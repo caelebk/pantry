@@ -6,34 +6,21 @@
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div
-        class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ 'dashboard.stats.totalItems' | transloco }}
-        </h3>
-        <p class="text-3xl font-bold text-[#7c4a0b] dark:text-orange-500 mt-2">5</p>
-        <p class="text-xs text-gray-400 mt-4">{{ 'dashboard.stats.inInventory' | transloco }}</p>
-    </div>
-    <div
-        class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ 'dashboard.stats.expiringSoon' | transloco
-            }}</h3>
-        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">0</p>
-        <p class="text-xs text-gray-400 mt-4">{{ 'dashboard.stats.within7Days' | transloco }}</p>
-    </div>
-    <div
-        class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ 'dashboard.stats.expired' | transloco }}
-        </h3>
-        <p class="text-3xl font-bold text-red-600 dark:text-red-500 mt-2">5</p>
-        <p class="text-xs text-gray-400 mt-4">{{ 'dashboard.stats.needsRemoval' | transloco }}</p>
-    </div>
-    <div
-        class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ 'dashboard.stats.canMake' | transloco }}
-        </h3>
-        <p class="text-3xl font-bold text-[#7c4a0b] dark:text-orange-500 mt-2">0</p>
-        <p class="text-xs text-gray-400 mt-4">{{ 'dashboard.stats.recipes' | transloco }}</p>
-    </div>
+    <stat-card [title]="'dashboard.stats.totalItems' | transloco" [value]="totalItems"
+        [subtitle]="'dashboard.stats.inInventory' | transloco">
+    </stat-card>
+
+    <stat-card [title]="'dashboard.stats.expiringSoon' | transloco" [value]="expiringSoonItems"
+        [subtitle]="'dashboard.stats.within7Days' | transloco" [valueColor]="'text-[#d97736] dark:text-orange-500'">
+    </stat-card>
+
+    <stat-card [title]="'dashboard.stats.expired' | transloco" [value]="expiredItems"
+        [subtitle]="'dashboard.stats.needsRemoval' | transloco" [valueColor]="'text-red-600 dark:text-red-500'">
+    </stat-card>
+
+    <stat-card [title]="'dashboard.stats.canMake' | transloco" [value]="canMakeRecipes"
+        [subtitle]="'dashboard.stats.recipes' | transloco">
+    </stat-card>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
