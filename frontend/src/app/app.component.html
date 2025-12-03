@@ -6,13 +6,13 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <app-tabs [activeTab]="currentTab" (tabSelected)="onTabSelected($event)"></app-tabs>
 
-      @if (currentTab === 'dashboard') {
+      @if (currentTab === Tab.Dashboard) {
       <app-dashboard></app-dashboard>
-      } @else if (currentTab === 'inventory') {
+      } @else if (currentTab === Tab.Inventory) {
       <app-inventory></app-inventory>
-      } @else if (currentTab === 'recipes') {
+      } @else if (currentTab === Tab.Recipes) {
       <app-recipes></app-recipes>
-      } @else if (currentTab === 'meal-planner') {
+      } @else if (currentTab === Tab.MealPlanner) {
       <app-meal-planner></app-meal-planner>
       }
     </main>

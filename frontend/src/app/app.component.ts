@@ -6,6 +6,7 @@ import { InventoryComponent } from './pages/inventory/inventory.component';
 import { RecipesComponent } from './pages/recipes/recipes.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MealPlannerComponent } from './pages/meal-planner/meal-planner.component';
+import { Tab } from './components/tabs/tabs.model';
 
 @Component({
   selector: 'app-root',
@@ -15,15 +16,16 @@ import { MealPlannerComponent } from './pages/meal-planner/meal-planner.componen
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
+  Tab = Tab; // Expose enum to template
   title = 'Pantry';
   darkMode = false;
-  currentTab = 'dashboard';
+  currentTab: Tab = Tab.Dashboard;
 
   toggleTheme() {
     this.darkMode = !this.darkMode;
   }
 
-  onTabSelected(tab: string) {
+  onTabSelected(tab: Tab) {
     this.currentTab = tab;
   }
 }
