@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
-import { AddItemFormComponent } from '../../components/add-item-form/add-item-form.component';
-import { ItemCardComponent } from '../../components/item-card/item-card.component';
+import { AddItemFormComponent } from './inventory-components/add-item-form/add-item-form.component';
+import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
 
 @Component({
