@@ -1,13 +1,46 @@
 <div class="flex flex-wrap gap-2 mb-8">
-    <button
-        class="px-4 py-2 bg-[#7c4a0b] dark:bg-orange-600 text-white text-sm font-medium rounded-md shadow-sm transition-colors duration-200">Inventory</button>
-    <button
-        class="px-4 py-2 bg-white dark:bg-[#262626] text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">Recipes</button>
-    <button
-        class="px-4 py-2 bg-white dark:bg-[#262626] text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">Dashboard</button>
-    <button
-        class="px-4 py-2 bg-white dark:bg-[#262626] text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">Meal
-        Planner</button>
+    <button (click)="selectTab('dashboard')" [class.bg-[#7c4a0b]]="activeTab === 'dashboard'"
+        [class.dark:bg-orange-600]="activeTab === 'dashboard'" [class.text-white]="activeTab === 'dashboard'"
+        [class.bg-white]="activeTab !== 'dashboard'" [class.dark:bg-[#262626]]="activeTab !== 'dashboard'"
+        [class.text-gray-700]="activeTab !== 'dashboard'" [class.dark:text-gray-300]="activeTab !== 'dashboard'"
+        class="px-4 py-2 text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
+        [class.border-gray-200]="activeTab !== 'dashboard'" [class.dark:border-gray-700]="activeTab !== 'dashboard'"
+        [class.hover:bg-gray-50]="activeTab !== 'dashboard'" [class.dark:hover:bg-gray-800]="activeTab !== 'dashboard'">
+        Dashboard
+    </button>
+
+    <button (click)="selectTab('inventory')" [class.bg-[#7c4a0b]]="activeTab === 'inventory'"
+        [class.dark:bg-orange-600]="activeTab === 'inventory'" [class.text-white]="activeTab === 'inventory'"
+        [class.bg-white]="activeTab !== 'inventory'" [class.dark:bg-[#262626]]="activeTab !== 'inventory'"
+        [class.text-gray-700]="activeTab !== 'inventory'" [class.dark:text-gray-300]="activeTab !== 'inventory'"
+        class="px-4 py-2 text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
+        [class.border-gray-200]="activeTab !== 'inventory'" [class.dark:border-gray-700]="activeTab !== 'inventory'"
+        [class.hover:bg-gray-50]="activeTab !== 'inventory'" [class.dark:hover:bg-gray-800]="activeTab !== 'inventory'">
+        Inventory
+    </button>
+
+    <button (click)="selectTab('recipes')" [class.bg-[#7c4a0b]]="activeTab === 'recipes'"
+        [class.dark:bg-orange-600]="activeTab === 'recipes'" [class.text-white]="activeTab === 'recipes'"
+        [class.bg-white]="activeTab !== 'recipes'" [class.dark:bg-[#262626]]="activeTab !== 'recipes'"
+        [class.text-gray-700]="activeTab !== 'recipes'" [class.dark:text-gray-300]="activeTab !== 'recipes'"
+        class="px-4 py-2 text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
+        [class.border-gray-200]="activeTab !== 'recipes'" [class.dark:border-gray-700]="activeTab !== 'recipes'"
+        [class.hover:bg-gray-50]="activeTab !== 'recipes'" [class.dark:hover:bg-gray-800]="activeTab !== 'recipes'">
+        Recipes
+    </button>
+
+    <button (click)="selectTab('meal-planner')" [class.bg-[#7c4a0b]]="activeTab === 'meal-planner'"
+        [class.dark:bg-orange-600]="activeTab === 'meal-planner'" [class.text-white]="activeTab === 'meal-planner'"
+        [class.bg-white]="activeTab !== 'meal-planner'" [class.dark:bg-[#262626]]="activeTab !== 'meal-planner'"
+        [class.text-gray-700]="activeTab !== 'meal-planner'" [class.dark:text-gray-300]="activeTab !== 'meal-planner'"
+        class="px-4 py-2 text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
+        [class.border-gray-200]="activeTab !== 'meal-planner'"
+        [class.dark:border-gray-700]="activeTab !== 'meal-planner'"
+        [class.hover:bg-gray-50]="activeTab !== 'meal-planner'"
+        [class.dark:hover:bg-gray-800]="activeTab !== 'meal-planner'">
+        Meal Planner
+    </button>
+
     <div class="ml-auto">
         <button
             class="p-2 bg-white dark:bg-[#262626] border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors duration-200">

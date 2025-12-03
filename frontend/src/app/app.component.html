@@ -4,8 +4,17 @@
     <app-header [darkMode]="darkMode" (themeToggled)="toggleTheme()"></app-header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <app-tabs></app-tabs>
+      <app-tabs [activeTab]="currentTab" (tabSelected)="onTabSelected($event)"></app-tabs>
+
+      @if (currentTab === 'dashboard') {
+      <app-dashboard></app-dashboard>
+      } @else if (currentTab === 'inventory') {
       <app-inventory></app-inventory>
+      } @else if (currentTab === 'recipes') {
+      <app-recipes></app-recipes>
+      } @else if (currentTab === 'meal-planner') {
+      <app-meal-planner></app-meal-planner>
+      }
     </main>
   </div>
 </div>
