@@ -30,79 +30,11 @@
     </div>
 
     <!-- Right Column: Categories & Actions -->
-    <div class="lg:col-span-1 space-y-6">
+    <div class="lg:col-span-1 space-y-8">
         <!-- By Category -->
-        <div
-            class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">{{ 'dashboard.byCategory.title' | transloco
-                }}</h3>
-
-            <div class="space-y-4">
-                <div>
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ 'categories.dairyEggs' | transloco
-                            }}</span>
-                        <span class="font-bold text-[#7c4a0b] dark:text-orange-500">2</span>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-[#7c4a0b] dark:bg-orange-600 h-2 rounded-full" style="width: 40%"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ 'categories.oilsCondiments' |
-                            transloco }}</span>
-                        <span class="font-bold text-[#7c4a0b] dark:text-orange-500">1</span>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-[#7c4a0b] dark:bg-orange-600 h-2 rounded-full" style="width: 20%"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ 'categories.grainsBaking' |
-                            transloco }}</span>
-                        <span class="font-bold text-[#7c4a0b] dark:text-orange-500">1</span>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-[#7c4a0b] dark:bg-orange-600 h-2 rounded-full" style="width: 20%"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ 'categories.produce' | transloco
-                            }}</span>
-                        <span class="font-bold text-[#7c4a0b] dark:text-orange-500">1</span>
-                    </div>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-[#7c4a0b] dark:bg-orange-600 h-2 rounded-full" style="width: 20%"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <category-container></category-container>
 
         <!-- Quick Actions -->
-        <div
-            class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">{{ 'dashboard.quickActions.title' |
-                transloco }}</h3>
-            <div class="space-y-3">
-                <button
-                    class="w-full py-2.5 bg-[#6b3f09] text-white rounded-md font-medium hover:bg-[#5a3507] transition-colors">
-                    {{ 'dashboard.quickActions.addItem' | transloco }}
-                </button>
-                <button
-                    class="w-full py-2.5 bg-[#e5e0d8] dark:bg-[#333] text-[#6b3f09] dark:text-gray-200 rounded-md font-medium hover:bg-[#d8d0c5] dark:hover:bg-[#404040] transition-colors">
-                    {{ 'dashboard.quickActions.addRecipe' | transloco }}
-                </button>
-                <button
-                    class="w-full py-2.5 bg-[#d97736] text-white rounded-md font-medium hover:bg-[#c66a2e] transition-colors">
-                    {{ 'dashboard.quickActions.planMeals' | transloco }}
-                </button>
-            </div>
-        </div>
+        <quick-actions-container></quick-actions-container>
     </div>
 </div>

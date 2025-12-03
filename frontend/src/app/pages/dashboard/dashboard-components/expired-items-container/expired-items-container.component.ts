@@ -8,6 +8,11 @@ import { Item } from '../../../../models/items.model';
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './expired-items-container.component.html',
+  styles: [`
+    :host {
+      display: block;
+    }
+  `]
 })
 export class ExpiredItemsContainerComponent {
   @Input() expiredItems: Item[] = [];
