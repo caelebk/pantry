@@ -6,6 +6,8 @@ import { ExpiredItemsContainerComponent } from './dashboard-components/expired-i
 import { CategoryContainerComponent } from './dashboard-components/category-container/category-container.component';
 import { QuickActionsContainerComponent } from './dashboard-components/quick-actions-container/quick-actions-container.component';
 import { Item } from '../../models/items.model';
+import { InventoryService } from '../../services/inventory/inventory.service';
+import { isExpired } from '../../utility/itemUtility';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,30 +21,9 @@ export class DashboardComponent {
   expiredItemsCount: number = 5;
   canMakeRecipesCount: number = 0;
 
-  expiredItems: Item[] = [
-    {
-      name: 'dashboard.sampleData.oliveOil',
-      category: 'categories.oilsCondiments',
-      quantity: 2,
-      unit: 'bottles',
-      purchaseDate: '2024-10-31',
-      bestBefore: '2025-10-31'
-    },
-    {
-      name: 'dashboard.sampleData.allPurposeFlour',
-      category: 'categories.grainsBaking',
-      quantity: 5,
-      unit: 'kg',
-      purchaseDate: '2024-10-14',
-      bestBefore: '2025-10-14'
-    },
-    {
-      name: 'dashboard.sampleData.milk',
-      category: 'categories.dairyEggs',
-      quantity: 2,
-      unit: 'liters',
-      purchaseDate: '2024-10-14',
-      bestBefore: '2025-10-14'
-    }
-  ];
+  expiredItems: Item[] = [];
+
+  constructor(private inventoryService: InventoryService) {
+    this.expiredItems = this.inventoryService.getItems().filter(item => isExpired(item));
+  }
 }
