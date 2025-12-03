@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AddItemFormComponent } from '../../components/add-item-form/add-item-form.component';
 import { ItemCardComponent } from '../../components/item-card/item-card.component';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule, AddItemFormComponent, ItemCardComponent],
+  imports: [CommonModule, TranslocoModule, AddItemFormComponent, ItemCardComponent],
   templateUrl: './inventory.component.html',
 })
 export class InventoryComponent {

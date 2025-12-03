@@ -17,19 +17,23 @@
 
     <div class="grid grid-cols-4 gap-4 mb-6 text-center">
         <div>
-            <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Servings</span>
+            <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{
+                'recipeCard.servings' | transloco }}</span>
             <span class="block font-bold text-gray-900 dark:text-white text-lg">{{ recipe?.servings }}</span>
         </div>
         <div>
-            <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Prep Time</span>
+            <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{
+                'recipeCard.prepTime' | transloco }}</span>
             <span class="block font-bold text-gray-900 dark:text-white text-lg">{{ recipe?.prepTime }}</span>
         </div>
         <div>
-            <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cook Time</span>
+            <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{
+                'recipeCard.cookTime' | transloco }}</span>
             <span class="block font-bold text-gray-900 dark:text-white text-lg">{{ recipe?.cookTime }}</span>
         </div>
         <div>
-            <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Time</span>
+            <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{
+                'recipeCard.totalTime' | transloco }}</span>
             <span class="block font-bold text-gray-900 dark:text-white text-lg">{{ recipe?.totalTime }}</span>
         </div>
     </div>
@@ -45,7 +49,7 @@
 
     <div class="grid md:grid-cols-2 gap-8 pt-6 border-t border-gray-100 dark:border-gray-800">
         <div>
-            <h5 class="font-bold text-gray-900 dark:text-white mb-3">Ingredients</h5>
+            <h5 class="font-bold text-gray-900 dark:text-white mb-3">{{ 'recipeCard.ingredients' | transloco }}</h5>
             <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                 @for (ingredient of recipe?.ingredients; track ingredient) {
                 <li class="flex items-start">
@@ -56,7 +60,7 @@
             </ul>
         </div>
         <div>
-            <h5 class="font-bold text-gray-900 dark:text-white mb-3">Instructions</h5>
+            <h5 class="font-bold text-gray-900 dark:text-white mb-3">{{ 'recipeCard.instructions' | transloco }}</h5>
             <ol class="space-y-2 text-sm text-gray-600 dark:text-gray-300 list-decimal list-inside">
                 @for (instruction of recipe?.instructions; track instruction) {
                 <li>{{ instruction }}</li>

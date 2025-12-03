@@ -5,19 +5,20 @@
             <h4 class="text-lg font-bold text-gray-900 dark:text-white">{{ item?.name }}</h4>
             <div class="grid grid-cols-2 gap-x-12 gap-y-2 mt-3 text-sm">
                 <div>
-                    <span class="text-gray-500 dark:text-gray-400 block">Category:</span>
+                    <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.category' | transloco }}</span>
                     <span class="font-medium text-gray-900 dark:text-gray-200">{{ item?.category }}</span>
                 </div>
                 <div>
-                    <span class="text-gray-500 dark:text-gray-400 block">Quantity:</span>
+                    <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.quantity' | transloco }}</span>
                     <span class="font-medium text-gray-900 dark:text-gray-200">{{ item?.quantity }}</span>
                 </div>
                 <div>
-                    <span class="text-gray-500 dark:text-gray-400 block">Purchase Date:</span>
+                    <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.purchaseDate' | transloco
+                        }}</span>
                     <span class="font-medium text-gray-900 dark:text-gray-200">{{ item?.purchaseDate }}</span>
                 </div>
                 <div>
-                    <span class="text-gray-500 dark:text-gray-400 block">Best Before:</span>
+                    <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.bestBefore' | transloco }}</span>
                     <span class="font-medium text-red-600 dark:text-red-500">{{ item?.bestBefore }}</span>
                 </div>
             </div>

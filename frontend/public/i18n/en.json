@@ -1,1 +1,172 @@
-{}
+{
+    "app": {
+        "name": "Pantry"
+    },
+    "nav": {
+        "dashboard": "Dashboard",
+        "inventory": "Inventory",
+        "recipes": "Recipes",
+        "mealPlanner": "Meal Planner"
+    },
+    "dashboard": {
+        "title": "Welcome Back",
+        "subtitle": "Here's what's happening in your kitchen today",
+        "stats": {
+            "totalItems": "Total Items",
+            "expiringSoon": "Expiring Soon",
+            "expired": "Expired",
+            "canMake": "Can Make",
+            "inInventory": "in inventory",
+            "within7Days": "within 7 days",
+            "needsRemoval": "needs removal",
+            "recipes": "recipes"
+        },
+        "expiredItems": {
+            "title": "Expired Items",
+            "moreItems": "+2 more expired items"
+        },
+        "byCategory": {
+            "title": "By Category"
+        },
+        "quickActions": {
+            "title": "Quick Actions",
+            "addItem": "Add Item",
+            "addRecipe": "Add Recipe",
+            "planMeals": "Plan Meals"
+        },
+        "storageTip": {
+            "title": "Storage Tip",
+            "content": "Store fresh produce in your crisper drawer to extend shelf life. Keep herbs in water like flowers."
+        },
+        "sampleData": {
+            "oliveOil": "Olive Oil",
+            "allPurposeFlour": "All-Purpose Flour",
+            "milk": "Milk",
+            "pasta": "Pasta",
+            "garlic": "Garlic"
+        }
+    },
+    "inventory": {
+        "title": "Kitchen Inventory",
+        "subtitle": "Track your ingredients and manage expiration dates",
+        "yourInventory": "Your Inventory",
+        "stats": {
+            "totalItems": "Total Items",
+            "expiringSoon": "Expiring Soon",
+            "expired": "Expired"
+        }
+    },
+    "recipes": {
+        "title": "My Recipes",
+        "subtitle": "Manage your favorite recipes and plan meals",
+        "yourRecipes": "Your Recipes"
+    },
+    "mealPlanner": {
+        "title": "Meal Planner",
+        "subtitle": "Find recipes you can make with your current inventory",
+        "currentInventory": "Current Inventory",
+        "almostReady": "Almost Ready",
+        "missingIngredients": "Missing ingredients:",
+        "missing": "Missing",
+        "ingredients": "ingredients",
+        "sampleData": {
+            "simplePasta": "Simple Pasta",
+            "simplePastaDesc": "Classic pasta dish with olive oil and garlic",
+            "simpleOmelette": "Simple Omelette",
+            "simpleOmeletteDesc": "Quick and easy omelette",
+            "pasta": "Pasta",
+            "oliveOil": "Olive Oil",
+            "garlic": "Garlic",
+            "allPurposeFlour": "All-Purpose Flour",
+            "boxes": "boxes",
+            "bottles": "bottles",
+            "cloves": "cloves",
+            "kg": "kg",
+            "need": "need",
+            "have": "have",
+            "eggs": "Eggs",
+            "butter": "Butter",
+            "pieces": "pieces",
+            "tbsp": "tbsp",
+            "g": "g"
+        }
+    },
+    "addItemForm": {
+        "title": "Add New Item",
+        "itemName": "Item Name",
+        "itemNamePlaceholder": "e.g., Chicken Breast",
+        "category": "Category",
+        "quantity": "Quantity",
+        "unit": "Unit",
+        "purchaseDate": "Purchase Date",
+        "bestBeforeDate": "Best Before Date",
+        "shelfLife": "Shelf Life",
+        "notes": "Notes",
+        "notesPlaceholder": "Optional notes...",
+        "addButton": "Add Item",
+        "categories": {
+            "pantryStaples": "Pantry Staples",
+            "vegetables": "Vegetables",
+            "fruits": "Fruits",
+            "meat": "Meat",
+            "dairy": "Dairy"
+        },
+        "units": {
+            "piece": "piece",
+            "days": "days",
+            "weeks": "weeks",
+            "months": "months"
+        }
+    },
+    "addRecipeForm": {
+        "title": "Add New Recipe",
+        "recipeName": "Recipe Name",
+        "recipeNamePlaceholder": "e.g., Chocolate Cake",
+        "description": "Description",
+        "descriptionPlaceholder": "Brief description...",
+        "servings": "Servings",
+        "difficulty": "Difficulty",
+        "prepTime": "Prep Time (min)",
+        "cookTime": "Cook Time (min)",
+        "tags": "Tags",
+        "tagsLabel": "Tags (comma-separated)",
+        "tagsPlaceholder": "e.g., Italian, Quick, Vegetarian",
+        "ingredients": "Ingredients",
+        "ingredientsNamePlaceholder": "Name",
+        "ingredientsUnitPlaceholder": "Unit",
+        "instructions": "Instructions",
+        "instructionsStepPlaceholder": "Step...",
+        "addButton": "Add Recipe",
+        "addIngredientButton": "Add",
+        "addInstructionButton": "Add",
+        "difficulties": {
+            "easy": "Easy",
+            "medium": "Medium",
+            "hard": "Hard"
+        }
+    },
+    "itemCard": {
+        "category": "Category:",
+        "quantity": "Quantity:",
+        "purchaseDate": "Purchase Date:",
+        "bestBefore": "Best Before:",
+        "expired": "Expired"
+    },
+    "recipeCard": {
+        "servings": "Servings",
+        "prepTime": "Prep Time",
+        "cookTime": "Cook Time",
+        "totalTime": "Total Time",
+        "ingredients": "Ingredients",
+        "instructions": "Instructions"
+    },
+    "categories": {
+        "dairyEggs": "Dairy & Eggs",
+        "oilsCondiments": "Oils & Condiments",
+        "grainsBaking": "Grains & Baking",
+        "produce": "Produce"
+    },
+    "common": {
+        "expired": "Expired"
+    }
+}

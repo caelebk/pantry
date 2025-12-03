@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AddRecipeFormComponent } from '../../components/add-recipe-form/add-recipe-form.component';
 import { RecipeCardComponent } from '../../components/recipe-card/recipe-card.component';
 
 @Component({
   selector: 'app-recipes',
   standalone: true,
-  imports: [CommonModule, AddRecipeFormComponent, RecipeCardComponent],
+  imports: [CommonModule, TranslocoModule, AddRecipeFormComponent, RecipeCardComponent],
   templateUrl: './recipes.component.html',
 })
 export class RecipesComponent {

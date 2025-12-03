@@ -6,7 +6,7 @@
         class="px-4 py-2 text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
         [class.border-gray-200]="activeTab !== 'dashboard'" [class.dark:border-gray-700]="activeTab !== 'dashboard'"
         [class.hover:bg-gray-50]="activeTab !== 'dashboard'" [class.dark:hover:bg-gray-800]="activeTab !== 'dashboard'">
-        Dashboard
+        {{ 'nav.dashboard' | transloco }}
     </button>
 
     <button (click)="selectTab('inventory')" [class.bg-[#7c4a0b]]="activeTab === 'inventory'"
@@ -16,7 +16,7 @@
         class="px-4 py-2 text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
         [class.border-gray-200]="activeTab !== 'inventory'" [class.dark:border-gray-700]="activeTab !== 'inventory'"
         [class.hover:bg-gray-50]="activeTab !== 'inventory'" [class.dark:hover:bg-gray-800]="activeTab !== 'inventory'">
-        Inventory
+        {{ 'nav.inventory' | transloco }}
     </button>
 
     <button (click)="selectTab('recipes')" [class.bg-[#7c4a0b]]="activeTab === 'recipes'"
@@ -26,7 +26,7 @@
         class="px-4 py-2 text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
         [class.border-gray-200]="activeTab !== 'recipes'" [class.dark:border-gray-700]="activeTab !== 'recipes'"
         [class.hover:bg-gray-50]="activeTab !== 'recipes'" [class.dark:hover:bg-gray-800]="activeTab !== 'recipes'">
-        Recipes
+        {{ 'nav.recipes' | transloco }}
     </button>
 
     <button (click)="selectTab('meal-planner')" [class.bg-[#7c4a0b]]="activeTab === 'meal-planner'"
@@ -38,7 +38,7 @@
         [class.dark:border-gray-700]="activeTab !== 'meal-planner'"
         [class.hover:bg-gray-50]="activeTab !== 'meal-planner'"
         [class.dark:hover:bg-gray-800]="activeTab !== 'meal-planner'">
-        Meal Planner
+        {{ 'nav.mealPlanner' | transloco }}
     </button>
 
     <div class="ml-auto">

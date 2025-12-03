@@ -6,10 +6,10 @@
                 class="w-8 h-8 bg-[#7c4a0b] dark:bg-orange-600 rounded-md flex items-center justify-center text-white font-bold text-lg transition-colors duration-200">
                 P
             </div>
-            <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Pantry</h1>
+            <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">{{ 'app.name' | transloco }}</h1>
         </div>
         <button (click)="onToggle()"
-            class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors duration-200">
+            class="p-2 cursor-pointer rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors duration-200">
             <!-- Sun icon for dark mode -->
             @if (darkMode) {
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

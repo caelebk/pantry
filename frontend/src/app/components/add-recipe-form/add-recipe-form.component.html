@@ -1,88 +1,98 @@
 <div
     class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 sticky top-24 transition-colors duration-200">
-    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Add New Recipe</h3>
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">{{ 'addRecipeForm.title' | transloco }}</h3>
     <form class="space-y-4">
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Recipe Name</label>
-            <input type="text" placeholder="e.g., Chocolate Cake"
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addRecipeForm.recipeName'
+                | transloco }}</label>
+            <input type="text" [placeholder]="'addRecipeForm.recipeNamePlaceholder' | transloco"
                 class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200">
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-            <textarea rows="3" placeholder="Brief description..."
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{
+                'addRecipeForm.description' | transloco }}</label>
+            <textarea rows="3" [placeholder]="'addRecipeForm.descriptionPlaceholder' | transloco"
                 class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200"></textarea>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Servings</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{
+                    'addRecipeForm.servings' | transloco }}</label>
                 <input type="number" value="2"
                     class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Difficulty</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{
+                    'addRecipeForm.difficulty' | transloco }}</label>
                 <select
                     class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200">
-                    <option>Easy</option>
-                    <option>Medium</option>
-                    <option>Hard</option>
+                    <option>{{ 'addRecipeForm.difficulties.easy' | transloco }}</option>
+                    <option>{{ 'addRecipeForm.difficulties.medium' | transloco }}</option>
+                    <option>{{ 'addRecipeForm.difficulties.hard' | transloco }}</option>
                 </select>
             </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prep Time (min)</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{
+                    'addRecipeForm.prepTime' | transloco }}</label>
                 <input type="number" value="10"
                     class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cook Time (min)</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{
+                    'addRecipeForm.cookTime' | transloco }}</label>
                 <input type="number" value="20"
                     class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200">
             </div>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tags
-                (comma-separated)</label>
-            <input type="text" placeholder="e.g., Italian, Quick, Vegetarian"
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addRecipeForm.tagsLabel'
+                | transloco }}</label>
+            <input type="text" [placeholder]="'addRecipeForm.tagsPlaceholder' | transloco"
                 class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200">
         </div>
 
         <div>
             <div class="flex justify-between items-center mb-1">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ingredients</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ 'addRecipeForm.ingredients'
+                    | transloco }}</label>
                 <button type="button"
-                    class="text-xs bg-[#7c4a0b] dark:bg-orange-600 text-white px-2 py-1 rounded hover:bg-[#6b3f09] dark:hover:bg-orange-700 transition-colors">Add</button>
+                    class="text-xs bg-[#7c4a0b] dark:bg-orange-600 text-white px-2 py-1 rounded hover:bg-[#6b3f09] dark:hover:bg-orange-700 transition-colors">{{
+                    'addRecipeForm.addIngredientButton' | transloco }}</button>
             </div>
             <div class="flex gap-2 mb-2">
-                <input type="text" placeholder="Name"
+                <input type="text" [placeholder]="'addRecipeForm.ingredientsNamePlaceholder' | transloco"
                     class="flex-1 rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200">
                 <input type="number" value="1"
                     class="w-16 rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200">
-                <input type="text" placeholder="Unit"
+                <input type="text" [placeholder]="'addRecipeForm.ingredientsUnitPlaceholder' | transloco"
                     class="w-20 rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200">
             </div>
         </div>
 
         <div>
             <div class="flex justify-between items-center mb-1">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Instructions</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{
+                    'addRecipeForm.instructions' | transloco }}</label>
                 <button type="button"
-                    class="text-xs bg-[#7c4a0b] dark:bg-orange-600 text-white px-2 py-1 rounded hover:bg-[#6b3f09] dark:hover:bg-orange-700 transition-colors">Add</button>
+                    class="text-xs bg-[#7c4a0b] dark:bg-orange-600 text-white px-2 py-1 rounded hover:bg-[#6b3f09] dark:hover:bg-orange-700 transition-colors">{{
+                    'addRecipeForm.addInstructionButton' | transloco }}</button>
             </div>
             <div class="flex gap-2 mb-2 items-start">
                 <span class="text-sm text-gray-500 dark:text-gray-400 mt-2">1.</span>
-                <textarea rows="2" placeholder="Step..."
+                <textarea rows="2" [placeholder]="'addRecipeForm.instructionsStepPlaceholder' | transloco"
                     class="flex-1 rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200"></textarea>
             </div>
         </div>
 
         <button type="button"
             class="w-full bg-[#7c4a0b] dark:bg-orange-600 text-white font-medium py-2.5 rounded-md hover:bg-[#6b3f09] dark:hover:bg-orange-700 transition-colors shadow-sm">
-            Add Recipe
+            {{ 'addRecipeForm.addButton' | transloco }}
         </button>
     </form>
 </div>

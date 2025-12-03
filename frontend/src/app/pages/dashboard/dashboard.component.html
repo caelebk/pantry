@@ -1,34 +1,38 @@
 <!-- Page Title -->
 <div class="mb-8">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Welcome Back</h2>
-    <p class="text-gray-500 dark:text-gray-400 mt-1">Here's what's happening in your kitchen today</p>
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ 'dashboard.title' | transloco }}</h2>
+    <p class="text-gray-500 dark:text-gray-400 mt-1">{{ 'dashboard.subtitle' | transloco }}</p>
 </div>
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
     <div
         class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Items</h3>
+        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ 'dashboard.stats.totalItems' | transloco }}
+        </h3>
         <p class="text-3xl font-bold text-[#7c4a0b] dark:text-orange-500 mt-2">5</p>
-        <p class="text-xs text-gray-400 mt-4">in inventory</p>
+        <p class="text-xs text-gray-400 mt-4">{{ 'dashboard.stats.inInventory' | transloco }}</p>
     </div>
     <div
         class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Expiring Soon</h3>
+        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ 'dashboard.stats.expiringSoon' | transloco
+            }}</h3>
         <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">0</p>
-        <p class="text-xs text-gray-400 mt-4">within 7 days</p>
+        <p class="text-xs text-gray-400 mt-4">{{ 'dashboard.stats.within7Days' | transloco }}</p>
     </div>
     <div
         class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Expired</h3>
+        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ 'dashboard.stats.expired' | transloco }}
+        </h3>
         <p class="text-3xl font-bold text-red-600 dark:text-red-500 mt-2">5</p>
-        <p class="text-xs text-gray-400 mt-4">needs removal</p>
+        <p class="text-xs text-gray-400 mt-4">{{ 'dashboard.stats.needsRemoval' | transloco }}</p>
     </div>
     <div
         class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Can Make</h3>
+        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ 'dashboard.stats.canMake' | transloco }}
+        </h3>
         <p class="text-3xl font-bold text-[#7c4a0b] dark:text-orange-500 mt-2">0</p>
-        <p class="text-xs text-gray-400 mt-4">recipes</p>
+        <p class="text-xs text-gray-400 mt-4">{{ 'dashboard.stats.recipes' | transloco }}</p>
     </div>
 </div>
 
@@ -38,7 +42,8 @@
         <div
             class="bg-red-50 dark:bg-[#1a1a1a] rounded-xl border-l-4 border-red-500 shadow-sm p-6 transition-colors duration-200">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Expired Items</h3>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ 'dashboard.expiredItems.title' |
+                    transloco }}</h3>
                 <div class="w-10 h-4 bg-red-600 rounded-full"></div>
             </div>
 
@@ -46,13 +51,16 @@
                 <!-- Item 1 -->
                 <div class="bg-white dark:bg-[#262626] p-4 rounded-lg flex justify-between items-center shadow-sm">
                     <div>
-                        <h4 class="font-bold text-gray-900 dark:text-white line-through decoration-gray-500">Olive Oil
+                        <h4 class="font-bold text-gray-900 dark:text-white line-through decoration-gray-500">{{
+                            'dashboard.sampleData.oliveOil' | transloco }}
                         </h4>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Oils & Condiments</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ 'categories.oilsCondiments' | transloco
+                            }}</p>
                     </div>
                     <div class="text-right">
                         <span
-                            class="text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">Expired</span>
+                            class="text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">{{
+                            'common.expired' | transloco }}</span>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2 bottles</p>
                     </div>
                 </div>
@@ -60,13 +68,16 @@
                 <!-- Item 2 -->
                 <div class="bg-white dark:bg-[#262626] p-4 rounded-lg flex justify-between items-center shadow-sm">
                     <div>
-                        <h4 class="font-bold text-gray-900 dark:text-white line-through decoration-gray-500">All-Purpose
-                            Flour</h4>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Grains & Baking</p>
+                        <h4 class="font-bold text-gray-900 dark:text-white line-through decoration-gray-500">{{
+                            'dashboard.sampleData.allPurposeFlour' | transloco }}
+                        </h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ 'categories.grainsBaking' | transloco }}
+                        </p>
                     </div>
                     <div class="text-right">
                         <span
-                            class="text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">Expired</span>
+                            class="text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">{{
+                            'common.expired' | transloco }}</span>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">5 kg</p>
                     </div>
                 </div>
@@ -74,19 +85,22 @@
                 <!-- Item 3 -->
                 <div class="bg-white dark:bg-[#262626] p-4 rounded-lg flex justify-between items-center shadow-sm">
                     <div>
-                        <h4 class="font-bold text-gray-900 dark:text-white line-through decoration-gray-500">Milk</h4>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Dairy & Eggs</p>
+                        <h4 class="font-bold text-gray-900 dark:text-white line-through decoration-gray-500">{{
+                            'dashboard.sampleData.milk' | transloco }}</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ 'categories.dairyEggs' | transloco }}</p>
                     </div>
                     <div class="text-right">
                         <span
-                            class="text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">Expired</span>
+                            class="text-xs font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded">{{
+                            'common.expired' | transloco }}</span>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2 liters</p>
                     </div>
                 </div>
             </div>
 
             <div class="mt-4 text-center">
-                <p class="text-sm text-gray-500 dark:text-gray-400">+2 more expired items</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'dashboard.expiredItems.moreItems' | transloco }}
+                </p>
             </div>
         </div>
     </div>
@@ -96,12 +110,14 @@
         <!-- By Category -->
         <div
             class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">By Category</h3>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">{{ 'dashboard.byCategory.title' | transloco
+                }}</h3>
 
             <div class="space-y-4">
                 <div>
                     <div class="flex justify-between text-sm mb-1">
-                        <span class="font-medium text-gray-700 dark:text-gray-300">Dairy & Eggs</span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ 'categories.dairyEggs' | transloco
+                            }}</span>
                         <span class="font-bold text-[#7c4a0b] dark:text-orange-500">2</span>
                     </div>
                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -111,7 +127,8 @@
 
                 <div>
                     <div class="flex justify-between text-sm mb-1">
-                        <span class="font-medium text-gray-700 dark:text-gray-300">Oils & Condiments</span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ 'categories.oilsCondiments' |
+                            transloco }}</span>
                         <span class="font-bold text-[#7c4a0b] dark:text-orange-500">1</span>
                     </div>
                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -121,7 +138,8 @@
 
                 <div>
                     <div class="flex justify-between text-sm mb-1">
-                        <span class="font-medium text-gray-700 dark:text-gray-300">Grains & Baking</span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ 'categories.grainsBaking' |
+                            transloco }}</span>
                         <span class="font-bold text-[#7c4a0b] dark:text-orange-500">1</span>
                     </div>
                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -131,7 +149,8 @@
 
                 <div>
                     <div class="flex justify-between text-sm mb-1">
-                        <span class="font-medium text-gray-700 dark:text-gray-300">Produce</span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ 'categories.produce' | transloco
+                            }}</span>
                         <span class="font-bold text-[#7c4a0b] dark:text-orange-500">1</span>
                     </div>
                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -144,28 +163,29 @@
         <!-- Quick Actions -->
         <div
             class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">{{ 'dashboard.quickActions.title' |
+                transloco }}</h3>
             <div class="space-y-3">
                 <button
                     class="w-full py-2.5 bg-[#6b3f09] text-white rounded-md font-medium hover:bg-[#5a3507] transition-colors">
-                    Add Item
+                    {{ 'dashboard.quickActions.addItem' | transloco }}
                 </button>
                 <button
                     class="w-full py-2.5 bg-[#e5e0d8] dark:bg-[#333] text-[#6b3f09] dark:text-gray-200 rounded-md font-medium hover:bg-[#d8d0c5] dark:hover:bg-[#404040] transition-colors">
-                    Add Recipe
+                    {{ 'dashboard.quickActions.addRecipe' | transloco }}
                 </button>
                 <button
                     class="w-full py-2.5 bg-[#d97736] text-white rounded-md font-medium hover:bg-[#c66a2e] transition-colors">
-                    Plan Meals
+                    {{ 'dashboard.quickActions.planMeals' | transloco }}
                 </button>
             </div>
         </div>
 
         <!-- Storage Tip -->
         <div class="bg-gray-50 dark:bg-[#262626] p-6 rounded-xl border border-gray-100 dark:border-gray-700">
-            <h3 class="font-bold text-gray-900 dark:text-white mb-2">Storage Tip</h3>
+            <h3 class="font-bold text-gray-900 dark:text-white mb-2">{{ 'dashboard.storageTip.title' | transloco }}</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">
-                Store fresh produce in your crisper drawer to extend shelf life. Keep herbs in water like flowers.
+                {{ 'dashboard.storageTip.content' | transloco }}
             </p>
         </div>
     </div>
