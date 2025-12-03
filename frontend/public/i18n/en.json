@@ -34,10 +34,6 @@
             "addRecipe": "Add Recipe",
             "planMeals": "Plan Meals"
         },
-        "storageTip": {
-            "title": "Storage Tip",
-            "content": "Store fresh produce in your crisper drawer to extend shelf life. Keep herbs in water like flowers."
-        },
         "sampleData": {
             "oliveOil": "Olive Oil",
             "allPurposeFlour": "All-Purpose Flour",
