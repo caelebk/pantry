@@ -6,14 +6,14 @@
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <stat-card [title]="'inventory.stats.totalItems' | transloco" [value]="totalItems">
+    <stat-card [title]="'inventory.stats.totalItems' | transloco" [value]="totalItemsCount">
     </stat-card>
 
-    <stat-card [title]="'inventory.stats.expiringSoon' | transloco" [value]="expiringSoonItems"
+    <stat-card [title]="'inventory.stats.expiringSoon' | transloco" [value]="expiringSoonItemsCount"
         [valueColor]="'text-[#d97736] dark:text-orange-500'">
     </stat-card>
 
-    <stat-card [title]="'inventory.stats.expired' | transloco" [value]="expiredItems"
+    <stat-card [title]="'inventory.stats.expired' | transloco" [value]="expiredItemsCount"
         [valueColor]="'text-red-600 dark:text-red-500'">
     </stat-card>
 </div>

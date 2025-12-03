@@ -23,17 +23,26 @@ export class DashboardComponent {
     {
       name: 'dashboard.sampleData.oliveOil',
       category: 'categories.oilsCondiments',
-      quantity: '2 bottles',
+      quantity: 2,
+      unit: 'bottles',
+      purchaseDate: '2024-10-31',
+      bestBefore: '2025-10-31'
     },
     {
       name: 'dashboard.sampleData.allPurposeFlour',
       category: 'categories.grainsBaking',
-      quantity: '5 kg'
+      quantity: 5,
+      unit: 'kg',
+      purchaseDate: '2024-10-14',
+      bestBefore: '2025-10-14'
     },
     {
       name: 'dashboard.sampleData.milk',
       category: 'categories.dairyEggs',
-      quantity: '2 liters'
+      quantity: 2,
+      unit: 'liters',
+      purchaseDate: '2024-10-14',
+      bestBefore: '2025-10-14'
     }
   ];
 }
