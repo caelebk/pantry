@@ -21,7 +21,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Add New Item Form -->
     <div class="lg:col-span-1">
-        <app-add-item-form></app-add-item-form>
+        <add-item-form></add-item-form>
     </div>
 
     <!-- Inventory List -->
@@ -29,7 +29,7 @@
         <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ 'inventory.yourInventory' | transloco }}</h3>
 
         @for (item of items; track item.name) {
-        <app-item-card [item]="item" class="mb-4"></app-item-card>
+        <item-card [item]="item" class="mb-4"></item-card>
         }
     </div>
 </div>

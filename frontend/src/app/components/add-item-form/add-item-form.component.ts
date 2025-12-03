@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
-  selector: 'app-add-item-form',
+  selector: 'add-item-form',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './add-item-form.component.html',

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
-  selector: 'app-item-card',
+  selector: 'item-card',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './item-card.component.html',
