@@ -6,6 +6,7 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
 import { Item } from '../../models/items.model';
 import { InventoryService } from '../../services/inventory/inventory.service';
+import { isExpired } from '../../utility/itemUtility';
 
 @Component({
   selector: 'app-inventory',
@@ -25,6 +26,6 @@ export class InventoryComponent {
     this.items = this.inventoryService.getItems();
     this.totalItemsCount = this.items.length;
     this.expiringSoonItemsCount = 0;
-    this.expiredItemsCount = this.items.filter(item => item.bestBefore < new Date().toISOString()).length;
+    this.expiredItemsCount = this.items.filter(item => isExpired(item)).length;
   }
 }

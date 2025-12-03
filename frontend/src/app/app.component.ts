@@ -18,7 +18,7 @@ import { Tab } from './components/tabs/tabs.model';
 export class AppComponent {
   Tab = Tab; // Expose enum to template
   title = 'Pantry';
-  darkMode = false;
+  darkMode = true;
   currentTab: Tab = Tab.Dashboard;
 
   toggleTheme() {

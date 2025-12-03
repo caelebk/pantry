@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
+import { Item } from '../../../../models/items.model';
+import { isExpired } from '../../../../utility/itemUtility';
 
 @Component({
   selector: 'item-card',
@@ -10,5 +12,13 @@ import { TranslocoModule } from '@jsverse/transloco';
   styles: [':host { display: block; }']
 })
 export class ItemCardComponent {
-  @Input() item: any; // Using any for now, ideally an interface
+  @Input() item?: Item;
+
+  expired: boolean = false;
+
+  ngOnInit(): void {
+    if (this.item) {
+      this.expired = isExpired(this.item);
+    }
+  }
 }

@@ -21,6 +21,14 @@ export class InventoryService {
       unit: 'bottles',
       purchaseDate: '2024-10-31',
       bestBefore: '2025-10-31'
+    },
+    {
+      name: 'Salt',
+      category: 'Spices & Seasonings',
+      quantity: 1,
+      unit: 'box',
+      purchaseDate: '2024-11-15',
+      bestBefore: '2028-11-15'
     }
   ];
 
