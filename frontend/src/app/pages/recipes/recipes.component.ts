@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
-import { AddRecipeFormComponent } from '../../components/add-recipe-form/add-recipe-form.component';
-import { RecipeCardComponent } from '../../components/recipe-card/recipe-card.component';
+import { AddRecipeFormComponent } from './recipe-components/add-recipe-form/add-recipe-form.component';
+import { RecipeCardComponent } from './recipe-components/recipe-card/recipe-card.component';
 
 @Component({
   selector: 'app-recipes',

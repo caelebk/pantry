@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
-  selector: 'app-recipe-card',
+  selector: 'recipe-card',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './recipe-card.component.html',

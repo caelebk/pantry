@@ -7,7 +7,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Add New Recipe Form -->
     <div class="lg:col-span-1">
-        <app-add-recipe-form></app-add-recipe-form>
+        <add-recipe-form></add-recipe-form>
     </div>
 
     <!-- Recipes List -->
@@ -15,7 +15,7 @@
         <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ 'recipes.yourRecipes' | transloco }}</h3>
 
         @for (recipe of recipes; track recipe.name) {
-        <app-recipe-card [recipe]="recipe" class="mb-4"></app-recipe-card>
+        <recipe-card [recipe]="recipe" class="mb-4"></recipe-card>
         }
     </div>
 </div>

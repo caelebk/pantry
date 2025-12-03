@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
-  selector: 'app-add-recipe-form',
+  selector: 'add-recipe-form',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './add-recipe-form.component.html',
