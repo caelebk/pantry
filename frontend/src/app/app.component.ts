@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HeaderComponent } from './components/header/header.component';
+import { TabsComponent } from './components/tabs/tabs.component';
+import { InventoryComponent } from './pages/inventory/inventory.component';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, HeaderComponent, TabsComponent, InventoryComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
