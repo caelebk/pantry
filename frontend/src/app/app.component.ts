@@ -15,7 +15,7 @@ import { MealPlannerComponent } from './pages/meal-planner/meal-planner.componen
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  title = 'frontend';
+  title = 'Pantry';
   darkMode = false;
   currentTab = 'dashboard';
 
