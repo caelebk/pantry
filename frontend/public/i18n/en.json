@@ -22,8 +22,7 @@
             "recipes": "recipes"
         },
         "expiredItems": {
-            "title": "Expired Items",
-            "moreItems": "+2 more expired items"
+            "title": "Expired Items"
         },
         "byCategory": {
             "title": "By Category"

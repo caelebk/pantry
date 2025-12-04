@@ -9,7 +9,7 @@
     </div>
 
     <div class="space-y-3">
-        @for (item of expiredItems; track item.name) {
+        @for (item of visibleExpiredItems; track item.name) {
         <div class="bg-white dark:bg-[#262626] p-4 rounded-lg flex justify-between items-center shadow-sm">
             <div>
                 <h4 class="font-bold text-gray-900 dark:text-white line-through decoration-gray-500">{{
@@ -29,7 +29,7 @@
     </div>
 
     <div class="mt-4 text-center">
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'dashboard.expiredItems.moreItems' | transloco }}
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ hiddenItemsMessage }}
         </p>
     </div>
 </div>

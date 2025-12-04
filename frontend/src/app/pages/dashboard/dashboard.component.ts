@@ -16,14 +16,18 @@ import { isExpired } from '../../utility/itemUtility';
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {
-  totalItemsCount: number = 5;
+  totalItemsCount: number;
+  expiredItemsCount: number;
   expiringSoonItemsCount: number = 0;
-  expiredItemsCount: number = 5;
   canMakeRecipesCount: number = 0;
 
+  items: Item[] = [];
   expiredItems: Item[] = [];
 
   constructor(private inventoryService: InventoryService) {
-    this.expiredItems = this.inventoryService.getItems().filter(item => isExpired(item));
+    this.items = this.inventoryService.getItems();
+    this.expiredItems = this.items.filter(item => isExpired(item));
+    this.totalItemsCount = this.items.length;
+    this.expiredItemsCount = this.expiredItems.length;
   }
 }

@@ -13,7 +13,7 @@ export class InventoryService {
       unit: Unit.Kilogram,
       purchaseDate: new Date('2024-10-14'),
       openedDate: new Date('2024-10-14'),
-      bestBeforeDate: new Date('2025-10-14'),
+      bestBeforeDate: new Date('2026-05-14'),
       location: Location.Pantry,
       notes: 'Store in a cool, dry place.'
     },

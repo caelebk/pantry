@@ -15,12 +15,13 @@
                 <div>
                     <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.purchaseDate' | transloco
                         }}</span>
-                    <span class="font-medium text-gray-900 dark:text-gray-200">{{ item?.purchaseDate }}</span>
+                    <span class="font-medium text-gray-900 dark:text-gray-200">{{
+                        item?.purchaseDate?.toLocaleDateString() }}</span>
                 </div>
                 <div>
                     <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.bestBefore' | transloco }}</span>
                     <span [ngClass]="expired ? 'text-red-600 dark:text-red-500' : 'text-blue-600 dark:text-blue-500'"
-                        class="font-medium">{{ item?.bestBeforeDate }}</span>
+                        class="font-medium">{{ item?.bestBeforeDate?.toLocaleDateString() }}</span>
                 </div>
             </div>
         </div>
