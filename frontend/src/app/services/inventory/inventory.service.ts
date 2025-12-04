@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Item, Unit, Location } from '../../models/items.model';
+import { Item, Unit, Location, Category } from '../../models/items.model';
 
 @Injectable({
   providedIn: 'root'
@@ -8,43 +8,43 @@ export class InventoryService {
   private items: Item[] = [
     {
       name: 'All-Purpose Flour',
-      category: 'Grains & Baking',
+      category: Category.BakeryGrains,
       quantity: 5,
-      unit: Unit.KILOGRAM,
+      unit: Unit.Kilogram,
       purchaseDate: new Date('2024-10-14'),
       openedDate: new Date('2024-10-14'),
       bestBeforeDate: new Date('2025-10-14'),
-      location: Location.PANTRY
+      location: Location.Pantry
     },
     {
       name: 'Olive Oil',
-      category: 'Oils & Condiments',
+      category: Category.OilsCondiments,
       quantity: 400,
-      unit: Unit.MILLILITRE,
+      unit: Unit.Millilitre,
       purchaseDate: new Date('2024-10-31'),
       openedDate: new Date('2024-10-31'),
       bestBeforeDate: new Date('2025-10-31'),
-      location: Location.PANTRY
+      location: Location.Pantry
     },
     {
       name: 'Salt',
-      category: 'Spices & Seasonings',
+      category: Category.SpicesSeasonings,
       quantity: 1,
-      unit: Unit.PIECE,
+      unit: Unit.Piece,
       purchaseDate: new Date('2024-11-15'),
       openedDate: new Date('2024-11-15'),
       bestBeforeDate: new Date('2028-11-15'),
-      location: Location.PANTRY
+      location: Location.Pantry
     },
     {
       name: 'Milk',
-      category: 'Dairy & Eggs',
+      category: Category.DairyEggs,
       quantity: 2,
-      unit: Unit.LITRE,
+      unit: Unit.Litre,
       purchaseDate: new Date('2024-10-14'),
       openedDate: new Date('2024-10-14'),
       bestBeforeDate: new Date('2025-10-14'),
-      location: Location.FRIDGE
+      location: Location.Fridge
     }
   ];
 

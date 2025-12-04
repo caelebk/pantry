@@ -1,6 +1,6 @@
 export interface Item {
     name: string;
-    category: string;
+    category: Category;
     quantity: number;
     unit: Unit;
     purchaseDate: Date;
@@ -10,25 +10,38 @@ export interface Item {
 }
 
 export enum Unit {
-    GRAM = 'g',
-    KILOGRAM = 'kg',
-    LITRE = 'l',
-    MILLILITRE = 'ml',
-    POUND = 'lb',
-    OUNCE = 'oz',
-    CUP = 'cup',
-    TABLESPOON = 'tbsp',
-    TEASPOON = 'tsp',
-    PIECE = 'pc',
+    Gram = 'g',
+    Kilogram = 'kg',
+    Litre = 'l',
+    Millilitre = 'ml',
+    Pound = 'lb',
+    Ounce = 'oz',
+    Cup = 'cup',
+    Tablespoon = 'tbsp',
+    Teaspoon = 'tsp',
+    Piece = 'pc',
 }
 
 export enum Location {
-    SHELF = 'shelf',
-    FREEZER = 'freezer',
-    PANTRY = 'pantry',
-    FRIDGE = 'fridge'
+    Shelf = 'shelf',
+    Freezer = 'freezer',
+    Pantry = 'pantry',
+    Fridge = 'fridge'
 }
 
 export enum Category {
-    
+  Produce = "Produce",
+  MeatSeafood = "Meat & Seafood",
+  DairyEggs = "Dairy & Eggs",
+  BakeryGrains = "Bakery & Grains",
+  PantryStaples = "Pantry Staples",
+  CannedGoods = "Canned Goods",
+  OilsCondiments = "Oils & Condiments",
+  SpicesSeasonings = "Spices & Seasonings",
+  Snacks = "Snacks",
+  FrozenFoods = "Frozen Foods",
+  Beverages = "Beverages",
+  Breakfast = "Breakfast",
+  ReadyToEat = "Ready-to-Eat",
+  Baking = "Baking",
 }
