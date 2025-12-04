@@ -70,7 +70,7 @@ export class AddItemFormComponent {
       { validators: Validators.required }
     ),
     location: new FormControl<Location>(
-      Location.Fridge, 
+      Location.Shelf, 
       { nonNullable: true, validators: Validators.required }
     ),
     notes: new FormControl<string>(

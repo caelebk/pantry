@@ -72,8 +72,8 @@
                 class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"></p-select>
         </div>
 
-        <button type="submit"
-            class="w-full bg-[#7c4a0b] dark:bg-orange-600 text-white font-medium py-2.5 rounded-md hover:bg-[#6b3f09] dark:hover:bg-orange-700 transition-colors shadow-sm">
+        <button type="submit" [disabled]="!addItemForm.valid"
+            class="w-full bg-[#7c4a0b] dark:bg-orange-600 text-white font-medium py-2.5 rounded-md hover:bg-[#6b3f09] dark:hover:bg-orange-700 transition-colors shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7c4a0b] disabled:dark:hover:bg-orange-600">
             {{ 'addItemForm.addButton' | transloco }}
         </button>
     </form>
