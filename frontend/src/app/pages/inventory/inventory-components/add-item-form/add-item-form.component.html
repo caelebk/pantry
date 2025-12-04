@@ -6,14 +6,14 @@
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.itemName' |
                 transloco }}</label>
             <input pInputText formControlName="name" [placeholder]="'addItemForm.itemNamePlaceholder' | transloco"
-                class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200" />
+                class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white" />
         </div>
 
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.category' |
                 transloco }}</label>
-            <p-select [options]="categories" formControlName="category"
-                class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 border transition-colors duration-200"
+            <p-select [options]="categories" formControlName="category" [filter]="true"
+                class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"
                 [placeholder]="'addItemForm.category' | transloco"></p-select>
         </div>
 
@@ -21,39 +21,39 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.quantity'
                     | transloco }}</label>
-                <p-inputnumber formControlName="quantity"
-                    inputStyleClass="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200"
+                <p-inputnumber formControlName="quantity" class="w-full"
+                    inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
                     [min]="1" [showButtons]="true"></p-inputnumber>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.unit' |
                     transloco }}</label>
                 <p-select [options]="units" formControlName="unit"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 border transition-colors duration-200"></p-select>
+                    class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"></p-select>
             </div>
         </div>
 
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.purchaseDate'
                 | transloco }}</label>
-            <p-datepicker formControlName="purchaseDate" styleClass="w-full"
-                inputStyleClass="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200"
+            <p-datepicker formControlName="purchaseDate" class="w-full"
+                inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
                 [showIcon]="true"></p-datepicker>
         </div>
 
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.openedDate'
                 | transloco }}</label>
-            <p-datepicker formControlName="openedDate" styleClass="w-full"
-                inputStyleClass="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200"
+            <p-datepicker formControlName="openedDate" class="w-full"
+                inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
                 [showIcon]="true" [showButtonBar]="true"></p-datepicker>
         </div>
 
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{
                 'addItemForm.bestBeforeDate' | transloco }}</label>
-            <p-datepicker formControlName="bestBeforeDate" styleClass="w-full"
-                inputStyleClass="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200"
+            <p-datepicker formControlName="bestBeforeDate" class="w-full"
+                inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
                 [showIcon]="true" [showButtonBar]="true"></p-datepicker>
         </div>
 
@@ -62,14 +62,14 @@
                 transloco }}</label>
             <textarea pTextarea formControlName="notes" rows="3"
                 [placeholder]="'addItemForm.notesPlaceholder' | transloco"
-                class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 sm:text-sm p-2 border transition-colors duration-200"></textarea>
+                class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"></textarea>
         </div>
 
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.location' |
                 transloco }}</label>
             <p-select [options]="locations" formControlName="location"
-                class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-[#7c4a0b] dark:focus:border-orange-500 focus:ring-[#7c4a0b] dark:focus:ring-orange-500 border transition-colors duration-200"></p-select>
+                class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"></p-select>
         </div>
 
         <button type="submit"

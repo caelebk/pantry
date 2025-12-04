@@ -23,6 +23,17 @@ export class AppComponent {
 
   toggleTheme() {
     this.darkMode = !this.darkMode;
+    if (this.darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }
+
+  ngOnInit() {
+    if (this.darkMode) {
+      document.documentElement.classList.add('dark');
+    }
   }
 
   onTabSelected(tab: Tab) {
