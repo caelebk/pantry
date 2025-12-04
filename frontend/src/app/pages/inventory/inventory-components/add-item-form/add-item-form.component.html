@@ -4,14 +4,14 @@
     <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()" class="space-y-4">
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.itemName' |
-                transloco }}</label>
+                transloco }}<span class="text-red-500">*</span></label>
             <input pInputText formControlName="name" [placeholder]="'addItemForm.itemNamePlaceholder' | transloco"
                 class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white" />
         </div>
 
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.category' |
-                transloco }}</label>
+                transloco }}<span class="text-red-500">*</span></label>
             <p-select [options]="categories" formControlName="category" [filter]="true"
                 class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"
                 [placeholder]="'addItemForm.category' | transloco"></p-select>
@@ -20,14 +20,14 @@
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.quantity'
-                    | transloco }}</label>
+                    | transloco }}<span class="text-red-500">*</span></label>
                 <p-inputnumber formControlName="quantity" class="w-full"
                     inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
                     [min]="1" [showButtons]="true"></p-inputnumber>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.unit' |
-                    transloco }}</label>
+                    transloco }}<span class="text-red-500">*</span></label>
                 <p-select [options]="units" formControlName="unit"
                     class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"></p-select>
             </div>
@@ -35,15 +35,15 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.purchaseDate'
-                | transloco }}</label>
+                | transloco }}<span class="text-red-500">*</span></label>
             <p-datepicker formControlName="purchaseDate" class="w-full"
                 inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
                 [showIcon]="true"></p-datepicker>
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.openedDate'
-                | transloco }}</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.openedDate' |
+                transloco }}</label>
             <p-datepicker formControlName="openedDate" class="w-full"
                 inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
                 [showIcon]="true" [showButtonBar]="true"></p-datepicker>
@@ -51,7 +51,7 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{
-                'addItemForm.bestBeforeDate' | transloco }}</label>
+                'addItemForm.bestBeforeDate' | transloco }}<span class="text-red-500">*</span></label>
             <p-datepicker formControlName="bestBeforeDate" class="w-full"
                 inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
                 [showIcon]="true" [showButtonBar]="true"></p-datepicker>
@@ -67,7 +67,7 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.location' |
-                transloco }}</label>
+                transloco }}<span class="text-red-500">*</span></label>
             <p-select [options]="locations" formControlName="location"
                 class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"></p-select>
         </div>
