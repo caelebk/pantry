@@ -24,10 +24,10 @@ export enum Unit {
 }
 
 export enum Location {
-    Shelf = 'shelf',
-    Freezer = 'freezer',
-    Pantry = 'pantry',
-    Fridge = 'fridge'
+    Shelf = 'Shelf',
+    Freezer = 'Freezer',
+    Fridge = 'Fridge',
+    Pantry = 'Pantry',
 }
 
 export enum Category {

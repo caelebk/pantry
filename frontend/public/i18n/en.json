@@ -33,13 +33,6 @@
             "addItem": "Add Item",
             "addRecipe": "Add Recipe",
             "planMeals": "Plan Meals"
-        },
-        "sampleData": {
-            "oliveOil": "Olive Oil",
-            "allPurposeFlour": "All-Purpose Flour",
-            "milk": "Milk",
-            "pasta": "Pasta",
-            "garlic": "Garlic"
         }
     },
     "inventory": {
@@ -96,23 +89,11 @@
         "unit": "Unit",
         "purchaseDate": "Purchase Date",
         "bestBeforeDate": "Best Before Date",
-        "shelfLife": "Shelf Life",
         "notes": "Notes",
         "notesPlaceholder": "Optional notes...",
         "addButton": "Add Item",
-        "categories": {
-            "pantryStaples": "Pantry Staples",
-            "vegetables": "Vegetables",
-            "fruits": "Fruits",
-            "meat": "Meat",
-            "dairy": "Dairy"
-        },
-        "units": {
-            "piece": "piece",
-            "days": "days",
-            "weeks": "weeks",
-            "months": "months"
-        }
+        "openedDate": "Opened Date",
+        "location": "Location"
     },
     "addRecipeForm": {
         "title": "Add New Recipe",
@@ -155,12 +136,6 @@
         "totalTime": "Total Time",
         "ingredients": "Ingredients",
         "instructions": "Instructions"
-    },
-    "categories": {
-        "dairyEggs": "Dairy & Eggs",
-        "oilsCondiments": "Oils & Condiments",
-        "grainsBaking": "Grains & Baking",
-        "produce": "Produce"
     },
     "common": {
         "expired": "Expired"

@@ -17,22 +17,22 @@ export class CategoryContainerComponent {
   // Mock data for categories
   categories = [
     {
-      name: 'categories.dairyEggs',
+      name: 'Dairy & Eggs',
       count: 2,
       percentage: 40
     },
     {
-      name: 'categories.oilsCondiments',
+      name: 'Oils & Condiments',
       count: 1,
       percentage: 20
     },
     {
-      name: 'categories.grainsBaking',
+      name: 'Grains & Baking',
       count: 1,
       percentage: 20
     },
     {
-      name: 'categories.produce',
+      name: 'Produce',
       count: 1,
       percentage: 20
     }

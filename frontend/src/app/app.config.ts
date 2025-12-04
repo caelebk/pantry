@@ -6,8 +6,25 @@ import { provideHttpClient } from '@angular/common/http';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura';
+
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideHttpClient(), provideTransloco({
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }), 
+    provideRouter(routes), 
+    provideHttpClient(), 
+    provideAnimationsAsync(),
+    providePrimeNG({ 
+        theme: {
+            preset: Aura,
+            // options: {
+            //     darkModeSelector: '.dark',
+            // }
+        }
+    }),
+    provideTransloco({
         config: { 
           availableLangs: ['en'],
           defaultLang: 'en',
