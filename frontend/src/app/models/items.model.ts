@@ -7,6 +7,7 @@ export interface Item {
     openedDate: Date;
     bestBeforeDate: Date;
     location: Location;
+    notes: string;
 }
 
 export enum Unit {

@@ -14,7 +14,8 @@ export class InventoryService {
       purchaseDate: new Date('2024-10-14'),
       openedDate: new Date('2024-10-14'),
       bestBeforeDate: new Date('2025-10-14'),
-      location: Location.Pantry
+      location: Location.Pantry,
+      notes: 'Store in a cool, dry place.'
     },
     {
       name: 'Olive Oil',
@@ -24,7 +25,8 @@ export class InventoryService {
       purchaseDate: new Date('2024-10-31'),
       openedDate: new Date('2024-10-31'),
       bestBeforeDate: new Date('2025-10-31'),
-      location: Location.Pantry
+      location: Location.Pantry,
+      notes: 'Store in a cool, dark place.'
     },
     {
       name: 'Salt',
@@ -34,7 +36,8 @@ export class InventoryService {
       purchaseDate: new Date('2024-11-15'),
       openedDate: new Date('2024-11-15'),
       bestBeforeDate: new Date('2028-11-15'),
-      location: Location.Pantry
+      location: Location.Pantry,
+      notes: 'Store in a cool, dry place.'
     },
     {
       name: 'Milk',
@@ -44,7 +47,8 @@ export class InventoryService {
       purchaseDate: new Date('2024-10-14'),
       openedDate: new Date('2024-10-14'),
       bestBeforeDate: new Date('2025-10-14'),
-      location: Location.Fridge
+      location: Location.Fridge,
+      notes: 'Store in the refrigerator.'
     }
   ];
 
