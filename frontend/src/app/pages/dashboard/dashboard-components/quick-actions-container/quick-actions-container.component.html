@@ -4,15 +4,15 @@
         transloco }}</h3>
     <div class="space-y-3">
         <button (click)="onAddItem()"
-            class="w-full cursor-pointer py-2.5 bg-[#6b3f09] text-white rounded-md font-medium hover:bg-[#5a3507] transition-colors">
+            class="w-full cursor-pointer py-2.5 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors">
             {{ 'dashboard.quickActions.addItem' | transloco }}
         </button>
         <button (click)="onAddRecipe()"
-            class="w-full cursor-pointer py-2.5 bg-[#e5e0d8] dark:bg-[#333] text-[#6b3f09] dark:text-gray-200 rounded-md font-medium hover:bg-[#d8d0c5] dark:hover:bg-[#404040] transition-colors">
+            class="w-full cursor-pointer py-2.5 bg-primary-100 dark:bg-[#333] text-primary-900 dark:text-gray-200 rounded-md font-medium hover:bg-primary-200 dark:hover:bg-[#404040] transition-colors">
             {{ 'dashboard.quickActions.addRecipe' | transloco }}
         </button>
         <button (click)="onPlanMeals()"
-            class="w-full cursor-pointer py-2.5 bg-[#d97736] text-white rounded-md font-medium hover:bg-[#c66a2e] transition-colors">
+            class="w-full cursor-pointer py-2.5 bg-primary-500 text-white rounded-md font-medium hover:bg-primary-600 transition-colors">
             {{ 'dashboard.quickActions.planMeals' | transloco }}
         </button>
     </div>

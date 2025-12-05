@@ -1,6 +1,6 @@
 <div class="flex flex-wrap gap-2 mb-8">
-    <button (click)="selectTab(tabs.Dashboard)" [class.bg-[#7c4a0b]]="isDashboardActive()"
-        [class.dark:bg-orange-600]="isDashboardActive()" [class.text-white]="isDashboardActive()"
+    <button (click)="selectTab(tabs.Dashboard)" [class.bg-primary-600]="isDashboardActive()"
+        [class.dark:bg-primary-600]="isDashboardActive()" [class.text-white]="isDashboardActive()"
         [class.bg-white]="!isDashboardActive()" [class.dark:bg-[#262626]]="!isDashboardActive()"
         [class.text-gray-700]="!isDashboardActive()" [class.dark:text-gray-300]="!isDashboardActive()"
         class="px-4 py-2 cursor-pointer text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
@@ -8,8 +8,8 @@
         [class.hover:bg-gray-50]="!isDashboardActive()" [class.dark:hover:bg-gray-800]="!isDashboardActive()">
         {{ 'nav.dashboard' | transloco }}
     </button>
-    <button (click)="selectTab(tabs.Inventory)" [class.bg-[#7c4a0b]]="isInventoryActive()"
-        [class.dark:bg-orange-600]="isInventoryActive()" [class.text-white]="isInventoryActive()"
+    <button (click)="selectTab(tabs.Inventory)" [class.bg-primary-600]="isInventoryActive()"
+        [class.dark:bg-primary-600]="isInventoryActive()" [class.text-white]="isInventoryActive()"
         [class.bg-white]="!isInventoryActive()" [class.dark:bg-[#262626]]="!isInventoryActive()"
         [class.text-gray-700]="!isInventoryActive()" [class.dark:text-gray-300]="!isInventoryActive()"
         class="px-4 py-2 cursor-pointer text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
@@ -17,8 +17,8 @@
         [class.hover:bg-gray-50]="!isInventoryActive()" [class.dark:hover:bg-gray-800]="!isInventoryActive()">
         {{ 'nav.inventory' | transloco }}
     </button>
-    <button (click)="selectTab(tabs.Recipes)" [class.bg-[#7c4a0b]]="isRecipesActive()"
-        [class.dark:bg-orange-600]="isRecipesActive()" [class.text-white]="isRecipesActive()"
+    <button (click)="selectTab(tabs.Recipes)" [class.bg-primary-600]="isRecipesActive()"
+        [class.dark:bg-primary-600]="isRecipesActive()" [class.text-white]="isRecipesActive()"
         [class.bg-white]="!isRecipesActive()" [class.dark:bg-[#262626]]="!isRecipesActive()"
         [class.text-gray-700]="!isRecipesActive()" [class.dark:text-gray-300]="!isRecipesActive()"
         class="px-4 py-2 cursor-pointer text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
@@ -26,8 +26,8 @@
         [class.hover:bg-gray-50]="!isRecipesActive()" [class.dark:hover:bg-gray-800]="!isRecipesActive()">
         {{ 'nav.recipes' | transloco }}
     </button>
-    <button (click)="selectTab(tabs.MealPlanner)" [class.bg-[#7c4a0b]]="isMealPlannerActive()"
-        [class.dark:bg-orange-600]="isMealPlannerActive()" [class.text-white]="isMealPlannerActive()"
+    <button (click)="selectTab(tabs.MealPlanner)" [class.bg-primary-600]="isMealPlannerActive()"
+        [class.dark:bg-primary-600]="isMealPlannerActive()" [class.text-white]="isMealPlannerActive()"
         [class.bg-white]="!isMealPlannerActive()" [class.dark:bg-[#262626]]="!isMealPlannerActive()"
         [class.text-gray-700]="!isMealPlannerActive()" [class.dark:text-gray-300]="!isMealPlannerActive()"
         class="px-4 py-2 cursor-pointer text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
