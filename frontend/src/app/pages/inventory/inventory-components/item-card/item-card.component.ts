@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './item-card.component.html',
-  styles: [':host { display: block; }']
+  styles: [':host { display: block; height: 100%; }']
 })
 export class ItemCardComponent {
   @Input() item!: Item;

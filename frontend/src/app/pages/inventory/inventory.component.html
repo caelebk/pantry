@@ -25,7 +25,7 @@
     </div>
 
     <!-- Inventory List -->
-    <div class="lg:col-span-2 space-y-6">
+    <div class="lg:col-span-2">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ 'inventory.yourInventory' | transloco }}</h3>
 
@@ -43,9 +43,11 @@
             </div>
         </div>
 
-        @for (item of filteredItems; track item.name) {
-        <item-card [item]="item" (delete)="onDeleteItem(item)" class="mb-4"></item-card>
-        }
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            @for (item of filteredItems; track item.name) {
+            <item-card [item]="item" (delete)="onDeleteItem(item)"></item-card>
+            }
+        </div>
     </div>
 </div>
 
