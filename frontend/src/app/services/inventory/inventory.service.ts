@@ -54,8 +54,18 @@ export class InventoryService {
 
   constructor() { }
 
-  // Example method
   getItems(): Item[] {
     return this.items;
+  }
+
+  addItem(item: Item) {
+    this.items.push(item);
+  }
+
+  removeItem(item: Item) {
+    const index = this.items.indexOf(item);
+    if (index > -1) {
+      this.items.splice(index, 1);
+    }
   }
 }

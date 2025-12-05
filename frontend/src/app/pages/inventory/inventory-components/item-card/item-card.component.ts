@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item } from '../../../../models/items.model';
 import { isExpired, itemProgress } from '../../../../utility/itemUtility';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'item-card',
@@ -13,6 +14,7 @@ import { isExpired, itemProgress } from '../../../../utility/itemUtility';
 })
 export class ItemCardComponent {
   @Input() item?: Item;
+  @Output() delete = new Subject<void>();
 
   expired: boolean = false;
   itemProgress: number = 0;

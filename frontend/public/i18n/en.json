@@ -126,7 +126,10 @@
         "quantity": "Quantity:",
         "purchaseDate": "Purchase Date:",
         "bestBefore": "Best Before:",
-        "expired": "Expired"
+        "expired": "Expired",
+        "location": "Location:",
+        "openedDate": "Opened Date:",
+        "notes": "Notes:"
     },
     "recipeCard": {
         "servings": "Servings",

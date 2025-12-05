@@ -23,9 +23,23 @@ export class InventoryComponent {
   constructor(private inventoryService: InventoryService) {}
 
   ngOnInit(): void {
+    this.initParameters();
+  }
+
+  private initParameters(): void {
     this.items = this.inventoryService.getItems();
     this.totalItemsCount = this.items.length;
     this.expiringSoonItemsCount = 0;
     this.expiredItemsCount = this.items.filter(item => isExpired(item)).length;
+  }
+
+  onAddItem(item: Item) {
+    this.inventoryService.addItem(item);
+    this.initParameters();
+  }
+
+  onDeleteItem(item: Item) {
+    this.inventoryService.removeItem(item);
+    this.initParameters();
   }
 }

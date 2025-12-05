@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, Validators, FormControl, FormGroup } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -8,6 +8,7 @@ import { Select } from 'primeng/select';
 import { InputNumber } from 'primeng/inputnumber';
 import { DatePicker } from 'primeng/datepicker';
 import { Textarea } from 'primeng/textarea';
+import { Subject } from 'rxjs';
 
 interface AddItemFormControls {
   name: FormControl<string>;
@@ -37,6 +38,9 @@ interface AddItemFormControls {
   templateUrl: './add-item-form.component.html',
 })
 export class AddItemFormComponent {
+
+  @Output() addItem$ = new Subject<Item>();
+  
   categories: Category[] = Object.values(Category);
   units: Unit[] = Object.values(Unit);
   locations: Location[] = Object.values(Location);
@@ -102,8 +106,8 @@ export class AddItemFormComponent {
   onSubmit() {
     if (this.addItemForm.valid) {
       const item: Item = this.toItem()!;
-      console.log('Form Submitted:', item);
-      // TODO: Send item to service/API
+      this.addItem$.next(item);
+      this.addItemForm.reset();
     } else {
       this.addItemForm.markAllAsTouched();
     }
