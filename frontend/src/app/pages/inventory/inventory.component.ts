@@ -6,16 +6,23 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
 import { Item } from '../../models/items.model';
 import { InventoryService } from '../../services/inventory/inventory.service';
-import { isExpired } from '../../utility/itemUtility';
+import { isExpired, sortItemsByBestBeforeDate } from '../../utility/itemUtility';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { Button } from "primeng/button";
+import { FormsModule } from '@angular/forms';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import { InputText } from 'primeng/inputtext';
+import { Select } from 'primeng/select';
+import { Category } from '../../models/items.model';
+import { CategoryOption } from '../../models/inventory.model';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, AddItemFormComponent, ItemCardComponent, StatCardComponent, ConfirmDialogModule, ToastModule, Button],
+  imports: [CommonModule, TranslocoModule, AddItemFormComponent, ItemCardComponent, StatCardComponent, ConfirmDialogModule, ToastModule, Button, FormsModule, IconField, InputIcon, InputText, Select],
   providers: [ConfirmationService, MessageService],
   templateUrl: './inventory.component.html',
 })
@@ -30,24 +37,37 @@ export class InventoryComponent {
   public expiringSoonItemsCount: number = 0;
   public expiredItemsCount: number = 0;
   public items: Item[] = [];
+  
+  public searchQuery: string = '';
+  public selectedCategory: Category | null = null;
+  public categoryOptions: CategoryOption[] = [];
 
   private confirmationService: ConfirmationService = inject(ConfirmationService);
   private messageService: MessageService = inject(MessageService); 
   private inventoryService: InventoryService = inject(InventoryService);
   private translocoService: TranslocoService = inject(TranslocoService);
 
+  public get filteredItems(): Item[] {
+    return this.items.filter(item => {
+      const matchesSearch = item.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+      const matchesCategory = this.selectedCategory ? item.category === this.selectedCategory : true;
+      return matchesSearch && matchesCategory;
+    });
+  }
+
   ngOnInit(): void {
     this.initParameters();
+    this.categoryOptions = Object.values(Category).map((c: Category) => ({ label: c, value: c }));
   }
 
   private initParameters(): void {
-    this.items = this.inventoryService.getItems().sort((a, b) => a.bestBeforeDate?.getTime() - b.bestBeforeDate?.getTime());
+    this.items = sortItemsByBestBeforeDate(this.inventoryService.getItems());
     this.totalItemsCount = this.items.length;
     this.expiringSoonItemsCount = 0;
-    this.expiredItemsCount = this.items.filter(item => isExpired(item)).length;
+    this.expiredItemsCount = this.items.filter((item: Item) => isExpired(item)).length;
   }
 
-  onAddItem(item: Item) {
+  public onAddItem(item: Item): void {
     this.inventoryService.addItem(item);
     this.initParameters();
     this.messageService.add({
@@ -57,7 +77,7 @@ export class InventoryComponent {
     });
   }
 
-  onDeleteItem(item: Item) {
+  public onDeleteItem(item: Item): void {
     this.confirmationService.confirm({
       header: this.translocoService.translate('inventory.removeConfirmationService.header'),
       message: this.translocoService.translate('inventory.removeConfirmationService.message'),

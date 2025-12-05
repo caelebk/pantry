@@ -16,6 +16,10 @@ export function itemProgress(item: Item): number {
     return progressPercentage;
 }
 
+export function sortItemsByBestBeforeDate(items: Item[]): Item[] {
+    return items.sort((a: Item, b: Item) => a.bestBeforeDate?.getTime() - b.bestBeforeDate?.getTime());
+}
+
 export function getTimeDifferenceString(date1: Date, date2: Date): string {
     const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
     const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());

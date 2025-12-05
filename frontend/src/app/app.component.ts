@@ -11,7 +11,7 @@ import { Tab } from './components/tabs/tabs.model';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, TabsComponent, InventoryComponent, RecipesComponent, DashboardComponent, MealPlannerComponent],
+  imports: [CommonModule, HeaderComponent, InventoryComponent, RecipesComponent, DashboardComponent, MealPlannerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

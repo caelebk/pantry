@@ -1,49 +1,36 @@
-<div class="flex flex-wrap gap-2 mb-8">
+<div class="flex items-center gap-1">
     <button (click)="selectTab(tabs.Dashboard)" [class.bg-primary-600]="isDashboardActive()"
-        [class.dark:bg-primary-600]="isDashboardActive()" [class.text-white]="isDashboardActive()"
-        [class.bg-white]="!isDashboardActive()" [class.dark:bg-[#262626]]="!isDashboardActive()"
-        [class.text-gray-700]="!isDashboardActive()" [class.dark:text-gray-300]="!isDashboardActive()"
-        class="px-4 py-2 cursor-pointer text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
-        [class.border-gray-200]="!isDashboardActive()" [class.dark:border-gray-700]="!isDashboardActive()"
-        [class.hover:bg-gray-50]="!isDashboardActive()" [class.dark:hover:bg-gray-800]="!isDashboardActive()">
+        [class.text-white]="isDashboardActive()" [class.text-gray-600]="!isDashboardActive()"
+        [class.dark:text-gray-400]="!isDashboardActive()" [class.hover:bg-gray-100]="!isDashboardActive()"
+        [class.dark:hover:bg-gray-800]="!isDashboardActive()" [class.hover:text-gray-900]="!isDashboardActive()"
+        [class.dark:hover:text-gray-100]="!isDashboardActive()"
+        class="px-4 py-2 cursor-pointer text-sm font-medium rounded-lg transition-colors duration-200">
         {{ 'nav.dashboard' | transloco }}
     </button>
     <button (click)="selectTab(tabs.Inventory)" [class.bg-primary-600]="isInventoryActive()"
-        [class.dark:bg-primary-600]="isInventoryActive()" [class.text-white]="isInventoryActive()"
-        [class.bg-white]="!isInventoryActive()" [class.dark:bg-[#262626]]="!isInventoryActive()"
-        [class.text-gray-700]="!isInventoryActive()" [class.dark:text-gray-300]="!isInventoryActive()"
-        class="px-4 py-2 cursor-pointer text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
-        [class.border-gray-200]="!isInventoryActive()" [class.dark:border-gray-700]="!isInventoryActive()"
-        [class.hover:bg-gray-50]="!isInventoryActive()" [class.dark:hover:bg-gray-800]="!isInventoryActive()">
+        [class.text-white]="isInventoryActive()" [class.text-gray-600]="!isInventoryActive()"
+        [class.dark:text-gray-400]="!isInventoryActive()" [class.hover:bg-gray-100]="!isInventoryActive()"
+        [class.dark:hover:bg-gray-800]="!isInventoryActive()" [class.hover:text-gray-900]="!isInventoryActive()"
+        [class.dark:hover:text-gray-100]="!isInventoryActive()"
+        class="px-4 py-2 cursor-pointer text-sm font-medium rounded-lg transition-colors duration-200">
         {{ 'nav.inventory' | transloco }}
     </button>
     <button (click)="selectTab(tabs.Recipes)" [class.bg-primary-600]="isRecipesActive()"
-        [class.dark:bg-primary-600]="isRecipesActive()" [class.text-white]="isRecipesActive()"
-        [class.bg-white]="!isRecipesActive()" [class.dark:bg-[#262626]]="!isRecipesActive()"
-        [class.text-gray-700]="!isRecipesActive()" [class.dark:text-gray-300]="!isRecipesActive()"
-        class="px-4 py-2 cursor-pointer text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
-        [class.border-gray-200]="!isRecipesActive()" [class.dark:border-gray-700]="!isRecipesActive()"
-        [class.hover:bg-gray-50]="!isRecipesActive()" [class.dark:hover:bg-gray-800]="!isRecipesActive()">
+        [class.text-white]="isRecipesActive()" [class.text-gray-600]="!isRecipesActive()"
+        [class.dark:text-gray-400]="!isRecipesActive()" [class.hover:bg-gray-100]="!isRecipesActive()"
+        [class.dark:hover:bg-gray-800]="!isRecipesActive()" [class.hover:text-gray-900]="!isRecipesActive()"
+        [class.dark:hover:text-gray-100]="!isRecipesActive()"
+        class="px-4 py-2 cursor-pointer text-sm font-medium rounded-lg transition-colors duration-200">
         {{ 'nav.recipes' | transloco }}
     </button>
     <button (click)="selectTab(tabs.MealPlanner)" [class.bg-primary-600]="isMealPlannerActive()"
-        [class.dark:bg-primary-600]="isMealPlannerActive()" [class.text-white]="isMealPlannerActive()"
-        [class.bg-white]="!isMealPlannerActive()" [class.dark:bg-[#262626]]="!isMealPlannerActive()"
-        [class.text-gray-700]="!isMealPlannerActive()" [class.dark:text-gray-300]="!isMealPlannerActive()"
-        class="px-4 py-2 cursor-pointer text-sm font-medium rounded-md shadow-sm border border-transparent transition-colors duration-200"
-        [class.border-gray-200]="!isMealPlannerActive()" [class.dark:border-gray-700]="!isMealPlannerActive()"
-        [class.hover:bg-gray-50]="!isMealPlannerActive()" [class.dark:hover:bg-gray-800]="!isMealPlannerActive()">
+        [class.text-white]="isMealPlannerActive()" [class.text-gray-600]="!isMealPlannerActive()"
+        [class.dark:text-gray-400]="!isMealPlannerActive()" [class.hover:bg-gray-100]="!isMealPlannerActive()"
+        [class.dark:hover:bg-gray-800]="!isMealPlannerActive()" [class.hover:text-gray-900]="!isMealPlannerActive()"
+        [class.dark:hover:text-gray-100]="!isMealPlannerActive()"
+        class="px-4 py-2 cursor-pointer text-sm font-medium rounded-lg transition-colors duration-200">
         {{ 'nav.mealPlanner' | transloco }}
     </button>
 
-    <div class="ml-auto">
-        <button
-            class="p-2 bg-white dark:bg-[#262626] border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M6 13.5V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 010 3m0-3a1.5 1.5 0 000 3m0 9.75V10.5" />
-            </svg>
-        </button>
-    </div>
+
 </div>

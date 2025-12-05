@@ -43,6 +43,10 @@
             "expiringSoon": "Expiring Soon",
             "expired": "Expired"
         },
+        "filters": {
+            "searchPlaceholder": "Search items...",
+            "categoryPlaceholder": "Filter by Category"
+        },
         "notificationService": {
             "itemAddedHeader": "Added: ",
             "itemAddedDescription": "Item Successfully Added",
@@ -53,7 +57,9 @@
         },
         "removeConfirmationService": {
             "header": "Remove Item",
-            "message": "Are you sure you want to remove this item?"
+            "message": "Are you sure you want to remove this item?",
+            "cancelButton": "Cancel",
+            "removeButton": "Remove"
         }
     },
     "recipes": {
