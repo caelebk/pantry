@@ -144,11 +144,11 @@
         "quantity": "Quantity:",
         "purchaseDate": "Purchase Date:",
         "bestBefore": "Best Before:",
-        "expired": "Expired",
         "location": "Location:",
         "openedDate": "Opened Date:",
         "notes": "Notes:",
-        "timeRemaining": "Time Remaining"
+        "timeRemaining": "Time Remaining",
+        "expired": "(Expired)"
     },
     "recipeCard": {
         "servings": "Servings",

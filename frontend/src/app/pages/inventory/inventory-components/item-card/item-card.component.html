@@ -2,7 +2,15 @@
     class="dark:bg-[#1a1a1a] rounded-xl p-6 border-l-4 shadow-sm relative transition-colors duration-200">
     <div class="flex justify-between items-start">
         <div class="w-full pr-4">
-            <h4 class="text-lg font-bold text-gray-900 dark:text-white">{{ item.name }}</h4>
+            <h4 class="text-lg font-bold text-gray-900 dark:text-white">
+                @if (expired) {
+                <span class="text-yellow-600 dark:text-yellow-500">
+                    <i class="pi pi-exclamation-triangle text-yellow-600 dark:text-yellow-500 ml-1"></i>
+                    {{ 'itemCard.expired' | transloco }}
+                </span>
+                }
+                {{ item.name }}
+            </h4>
             @if (item.notes) {
             <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">{{ item.notes }}</p>
             }
