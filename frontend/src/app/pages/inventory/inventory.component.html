@@ -33,3 +33,21 @@
         }
     </div>
 </div>
+
+<p-toast></p-toast>
+<p-confirmDialog [dismissableMask]="dismissableMask">
+    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        @if (message) {
+        <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+            <i [class]="message.icon" class="!text-5xl"></i>
+            <span class="font-bold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+            <p class="mb-0">{{ message.message }}</p>
+            <div class="flex items-center gap-2 mt-6">
+                <p-button label="Cancel" [outlined]="outlinedCancelButton" (onClick)="onReject()" styleClass="w-32">
+                </p-button>
+                <p-button label="Remove" (onClick)="onAccept()" styleClass="w-32"></p-button>
+            </div>
+        </div>
+        }
+    </ng-template>
+</p-confirmDialog>

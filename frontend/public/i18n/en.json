@@ -42,6 +42,18 @@
             "totalItems": "Total Items",
             "expiringSoon": "Expiring Soon",
             "expired": "Expired"
+        },
+        "notificationService": {
+            "itemAddedHeader": "Added: ",
+            "itemAddedDescription": "Item Successfully Added",
+            "itemRemovalHeader": "Remove: ",
+            "itemRemovalDescription": "Item Successfully Removed",
+            "itemRemovalFailedHeader": "Failed to remove: ",
+            "itemRemovalFailedCancelledDescription": "Successfully Cancelled Item Removal"
+        },
+        "removeConfirmationService": {
+            "header": "Remove Item",
+            "message": "Are you sure you want to remove this item?"
         }
     },
     "recipes": {
