@@ -49,11 +49,11 @@
         },
         "notificationService": {
             "itemAddedHeader": "Added: ",
-            "itemAddedDescription": "Item Successfully Added",
+            "itemAddedDescription": "Item successfully added.",
             "itemRemovalHeader": "Remove: ",
-            "itemRemovalDescription": "Item Successfully Removed",
+            "itemRemovalDescription": "Item successfully removed.",
             "itemRemovalFailedHeader": "Failed to remove: ",
-            "itemRemovalFailedCancelledDescription": "Successfully Cancelled Item Removal"
+            "itemRemovalFailedCancelledDescription": "Cancelled remove item action."
         },
         "removeConfirmationService": {
             "header": "Remove Item",

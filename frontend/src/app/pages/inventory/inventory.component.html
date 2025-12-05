@@ -59,9 +59,9 @@
             <p class="mb-0">{{ message.message }}</p>
             <div class="flex items-center gap-2 mt-6">
                 <p-button label="{{ 'inventory.removeConfirmationService.cancelButton' | transloco }}"
-                    [outlined]="outlinedCancelButton" (onClick)="onReject()" class="w-32"></p-button>
+                    [outlined]="outlinedCancelButton" (onClick)="onReject()" styleClass="w-32"></p-button>
                 <p-button label="{{ 'inventory.removeConfirmationService.removeButton' | transloco }}"
-                    (onClick)="onAccept()" class="w-32"></p-button>
+                    (onClick)="onAccept()" styleClass="w-32"></p-button>
             </div>
         </div>
         }
