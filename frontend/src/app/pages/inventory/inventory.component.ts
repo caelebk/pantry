@@ -41,7 +41,7 @@ export class InventoryComponent {
   }
 
   private initParameters(): void {
-    this.items = this.inventoryService.getItems();
+    this.items = this.inventoryService.getItems().sort((a, b) => a.bestBeforeDate?.getTime() - b.bestBeforeDate?.getTime());
     this.totalItemsCount = this.items.length;
     this.expiringSoonItemsCount = 0;
     this.expiredItemsCount = this.items.filter(item => isExpired(item)).length;

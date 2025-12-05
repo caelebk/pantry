@@ -141,7 +141,8 @@
         "expired": "Expired",
         "location": "Location:",
         "openedDate": "Opened Date:",
-        "notes": "Notes:"
+        "notes": "Notes:",
+        "timeRemaining": "Time Remaining"
     },
     "recipeCard": {
         "servings": "Servings",
