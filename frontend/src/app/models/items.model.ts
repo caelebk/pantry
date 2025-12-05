@@ -4,7 +4,7 @@ export interface Item {
     quantity: number;
     unit: Unit;
     purchaseDate: Date;
-    openedDate: Date;
+    openedDate?: Date;
     bestBeforeDate: Date;
     location: Location;
     notes: string;
