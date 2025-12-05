@@ -2,39 +2,39 @@
     class="dark:bg-[#1a1a1a] rounded-xl p-6 border-l-4 shadow-sm relative transition-colors duration-200">
     <div class="flex justify-between items-start">
         <div class="w-full pr-4">
-            <h4 class="text-lg font-bold text-gray-900 dark:text-white">{{ item?.name }}</h4>
-            @if (item?.notes) {
-            <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">{{ item?.notes }}</p>
+            <h4 class="text-lg font-bold text-gray-900 dark:text-white">{{ item.name }}</h4>
+            @if (item.notes) {
+            <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">{{ item.notes }}</p>
             }
             <div class="grid grid-cols-2 gap-x-12 gap-y-2 mt-3 text-sm">
                 <div>
                     <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.category' | transloco }}</span>
-                    <span class="font-medium text-gray-900 dark:text-gray-200">{{ item?.category }}</span>
+                    <span class="font-medium text-gray-900 dark:text-gray-200">{{ item.category }}</span>
                 </div>
                 <div>
                     <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.location' | transloco }}</span>
-                    <span class="font-medium text-gray-900 dark:text-gray-200">{{ item?.location }}</span>
+                    <span class="font-medium text-gray-900 dark:text-gray-200">{{ item.location }}</span>
                 </div>
                 <div>
                     <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.quantity' | transloco }}</span>
-                    <span class="font-medium text-gray-900 dark:text-gray-200">{{ item?.quantity }} {{ item?.unit
+                    <span class="font-medium text-gray-900 dark:text-gray-200">{{ item.quantity }} {{ item.unit
                         }}</span>
                 </div>
                 <div>
                     <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.openedDate' | transloco }}</span>
-                    <span class="font-medium text-gray-900 dark:text-gray-200">{{ item?.openedDate ?
-                        item?.openedDate?.toLocaleDateString() : '-' }}</span>
+                    <span class="font-medium text-gray-900 dark:text-gray-200">{{ item.openedDate ?
+                        item.openedDate.toLocaleDateString() : '-' }}</span>
                 </div>
                 <div>
                     <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.purchaseDate' | transloco
                         }}</span>
                     <span class="font-medium text-gray-900 dark:text-gray-200">{{
-                        item?.purchaseDate?.toLocaleDateString() }}</span>
+                        item.purchaseDate.toLocaleDateString() }}</span>
                 </div>
                 <div>
                     <span class="text-gray-500 dark:text-gray-400 block">{{ 'itemCard.bestBefore' | transloco }}</span>
                     <span [ngClass]="expired ? 'text-red-600 dark:text-red-500' : 'text-blue-600 dark:text-blue-500'"
-                        class="font-medium">{{ item?.bestBeforeDate?.toLocaleDateString() }}</span>
+                        class="font-medium">{{ item.bestBeforeDate.toLocaleDateString() }}</span>
                 </div>
             </div>
         </div>

@@ -13,18 +13,16 @@ import { Subject } from 'rxjs';
   styles: [':host { display: block; }']
 })
 export class ItemCardComponent {
-  @Input() item?: Item;
+  @Input() item!: Item;
   @Output() delete = new Subject<void>();
 
-  expired: boolean = false;
-  itemProgress: number = 0;
-  timeRemaining: string = '';
+  public expired: boolean = false;
+  public itemProgress: number = 0;
+  public timeRemaining: string = '';
 
   ngOnInit(): void {
-    if (this.item) {
-      this.expired = isExpired(this.item);
-      this.itemProgress = itemProgress(this.item);
-      this.timeRemaining = getTimeDifferenceString(new Date(), this.item.bestBeforeDate); 
-    }
+    this.expired = isExpired(this.item);
+    this.itemProgress = itemProgress(this.item);
+    this.timeRemaining = getTimeDifferenceString(new Date(), this.item.bestBeforeDate); 
   }
 }
