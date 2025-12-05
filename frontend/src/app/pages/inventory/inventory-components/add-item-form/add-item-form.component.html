@@ -1,5 +1,5 @@
 <div
-    class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 sticky top-24 transition-colors duration-200 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
+    class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 sticky top-24 transition-colors duration-200 max-h-[calc(100vh)]">
     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">{{ 'addItemForm.title' | transloco }}</h3>
     <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()" class="space-y-4">
         <div>
@@ -56,16 +56,6 @@
                 inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
                 [showIcon]="true"></p-datepicker>
         </div>
-
-        <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {{ 'addItemForm.openedDate' | transloco }}
-            </label>
-            <p-datepicker formControlName="openedDate" class="w-full"
-                inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
-                [showIcon]="true" [showButtonBar]="true"></p-datepicker>
-        </div>
-
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {{ 'addItemForm.bestBeforeDate' | transloco }}
@@ -76,14 +66,27 @@
                 [showIcon]="true" [showButtonBar]="true"></p-datepicker>
         </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {{ 'addItemForm.notes' | transloco }}
-            </label>
-            <textarea pTextarea formControlName="notes" rows="3"
-                [placeholder]="'addItemForm.notesPlaceholder' | transloco"
-                class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"></textarea>
-        </div>
+        <p-panel header="{{ 'addItemForm.optionalDetails' | transloco }}" [toggleable]="true" [collapsed]="true"
+            styleClass="mt-4">
+            <div class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        {{ 'addItemForm.openedDate' | transloco }}
+                    </label>
+                    <p-datepicker formControlName="openedDate" class="w-full"
+                        inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
+                        [showIcon]="true" [showButtonBar]="true"></p-datepicker>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        {{ 'addItemForm.notes' | transloco }}
+                    </label>
+                    <textarea pTextarea formControlName="notes" rows="3"
+                        [placeholder]="'addItemForm.notesPlaceholder' | transloco"
+                        class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"></textarea>
+                </div>
+            </div>
+        </p-panel>
 
         <button type="submit" [disabled]="!addItemForm.valid"
             class="w-full bg-primary-600 dark:bg-primary-600 text-white font-medium py-2.5 rounded-md hover:bg-primary-700 dark:hover:bg-primary-700 transition-colors shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-600 disabled:dark:hover:bg-primary-600">

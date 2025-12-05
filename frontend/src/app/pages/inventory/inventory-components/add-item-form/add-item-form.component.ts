@@ -8,6 +8,7 @@ import { Select } from 'primeng/select';
 import { InputNumber } from 'primeng/inputnumber';
 import { DatePicker } from 'primeng/datepicker';
 import { Textarea } from 'primeng/textarea';
+import { PanelModule } from 'primeng/panel';
 import { Subject } from 'rxjs';
 
 interface AddItemFormControls {
@@ -33,7 +34,8 @@ interface AddItemFormControls {
     Select,
     InputNumber,
     DatePicker,
-    Textarea
+    Textarea,
+    PanelModule
   ],
   templateUrl: './add-item-form.component.html',
 })
@@ -107,7 +109,17 @@ export class AddItemFormComponent {
     if (this.addItemForm.valid) {
       const item: Item = this.toItem()!;
       this.addItem$.next(item);
-      this.addItemForm.reset();
+      this.addItemForm.reset({
+        name: '',
+        category: Category.Produce,
+        quantity: 1,
+        unit: Unit.Gram,
+        purchaseDate: new Date(),
+        openedDate: null,
+        bestBeforeDate: null,
+        location: Location.Shelf,
+        notes: ''
+      });
     } else {
       this.addItemForm.markAllAsTouched();
     }

@@ -108,6 +108,7 @@
         "bestBeforeDate": "Best Before Date",
         "notes": "Notes",
         "notesPlaceholder": "Optional notes...",
+        "optionalDetails": "Optional Details",
         "addButton": "Add Item",
         "openedDate": "Opened Date",
         "location": "Location"
