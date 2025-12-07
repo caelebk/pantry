@@ -5,16 +5,7 @@
       (tabSelected)="onTabSelected($event)"></app-header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-      @if (currentTab === Tab.Dashboard) {
-      <app-dashboard></app-dashboard>
-      } @else if (currentTab === Tab.Inventory) {
-      <app-inventory></app-inventory>
-      } @else if (currentTab === Tab.Recipes) {
-      <app-recipes></app-recipes>
-      } @else if (currentTab === Tab.MealPlanner) {
-      <app-meal-planner></app-meal-planner>
-      }
+      <router-outlet></router-outlet>
     </main>
   </div>
 </div>
