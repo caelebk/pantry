@@ -1,4 +1,4 @@
-<div class="p-4 overflow-y-auto custom-scrollbar">
+<div class="p-4">
     <form [formGroup]="editItemForm" (ngSubmit)="onSubmit()" class="space-y-4">
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.itemName' |
@@ -15,7 +15,7 @@
                 </label>
                 <p-select [options]="categories" formControlName="category" [filter]="true"
                     class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"
-                    [placeholder]="'addItemForm.category' | transloco"></p-select>
+                    [placeholder]="'addItemForm.category' | transloco" appendTo="body"></p-select>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -23,7 +23,8 @@
                     <span class="text-red-500">*</span>
                 </label>
                 <p-select [options]="locations" formControlName="location"
-                    class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"></p-select>
+                    class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"
+                    appendTo="body"></p-select>
             </div>
         </div>
 
@@ -41,7 +42,8 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.unit' |
                     transloco }}<span class="text-red-500">*</span></label>
                 <p-select [options]="units" formControlName="unit"
-                    class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"></p-select>
+                    class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"
+                    appendTo="body"></p-select>
             </div>
         </div>
 
@@ -52,7 +54,7 @@
             </label>
             <p-datepicker formControlName="purchaseDate" class="w-full"
                 inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
-                [showIcon]="true"></p-datepicker>
+                [showIcon]="true" appendTo="body"></p-datepicker>
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -61,7 +63,7 @@
             </label>
             <p-datepicker formControlName="bestBeforeDate" class="w-full"
                 inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
-                [showIcon]="true" [showButtonBar]="true"></p-datepicker>
+                [showIcon]="true" [showButtonBar]="true" appendTo="body"></p-datepicker>
         </div>
 
         <div class="flex flex-col gap-4">
@@ -71,7 +73,7 @@
                 </label>
                 <p-datepicker formControlName="openedDate" class="w-full"
                     inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
-                    [showIcon]="true" [showButtonBar]="true"></p-datepicker>
+                    [showIcon]="true" [showButtonBar]="true" appendTo="body"></p-datepicker>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
