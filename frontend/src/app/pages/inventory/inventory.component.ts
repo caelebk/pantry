@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { trigger, style, animate, transition } from '@angular/animations';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AddItemFormComponent } from './inventory-components/add-item-form/add-item-form.component';
 import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
@@ -25,11 +26,25 @@ import { CategoryOption } from '../../models/inventory.model';
   imports: [CommonModule, TranslocoModule, AddItemFormComponent, ItemCardComponent, StatCardComponent, ConfirmDialogModule, ToastModule, Button, FormsModule, IconField, InputIcon, InputText, Select],
   providers: [ConfirmationService, MessageService],
   templateUrl: './inventory.component.html',
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' })),
+      ]),
+    ]),
+  ],
 })
 export class InventoryComponent {
   private readonly removeConfirmationServiceIcon = 'pi pi-exclamation-triangle';
   private readonly successNotificationClass = 'success';
   private readonly errorNotificationClass = 'error';
+  private readonly scrollThreshold = 300;
+  private readonly scrollLocation = 0;
+
   public readonly dismissableMask = true;
   public readonly outlinedCancelButton = true;
 
@@ -38,6 +53,7 @@ export class InventoryComponent {
   public expiredItemsCount: number = 0;
   public items: Item[] = [];
   
+  public showScrollTopButton: boolean = false;
   public searchQuery: string = '';
   public selectedCategory: Category | null = null;
   public categoryOptions: CategoryOption[] = [];
@@ -53,6 +69,15 @@ export class InventoryComponent {
       const matchesCategory = this.selectedCategory ? item.category === this.selectedCategory : true;
       return matchesSearch && matchesCategory;
     });
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    this.showScrollTopButton = window.scrollY > this.scrollThreshold;
+  }
+
+  public scrollToTop(): void {
+    window.scrollTo({ top: this.scrollLocation, behavior: 'smooth' });
   }
 
   ngOnInit(): void {

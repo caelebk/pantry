@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
             @for (item of filteredItems; track item.name) {
             <item-card [item]="item" (delete)="onDeleteItem(item)" (update)="onUpdateItem(item, $event)"></item-card>
             }
@@ -69,3 +69,10 @@
         }
     </ng-template>
 </p-confirmDialog>
+
+@if (showScrollTopButton) {
+<button (click)="scrollToTop()" @fadeInOut
+    class="fixed bottom-8 right-8 p-3 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-all duration-300 z-50 cursor-pointer">
+    <i class="pi pi-arrow-up text-xl"></i>
+</button>
+}
