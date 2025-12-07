@@ -1,5 +1,5 @@
 <div
-    class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 sticky top-24 transition-colors duration-200 max-h-[calc(100vh)]">
+    class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 sticky top-24 transition-colors duration-200 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">{{ 'addItemForm.title' | transloco }}</h3>
     <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()" class="space-y-4">
         <div>
