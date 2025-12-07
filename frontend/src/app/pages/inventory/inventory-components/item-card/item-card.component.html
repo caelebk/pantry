@@ -11,12 +11,15 @@
                 {{ item.name }}
             </h4>
             <div class="flex gap-1 shrink-0">
-                @if (item.notes) {
                 <button (click)="showNote()"
                     class="p-1.5 cursor-pointer bg-gray-500 dark:bg-gray-800 text-white rounded-md hover:bg-gray-700 dark:hover:bg-gray-600 shadow-sm transition-colors shrink-0">
                     <i class="pi pi-info-circle w-4 h-4"></i>
                 </button>
-                }
+                <button
+                    class="p-1.5 cursor-pointer bg-gray-500 dark:bg-gray-800 text-white rounded-md hover:bg-gray-700 dark:hover:bg-gray-600 shadow-sm transition-colors shrink-0">
+                    <i class="pi pi-pencil w-4 h-4"></i>
+                </button>
+
                 <button (click)="delete.next()"
                     class="p-1.5 cursor-pointer bg-gray-500 dark:bg-gray-800 text-white rounded-md hover:bg-gray-700 dark:hover:bg-gray-600 shadow-sm transition-colors shrink-0">
                     <i class="pi pi-trash w-4 h-4"></i>
@@ -90,7 +93,7 @@
 <p-dialog [(visible)]="displayNoteDialog" [modal]="true" [dismissableMask]="true" [style]="{width: '50vw'}"
     [header]="item.name">
     <p class="m-0 text-gray-700 dark:text-gray-300 leading-relaxed">
-        {{ item.notes }}
+        {{ item.notes ? item.notes : 'No notes.' }}
     </p>
     <ng-template pTemplate="footer">
         <p-button label="Close" (click)="displayNoteDialog = false" styleClass="p-button-text"></p-button>

@@ -26,7 +26,7 @@ export class InventoryService {
       openedDate: new Date('2024-10-31'),
       bestBeforeDate: new Date('2025-10-31'),
       location: Location.Pantry,
-      notes: 'Store in a cool, dark place.'
+      notes: ''
     },
     {
       name: 'Salt',
