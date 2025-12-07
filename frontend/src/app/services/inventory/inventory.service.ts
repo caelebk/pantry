@@ -124,4 +124,11 @@ export class InventoryService {
       this.items.splice(index, 1);
     }
   }
+
+  updateItem(oldItem: Item, newItem: Item) {
+    const index = this.items.indexOf(oldItem);
+    if (index > -1) {
+      this.items[index] = newItem;
+    }
+  }
 }

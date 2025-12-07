@@ -15,7 +15,7 @@
                     class="p-1.5 cursor-pointer bg-gray-500 dark:bg-gray-800 text-white rounded-md hover:bg-gray-700 dark:hover:bg-gray-600 shadow-sm transition-colors shrink-0">
                     <i class="pi pi-info-circle w-4 h-4"></i>
                 </button>
-                <button
+                <button (click)="showEdit()"
                     class="p-1.5 cursor-pointer bg-gray-500 dark:bg-gray-800 text-white rounded-md hover:bg-gray-700 dark:hover:bg-gray-600 shadow-sm transition-colors shrink-0">
                     <i class="pi pi-pencil w-4 h-4"></i>
                 </button>
@@ -98,4 +98,9 @@
     <ng-template pTemplate="footer">
         <p-button label="Close" (click)="displayNoteDialog = false" styleClass="p-button-text"></p-button>
     </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="displayEditDialog" [modal]="true" [dismissableMask]="true" [style]="{width: '50vw'}"
+    [header]="'Edit ' + item.name">
+    <edit-item-form [itemToEdit]="item" (updateItem$)="onEditItem($event)"></edit-item-form>
 </p-dialog>

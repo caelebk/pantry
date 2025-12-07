@@ -1,4 +1,4 @@
-import { Component, Output } from '@angular/core';
+import { Component, input, Output, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -13,7 +13,7 @@ import { Subject } from 'rxjs';
 import { createItemForm, ItemFormControls, toItem } from '../../../../utility/itemFormUtility';
 
 @Component({
-  selector: 'add-item-form',
+  selector: 'edit-item-form',
   standalone: true,
   imports: [
     CommonModule, 
@@ -26,37 +26,46 @@ import { createItemForm, ItemFormControls, toItem } from '../../../../utility/it
     Textarea,
     PanelModule
   ],
-  templateUrl: './add-item-form.component.html',
+  templateUrl: './edit-item-form.component.html',
 })
-export class AddItemFormComponent {
+export class EditItemFormComponent {
 
-  @Output() addItem$ = new Subject<Item>();
+  itemToEdit = input.required<Item>();
+  @Output() updateItem$ = new Subject<Item>();
   
   categories: Category[] = Object.values(Category);
   units: Unit[] = Object.values(Unit);
   locations: Location[] = Object.values(Location);
 
-  addItemForm: FormGroup<ItemFormControls> = createItemForm();
+  editItemForm: FormGroup<ItemFormControls> = createItemForm();
 
-  onSubmit() {
-    if (this.addItemForm.valid) {
-      const item: Item | null = toItem(this.addItemForm);
+  constructor() {
+    effect(() => {
+      const item = this.itemToEdit();
       if (item) {
-        this.addItem$.next(item);
-        this.addItemForm.reset({
-          name: '',
-          category: Category.Produce,
-          quantity: 1,
-          unit: Unit.Gram,
-          purchaseDate: new Date(),
-          openedDate: null,
-          bestBeforeDate: null,
-          location: Location.Shelf,
-          notes: ''
+        this.editItemForm.patchValue({
+          name: item.name,
+          category: item.category,
+          quantity: item.quantity,
+          unit: item.unit,
+          purchaseDate: item.purchaseDate,
+          openedDate: item.openedDate,
+          bestBeforeDate: item.bestBeforeDate,
+          location: item.location,
+          notes: item.notes
         });
       }
+    });
+  }
+
+  onSubmit() {
+    if (this.editItemForm.valid) {
+      const item: Item | null = toItem(this.editItemForm);
+      if (item) {
+        this.updateItem$.next(item);
+      }
     } else {
-      this.addItemForm.markAllAsTouched();
+      this.editItemForm.markAllAsTouched();
     }
   }
 }

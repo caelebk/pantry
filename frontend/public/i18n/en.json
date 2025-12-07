@@ -53,7 +53,9 @@
             "itemRemovalHeader": "Remove: ",
             "itemRemovalDescription": "Item successfully removed.",
             "itemRemovalFailedHeader": "Failed to remove: ",
-            "itemRemovalFailedCancelledDescription": "Cancelled remove item action."
+            "itemRemovalFailedCancelledDescription": "Cancelled remove item action.",
+            "itemUpdatedHeader": "Updated: ",
+            "itemUpdatedDescription": "Item successfully updated."
         },
         "removeConfirmationService": {
             "header": "Remove Item",
@@ -110,6 +112,8 @@
         "notesPlaceholder": "Optional notes...",
         "optionalDetails": "Optional Details",
         "addButton": "Add Item",
+        "editTitle": "Edit Item",
+        "updateButton": "Update Item",
         "openedDate": "Opened Date",
         "location": "Location"
     },

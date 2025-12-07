@@ -45,7 +45,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             @for (item of filteredItems; track item.name) {
-            <item-card [item]="item" (delete)="onDeleteItem(item)"></item-card>
+            <item-card [item]="item" (delete)="onDeleteItem(item)" (update)="onUpdateItem(item, $event)"></item-card>
             }
         </div>
     </div>
