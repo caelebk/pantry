@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+.vscode/
+cov_profile/
+lcov.info
+node_modules/
+vendor/
