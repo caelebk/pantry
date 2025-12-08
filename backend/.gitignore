@@ -6,3 +6,4 @@ cov_profile/
 lcov.info
 node_modules/
 vendor/
+reference.md

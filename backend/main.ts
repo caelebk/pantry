@@ -1,10 +1,27 @@
-import { Context, Hono } from "hono";
+/**
+ * Entry point for the Pantry API
+ */
 
-const app = new Hono();
-const port = Number(Deno.env.get("PORT")) || 8000;
+import app from './src/app.ts';
+import { config } from './src/config/env.ts';
+import { closeDB, initDB } from './src/db/client.ts';
 
-app.get("/", (c: Context) => {
-  return c.text(`Hello Hono from port ${port}!`);
+console.log(`🚀 Starting Pantry API on port ${config.port}`);
+console.log(`📝 Environment: ${config.env}`);
+
+// Initialize database connection
+try {
+  await initDB();
+} catch (error) {
+  console.error('Failed to initialize database:', error);
+  Deno.exit(1);
+}
+
+// Graceful shutdown
+Deno.addSignalListener('SIGINT', async () => {
+  console.log('\n🛑 Shutting down gracefully...');
+  await closeDB();
+  Deno.exit(0);
 });
 
-Deno.serve({ port: port }, app.fetch);
+Deno.serve({ port: config.port }, app.fetch);
