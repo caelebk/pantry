@@ -59,8 +59,8 @@ async function runMigrations() {
           await transaction.commit();
           console.log(`✅ Applied: ${file}`);
         } catch (err) {
-          await transaction.rollback();
           console.error(`❌ Failed migration ${file}:`, err);
+          await transaction.rollback();
           throw err;
         }
       }

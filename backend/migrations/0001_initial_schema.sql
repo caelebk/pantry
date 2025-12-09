@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS ingredients (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TRIGGER update_ingredients_updated_at BEFORE UPDATE ON ingredients
+CREATE OR REPLACE TRIGGER update_ingredients_updated_at BEFORE UPDATE ON ingredients
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Item Table
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS items (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TRIGGER update_items_updated_at BEFORE UPDATE ON items
+CREATE OR REPLACE TRIGGER update_items_updated_at BEFORE UPDATE ON items
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Recipe Table
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS recipes (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TRIGGER update_recipes_updated_at BEFORE UPDATE ON recipes
+CREATE OR REPLACE TRIGGER update_recipes_updated_at BEFORE UPDATE ON recipes
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Recipe Ingredient Table
@@ -88,11 +88,11 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients (
     quantity FLOAT NOT NULL,
     unit_id INTEGER REFERENCES units(id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (recipe_id, ingredient_id)
 );
 
-CREATE TRIGGER update_recipe_ingredients_updated_at BEFORE UPDATE ON recipe_ingredients
+CREATE OR REPLACE TRIGGER update_recipe_ingredients_updated_at BEFORE UPDATE ON recipe_ingredients
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Recipe Step Table
