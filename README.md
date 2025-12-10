@@ -38,7 +38,8 @@ directories.
 ├── backend/            # Deno + Hono API
 │   ├── src/            # Source code (routes, services, models)
 │   ├── tests/          # Integration tests
-│   ├── init.sql        # Database initialization schema
+│   ├── scripts/        # Basic scripts (db migration)
+|   ├── migrations/     # *.sql migration files
 │   └── docker-compose.yml # PostgreSQL container configuration
 │
 └── frontend/           # Angular Application

@@ -1,0 +1,113 @@
+-- Initial database schema for Pantry app
+
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Function for updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Location Table
+CREATE TABLE IF NOT EXISTS locations (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+-- Category Table
+CREATE TABLE IF NOT EXISTS categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+-- Unit Table
+CREATE TABLE IF NOT EXISTS units (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    type VARCHAR(50), -- volume vs weight
+    to_base_factor FLOAT
+);
+
+-- Ingredient Table
+CREATE TABLE IF NOT EXISTS ingredients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
+    default_unit_id INTEGER REFERENCES units(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE TRIGGER update_ingredients_updated_at BEFORE UPDATE ON ingredients
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Item Table
+CREATE TABLE IF NOT EXISTS items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ingredient_id UUID REFERENCES ingredients(id) ON DELETE SET NULL,
+    label VARCHAR(255),
+    quantity FLOAT NOT NULL,
+    unit_id INTEGER REFERENCES units(id) ON DELETE SET NULL,
+    expiration_date TIMESTAMP,
+    opened_date TIMESTAMP,
+    purchase_date TIMESTAMP,
+    location_id INTEGER REFERENCES locations(id) ON DELETE SET NULL,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE TRIGGER update_items_updated_at BEFORE UPDATE ON items
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Recipe Table
+CREATE TABLE IF NOT EXISTS recipes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    difficulty VARCHAR(50),
+    servings FLOAT,
+    prep_time FLOAT,
+    cook_time FLOAT,
+    image_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE TRIGGER update_recipes_updated_at BEFORE UPDATE ON recipes
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Recipe Ingredient Table
+CREATE TABLE IF NOT EXISTS recipe_ingredients (
+    recipe_id UUID REFERENCES recipes(id) ON DELETE CASCADE,
+    ingredient_id UUID REFERENCES ingredients(id) ON DELETE CASCADE,
+    quantity FLOAT NOT NULL,
+    unit_id INTEGER REFERENCES units(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (recipe_id, ingredient_id)
+);
+
+CREATE OR REPLACE TRIGGER update_recipe_ingredients_updated_at BEFORE UPDATE ON recipe_ingredients
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Recipe Step Table
+CREATE TABLE IF NOT EXISTS recipe_steps (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    recipe_id UUID REFERENCES recipes(id) ON DELETE CASCADE,
+    step_number INTEGER NOT NULL,
+    instruction_text TEXT NOT NULL,
+    image_url TEXT,
+    timer_seconds INTEGER
+);
+
+-- Indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_items_ingredient_id ON items(ingredient_id);
+CREATE INDEX IF NOT EXISTS idx_items_location_id ON items(location_id);
+CREATE INDEX IF NOT EXISTS idx_ingredients_category_id ON ingredients(category_id);
+CREATE INDEX IF NOT EXISTS idx_recipe_steps_recipe_id ON recipe_steps(recipe_id);
+CREATE INDEX IF NOT EXISTS idx_recipe_steps_step_number ON recipe_steps(step_number);
