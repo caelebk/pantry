@@ -49,7 +49,18 @@ async function seedDB() {
         unitIds.set(unit.name, result.rows[0].id);
       }
 
-      // 4. Insert Ingredients
+      // 4. Insert Difficulties
+      console.log("📊 Seeding difficulties...");
+      const difficultyIds = new Map<string, number>();
+      for (const diff of seedData.difficulties) {
+        const result = await transaction.queryObject<{ id: number }>(
+          "INSERT INTO difficulties (name) VALUES ($1) RETURNING id",
+          [diff.name]
+        );
+        difficultyIds.set(diff.name, result.rows[0].id);
+      }
+
+      // 5. Insert Ingredients
       console.log("🥦 Seeding ingredients...");
       for (const ing of seedData.ingredients) {
         const catId = categoryIds.get(ing.category);
@@ -65,7 +76,7 @@ async function seedDB() {
         ingredientIds.set(ing.name, result.rows[0].id);
       }
 
-      // 5. Insert Items (Pantry Inventory)
+      // 6. Insert Items (Pantry Inventory)
       console.log("📦 Seeding pantry items...");
       for (const item of seedData.items) {
         const ingId = ingredientIds.get(item.ingredient);
@@ -78,32 +89,37 @@ async function seedDB() {
 
         await transaction.queryArray(
           `INSERT INTO items 
-           (ingredient_id, quantity, unit_id, location_id, expiration_date, purchase_date, notes) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+           (ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date, opened_date, notes) 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
           [
             ingId,
+            item.label,
             item.quantity,
             unitId,
             locId,
-            item.expiration_date || null,
-            item.purchase_date || null,
+            item.expiration_date,
+            item.purchase_date,
+            item.opened_date || null,
             item.notes || null
           ]
         );
       }
 
-      // 6. Insert Recipes
+      // 7. Insert Recipes
       console.log("🍳 Seeding recipes...");
       for (const recipe of seedData.recipes) {
+        const difficultyId = difficultyIds.get(recipe.difficulty);
+        if (!difficultyId) throw new Error(`Difficulty not found: ${recipe.difficulty}`);
+
         const result = await transaction.queryObject<{ id: string }>(
           `INSERT INTO recipes 
-           (name, description, difficulty, servings, prep_time, cook_time) 
+           (name, description, difficulty_id, servings, prep_time, cook_time) 
            VALUES ($1, $2, $3, $4, $5, $6) 
            RETURNING id`,
           [
             recipe.name,
             recipe.description,
-            recipe.difficulty,
+            difficultyId,
             recipe.servings,
             recipe.prep_time,
             recipe.cook_time
