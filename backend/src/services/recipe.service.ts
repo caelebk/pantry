@@ -2,7 +2,7 @@
  * Recipe service - Business logic for recipe operations
  */
 
-import type { Recipe, CreateRecipeDTO, UpdateRecipeDTO } from "../models/recipe.model.ts";
+import type { Recipe, CreateRecipeDTO, UpdateRecipeDTO } from "../models/data-models/recipe.model.ts";
 
 export class RecipeService {
   /**

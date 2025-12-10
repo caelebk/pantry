@@ -3,7 +3,7 @@
  */
 
 import { Hono } from "hono";
-import type { CreateRecipeDTO, UpdateRecipeDTO } from "../models/recipe.model.ts";
+import type { CreateRecipeDTO, UpdateRecipeDTO } from "../models/data-models/recipe.model.ts";
 
 const recipes = new Hono();
 
