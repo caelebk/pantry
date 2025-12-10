@@ -2,55 +2,164 @@
  * Item service - Business logic for item operations
  */
 
-import type { Item, CreateItemDTO, UpdateItemDTO } from "../models/item.model.ts";
+import { getPool } from "../db/client.ts";
+import { ItemDTO, CreateItemDTO, UpdateItemDTO } from "../models/data-models/item.model.ts";
+import { ItemRow } from '../models/schema-models/inventory-schema.model.ts';
+import { mapItemRowToItem } from './item.mapper.ts';
+import { ItemMessages } from "../messages/item.messages.ts";
+import { isValidUUID } from "../utils/validators.ts";
 
 export class ItemService {
+  private readonly secondsInDay: number = 24 * 60 * 60 * 1000;
+  private readonly soonExpiryDays: number = 7;
+
   /**
-   * Get all items
+   * Retrieves all items from the database.
+   * @returns {Promise<ItemDTO[]>} A promise that resolves to an array of Item objects.
    */
-  async findAll(): Promise<Item[]> {
-    // TODO: Implement database query
-    return [];
+  async getAllItems(): Promise<ItemDTO[]> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<ItemRow>(
+        "SELECT * FROM items ORDER BY created_at DESC"
+      );
+      return result.rows.map(mapItemRowToItem);
+    } catch (error: unknown) {
+      console.error("Error fetching all items:", error);
+      throw new Error(ItemMessages.DB_RETRIEVE_ITEMS_ERROR);
+    } finally {
+      client.release();
+    }
   }
 
   /**
-   * Get item by ID
+   * Retrieves a single item by its ID.
+   * @param {string} id The unique identifier of the item.
+   * @returns {Promise<ItemDTO | null>} A promise that resolves to the Item object if found, otherwise null.
    */
-  async findById(id: string): Promise<Item | null> {
-    // TODO: Implement database query
-    return null;
+  async getItemById(id: string): Promise<ItemDTO | null> {
+    if (!isValidUUID(id)) {
+      throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
+    }
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<ItemRow>(
+        "SELECT * FROM items WHERE id = $1",
+        [id]
+      );
+
+      const results = result.rows.map(mapItemRowToItem);
+      const firstResult = results[0];
+      return firstResult;
+    } catch (error: unknown) {
+      console.error("Error fetching item by ID:", error);
+      throw new Error(ItemMessages.DB_RETRIEVE_ITEM_ERROR);
+    } finally {
+      client.release();
+    }
   }
 
   /**
-   * Create new item
+   * Creates a new item in the database.
+   * @param {CreateItemDTO} data The data transfer object containing the new item's details.
+   * @returns {Promise<ItemDTO>} A promise that resolves to the newly created Item object.
    */
-  async create(data: CreateItemDTO): Promise<Item> {
-    // TODO: Implement database insert
-    throw new Error("Not implemented");
+  async createItem(data: CreateItemDTO): Promise<ItemDTO> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<ItemRow>(
+        "INSERT INTO items (label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+        [data.label, data.quantity, data.unitId, data.locationId, data.expirationDate, data.openedDate, data.purchaseDate, data.notes]
+      );
+
+      const results = result.rows.map(mapItemRowToItem);
+      const firstResult = results[0];
+      return firstResult;
+    } catch (error: unknown) {
+      console.error("Error creating item:", error);
+      throw new Error(ItemMessages.DB_CREATE_ERROR);
+    } finally {
+      client.release();
+    }
   }
 
   /**
-   * Update item
+   * Updates an existing item in the database.
+   * @param {string} id The unique identifier of the item to update.
+   * @param {UpdateItemDTO} data The data transfer object containing the updated item's details.
+   * @returns {Promise<ItemDTO | null>} A promise that resolves to the updated Item object if found, otherwise null.
    */
-  async update(id: string, data: UpdateItemDTO): Promise<Item | null> {
-    // TODO: Implement database update
-    throw new Error("Not implemented");
+  async updateItem(id: string, data: UpdateItemDTO): Promise<ItemDTO | null> {
+    if (!isValidUUID(id)) {
+      throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
+    }
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<ItemRow>(
+        "UPDATE items SET label = $1, quantity = $2, unit_id = $3, location_id = $4, expiration_date = $5, opened_date = $6, purchase_date = $7, notes = $8 WHERE id = $9 RETURNING *",
+        [data.label, data.quantity, data.unitId, data.locationId, data.expirationDate, data.openedDate, data.purchaseDate, data.notes, id]
+      );
+
+      const results = result.rows.map(mapItemRowToItem);
+      const firstResult = results[0];
+      return firstResult;
+    } catch (error: unknown) {
+      console.error("Error updating item:", error);
+      throw new Error(ItemMessages.DB_UPDATE_ERROR);
+    } finally {
+      client.release();
+    }
   }
 
   /**
-   * Delete item
+   * Deletes an item from the database by its ID.
+   * @param {string} id The unique identifier of the item to delete.
+   * @returns {Promise<boolean>} A promise that resolves to true if the item was successfully deleted, false otherwise.
    */
-  async delete(id: string): Promise<boolean> {
-    // TODO: Implement database delete
-    return false;
+  async deleteItemById(id: string): Promise<boolean> {
+    if (!isValidUUID(id)) {
+      throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
+    }
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      await client.queryObject<ItemRow>(
+        "DELETE FROM items WHERE id = $1",
+        [id]
+      );
+      return true;
+    } catch (error: unknown) {
+      console.error("Error deleting item:", error);
+      throw new Error(ItemMessages.DB_DELETE_ERROR);
+    } finally {
+      client.release();
+    }
   }
 
   /**
-   * Find items expiring soon
+   * Finds items that are expiring within a specified number of days.
+   * @param {number} [days=7] The number of days within which items are considered expiring soon. Defaults to 7 days.
+   * @returns {Promise<ItemDTO[]>} A promise that resolves to an array of Item objects expiring soon.
    */
-  async findExpiringSoon(days: number = 7): Promise<Item[]> {
-    // TODO: Implement query for items expiring within specified days
-    return [];
+  async findExpiringSoon(days: number = this.soonExpiryDays): Promise<ItemDTO[]> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<ItemRow>(
+        "SELECT * FROM items WHERE expiration_date <= $1 ORDER BY expiration_date ASC",
+        [new Date(Date.now() + days * this.secondsInDay)]
+      );
+      return result.rows.map(mapItemRowToItem);
+    } catch (error: unknown) {
+      console.error("Error finding expiring soon items:", error);
+      throw new Error(ItemMessages.DB_FIND_EXPIRING_ERROR);
+    } finally {
+      client.release();
+    }
   }
 }
 

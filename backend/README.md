@@ -11,13 +11,15 @@ backend/
 │   │   └── env.ts       # Environment configuration
 │   ├── db/              # Database setup
 │   │   └── client.ts    # Database client
+│   ├── messages/        # Centralized message constants
+│   │   └── item.messages.ts
 │   ├── middleware/      # Custom middleware
 │   │   ├── cors.ts      # CORS configuration
 │   │   ├── errorHandler.ts  # Global error handling
 │   │   └── logger.ts    # Request logging
 │   ├── models/          # TypeScript interfaces/types
-│   │   ├── item.model.ts
-│   │   └── recipe.model.ts
+│   │   ├── data-models/     # Application data models (DTOs)
+│   │   └── schema-models/   # Database schema models
 │   ├── routes/          # API routes
 │   │   ├── index.ts     # Main router
 │   │   ├── items.routes.ts
@@ -27,7 +29,9 @@ backend/
 │   │   └── recipe.service.ts
 │   ├── utils/           # Utility functions
 │   │   ├── response.ts  # API response helpers
-│   │   └── validators.ts # Validation functions
+│   │   └── validators.ts # Generic validation functions
+│   ├── validators/      # Domain-specific validators
+│   │   └── item.validator.ts
 │   └── app.ts           # Main app setup
 ├── tests/               # Test files
 │   └── items.test.ts
@@ -91,6 +95,7 @@ deno task db:seed     # Populate with sample data
 ### Items
 
 - `GET /api/items` - Get all items
+- `GET /api/items/expiring-soon` - Get items expiring soon (optional query param `?days=7`)
 - `GET /api/items/:id` - Get item by ID
 - `POST /api/items` - Create new item
 - `PUT /api/items/:id` - Update item
