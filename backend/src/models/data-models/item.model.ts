@@ -1,31 +1,3 @@
-// Key Reference Tables
-export interface Location {
-  id: number;
-  name: string;
-}
-
-export interface Category {
-  id: number;
-  name: string;
-}
-
-export interface Unit {
-  id: number;
-  name: string;
-  type?: string; // 'volume' | 'weight' | 'count'
-  toBaseFactor?: number;
-}
-
-// Ingredient (Base definition of food)
-export interface Ingredient {
-  id: string; // UUID
-  name: string;
-  categoryId: number;
-  defaultUnitId: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
 // Item (Specific instance in pantry)
 export interface ItemDTO {
   id: string; // UUID

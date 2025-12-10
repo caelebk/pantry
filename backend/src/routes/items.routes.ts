@@ -3,7 +3,7 @@
  */
 
 import { Context, Hono } from "hono";
-import { CreateItemDTO, ItemDTO, UpdateItemDTO } from "../models/data-models/inventory.model.ts";
+import { CreateItemDTO, ItemDTO, UpdateItemDTO } from "../models/data-models/item.model.ts";
 import { HttpResponse, HttpErrorResponse, HttpStatusMessage, HttpStatusCode } from "../models/transfer-models/http.model.ts";
 
 import { itemService } from "../services/item.service.ts";
@@ -49,18 +49,55 @@ items.get("/", async (c: Context) => {
  *   "data": { "id": "123" }
  * }
  */
-items.get("/:id", (c: Context) => {
+items.get("/:id", async (c: Context) => {
   const id = c.req.param("id");
+  const item: ItemDTO | null = await itemService.findById(id);
   
-  // TODO: Implement get item by ID logic
-  // Mock response for now
-  const response: HttpResponse = {
+  if (item) {
+    const response: HttpResponse = {
       status: HttpStatusMessage.OK,
-      data: { id },
-  };
-  return c.json(response, HttpStatusCode.OK);
+      data: item,
+    };
+    return c.json(response, HttpStatusCode.OK);
+  } else {
+    const errorResponse: HttpErrorResponse = {
+      status: HttpStatusMessage.NOT_FOUND,
+      message: "Item not found",
+    };
+    return c.json(errorResponse, HttpStatusCode.NOT_FOUND);
+  }
 });
 
+/**
+ * GET /api/items/:label
+ * @summary Get item by label
+ * @param {string} label.path - The label of the item to retrieve
+ * @returns {object} 200 - The item with the specified label
+ * @returns {object} 404 - Item not found
+ * @example response - 200 - success
+ * {
+ *   "status": "200",
+ *   "data": { "label": "123" }
+ * }
+ */
+items.get("/:label", async (c: Context) => {
+  const label = c.req.param("label");
+  const item: ItemDTO | null = await itemService.findByLabel(label);
+  
+  if (item) {
+    const response: HttpResponse = {
+      status: HttpStatusMessage.OK,
+      data: item,
+    };
+    return c.json(response, HttpStatusCode.OK);
+  } else {
+    const errorResponse: HttpErrorResponse = {
+      status: HttpStatusMessage.NOT_FOUND,
+      message: "Item not found",
+    };
+    return c.json(errorResponse, HttpStatusCode.NOT_FOUND);
+  }
+});
 /**
  * POST /api/items
  * @summary Create a new item
