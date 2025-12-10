@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS recipes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    difficulty INTEGER REFERENCES difficulties(id) ON DELETE RESTRICT,
+    difficulty_id INTEGER REFERENCES difficulties(id) ON DELETE RESTRICT,
     servings FLOAT,
     prep_time FLOAT,
     cook_time FLOAT,
@@ -116,7 +116,7 @@ CREATE INDEX IF NOT EXISTS idx_items_location_id ON items(location_id);
 CREATE INDEX IF NOT EXISTS idx_items_unit_id ON items(unit_id);
 CREATE INDEX IF NOT EXISTS idx_ingredients_category_id ON ingredients(category_id);
 CREATE INDEX IF NOT EXISTS idx_ingredients_default_unit_id ON ingredients(default_unit_id);
-CREATE INDEX IF NOT EXISTS idx_recipes_difficulty_id ON recipes(difficulty);
+CREATE INDEX IF NOT EXISTS idx_recipes_difficulty_id ON recipes(difficulty_id);
 CREATE INDEX IF NOT EXISTS idx_recipe_ingredients_ingredient_id ON recipe_ingredients(ingredient_id);
 CREATE INDEX IF NOT EXISTS idx_recipe_ingredients_unit_id ON recipe_ingredients(unit_id);
 CREATE INDEX IF NOT EXISTS idx_recipe_steps_recipe_id ON recipe_steps(recipe_id);
