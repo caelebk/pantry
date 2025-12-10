@@ -22,7 +22,7 @@ const items = new Hono();
  */
 items.get("/", async (c: Context) => {
   try {
-    const items: ItemDTO[] = await itemService.findAll();
+    const items: ItemDTO[] = await itemService.getAllItems();
     const response: HttpResponse = {
       status: HttpStatusMessage.OK,
       data: items,

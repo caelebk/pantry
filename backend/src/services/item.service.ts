@@ -12,7 +12,7 @@ export class ItemService {
    * Retrieves all items from the database.
    * @returns {Promise<ItemDTO[]>} A promise that resolves to an array of Item objects.
    */
-  async findAll(): Promise<ItemDTO[]> {
+  async getAllItems(): Promise<ItemDTO[]> {
     const pool = getPool();
     const client = await pool.connect();
     try {
