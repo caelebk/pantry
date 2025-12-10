@@ -3,7 +3,7 @@
  */
 
 import { getPool } from "../db/client.ts";
-import type { ItemDTO, CreateItemDTO, UpdateItemDTO } from "../models/data-models/item.model.ts";
+import { ItemDTO, CreateItemDTO, UpdateItemDTO } from "../models/data-models/item.model.ts";
 import { ItemRow } from '../models/schema-models/inventory-schema.model.ts';
 import { mapItemRowToItem } from './item.mapper.ts';
 
@@ -140,7 +140,7 @@ export class ItemService {
     const client = await pool.connect();
     try {
       const result = await client.queryObject<ItemRow>(
-        "SELECT * FROM items WHERE expiration_date <= $1",
+        "SELECT * FROM items WHERE expiration_date <= $1 ORDER BY expiration_date ASC",
         [new Date(Date.now() + days * this.secondsInDay)]
       );
       return result.rows.map(mapItemRowToItem);
