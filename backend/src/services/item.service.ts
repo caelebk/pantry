@@ -3,11 +3,15 @@
  */
 
 import { getPool } from "../db/client.ts";
-import type { ItemDTO, CreateItemDTO, UpdateItemDTO } from "../models/data-models/inventory.model.ts";
+import type { ItemDTO, CreateItemDTO, UpdateItemDTO } from "../models/data-models/item.model.ts";
 import { ItemRow } from '../models/schema-models/inventory-schema.model.ts';
 import { mapItemRowToItem } from './item.mapper.ts';
 
 export class ItemService {
+
+  private readonly secondsInDay: number = 24 * 60 * 60 * 1000;
+  private readonly soonExpiryDays: number = 7;
+
   /**
    * Retrieves all items from the database.
    * @returns {Promise<ItemDTO[]>} A promise that resolves to an array of Item objects.
@@ -33,9 +37,24 @@ export class ItemService {
    * @param {string} id The unique identifier of the item.
    * @returns {Promise<ItemDTO | null>} A promise that resolves to the Item object if found, otherwise null.
    */
-  async findById(id: string): Promise<ItemDTO | null> {
-    // TODO: Implement database query
-    return null;
+  async getItemById(id: string): Promise<ItemDTO | null> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<ItemRow>(
+        "SELECT * FROM items WHERE id = $1",
+        [id]
+      );
+
+      const results = result.rows.map(mapItemRowToItem);
+      const firstResult = results[0];
+      return firstResult;
+    } catch (error: unknown) {
+      console.error("Error fetching item by ID:", error);
+      throw new Error("Failed to retrieve item from the database.");
+    } finally {
+      client.release();
+    }
   }
 
   /**
@@ -43,9 +62,24 @@ export class ItemService {
    * @param {CreateItemDTO} data The data transfer object containing the new item's details.
    * @returns {Promise<ItemDTO>} A promise that resolves to the newly created Item object.
    */
-  async create(data: CreateItemDTO): Promise<ItemDTO> {
-    // TODO: Implement database insert
-    throw new Error("Not implemented");
+  async createItem(data: CreateItemDTO): Promise<ItemDTO> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<ItemRow>(
+        "INSERT INTO items (label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+        [data.label, data.quantity, data.unitId, data.locationId, data.expirationDate, data.openedDate, data.purchaseDate, data.notes]
+      );
+
+      const results = result.rows.map(mapItemRowToItem);
+      const firstResult = results[0];
+      return firstResult;
+    } catch (error: unknown) {
+      console.error("Error creating item:", error);
+      throw new Error("Failed to create item in the database.");
+    } finally {
+      client.release();
+    }
   }
 
   /**
@@ -54,9 +88,24 @@ export class ItemService {
    * @param {UpdateItemDTO} data The data transfer object containing the updated item's details.
    * @returns {Promise<ItemDTO | null>} A promise that resolves to the updated Item object if found, otherwise null.
    */
-  async update(id: string, data: UpdateItemDTO): Promise<ItemDTO | null> {
-    // TODO: Implement database update
-    throw new Error("Not implemented");
+  async updateItem(id: string, data: UpdateItemDTO): Promise<ItemDTO | null> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<ItemRow>(
+        "UPDATE items SET label = $1, quantity = $2, unit_id = $3, location_id = $4, expiration_date = $5, opened_date = $6, purchase_date = $7, notes = $8 WHERE id = $9 RETURNING *",
+        [data.label, data.quantity, data.unitId, data.locationId, data.expirationDate, data.openedDate, data.purchaseDate, data.notes, id]
+      );
+
+      const results = result.rows.map(mapItemRowToItem);
+      const firstResult = results[0];
+      return firstResult;
+    } catch (error: unknown) {
+      console.error("Error updating item:", error);
+      throw new Error("Failed to update item in the database.");
+    } finally {
+      client.release();
+    }
   }
 
   /**
@@ -64,9 +113,21 @@ export class ItemService {
    * @param {string} id The unique identifier of the item to delete.
    * @returns {Promise<boolean>} A promise that resolves to true if the item was successfully deleted, false otherwise.
    */
-  async delete(id: string): Promise<boolean> {
-    // TODO: Implement database delete
-    return false;
+  async deleteItemById(id: string): Promise<boolean> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      await client.queryObject<ItemRow>(
+        "DELETE FROM items WHERE id = $1",
+        [id]
+      );
+      return true;
+    } catch (error: unknown) {
+      console.error("Error deleting item:", error);
+      throw new Error("Failed to delete item from the database.");
+    } finally {
+      client.release();
+    }
   }
 
   /**
@@ -74,9 +135,21 @@ export class ItemService {
    * @param {number} [days=7] The number of days within which items are considered expiring soon. Defaults to 7 days.
    * @returns {Promise<ItemDTO[]>} A promise that resolves to an array of Item objects expiring soon.
    */
-  async findExpiringSoon(days: number = 7): Promise<ItemDTO[]> {
-    // TODO: Implement query for items expiring within specified days
-    return [];
+  async findExpiringSoon(days: number = this.soonExpiryDays): Promise<ItemDTO[]> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<ItemRow>(
+        "SELECT * FROM items WHERE expiration_date <= $1",
+        [new Date(Date.now() + days * this.secondsInDay)]
+      );
+      return result.rows.map(mapItemRowToItem);
+    } catch (error: unknown) {
+      console.error("Error finding expiring soon items:", error);
+      throw new Error("Failed to find expiring soon items from the database.");
+    } finally {
+      client.release();
+    }
   }
 }
 

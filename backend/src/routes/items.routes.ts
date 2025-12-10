@@ -37,6 +37,44 @@ items.get("/", async (c: Context) => {
   }
 });
 
+
+/**
+ * GET /api/items/expiring-soon
+ * @summary Get items expiring soon
+ * @param {number} days.query - The number of days to look ahead for expiring items
+ * @returns {object} 200 - An array of items expiring soon
+ * @example response - 200 - success
+ * {
+ *   "status": "200",
+ *   "data": []
+ * }
+ */
+items.get('/expiring-soon', async (c: Context) => {
+  try {
+    const daysStr: string | undefined = c.req.query("days");
+    const days: number = daysStr ? parseInt(daysStr) : NaN;
+
+    let items: ItemDTO[];
+    if (isNaN(days)) {
+      items = await itemService.findExpiringSoon();
+    } else {
+      items = await itemService.findExpiringSoon(days);
+    }
+
+    const response: HttpResponse = {
+      status: HttpStatusMessage.OK,
+      data: items,
+    };
+    return c.json(response, HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    const errorResponse: HttpErrorResponse = {
+      status: HttpStatusMessage.INTERNAL_SERVER_ERROR,
+      message: "Failed to fetch expiring soon items",
+    };
+    return c.json(errorResponse, HttpStatusCode.INTERNAL_SERVER_ERROR);
+  }
+});
+
 /**
  * GET /api/items/:id
  * @summary Get item by ID
@@ -51,7 +89,7 @@ items.get("/", async (c: Context) => {
  */
 items.get("/:id", async (c: Context) => {
   const id = c.req.param("id");
-  const item: ItemDTO | null = await itemService.findById(id);
+  const item: ItemDTO | null = await itemService.getItemById(id);
   
   if (item) {
     const response: HttpResponse = {
@@ -68,36 +106,6 @@ items.get("/:id", async (c: Context) => {
   }
 });
 
-/**
- * GET /api/items/:label
- * @summary Get item by label
- * @param {string} label.path - The label of the item to retrieve
- * @returns {object} 200 - The item with the specified label
- * @returns {object} 404 - Item not found
- * @example response - 200 - success
- * {
- *   "status": "200",
- *   "data": { "label": "123" }
- * }
- */
-items.get("/:label", async (c: Context) => {
-  const label = c.req.param("label");
-  const item: ItemDTO | null = await itemService.findByLabel(label);
-  
-  if (item) {
-    const response: HttpResponse = {
-      status: HttpStatusMessage.OK,
-      data: item,
-    };
-    return c.json(response, HttpStatusCode.OK);
-  } else {
-    const errorResponse: HttpErrorResponse = {
-      status: HttpStatusMessage.NOT_FOUND,
-      message: "Item not found",
-    };
-    return c.json(errorResponse, HttpStatusCode.NOT_FOUND);
-  }
-});
 /**
  * POST /api/items
  * @summary Create a new item
@@ -119,11 +127,11 @@ items.get("/:label", async (c: Context) => {
 items.post("/", async (c: Context) => {
   try {
     const body = await c.req.json<CreateItemDTO>();
+    const item: ItemDTO = await itemService.createItem(body);
     
-    // TODO: Implement create item logic
     const response: HttpResponse = {
       status: HttpStatusMessage.CREATED,
-      data: body,
+      data: item,
     };
     return c.json(response, HttpStatusCode.CREATED);
   } catch (_error: unknown) {
@@ -159,10 +167,18 @@ items.put("/:id", async (c: Context) => {
     const id = c.req.param("id");
     const body = await c.req.json<UpdateItemDTO>();
     
-    // TODO: Implement update item logic
+    const item: ItemDTO | null = await itemService.updateItem(id, body);
+    if (!item) {
+      const errorResponse: HttpErrorResponse = {
+        status: HttpStatusMessage.NOT_FOUND,
+        message: "Item not found",
+      };
+      return c.json(errorResponse, HttpStatusCode.NOT_FOUND);
+    }
+
     const response: HttpResponse = {
         status: HttpStatusMessage.OK,
-        data: { id, ...body },
+        data: item,
     };
     return c.json(response, HttpStatusCode.OK);
   } catch (_error: unknown) {
@@ -186,15 +202,32 @@ items.put("/:id", async (c: Context) => {
  *   "data": { "message": "Item 123 deleted" }
  * }
  */
-items.delete("/:id", (c: Context) => {
+items.delete("/:id", async (c: Context) => {
   const id = c.req.param("id");
-  
-  // TODO: Implement delete item logic
-  const response: HttpResponse = {
-    status: HttpStatusMessage.OK,
-    data: { message: `Item ${id} deleted` },
-  };
-  return c.json(response, HttpStatusCode.OK);
+  try {
+    const checkItem: ItemDTO | null = await itemService.getItemById(id);
+    if (!checkItem) {
+      const errorResponse: HttpErrorResponse = {
+        status: HttpStatusMessage.NOT_FOUND,
+        message: "Item not found",
+      };
+      return c.json(errorResponse, HttpStatusCode.NOT_FOUND);
+    }
+
+    await itemService.deleteItemById(id);
+
+    const response: HttpResponse = {
+      status: HttpStatusMessage.OK,
+      data: { message: `Item ${id} deleted` },
+    };
+    return c.json(response, HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    const errorResponse: HttpErrorResponse = {
+      status: HttpStatusMessage.INTERNAL_SERVER_ERROR,
+      message: "Failed to delete item",
+    };
+    return c.json(errorResponse, HttpStatusCode.INTERNAL_SERVER_ERROR);
+  }
 });
 
 export default items;

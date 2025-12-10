@@ -28,12 +28,13 @@ export interface CreateItemDTO {
 }
 
 export interface UpdateItemDTO {
-  label?: string;
-  quantity?: number;
-  unitId?: number;
-  locationId?: number;
-  expirationDate?: string;
+  ingredientId?: string;
+  label: string;
+  quantity: number;
+  unitId: number;
+  locationId: number;
+  expirationDate: string;
   openedDate?: string;
-  purchaseDate?: string;
+  purchaseDate: string;
   notes?: string;
 }
