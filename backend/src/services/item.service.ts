@@ -7,6 +7,7 @@ import { ItemDTO, CreateItemDTO, UpdateItemDTO } from "../models/data-models/ite
 import { ItemRow } from '../models/schema-models/inventory-schema.model.ts';
 import { mapItemRowToItem } from './item.mapper.ts';
 import { ItemMessages } from "../messages/item.messages.ts";
+import { isValidUUID } from "../utils/validators.ts";
 
 export class ItemService {
   private readonly secondsInDay: number = 24 * 60 * 60 * 1000;
@@ -38,6 +39,9 @@ export class ItemService {
    * @returns {Promise<ItemDTO | null>} A promise that resolves to the Item object if found, otherwise null.
    */
   async getItemById(id: string): Promise<ItemDTO | null> {
+    if (!isValidUUID(id)) {
+      throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
+    }
     const pool = getPool();
     const client = await pool.connect();
     try {
@@ -89,6 +93,9 @@ export class ItemService {
    * @returns {Promise<ItemDTO | null>} A promise that resolves to the updated Item object if found, otherwise null.
    */
   async updateItem(id: string, data: UpdateItemDTO): Promise<ItemDTO | null> {
+    if (!isValidUUID(id)) {
+      throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
+    }
     const pool = getPool();
     const client = await pool.connect();
     try {
@@ -114,6 +121,9 @@ export class ItemService {
    * @returns {Promise<boolean>} A promise that resolves to true if the item was successfully deleted, false otherwise.
    */
   async deleteItemById(id: string): Promise<boolean> {
+    if (!isValidUUID(id)) {
+      throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
+    }
     const pool = getPool();
     const client = await pool.connect();
     try {

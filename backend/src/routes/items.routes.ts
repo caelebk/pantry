@@ -4,6 +4,8 @@
 import { Context, Hono } from "hono";
 import { CreateItemDTO, ItemDTO, UpdateItemDTO } from "../models/data-models/item.model.ts";
 import { successResponse, errorResponse, HttpStatusCode } from "../utils/response.ts";
+import { isValidUUID, isPositiveNumber } from "../utils/validators.ts";
+import { isValidCreateItemDTO, isValidUpdateItemDTO } from "../validators/item.validator.ts";
 import { ItemMessages } from "../messages/item.messages.ts";
 import { itemService } from "../services/item.service.ts";
 
@@ -44,6 +46,10 @@ items.get('/expiring-soon', async (c: Context) => {
   try {
     const daysStr: string | undefined = c.req.query("days");
     const days: number = daysStr ? parseInt(daysStr) : NaN;
+    
+    if (daysStr && !isPositiveNumber(days)) {
+        return c.json(errorResponse(ItemMessages.INVALID_DAYS), HttpStatusCode.BAD_REQUEST);
+    }
 
     const items: ItemDTO[] = isNaN(days) ? await itemService.findExpiringSoon() : await itemService.findExpiringSoon(days);
 
@@ -68,6 +74,9 @@ items.get('/expiring-soon', async (c: Context) => {
  */
 items.get("/:id", async (c: Context) => {
   const id = c.req.param("id");
+  if (!isValidUUID(id)) {
+      return c.json(errorResponse(ItemMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+  }
   const item: ItemDTO | null = await itemService.getItemById(id);
   
   if (item) {
@@ -98,6 +107,9 @@ items.get("/:id", async (c: Context) => {
 items.post("/", async (c: Context) => {
   try {
     const body = await c.req.json<CreateItemDTO>();
+    if (!isValidCreateItemDTO(body)) {
+        return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+    }
     const item: ItemDTO = await itemService.createItem(body);
     
     return c.json(successResponse(item), HttpStatusCode.CREATED);
@@ -128,7 +140,13 @@ items.post("/", async (c: Context) => {
 items.put("/:id", async (c: Context) => {
   try {
     const id = c.req.param("id");
+    if (!isValidUUID(id)) {
+        return c.json(errorResponse(ItemMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+    }
     const body = await c.req.json<UpdateItemDTO>();
+    if (!isValidUpdateItemDTO(body)) {
+        return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+    }
     
     const item: ItemDTO | null = await itemService.updateItem(id, body);
     if (!item) {
@@ -155,6 +173,9 @@ items.put("/:id", async (c: Context) => {
  */
 items.delete("/:id", async (c: Context) => {
   const id = c.req.param("id");
+  if (!isValidUUID(id)) {
+      return c.json(errorResponse(ItemMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+  }
   try {
     const checkItem: ItemDTO | null = await itemService.getItemById(id);
     if (!checkItem) {
