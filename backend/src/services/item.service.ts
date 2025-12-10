@@ -6,9 +6,9 @@ import { getPool } from "../db/client.ts";
 import { ItemDTO, CreateItemDTO, UpdateItemDTO } from "../models/data-models/item.model.ts";
 import { ItemRow } from '../models/schema-models/inventory-schema.model.ts';
 import { mapItemRowToItem } from './item.mapper.ts';
+import { ItemMessages } from "../messages/item.messages.ts";
 
 export class ItemService {
-
   private readonly secondsInDay: number = 24 * 60 * 60 * 1000;
   private readonly soonExpiryDays: number = 7;
 
@@ -26,7 +26,7 @@ export class ItemService {
       return result.rows.map(mapItemRowToItem);
     } catch (error: unknown) {
       console.error("Error fetching all items:", error);
-      throw new Error("Failed to retrieve items from the database.");
+      throw new Error(ItemMessages.DB_RETRIEVE_ITEMS_ERROR);
     } finally {
       client.release();
     }
@@ -51,7 +51,7 @@ export class ItemService {
       return firstResult;
     } catch (error: unknown) {
       console.error("Error fetching item by ID:", error);
-      throw new Error("Failed to retrieve item from the database.");
+      throw new Error(ItemMessages.DB_RETRIEVE_ITEM_ERROR);
     } finally {
       client.release();
     }
@@ -76,7 +76,7 @@ export class ItemService {
       return firstResult;
     } catch (error: unknown) {
       console.error("Error creating item:", error);
-      throw new Error("Failed to create item in the database.");
+      throw new Error(ItemMessages.DB_CREATE_ERROR);
     } finally {
       client.release();
     }
@@ -102,7 +102,7 @@ export class ItemService {
       return firstResult;
     } catch (error: unknown) {
       console.error("Error updating item:", error);
-      throw new Error("Failed to update item in the database.");
+      throw new Error(ItemMessages.DB_UPDATE_ERROR);
     } finally {
       client.release();
     }
@@ -124,7 +124,7 @@ export class ItemService {
       return true;
     } catch (error: unknown) {
       console.error("Error deleting item:", error);
-      throw new Error("Failed to delete item from the database.");
+      throw new Error(ItemMessages.DB_DELETE_ERROR);
     } finally {
       client.release();
     }
@@ -146,7 +146,7 @@ export class ItemService {
       return result.rows.map(mapItemRowToItem);
     } catch (error: unknown) {
       console.error("Error finding expiring soon items:", error);
-      throw new Error("Failed to find expiring soon items from the database.");
+      throw new Error(ItemMessages.DB_FIND_EXPIRING_ERROR);
     } finally {
       client.release();
     }
