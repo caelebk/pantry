@@ -2,7 +2,7 @@
 import { join } from "@std/path";
 import { initDB, getPool, closeDB } from "../src/db/client.ts";
 
-async function runMigrations() {
+export async function runMigrations() {
   console.log("🚀 Starting migrations...");
   
   await initDB();

@@ -75,6 +75,11 @@ deno task start
 
 # Run tests
 deno task test
+
+# Database Operations
+deno task db:migrate  # Run pending migrations
+deno task db:reset    # Reset database (DATA LOSS)
+deno task db:seed     # Populate with sample data
 ```
 
 ## 📡 API Endpoints

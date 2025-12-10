@@ -3,7 +3,9 @@
     "dev": "deno run --allow-env --watch --allow-net --allow-read main.ts",
     "start": "deno run --allow-env --allow-net --allow-read main.ts",
     "test": "deno test --allow-env --allow-net --allow-read",
-    "migrate": "deno run --allow-env --allow-net --allow-read scripts/migrate.ts"
+    "db:migrate": "deno run --allow-env --allow-net --allow-read scripts/migrate_db.ts",
+    "db:reset": "deno run --allow-env --allow-net --allow-read scripts/reset_db.ts",
+    "db:seed": "deno run --allow-env --allow-net --allow-read scripts/seed_db.ts"
   },
   "imports": {
     "hono": "jsr:@hono/hono",

@@ -9,11 +9,14 @@ This guide will help you get PostgreSQL running locally using Docker and manage 
    docker-compose up -d
    ```
 
-2. **Run Migrations** (Initialize Schema):
+2. **Initialize Database** (Migrate & Seed):
    ```bash
-   deno task migrate
+   # Reset schema and apply migrations
+   deno task db:reset
+
+   # Populate with demo data (Optional)
+   deno task db:seed
    ```
-   _Run this command whenever you pull new changes or modify the schema._
 
 3. **Verify database is running**:
    ```bash
@@ -31,14 +34,20 @@ This guide will help you get PostgreSQL running locally using Docker and manage 
 We use a custom migration system to manage database schema changes.
 
 - **Migration Files**: stored in `migrations/` directory (e.g., `0001_initial_schema.sql`).
-- **Run Migrations**: `deno task migrate`
+- **Run Migrations**: `deno task db:migrate`
   - This script checks which migrations have already been applied (tracked in `_migrations` table)
     and runs any new ones in alphabetical order.
+- **Reset Database**: `deno task db:reset`
+  - **WARNING**: This drops the `public` schema (deleting all data) and re-runs all migrations.
+- **Seed Database**: `deno task db:seed`
+  - Populates the database with robust stub data (ingredients, items, recipes, etc.).
+  - Modify data in `scripts/seed_data.ts`.
+
 - **Create New Migration**:
   1. Create a new `.sql` file in `migrations/` with a sequential prefix (e.g.,
      `0002_add_users.sql`).
   2. Write your SQL statements (CREATE TABLE, ALTER TABLE, etc.).
-  3. Run `deno task migrate` to apply it.
+  3. Run `deno task db:migrate` to apply it.
 
 ## Database Connection Details
 
@@ -64,7 +73,13 @@ docker-compose down
 
 ### Reset Database (Fresh Start)
 
-Wipes all data and schemas.
+The easiest way to reset is using the Deno task:
+
+```bash
+deno task db:reset
+```
+
+If you need a full Docker reset:
 
 ```bash
 # 1. Destroy container and volumes
@@ -73,8 +88,9 @@ docker-compose down -v
 # 2. Start fresh container
 docker-compose up -d
 
-# 3. Re-apply schema
-deno task migrate
+# 3. Re-apply schema and seed
+deno task db:reset
+deno task db:seed
 ```
 
 ### View database logs
