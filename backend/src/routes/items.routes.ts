@@ -4,7 +4,7 @@
 
 import { Context, Hono } from "hono";
 import { CreateItemDTO, ItemDTO, UpdateItemDTO } from "../models/data-models/item.model.ts";
-import { HttpResponse, HttpErrorResponse, HttpStatusMessage, HttpStatusCode } from "../models/transfer-models/http.model.ts";
+import { successResponse, errorResponse, HttpStatusCode } from "../utils/response.ts";
 import { itemService } from "../services/item.service.ts";
 
 const items = new Hono();
@@ -22,17 +22,9 @@ const items = new Hono();
 items.get("/", async (c: Context) => {
   try {
     const items: ItemDTO[] = await itemService.getAllItems();
-    const response: HttpResponse = {
-      status: HttpStatusMessage.OK,
-      data: items,
-    };
-    return c.json(response, HttpStatusCode.OK);
+    return c.json(successResponse(items), HttpStatusCode.OK);
   } catch (_error: unknown) {
-    const errorResponse: HttpErrorResponse = {
-      status: HttpStatusMessage.INTERNAL_SERVER_ERROR,
-      message: "Failed to fetch items",
-    };
-    return c.json(errorResponse, HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(errorResponse("Failed to fetch items"), HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 });
 
@@ -60,17 +52,10 @@ items.get('/expiring-soon', async (c: Context) => {
       items = await itemService.findExpiringSoon(days);
     }
 
-    const response: HttpResponse = {
-      status: HttpStatusMessage.OK,
-      data: items,
-    };
+    const response = successResponse(items);
     return c.json(response, HttpStatusCode.OK);
   } catch (_error: unknown) {
-    const errorResponse: HttpErrorResponse = {
-      status: HttpStatusMessage.INTERNAL_SERVER_ERROR,
-      message: "Failed to fetch expiring soon items",
-    };
-    return c.json(errorResponse, HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(errorResponse("Failed to fetch expiring soon items"), HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 });
 
@@ -91,17 +76,9 @@ items.get("/:id", async (c: Context) => {
   const item: ItemDTO | null = await itemService.getItemById(id);
   
   if (item) {
-    const response: HttpResponse = {
-      status: HttpStatusMessage.OK,
-      data: item,
-    };
-    return c.json(response, HttpStatusCode.OK);
+    return c.json(successResponse(item), HttpStatusCode.OK);
   } else {
-    const errorResponse: HttpErrorResponse = {
-      status: HttpStatusMessage.NOT_FOUND,
-      message: "Item not found",
-    };
-    return c.json(errorResponse, HttpStatusCode.NOT_FOUND);
+    return c.json(errorResponse("Item not found"), HttpStatusCode.NOT_FOUND);
   }
 });
 
@@ -128,17 +105,9 @@ items.post("/", async (c: Context) => {
     const body = await c.req.json<CreateItemDTO>();
     const item: ItemDTO = await itemService.createItem(body);
     
-    const response: HttpResponse = {
-      status: HttpStatusMessage.CREATED,
-      data: item,
-    };
-    return c.json(response, HttpStatusCode.CREATED);
+    return c.json(successResponse(item), HttpStatusCode.CREATED);
   } catch (_error: unknown) {
-      const errorResponse: HttpErrorResponse = {
-          status: HttpStatusMessage.BAD_REQUEST,
-          message: "Invalid request body",
-      };
-      return c.json(errorResponse, HttpStatusCode.BAD_REQUEST);
+      return c.json(errorResponse("Invalid request body"), HttpStatusCode.BAD_REQUEST);
   }
 });
 
@@ -168,24 +137,12 @@ items.put("/:id", async (c: Context) => {
     
     const item: ItemDTO | null = await itemService.updateItem(id, body);
     if (!item) {
-      const errorResponse: HttpErrorResponse = {
-        status: HttpStatusMessage.NOT_FOUND,
-        message: "Item not found",
-      };
-      return c.json(errorResponse, HttpStatusCode.NOT_FOUND);
+      return c.json(errorResponse("Item not found"), HttpStatusCode.NOT_FOUND);
     }
 
-    const response: HttpResponse = {
-        status: HttpStatusMessage.OK,
-        data: item,
-    };
-    return c.json(response, HttpStatusCode.OK);
+    return c.json(successResponse(item), HttpStatusCode.OK);
   } catch (_error: unknown) {
-     const errorResponse: HttpErrorResponse = {
-         status: HttpStatusMessage.BAD_REQUEST,
-         message: "Invalid request body",
-     };
-     return c.json(errorResponse, HttpStatusCode.BAD_REQUEST);
+     return c.json(errorResponse("Invalid request body"), HttpStatusCode.BAD_REQUEST);
   }
 });
 
@@ -206,26 +163,14 @@ items.delete("/:id", async (c: Context) => {
   try {
     const checkItem: ItemDTO | null = await itemService.getItemById(id);
     if (!checkItem) {
-      const errorResponse: HttpErrorResponse = {
-        status: HttpStatusMessage.NOT_FOUND,
-        message: "Item not found",
-      };
-      return c.json(errorResponse, HttpStatusCode.NOT_FOUND);
+      return c.json(errorResponse("Item not found"), HttpStatusCode.NOT_FOUND);
     }
 
     await itemService.deleteItemById(id);
 
-    const response: HttpResponse = {
-      status: HttpStatusMessage.OK,
-      data: { message: `Item ${id} deleted` },
-    };
-    return c.json(response, HttpStatusCode.OK);
+    return c.json(successResponse({ message: `Item ${id} deleted` }), HttpStatusCode.OK);
   } catch (_error: unknown) {
-    const errorResponse: HttpErrorResponse = {
-      status: HttpStatusMessage.INTERNAL_SERVER_ERROR,
-      message: "Failed to delete item",
-    };
-    return c.json(errorResponse, HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(errorResponse("Failed to delete item"), HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 });
 
