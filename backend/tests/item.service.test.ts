@@ -3,7 +3,7 @@ import { Pool } from 'postgres';
 import { setPool } from '../src/db/client.ts';
 import { CreateItemDTO, UpdateItemDTO } from '../src/models/data-models/item.model.ts';
 import { ItemRow } from '../src/models/schema-models/inventory-schema.model.ts';
-import { itemService } from '../src/services/items/item.service.ts';
+import { itemService } from '../src/services/item.service.ts';
 
 // Mock Types
 type QueryCallback = (query: string, args?: unknown[]) => Promise<{ rows: unknown[] }>;

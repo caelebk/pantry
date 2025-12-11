@@ -1,7 +1,7 @@
-import { getPool } from '../../db/client.ts';
-import { CategoryMessages } from '../../messages/category.messages.ts';
-import { CategoryDTO } from '../../models/data-models/category.model.ts';
-import { CategoryRow } from '../../models/schema-models/inventory-schema.model.ts';
+import { getPool } from '../db/client.ts';
+import { CategoryMessages } from '../messages/category.messages.ts';
+import { CategoryDTO } from '../models/data-models/category.model.ts';
+import { CategoryRow } from '../models/schema-models/inventory-schema.model.ts';
 
 export class CategoryService {
   /**

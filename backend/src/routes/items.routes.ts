@@ -4,7 +4,7 @@
 import { Context, Hono } from 'hono';
 import { ItemMessages } from '../messages/item.messages.ts';
 import { CreateItemDTO, ItemDTO, UpdateItemDTO } from '../models/data-models/item.model.ts';
-import { itemService } from '../services/items/item.service.ts';
+import { itemService } from '../services/item.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isPositiveNumber, isValidUUID } from '../utils/validators.ts';
 import { isValidCreateItemDTO, isValidUpdateItemDTO } from '../validators/item.validator.ts';

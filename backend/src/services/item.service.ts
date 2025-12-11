@@ -2,11 +2,11 @@
  * Item service - Business logic for item operations
  */
 
-import { getPool } from '../../db/client.ts';
-import { ItemMessages } from '../../messages/item.messages.ts';
-import { CreateItemDTO, ItemDTO, UpdateItemDTO } from '../../models/data-models/item.model.ts';
-import { ItemRow } from '../../models/schema-models/inventory-schema.model.ts';
-import { isValidUUID } from '../../utils/validators.ts';
+import { getPool } from '../db/client.ts';
+import { ItemMessages } from '../messages/item.messages.ts';
+import { CreateItemDTO, ItemDTO, UpdateItemDTO } from '../models/data-models/item.model.ts';
+import { ItemRow } from '../models/schema-models/inventory-schema.model.ts';
+import { isValidUUID } from '../utils/validators.ts';
 
 export class ItemService {
   private readonly secondsInDay: number = 24 * 60 * 60 * 1000;

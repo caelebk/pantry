@@ -1,7 +1,7 @@
 import { Context, Hono } from 'hono';
 import { IngredientMessages } from '../messages/ingredient.messages.ts';
 import { IngredientDTO } from '../models/data-models/ingredient.model.ts';
-import { ingredientService } from '../services/ingredients/ingredients.service.ts';
+import { ingredientService } from '../services/ingredients.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isValidUUID } from '../utils/validators.ts';
 import {

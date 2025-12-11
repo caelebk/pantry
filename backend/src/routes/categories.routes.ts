@@ -1,8 +1,8 @@
 import { Context, Hono } from 'hono';
 import { CategoryMessages } from '../messages/category.messages.ts';
 import { IngredientMessages } from '../messages/ingredient.messages.ts';
-import { categoryService } from '../services/categories/category.service.ts';
-import { ingredientService } from '../services/ingredients/ingredients.service.ts';
+import { categoryService } from '../services/category.service.ts';
+import { ingredientService } from '../services/ingredients.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isPositiveNumber } from '../utils/validators.ts';
 

@@ -1,7 +1,7 @@
-import { getPool } from '../../db/client.ts';
-import { IngredientMessages } from '../../messages/ingredient.messages.ts';
-import { IngredientDTO } from '../../models/data-models/ingredient.model.ts';
-import { IngredientRow } from '../../models/schema-models/inventory-schema.model.ts';
+import { getPool } from '../db/client.ts';
+import { IngredientMessages } from '../messages/ingredient.messages.ts';
+import { IngredientDTO } from '../models/data-models/ingredient.model.ts';
+import { IngredientRow } from '../models/schema-models/inventory-schema.model.ts';
 
 export class IngredientsService {
   /**
