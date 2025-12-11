@@ -6,7 +6,7 @@ import type {
   CreateRecipeDTO,
   Recipe,
   UpdateRecipeDTO,
-} from '../models/data-models/recipe.model.ts';
+} from '../../models/data-models/recipe.model.ts';
 
 export class RecipeService {
   /**

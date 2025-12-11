@@ -1,5 +1,5 @@
-import { ItemRow } from '../models/schema-models/inventory-schema.model.ts';
-import { ItemDTO } from '../models/data-models/item.model.ts';
+import { ItemDTO } from '../../models/data-models/item.model.ts';
+import { ItemRow } from '../../models/schema-models/inventory-schema.model.ts';
 
 export function mapItemRowToItem(row: ItemRow): ItemDTO {
   return {

@@ -2,7 +2,7 @@ import { assertEquals } from '@std/assert';
 import { Hono } from 'hono';
 import { CreateItemDTO, ItemDTO } from '../src/models/data-models/item.model.ts';
 import items from '../src/routes/items.routes.ts';
-import { itemService } from '../src/services/item.service.ts';
+import { itemService } from '../src/services/items/item.service.ts';
 import { HttpStatusCode } from '../src/utils/response.ts';
 
 // Helper to create a request
