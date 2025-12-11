@@ -18,6 +18,13 @@ export function getPool(): Pool {
 }
 
 /**
+ * Set database pool instance (for testing)
+ */
+export function setPool(p: Pool) {
+  pool = p;
+}
+
+/**
  * Initialize database connection pool
  */
 export async function initDB() {
