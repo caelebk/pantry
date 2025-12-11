@@ -8,7 +8,7 @@ export interface IngredientDTO {
   updatedAt?: Date;
 }
 
-export interface Category {
+export interface CategoryDTO {
   id: number;
   name: string;
 }

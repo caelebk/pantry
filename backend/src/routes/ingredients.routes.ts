@@ -3,13 +3,97 @@ import { IngredientMessages } from '../messages/ingredient.messages.ts';
 import { IngredientDTO } from '../models/data-models/ingredient.model.ts';
 import { ingredientService } from '../services/ingredients/ingredients.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
-import { isValidUUID } from '../utils/validators.ts';
+import { isPositiveNumber, isValidUUID } from '../utils/validators.ts';
 import {
   isValidCreateIngredientDTO,
   isValidUpdateIngredientDTO,
 } from '../validators/ingredient.validator.ts';
 
 const ingredients = new Hono();
+
+/**
+ * GET /api/ingredients/categories
+ * @summary Get all ingredient categories
+ * @returns {object} 200 - An array of ingredient categories
+ * @example response - 200 - success
+ * {
+ *   "status": "200",
+ *   "data": []
+ * }
+ */
+ingredients.get('/categories', async (c: Context) => {
+  try {
+    const categories = await ingredientService.getAllCategories();
+    return c.json(successResponse(categories), HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    return c.json(
+      errorResponse(IngredientMessages.DB_RETRIEVE_CATEGORIES_ERROR),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
+
+/**
+ * GET /api/ingredients/categories/:id
+ * @summary Get a category by ID
+ * @param {number} id.path - The ID of the category to retrieve
+ * @returns {object} 200 - The category with the specified ID
+ * @returns {object} 404 - Category not found
+ * @example response - 200 - success
+ * {
+ *   "status": "200",
+ *   "data": { "id": 1, "name": "Grains" }
+ * }
+ */
+ingredients.get('/categories/:id', async (c: Context) => {
+  try {
+    const id = c.req.param('id');
+    if (!isPositiveNumber(Number(id))) {
+      return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+    }
+    const category = await ingredientService.getCategoryById(Number(id));
+    if (!category) {
+      return c.json(errorResponse(IngredientMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
+    }
+    return c.json(successResponse(category), HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    return c.json(
+      errorResponse(IngredientMessages.DB_RETRIEVE_CATEGORY_ERROR),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
+
+/**
+ * GET /api/ingredients/categories/:id/ingredients
+ * @summary Get ingredients by category ID
+ * @param {number} id.path - The ID of the category to retrieve ingredients from
+ * @returns {object} 200 - An array of ingredients with the specified category ID
+ * @returns {object} 404 - Category not found
+ * @example response - 200 - success
+ * {
+ *   "status": "200",
+ *   "data": []
+ * }
+ */
+ingredients.get('/categories/:id/ingredients', async (c: Context) => {
+  try {
+    const id = c.req.param('id');
+    if (!isPositiveNumber(Number(id))) {
+      return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+    }
+    const ingredients = await ingredientService.getIngredientsByCategory(Number(id));
+    if (!ingredients) {
+      return c.json(errorResponse(IngredientMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
+    }
+    return c.json(successResponse(ingredients), HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    return c.json(
+      errorResponse(IngredientMessages.DB_RETRIEVE_ITEMS_ERROR),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
 
 /**
  * GET /api/ingredients

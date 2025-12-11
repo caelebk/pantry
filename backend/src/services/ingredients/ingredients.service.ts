@@ -1,7 +1,7 @@
 import { getPool } from '../../db/client.ts';
 import { IngredientMessages } from '../../messages/ingredient.messages.ts';
-import { IngredientDTO } from '../../models/data-models/ingredient.model.ts';
-import { IngredientRow } from '../../models/schema-models/inventory-schema.model.ts';
+import { CategoryDTO, IngredientDTO } from '../../models/data-models/ingredient.model.ts';
+import { CategoryRow, IngredientRow } from '../../models/schema-models/inventory-schema.model.ts';
 
 export class IngredientsService {
   /**
@@ -111,6 +111,74 @@ export class IngredientsService {
       console.error('Error deleting ingredient:', error);
       throw new Error(IngredientMessages.DB_DELETE_ITEM_ERROR);
     }
+  }
+
+  /**
+   * Retrieves all categories from the database.
+   * @returns {Promise<CategoryDTO[]>} A promise that resolves to an array of Category objects.
+   */
+  async getAllCategories(): Promise<CategoryDTO[]> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<CategoryRow>('SELECT * FROM categories');
+      client.release();
+      return result.rows.map(this.mapCategoryRowToCategory);
+    } catch (error: unknown) {
+      console.error('Error finding categories:', error);
+      throw new Error(IngredientMessages.DB_RETRIEVE_CATEGORIES_ERROR);
+    }
+  }
+
+  /**
+   * Retrieves a category by its ID.
+   * @param {number} category_id - The ID of the category to retrieve.
+   * @returns {Promise<CategoryDTO | null>} A promise that resolves to the Category object if found, or null if not found.
+   */
+  async getCategoryById(category_id: number): Promise<CategoryDTO | null> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<CategoryRow>(
+        'SELECT * FROM categories WHERE id = $1',
+        [category_id],
+      );
+      client.release();
+      const results = result.rows.map(this.mapCategoryRowToCategory);
+      const firstResult = results[0];
+      return firstResult || null;
+    } catch (error: unknown) {
+      console.error('Error finding category by ID:', error);
+      throw new Error(IngredientMessages.DB_RETRIEVE_CATEGORY_ERROR);
+    }
+  }
+
+  /**
+   * Retrieves all ingredients by category from the database.
+   * @param {string} categoryId - The ID of the category to retrieve ingredients from.
+   * @returns {Promise<IngredientDTO[]>} A promise that resolves to an array of Ingredient objects.
+   */
+  async getIngredientsByCategory(categoryId: number): Promise<IngredientDTO[]> {
+    const pool = getPool();
+    const client = await pool.connect();
+    try {
+      const result = await client.queryObject<IngredientRow>(
+        'SELECT * FROM ingredients WHERE category_id = $1',
+        [categoryId],
+      );
+      client.release();
+      return result.rows.map(this.mapIngredientRowToIngredient);
+    } catch (error: unknown) {
+      console.error('Error finding ingredients by category:', error);
+      throw new Error(IngredientMessages.DB_RETRIEVE_ITEMS_ERROR);
+    }
+  }
+
+  private mapCategoryRowToCategory(row: CategoryRow): CategoryDTO {
+    return {
+      id: row.id,
+      name: row.name,
+    };
   }
 
   private mapIngredientRowToIngredient(row: IngredientRow): IngredientDTO {
