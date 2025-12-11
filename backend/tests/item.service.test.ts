@@ -2,7 +2,7 @@ import { assert, assertEquals } from '@std/assert';
 import { Pool } from 'postgres';
 import { setPool } from '../src/db/client.ts';
 import { CreateItemDTO, UpdateItemDTO } from '../src/models/data-models/item.model.ts';
-import { ItemRow } from '../src/models/schema-models/inventory-schema.model.ts';
+import { ItemRow } from '../src/models/schema-models/item.model.ts';
 import { itemService } from '../src/services/item.service.ts';
 
 // Mock Types
@@ -12,6 +12,22 @@ class MockClient {
   constructor(private queryCallback: QueryCallback) {}
 
   async queryObject<T>(query: string, args: unknown[] = []): Promise<{ rows: T[] }> {
+    // Validate parameter count
+    const matches = query.match(/\$(\d+)/g);
+    if (matches) {
+      const indices = matches.map((m) => parseInt(m.substring(1)));
+      const maxIndex = Math.max(...indices);
+      assert(
+        args.length === maxIndex,
+        `Parameter mismatch: Query requires ${maxIndex} parameters, but received ${args.length}`,
+      );
+    } else {
+      assert(
+        args.length === 0,
+        `Parameter mismatch: Query requires 0 parameters, but received ${args.length}`,
+      );
+    }
+
     return (await this.queryCallback(query, args)) as { rows: T[] };
   }
 
@@ -94,8 +110,8 @@ Deno.test('ItemService - createItem - success', async () => {
     const returnedRow = {
       ...mockItemRow,
       ...newItem,
-      expiration_date: new Date(newItem.expirationDate),
-      purchase_date: new Date(newItem.purchaseDate),
+      expiration_date: new Date(newItem.expirationDate as string),
+      purchase_date: new Date(newItem.purchaseDate as string),
       // openedDate is undefined/null
     };
     return Promise.resolve({ rows: [returnedRow] });
@@ -124,8 +140,8 @@ Deno.test('ItemService - updateItem - success', async () => {
     const returnedRow = {
       ...mockItemRow,
       ...updateData,
-      expiration_date: new Date(updateData.expirationDate),
-      purchase_date: new Date(updateData.purchaseDate),
+      expiration_date: new Date(updateData.expirationDate as string),
+      purchase_date: new Date(updateData.purchaseDate as string),
     };
     return Promise.resolve({ rows: [returnedRow] });
   });

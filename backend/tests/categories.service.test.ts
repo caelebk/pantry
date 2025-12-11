@@ -1,7 +1,7 @@
 import { assert, assertEquals } from '@std/assert';
 import { Pool } from 'postgres';
 import { setPool } from '../src/db/client.ts';
-import { CategoryRow } from '../src/models/schema-models/inventory-schema.model.ts';
+import { CategoryRow } from '../src/models/schema-models/category.model.ts';
 import { categoryService } from '../src/services/category.service.ts';
 
 // Mock Types

@@ -1,10 +1,13 @@
-import { IngredientDTO } from '../models/data-models/ingredient.model.ts';
+import {
+  CreateIngredientDTO,
+  UpdateIngredientDTO,
+} from '../models/data-models/ingredient.model.ts';
 import { isNonEmptyString, isPositiveNumber } from '../utils/validators.ts';
 
 /**
  * Validate Create Ingredient (using IngredientDTO for now)
  */
-export function isValidCreateIngredientDTO(data: Partial<IngredientDTO>): boolean {
+export function isValidCreateIngredientDTO(data: Partial<CreateIngredientDTO>): boolean {
   if (!data) return false;
   if (!isNonEmptyString(data.name || '')) return false;
 
@@ -17,7 +20,7 @@ export function isValidCreateIngredientDTO(data: Partial<IngredientDTO>): boolea
 /**
  * Validate Update Ingredient
  */
-export function isValidUpdateIngredientDTO(data: Partial<IngredientDTO>): boolean {
+export function isValidUpdateIngredientDTO(data: Partial<UpdateIngredientDTO>): boolean {
   if (!data) return false;
   // For update, name must be string if provided, but usually PUT replaces the resource or we just validate what's there.
   // Assuming strict requirements similar to Create for now, or just validating properties if they exist.

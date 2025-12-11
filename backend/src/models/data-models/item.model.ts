@@ -1,6 +1,10 @@
-// Item (Specific instance in pantry)
+/**
+ * Item Data Models
+ */
+
+// Full response object
 export interface ItemDTO {
-  id: string;
+  id: string; // UUID
   ingredientId?: string;
   label: string;
   quantity: number;
@@ -14,27 +18,21 @@ export interface ItemDTO {
   updatedAt: Date;
 }
 
-// DTOs
+// Creation DTO - omit system fields
 export interface CreateItemDTO {
-  ingredientId?: string; // User selects an ingredient
+  // Required
   label: string;
   quantity: number;
   unitId: number;
   locationId: number;
-  expirationDate: string;
-  openedDate?: string;
-  purchaseDate: string;
+  expirationDate: string | Date; // Allow string from JSON
+  purchaseDate: string | Date; // Allow string from JSON
+
+  // Optional
+  ingredientId?: string;
+  openedDate?: string | Date; // Allow string from JSON
   notes?: string;
 }
 
-export interface UpdateItemDTO {
-  ingredientId?: string;
-  label: string;
-  quantity: number;
-  unitId: number;
-  locationId: number;
-  expirationDate: string;
-  openedDate?: string;
-  purchaseDate: string;
-  notes?: string;
-}
+// Update DTO - all create fields are optional
+export interface UpdateItemDTO extends Partial<CreateItemDTO> {}

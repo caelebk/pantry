@@ -1,6 +1,9 @@
 import { Context, Hono } from 'hono';
 import { IngredientMessages } from '../messages/ingredient.messages.ts';
-import { IngredientDTO } from '../models/data-models/ingredient.model.ts';
+import {
+  CreateIngredientDTO,
+  UpdateIngredientDTO,
+} from '../models/data-models/ingredient.model.ts';
 import { ingredientService } from '../services/ingredients.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isValidUUID } from '../utils/validators.ts';
@@ -82,7 +85,7 @@ ingredients.get('/:id', async (c: Context) => {
  */
 ingredients.post('/', async (c: Context) => {
   try {
-    const body = await c.req.json<IngredientDTO>();
+    const body = await c.req.json<CreateIngredientDTO>();
     if (!isValidCreateIngredientDTO(body)) {
       return c.json(errorResponse(IngredientMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
     }
@@ -120,7 +123,7 @@ ingredients.put('/:id', async (c: Context) => {
     if (!isValidUUID(id)) {
       return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
-    const body = await c.req.json<IngredientDTO>();
+    const body = await c.req.json<UpdateIngredientDTO>();
     if (!isValidUpdateIngredientDTO(body)) {
       return c.json(errorResponse(IngredientMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
     }

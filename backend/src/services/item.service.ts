@@ -5,7 +5,8 @@
 import { getPool } from '../db/client.ts';
 import { ItemMessages } from '../messages/item.messages.ts';
 import { CreateItemDTO, ItemDTO, UpdateItemDTO } from '../models/data-models/item.model.ts';
-import { ItemRow } from '../models/schema-models/inventory-schema.model.ts';
+import { ItemRow } from '../models/schema-models/item.model.ts';
+import { toDate } from '../utils/dates.ts';
 import { isValidUUID } from '../utils/validators.ts';
 
 export class ItemService {
@@ -74,9 +75,9 @@ export class ItemService {
           data.quantity,
           data.unitId,
           data.locationId,
-          data.expirationDate,
-          data.openedDate,
-          data.purchaseDate,
+          toDate(data.expirationDate),
+          data.openedDate ? toDate(data.openedDate) : null,
+          toDate(data.purchaseDate),
           data.notes,
         ],
       );
@@ -105,15 +106,15 @@ export class ItemService {
     const client = await pool.connect();
     try {
       const result = await client.queryObject<ItemRow>(
-        'UPDATE items SET label = $1, quantity = $2, unit_id = $3, location_id = $4, expiration_date = $5, opened_date = $6, purchase_date = $7, notes = $8 WHERE id = $9 RETURNING *',
+        'UPDATE items SET label = COALESCE($1, label), quantity = COALESCE($2, quantity), unit_id = COALESCE($3, unit_id), location_id = COALESCE($4, location_id), expiration_date = COALESCE($5, expiration_date), opened_date = COALESCE($6, opened_date), purchase_date = COALESCE($7, purchase_date), notes = COALESCE($8, notes) WHERE id = $9 RETURNING *',
         [
           data.label,
           data.quantity,
           data.unitId,
           data.locationId,
-          data.expirationDate,
-          data.openedDate,
-          data.purchaseDate,
+          data.expirationDate !== undefined ? toDate(data.expirationDate) : null,
+          data.openedDate !== undefined ? toDate(data.openedDate) : null,
+          data.purchaseDate !== undefined ? toDate(data.purchaseDate) : null,
           data.notes,
           id,
         ],

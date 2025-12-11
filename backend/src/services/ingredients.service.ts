@@ -1,7 +1,11 @@
 import { getPool } from '../db/client.ts';
 import { IngredientMessages } from '../messages/ingredient.messages.ts';
-import { IngredientDTO } from '../models/data-models/ingredient.model.ts';
-import { IngredientRow } from '../models/schema-models/inventory-schema.model.ts';
+import {
+  CreateIngredientDTO,
+  IngredientDTO,
+  UpdateIngredientDTO,
+} from '../models/data-models/ingredient.model.ts';
+import { IngredientRow } from '../models/schema-models/ingredient.model.ts';
 
 export class IngredientsService {
   /**
@@ -47,10 +51,10 @@ export class IngredientsService {
 
   /**
    * Creates a new ingredient in the database.
-   * @param {IngredientDTO} ingredient - The ingredient to create.
+   * @param {CreateIngredientDTO} ingredient - The ingredient to create.
    * @returns {Promise<IngredientDTO>} A promise that resolves to the created Ingredient object.
    */
-  async createIngredient(ingredient: IngredientDTO): Promise<IngredientDTO> {
+  async createIngredient(ingredient: CreateIngredientDTO): Promise<IngredientDTO> {
     const pool = getPool();
     const client = await pool.connect();
     try {
@@ -71,15 +75,18 @@ export class IngredientsService {
   /**
    * Updates an existing ingredient in the database.
    * @param {string} id - The ID of the ingredient to update.
-   * @param {IngredientDTO} ingredient - The ingredient to update.
+   * @param {UpdateIngredientDTO} ingredient - The ingredient to update.
    * @returns {Promise<IngredientDTO | null>} A promise that resolves to the updated Ingredient object if found, or null if not found.
    */
-  async updateIngredient(id: string, ingredient: IngredientDTO): Promise<IngredientDTO | null> {
+  async updateIngredient(
+    id: string,
+    ingredient: UpdateIngredientDTO,
+  ): Promise<IngredientDTO | null> {
     const pool = getPool();
     const client = await pool.connect();
     try {
       const result = await client.queryObject<IngredientRow>(
-        'UPDATE ingredients SET name = $2, category_id = $3, default_unit_id = $4 WHERE id = $1 RETURNING *',
+        'UPDATE ingredients SET name = COALESCE($2, name), category_id = COALESCE($3, category_id), default_unit_id = COALESCE($4, default_unit_id) WHERE id = $1 RETURNING *',
         [id, ingredient.name, ingredient.categoryId, ingredient.defaultUnitId],
       );
       client.release();

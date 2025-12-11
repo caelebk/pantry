@@ -1,6 +1,7 @@
 /**
  * Validation utility functions
  */
+import { toDate } from './dates.ts';
 
 /**
  * Validate email format
@@ -19,10 +20,10 @@ export function isValidUUID(uuid: string): boolean {
 }
 
 /**
- * Validate date string
+ * Validate date string or Date object
  */
-export function isValidDate(dateString: string): boolean {
-  const date = new Date(dateString);
+export function isValidDate(dateValue: string | Date): boolean {
+  const date = toDate(dateValue);
   return !isNaN(date.getTime());
 }
 

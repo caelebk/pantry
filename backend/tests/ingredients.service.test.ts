@@ -2,7 +2,7 @@ import { assert, assertEquals } from '@std/assert';
 import { Pool } from 'postgres';
 import { setPool } from '../src/db/client.ts';
 import { IngredientDTO } from '../src/models/data-models/ingredient.model.ts';
-import { IngredientRow } from '../src/models/schema-models/inventory-schema.model.ts';
+import { IngredientRow } from '../src/models/schema-models/ingredient.model.ts';
 import { ingredientService } from '../src/services/ingredients.service.ts';
 
 // Mock Types
