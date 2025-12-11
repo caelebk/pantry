@@ -2,14 +2,14 @@
  * Global error handling middleware
  */
 
-import { Context } from "hono";
-import { ContentfulStatusCode } from "hono/utils/http-status";
+import { Context } from 'hono';
+import { ContentfulStatusCode } from 'hono/utils/http-status';
 
 export class AppError extends Error {
   constructor(
     public statusCode: number,
     message: string,
-    public isOperational = true
+    public isOperational = true,
   ) {
     super(message);
     Object.setPrototypeOf(this, AppError.prototype);
@@ -17,24 +17,24 @@ export class AppError extends Error {
 }
 
 export function errorHandler(err: Error, c: Context) {
-  console.error("Error:", err);
+  console.error('Error:', err);
 
   if (err instanceof AppError) {
     return c.json(
       {
-        status: "error",
+        status: 'error',
         message: err.message,
       },
-      err.statusCode as ContentfulStatusCode
+      err.statusCode as ContentfulStatusCode,
     );
   }
 
   // Unknown error
   return c.json(
     {
-      status: "error",
-      message: "Internal server error",
+      status: 'error',
+      message: 'Internal server error',
     },
-    500
+    500,
   );
 }

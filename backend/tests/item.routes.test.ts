@@ -1,45 +1,44 @@
-
-import { assertEquals } from "@std/assert";
-import { Hono } from "hono";
-import items from "../src/routes/items.routes.ts";
-import { itemService } from "../src/services/item.service.ts"; 
-import { CreateItemDTO, ItemDTO } from "../src/models/data-models/item.model.ts";
-import { HttpStatusCode } from "../src/utils/response.ts";
+import { assertEquals } from '@std/assert';
+import { Hono } from 'hono';
+import { CreateItemDTO, ItemDTO } from '../src/models/data-models/item.model.ts';
+import items from '../src/routes/items.routes.ts';
+import { itemService } from '../src/services/item.service.ts';
+import { HttpStatusCode } from '../src/utils/response.ts';
 
 // Helper to create a request
-function createRequest(path: string, method: string, body?: any) {
+function createRequest(path: string, method: string, body?: unknown) {
   return new Request(`http://localhost${path}`, {
     method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   });
 }
 
 // Mock data
 const mockItem: ItemDTO = {
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  label: "Test Item",
+  id: '123e4567-e89b-12d3-a456-426614174000',
+  label: 'Test Item',
   quantity: 5,
   unitId: 1,
   locationId: 1,
   expirationDate: new Date(),
   openedDate: undefined,
   purchaseDate: new Date(),
-  notes: "Test notes",
+  notes: 'Test notes',
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 };
 
-Deno.test("Items API - GET /api/items - success", async () => {
+Deno.test('Items API - GET /api/items - success', async () => {
   // Mock service
   const originalGetAllItems = itemService.getAllItems;
-  itemService.getAllItems = async () => [mockItem];
+  itemService.getAllItems = () => Promise.resolve([mockItem]);
 
   try {
     const app = new Hono();
-    app.route("/api/items", items);
+    app.route('/api/items', items);
 
-    const res = await app.request(createRequest("/api/items", "GET"));
+    const res = await app.request(createRequest('/api/items', 'GET'));
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.length, 1);
@@ -49,15 +48,15 @@ Deno.test("Items API - GET /api/items - success", async () => {
   }
 });
 
-Deno.test("Items API - GET /api/items/:id - success", async () => {
+Deno.test('Items API - GET /api/items/:id - success', async () => {
   const originalGetItemById = itemService.getItemById;
-  itemService.getItemById = async (id) => id === mockItem.id ? mockItem : null;
+  itemService.getItemById = (id) => Promise.resolve(id === mockItem.id ? mockItem : null);
 
   try {
     const app = new Hono();
-    app.route("/api/items", items);
+    app.route('/api/items', items);
 
-    const res = await app.request(createRequest(`/api/items/${mockItem.id}`, "GET"));
+    const res = await app.request(createRequest(`/api/items/${mockItem.id}`, 'GET'));
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.id, mockItem.id);
@@ -66,42 +65,42 @@ Deno.test("Items API - GET /api/items/:id - success", async () => {
   }
 });
 
-Deno.test("Items API - GET /api/items/:id - not found", async () => {
-    const originalGetItemById = itemService.getItemById;
-    itemService.getItemById = async () => null;
-  
-    try {
-      const app = new Hono();
-      app.route("/api/items", items);
-      
-      const validUuid = "123e4567-e89b-12d3-a456-426614174999"; 
-      const res = await app.request(createRequest(`/api/items/${validUuid}`, "GET"));
-      assertEquals(res.status, HttpStatusCode.NOT_FOUND);
-    } finally {
-      itemService.getItemById = originalGetItemById;
-    }
-  });
-
-Deno.test("Items API - POST /api/items - success", async () => {
-  const originalCreateItem = itemService.createItem;
-  itemService.createItem = async (_data) => mockItem;
+Deno.test('Items API - GET /api/items/:id - not found', async () => {
+  const originalGetItemById = itemService.getItemById;
+  itemService.getItemById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
-    app.route("/api/items", items);
+    app.route('/api/items', items);
+
+    const validUuid = '123e4567-e89b-12d3-a456-426614174999';
+    const res = await app.request(createRequest(`/api/items/${validUuid}`, 'GET'));
+    assertEquals(res.status, HttpStatusCode.NOT_FOUND);
+  } finally {
+    itemService.getItemById = originalGetItemById;
+  }
+});
+
+Deno.test('Items API - POST /api/items - success', async () => {
+  const originalCreateItem = itemService.createItem;
+  itemService.createItem = (_data) => Promise.resolve(mockItem);
+
+  try {
+    const app = new Hono();
+    app.route('/api/items', items);
 
     const newItem: CreateItemDTO = {
-      label: "Test Item",
+      label: 'Test Item',
       quantity: 5,
       unitId: 1,
       locationId: 1,
       expirationDate: new Date().toISOString(),
       purchaseDate: new Date().toISOString(),
-      notes: "notes",
-      openedDate: undefined
+      notes: 'notes',
+      openedDate: undefined,
     };
 
-    const res = await app.request(createRequest("/api/items", "POST", newItem));
+    const res = await app.request(createRequest('/api/items', 'POST', newItem));
     assertEquals(res.status, HttpStatusCode.CREATED);
     const body = await res.json();
     assertEquals(body.data.id, mockItem.id);
@@ -110,18 +109,18 @@ Deno.test("Items API - POST /api/items - success", async () => {
   }
 });
 
-Deno.test("Items API - DELETE /api/items/:id - success", async () => {
+Deno.test('Items API - DELETE /api/items/:id - success', async () => {
   const originalGetItemById = itemService.getItemById;
   const originalDeleteItemById = itemService.deleteItemById;
-  
-  itemService.getItemById = async () => mockItem;
-  itemService.deleteItemById = async () => true;
+
+  itemService.getItemById = () => Promise.resolve(mockItem);
+  itemService.deleteItemById = () => Promise.resolve(true);
 
   try {
     const app = new Hono();
-    app.route("/api/items", items);
-    
-    const res = await app.request(createRequest(`/api/items/${mockItem.id}`, "DELETE"));
+    app.route('/api/items', items);
+
+    const res = await app.request(createRequest(`/api/items/${mockItem.id}`, 'DELETE'));
     assertEquals(res.status, HttpStatusCode.OK);
   } finally {
     itemService.getItemById = originalGetItemById;

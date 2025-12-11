@@ -2,7 +2,7 @@
  * Request logging middleware
  */
 
-import { Context, Next } from "hono";
+import { Context, Next } from 'hono';
 
 export async function logger(c: Context, next: Next) {
   const start = Date.now();

@@ -2,12 +2,12 @@
  * Item service - Business logic for item operations
  */
 
-import { getPool } from "../db/client.ts";
-import { ItemDTO, CreateItemDTO, UpdateItemDTO } from "../models/data-models/item.model.ts";
+import { getPool } from '../db/client.ts';
+import { CreateItemDTO, ItemDTO, UpdateItemDTO } from '../models/data-models/item.model.ts';
 import { ItemRow } from '../models/schema-models/inventory-schema.model.ts';
 import { mapItemRowToItem } from './item.mapper.ts';
-import { ItemMessages } from "../messages/item.messages.ts";
-import { isValidUUID } from "../utils/validators.ts";
+import { ItemMessages } from '../messages/item.messages.ts';
+import { isValidUUID } from '../utils/validators.ts';
 
 export class ItemService {
   private readonly secondsInDay: number = 24 * 60 * 60 * 1000;
@@ -22,11 +22,11 @@ export class ItemService {
     const client = await pool.connect();
     try {
       const result = await client.queryObject<ItemRow>(
-        "SELECT * FROM items ORDER BY created_at DESC"
+        'SELECT * FROM items ORDER BY created_at DESC',
       );
       return result.rows.map(mapItemRowToItem);
     } catch (error: unknown) {
-      console.error("Error fetching all items:", error);
+      console.error('Error fetching all items:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEMS_ERROR);
     } finally {
       client.release();
@@ -46,15 +46,15 @@ export class ItemService {
     const client = await pool.connect();
     try {
       const result = await client.queryObject<ItemRow>(
-        "SELECT * FROM items WHERE id = $1",
-        [id]
+        'SELECT * FROM items WHERE id = $1',
+        [id],
       );
 
       const results = result.rows.map(mapItemRowToItem);
       const firstResult = results[0];
       return firstResult || null;
     } catch (error: unknown) {
-      console.error("Error fetching item by ID:", error);
+      console.error('Error fetching item by ID:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEM_ERROR);
     } finally {
       client.release();
@@ -71,15 +71,24 @@ export class ItemService {
     const client = await pool.connect();
     try {
       const result = await client.queryObject<ItemRow>(
-        "INSERT INTO items (label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-        [data.label, data.quantity, data.unitId, data.locationId, data.expirationDate, data.openedDate, data.purchaseDate, data.notes]
+        'INSERT INTO items (label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+        [
+          data.label,
+          data.quantity,
+          data.unitId,
+          data.locationId,
+          data.expirationDate,
+          data.openedDate,
+          data.purchaseDate,
+          data.notes,
+        ],
       );
 
       const results = result.rows.map(mapItemRowToItem);
       const firstResult = results[0];
       return firstResult;
     } catch (error: unknown) {
-      console.error("Error creating item:", error);
+      console.error('Error creating item:', error);
       throw new Error(ItemMessages.DB_CREATE_ERROR);
     } finally {
       client.release();
@@ -100,15 +109,25 @@ export class ItemService {
     const client = await pool.connect();
     try {
       const result = await client.queryObject<ItemRow>(
-        "UPDATE items SET label = $1, quantity = $2, unit_id = $3, location_id = $4, expiration_date = $5, opened_date = $6, purchase_date = $7, notes = $8 WHERE id = $9 RETURNING *",
-        [data.label, data.quantity, data.unitId, data.locationId, data.expirationDate, data.openedDate, data.purchaseDate, data.notes, id]
+        'UPDATE items SET label = $1, quantity = $2, unit_id = $3, location_id = $4, expiration_date = $5, opened_date = $6, purchase_date = $7, notes = $8 WHERE id = $9 RETURNING *',
+        [
+          data.label,
+          data.quantity,
+          data.unitId,
+          data.locationId,
+          data.expirationDate,
+          data.openedDate,
+          data.purchaseDate,
+          data.notes,
+          id,
+        ],
       );
 
       const results = result.rows.map(mapItemRowToItem);
       const firstResult = results[0];
       return firstResult || null;
     } catch (error: unknown) {
-      console.error("Error updating item:", error);
+      console.error('Error updating item:', error);
       throw new Error(ItemMessages.DB_UPDATE_ERROR);
     } finally {
       client.release();
@@ -128,12 +147,12 @@ export class ItemService {
     const client = await pool.connect();
     try {
       await client.queryObject<ItemRow>(
-        "DELETE FROM items WHERE id = $1",
-        [id]
+        'DELETE FROM items WHERE id = $1',
+        [id],
       );
       return true;
     } catch (error: unknown) {
-      console.error("Error deleting item:", error);
+      console.error('Error deleting item:', error);
       throw new Error(ItemMessages.DB_DELETE_ERROR);
     } finally {
       client.release();
@@ -150,12 +169,12 @@ export class ItemService {
     const client = await pool.connect();
     try {
       const result = await client.queryObject<ItemRow>(
-        "SELECT * FROM items WHERE expiration_date <= $1 ORDER BY expiration_date ASC",
-        [new Date(Date.now() + days * this.secondsInDay)]
+        'SELECT * FROM items WHERE expiration_date <= $1 ORDER BY expiration_date ASC',
+        [new Date(Date.now() + days * this.secondsInDay)],
       );
       return result.rows.map(mapItemRowToItem);
     } catch (error: unknown) {
-      console.error("Error finding expiring soon items:", error);
+      console.error('Error finding expiring soon items:', error);
       throw new Error(ItemMessages.DB_FIND_EXPIRING_ERROR);
     } finally {
       client.release();

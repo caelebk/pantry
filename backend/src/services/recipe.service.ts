@@ -2,7 +2,11 @@
  * Recipe service - Business logic for recipe operations
  */
 
-import type { Recipe, CreateRecipeDTO, UpdateRecipeDTO } from "../models/data-models/recipe.model.ts";
+import type {
+  CreateRecipeDTO,
+  Recipe,
+  UpdateRecipeDTO,
+} from '../models/data-models/recipe.model.ts';
 
 export class RecipeService {
   /**
@@ -10,47 +14,47 @@ export class RecipeService {
    */
   async findAll(): Promise<Recipe[]> {
     // TODO: Implement database query
-    return [];
+    return await Promise.resolve([]);
   }
 
   /**
    * Get recipe by ID
    */
-  async findById(id: string): Promise<Recipe | null> {
+  async findById(_id: string): Promise<Recipe | null> {
     // TODO: Implement database query
-    return null;
+    return await Promise.resolve(null);
   }
 
   /**
    * Create new recipe
    */
-  async create(data: CreateRecipeDTO): Promise<Recipe> {
+  async create(_data: CreateRecipeDTO): Promise<Recipe> {
     // TODO: Implement database insert
-    throw new Error("Not implemented");
+    return await Promise.resolve({} as Recipe);
   }
 
   /**
    * Update recipe
    */
-  async update(id: string, data: UpdateRecipeDTO): Promise<Recipe | null> {
+  async update(_id: string, _data: UpdateRecipeDTO): Promise<Recipe | null> {
     // TODO: Implement database update
-    throw new Error("Not implemented");
+    return await Promise.resolve({} as Recipe);
   }
 
   /**
    * Delete recipe
    */
-  async delete(id: string): Promise<boolean> {
+  async delete(_id: string): Promise<boolean> {
     // TODO: Implement database delete
-    return false;
+    return await Promise.resolve(false);
   }
 
   /**
    * Find recipes that can be made with available items
    */
-  async findMakeable(availableItemIds: string[]): Promise<Recipe[]> {
+  async findMakeable(_availableItemIds: string[]): Promise<Recipe[]> {
     // TODO: Implement query for recipes with matching ingredients
-    return [];
+    return await Promise.resolve([]);
   }
 }
 

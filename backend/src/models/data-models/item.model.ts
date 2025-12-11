@@ -2,7 +2,7 @@
 export interface ItemDTO {
   id: string; // UUID
   ingredientId?: string;
-  label: string; 
+  label: string;
   quantity: number;
   unitId: number;
   locationId: number;
