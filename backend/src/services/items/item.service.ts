@@ -23,12 +23,11 @@ export class ItemService {
       const result = await client.queryObject<ItemRow>(
         'SELECT * FROM items ORDER BY created_at DESC',
       );
+      client.release();
       return result.rows.map(this.mapItemRowToItem);
     } catch (error: unknown) {
       console.error('Error fetching all items:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEMS_ERROR);
-    } finally {
-      client.release();
     }
   }
 
@@ -51,12 +50,11 @@ export class ItemService {
 
       const results = result.rows.map(this.mapItemRowToItem);
       const firstResult = results[0];
+      client.release();
       return firstResult || null;
     } catch (error: unknown) {
       console.error('Error fetching item by ID:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEM_ERROR);
-    } finally {
-      client.release();
     }
   }
 
@@ -85,12 +83,11 @@ export class ItemService {
 
       const results = result.rows.map(this.mapItemRowToItem);
       const firstResult = results[0];
+      client.release();
       return firstResult;
     } catch (error: unknown) {
       console.error('Error creating item:', error);
       throw new Error(ItemMessages.DB_CREATE_ERROR);
-    } finally {
-      client.release();
     }
   }
 
@@ -124,12 +121,11 @@ export class ItemService {
 
       const results = result.rows.map(this.mapItemRowToItem);
       const firstResult = results[0];
+      client.release();
       return firstResult || null;
     } catch (error: unknown) {
       console.error('Error updating item:', error);
       throw new Error(ItemMessages.DB_UPDATE_ERROR);
-    } finally {
-      client.release();
     }
   }
 
@@ -149,12 +145,11 @@ export class ItemService {
         'DELETE FROM items WHERE id = $1',
         [id],
       );
+      client.release();
       return true;
     } catch (error: unknown) {
       console.error('Error deleting item:', error);
       throw new Error(ItemMessages.DB_DELETE_ERROR);
-    } finally {
-      client.release();
     }
   }
 
@@ -171,12 +166,11 @@ export class ItemService {
         'SELECT * FROM items WHERE expiration_date <= $1 ORDER BY expiration_date ASC',
         [new Date(Date.now() + days * this.secondsInDay)],
       );
+      client.release();
       return result.rows.map(this.mapItemRowToItem);
     } catch (error: unknown) {
       console.error('Error finding expiring soon items:', error);
       throw new Error(ItemMessages.DB_FIND_EXPIRING_ERROR);
-    } finally {
-      client.release();
     }
   }
 

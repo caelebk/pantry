@@ -1,6 +1,6 @@
 // Item (Specific instance in pantry)
 export interface ItemDTO {
-  id: string; // UUID
+  id: string;
   ingredientId?: string;
   label: string;
   quantity: number;
