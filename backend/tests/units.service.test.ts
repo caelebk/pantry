@@ -58,6 +58,70 @@ Deno.test('UnitService - getAllUnits - success', async () => {
   assertEquals(units[0].id, mockGram.id);
 });
 
+Deno.test('UnitService - getAllUnits - db error', async () => {
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('DB Connection Failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  // Suppress console.error
+  const originalConsoleError = console.error;
+  console.error = () => {};
+
+  try {
+    await assertRejects(
+      async () => await unitService.getAllUnits(),
+      Error,
+      'Failed to retrieve units',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
+});
+
+Deno.test('UnitService - getUnitById - success', async () => {
+  const mockPool = new MockPool((query, args) => {
+    assert(query.includes('WHERE id = $1'));
+    assert(args?.[0] === mockGram.id);
+    return Promise.resolve({ rows: [mockGram] });
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const unit = await unitService.getUnitById(mockGram.id);
+  assertEquals(unit?.id, mockGram.id);
+});
+
+Deno.test('UnitService - getUnitById - not found', async () => {
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.resolve({ rows: [] });
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const unit = await unitService.getUnitById(999);
+  assertEquals(unit, null);
+});
+
+Deno.test('UnitService - getUnitById - db error', async () => {
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('DB Error'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  // Suppress console.error
+  const originalConsoleError = console.error;
+  console.error = () => {};
+
+  try {
+    await assertRejects(
+      async () => await unitService.getUnitById(1),
+      Error,
+      'Failed to retrieve unit',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
+});
+
 Deno.test('UnitService - convert - success (Base to Derived)', async () => {
   // 1000g -> 1kg
   const mockPool = new MockPool((query, args) => {
@@ -101,5 +165,21 @@ Deno.test('UnitService - convert - fail (Type Mismatch)', async () => {
     async () => await unitService.convert(1, mockKg.id, mockLiter.id),
     Error,
     'Cannot convert',
+  );
+});
+
+Deno.test('UnitService - convert - fail (Unit Not Found)', async () => {
+  const mockPool = new MockPool((_query, args) => {
+    // Return mockGram if asked for, but return nothing for other ID
+    const id = args?.[0] as number;
+    if (id === mockGram.id) return Promise.resolve({ rows: [mockGram] });
+    return Promise.resolve({ rows: [] });
+  });
+  setPool(mockPool as unknown as Pool);
+
+  await assertRejects(
+    async () => await unitService.convert(10, mockGram.id, 999),
+    Error,
+    'Resource not found', // Assuming UnitMessages.NOT_FOUND maps to this or similar
   );
 });

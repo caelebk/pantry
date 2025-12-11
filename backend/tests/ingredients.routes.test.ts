@@ -42,6 +42,20 @@ Deno.test('Ingredients API - GET /api/ingredients - success', async () => {
   }
 });
 
+Deno.test('Ingredients API - GET /api/ingredients - service error', async () => {
+  const originalGetAll = ingredientService.getAllIngredients;
+  ingredientService.getAllIngredients = () => Promise.reject(new Error('Fail'));
+
+  try {
+    const app = new Hono();
+    app.route('/api/ingredients', ingredients);
+    const res = await app.request(createRequest('/api/ingredients', 'GET'));
+    assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
+  } finally {
+    ingredientService.getAllIngredients = originalGetAll;
+  }
+});
+
 Deno.test('Ingredients API - GET /api/ingredients/:id - success', async () => {
   const originalGetById = ingredientService.getIngredientById;
   ingredientService.getIngredientById = (id) =>
@@ -78,6 +92,13 @@ Deno.test('Ingredients API - GET /api/ingredients/:id - not found', async () => 
   }
 });
 
+Deno.test('Ingredients API - GET /api/ingredients/:id - invalid id', async () => {
+  const app = new Hono();
+  app.route('/api/ingredients', ingredients);
+  const res = await app.request(createRequest('/api/ingredients/abc', 'GET'));
+  assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
+});
+
 Deno.test('Ingredients API - POST /api/ingredients - success', async () => {
   const originalCreate = ingredientService.createIngredient;
   ingredientService.createIngredient = (_data) => Promise.resolve(mockIngredient);
@@ -103,6 +124,27 @@ Deno.test('Ingredients API - POST /api/ingredients - success', async () => {
   }
 });
 
+Deno.test('Ingredients API - POST /api/ingredients - invalid body', async () => {
+  const app = new Hono();
+  app.route('/api/ingredients', ingredients);
+  const res = await app.request(createRequest('/api/ingredients', 'POST', { catId: 1 }));
+  assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
+});
+
+Deno.test('Ingredients API - POST /api/ingredients - service error', async () => {
+  const originalCreate = ingredientService.createIngredient;
+  ingredientService.createIngredient = () => Promise.reject(new Error('Fail'));
+  try {
+    const app = new Hono();
+    app.route('/api/ingredients', ingredients);
+    const validBody = { name: 'Test', categoryId: 1, defaultUnitId: 1 };
+    const res = await app.request(createRequest('/api/ingredients', 'POST', validBody));
+    assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
+  } finally {
+    ingredientService.createIngredient = originalCreate;
+  }
+});
+
 Deno.test('Ingredients API - DELETE /api/ingredients/:id - success', async () => {
   const originalGetById = ingredientService.getIngredientById;
   const originalDelete = ingredientService.deleteIngredient;
@@ -121,5 +163,62 @@ Deno.test('Ingredients API - DELETE /api/ingredients/:id - success', async () =>
   } finally {
     ingredientService.getIngredientById = originalGetById;
     ingredientService.deleteIngredient = originalDelete;
+  }
+});
+
+Deno.test('Ingredients API - DELETE /api/ingredients/:id - invalid id', async () => {
+  const app = new Hono();
+  app.route('/api/ingredients', ingredients);
+  const res = await app.request(createRequest('/api/ingredients/abc', 'DELETE'));
+  assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
+});
+
+Deno.test('Ingredients API - DELETE /api/ingredients/:id - not found', async () => {
+  const originalGetById = ingredientService.getIngredientById;
+  ingredientService.getIngredientById = () => Promise.resolve(null);
+  try {
+    const app = new Hono();
+    app.route('/api/ingredients', ingredients);
+    const validUuid = '123e4567-e89b-12d3-a456-426614174999';
+    const res = await app.request(createRequest(`/api/ingredients/${validUuid}`, 'DELETE'));
+    assertEquals(res.status, HttpStatusCode.NOT_FOUND);
+  } finally {
+    ingredientService.getIngredientById = originalGetById;
+  }
+});
+
+Deno.test('Ingredients API - PUT /api/ingredients/:id - success', async () => {
+  const originalGetById = ingredientService.getIngredientById;
+  const originalUpdate = ingredientService.updateIngredient;
+
+  ingredientService.getIngredientById = () => Promise.resolve(mockIngredient);
+  ingredientService.updateIngredient = (_id, _data) =>
+    Promise.resolve({ ...mockIngredient, name: 'Updated' });
+
+  try {
+    const app = new Hono();
+    app.route('/api/ingredients', ingredients);
+    const res = await app.request(
+      createRequest(`/api/ingredients/${mockIngredient.id}`, 'PUT', { name: 'Updated' }),
+    );
+    assertEquals(res.status, HttpStatusCode.OK);
+  } finally {
+    ingredientService.getIngredientById = originalGetById;
+    ingredientService.updateIngredient = originalUpdate;
+  }
+});
+
+Deno.test('Ingredients API - PUT /api/ingredients/:id - not found', async () => {
+  const originalUpdate = ingredientService.updateIngredient;
+  ingredientService.updateIngredient = () => Promise.resolve(null);
+  try {
+    const app = new Hono();
+    app.route('/api/ingredients', ingredients);
+    const res = await app.request(
+      createRequest(`/api/ingredients/${mockIngredient.id}`, 'PUT', { name: 'Updated' }),
+    );
+    assertEquals(res.status, HttpStatusCode.NOT_FOUND);
+  } finally {
+    ingredientService.updateIngredient = originalUpdate;
   }
 });

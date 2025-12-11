@@ -121,7 +121,7 @@ items.post('/', async (c: Context) => {
 
     return c.json(successResponse(item), HttpStatusCode.CREATED);
   } catch (_error: unknown) {
-    return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+    return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 });
 
@@ -162,7 +162,7 @@ items.put('/:id', async (c: Context) => {
 
     return c.json(successResponse(item), HttpStatusCode.OK);
   } catch (_error: unknown) {
-    return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+    return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 });
 

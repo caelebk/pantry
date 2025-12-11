@@ -1,4 +1,4 @@
-import { assert, assertEquals } from '@std/assert';
+import { assert, assertEquals, assertRejects } from '@std/assert';
 import { Pool } from 'postgres';
 import { setPool } from '../src/db/client.ts';
 import { CategoryRow } from '../src/models/schema-models/category.model.ts';
@@ -42,6 +42,25 @@ Deno.test('CategoryService - getAllCategories - success', async () => {
   assertEquals(categories[0].id, mockCategoryRow.id);
 });
 
+Deno.test('CategoryService - getAllCategories - db error', async () => {
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Connection failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await categoryService.getAllCategories(),
+      Error,
+      'Failed to retrieve categories',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
+});
+
 Deno.test('CategoryService - getCategoryById - success', async () => {
   const mockPool = new MockPool((query, args) => {
     assert(query.includes('WHERE id = $1'));
@@ -63,4 +82,23 @@ Deno.test('CategoryService - getCategoryById - not found', async () => {
 
   const category = await categoryService.getCategoryById(999);
   assertEquals(category, null);
+});
+
+Deno.test('CategoryService - getCategoryById - db error', async () => {
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Fail'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await categoryService.getCategoryById(1),
+      Error,
+      'Failed to retrieve category',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
 });

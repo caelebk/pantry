@@ -1,4 +1,4 @@
-import { assert, assertEquals } from '@std/assert';
+import { assert, assertEquals, assertRejects } from '@std/assert';
 import { Pool } from 'postgres';
 import { setPool } from '../src/db/client.ts';
 import { IngredientDTO } from '../src/models/data-models/ingredient.model.ts';
@@ -46,6 +46,25 @@ Deno.test('IngredientsService - getAllIngredients - success', async () => {
   const ingredients = await ingredientService.getAllIngredients();
   assertEquals(ingredients.length, 1);
   assertEquals(ingredients[0].id, mockIngredientRow.id);
+});
+
+Deno.test('IngredientsService - getAllIngredients - db error', async () => {
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Connection failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await ingredientService.getAllIngredients(),
+      Error,
+      'Failed to retrieve ingredients',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
 });
 
 Deno.test('IngredientsService - getIngredientById - success', async () => {
@@ -96,6 +115,31 @@ Deno.test('IngredientsService - createIngredient - success', async () => {
   assertEquals(ingredient.name, newIngredient.name);
 });
 
+Deno.test('IngredientsService - createIngredient - db error', async () => {
+  const newIngredient: IngredientDTO = {
+    id: '123e4567-e89b-12d3-a456-426614174111',
+    name: 'New Ingredient',
+    categoryId: 1,
+    defaultUnitId: 1,
+  };
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Fail'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await ingredientService.createIngredient(newIngredient),
+      Error,
+      'Failed to create ingredient',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
+});
+
 Deno.test('IngredientsService - updateIngredient - success', async () => {
   const updateData: IngredientDTO = {
     id: mockIngredientRow.id,
@@ -120,6 +164,45 @@ Deno.test('IngredientsService - updateIngredient - success', async () => {
   const ingredient = await ingredientService.updateIngredient(mockIngredientRow.id, updateData);
   assert(ingredient !== null);
   assertEquals(ingredient?.name, updateData.name);
+});
+
+Deno.test('IngredientsService - updateIngredient - not found', async () => {
+  const updateData: IngredientDTO = { id: '999', name: 'Ghost', categoryId: 1, defaultUnitId: 1 };
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.resolve({ rows: [] });
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const ingredient = await ingredientService.updateIngredient(
+    '123e4567-e89b-12d3-a456-426614174999',
+    updateData,
+  );
+  assertEquals(ingredient, null);
+});
+
+Deno.test('IngredientsService - updateIngredient - db error', async () => {
+  const updateData: IngredientDTO = {
+    id: mockIngredientRow.id,
+    name: 'Error',
+    categoryId: 1,
+    defaultUnitId: 1,
+  };
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Fail'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await ingredientService.updateIngredient(mockIngredientRow.id, updateData),
+      Error,
+      'Failed to update ingredient',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
 });
 
 Deno.test('IngredientsService - deleteIngredient - success', async () => {

@@ -1,4 +1,4 @@
-import { assert, assertEquals } from '@std/assert';
+import { assert, assertEquals, assertRejects } from '@std/assert';
 import { Pool } from 'postgres';
 import { setPool } from '../src/db/client.ts';
 import { CreateItemDTO, UpdateItemDTO } from '../src/models/data-models/item.model.ts';
@@ -70,6 +70,25 @@ Deno.test('ItemService - getAllItems - success', async () => {
   assertEquals(items[0].id, mockItemRow.id);
 });
 
+Deno.test('ItemService - getAllItems - db error', async () => {
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Connection failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await itemService.getAllItems(),
+      Error,
+      'Failed to retrieve items',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
+});
+
 Deno.test('ItemService - getItemById - success', async () => {
   const mockPool = new MockPool((query, args) => {
     assert(query.includes('WHERE id = $1'));
@@ -122,6 +141,35 @@ Deno.test('ItemService - createItem - success', async () => {
   assertEquals(item.label, newItem.label);
 });
 
+Deno.test('ItemService - createItem - db error', async () => {
+  const newItem: CreateItemDTO = {
+    label: 'Error Item',
+    quantity: 1,
+    unitId: 1,
+    locationId: 1,
+    expirationDate: mockDate.toISOString(),
+    purchaseDate: mockDate.toISOString(),
+    notes: 'notes',
+  };
+
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Insert failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await itemService.createItem(newItem),
+      Error,
+      'Failed to create item',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
+});
+
 Deno.test('ItemService - updateItem - success', async () => {
   const updateData: UpdateItemDTO = {
     label: 'Updated Item',
@@ -152,6 +200,37 @@ Deno.test('ItemService - updateItem - success', async () => {
   assertEquals(item?.label, updateData.label);
 });
 
+Deno.test('ItemService - updateItem - not found', async () => {
+  const updateData: UpdateItemDTO = { label: 'Ghost Item' };
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.resolve({ rows: [] });
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const item = await itemService.updateItem('123e4567-e89b-12d3-a456-426614174999', updateData);
+  assertEquals(item, null);
+});
+
+Deno.test('ItemService - updateItem - db error', async () => {
+  const updateData: UpdateItemDTO = { label: 'Error Item' };
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Update failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await itemService.updateItem(mockItemRow.id, updateData),
+      Error,
+      'Failed to update item',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
+});
+
 Deno.test('ItemService - deleteItemById - success', async () => {
   const mockPool = new MockPool((query, args) => {
     assert(query.includes('DELETE FROM items'));
@@ -162,4 +241,23 @@ Deno.test('ItemService - deleteItemById - success', async () => {
 
   const result = await itemService.deleteItemById(mockItemRow.id);
   assertEquals(result, true);
+});
+
+Deno.test('ItemService - deleteItemById - db error', async () => {
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Delete failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await itemService.deleteItemById(mockItemRow.id),
+      Error,
+      'Failed to delete item',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
 });

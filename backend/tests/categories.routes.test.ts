@@ -45,6 +45,20 @@ Deno.test('Categories API - GET /api/categories - success', async () => {
   }
 });
 
+Deno.test('Categories API - GET /api/categories - service error', async () => {
+  const originalGetAll = categoryService.getAllCategories;
+  categoryService.getAllCategories = () => Promise.reject(new Error('Fail'));
+
+  try {
+    const app = new Hono();
+    app.route('/api/categories', categories);
+    const res = await app.request(createRequest('/api/categories', 'GET'));
+    assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
+  } finally {
+    categoryService.getAllCategories = originalGetAll;
+  }
+});
+
 Deno.test('Categories API - GET /api/categories/:id - success', async () => {
   const originalGetById = categoryService.getCategoryById;
   categoryService.getCategoryById = (id) =>
@@ -78,6 +92,13 @@ Deno.test('Categories API - GET /api/categories/:id - not found', async () => {
   } finally {
     categoryService.getCategoryById = originalGetById;
   }
+});
+
+Deno.test('Categories API - GET /api/categories/:id - invalid id', async () => {
+  const app = new Hono();
+  app.route('/api/categories', categories);
+  const res = await app.request(createRequest('/api/categories/abc', 'GET'));
+  assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
 });
 
 Deno.test('Categories API - GET /api/categories/:id/ingredients - success', async () => {
@@ -118,5 +139,33 @@ Deno.test('Categories API - GET /api/categories/:id/ingredients - category not f
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
     categoryService.getCategoryById = originalGetCategoryById;
+  }
+});
+
+Deno.test('Categories API - GET /api/categories/:id/ingredients - invalid id', async () => {
+  const app = new Hono();
+  app.route('/api/categories', categories);
+  const res = await app.request(createRequest('/api/categories/abc/ingredients', 'GET'));
+  assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
+});
+
+Deno.test('Categories API - GET /api/categories/:id/ingredients - service error', async () => {
+  const originalGetCategoryById = categoryService.getCategoryById;
+  categoryService.getCategoryById = () => Promise.resolve(mockCategory);
+
+  // Mock ingredient service fail
+  const originalGetIngredients = ingredientService.getIngredientsByCategory;
+  ingredientService.getIngredientsByCategory = () => Promise.reject(new Error('Fail'));
+
+  try {
+    const app = new Hono();
+    app.route('/api/categories', categories);
+    const res = await app.request(
+      createRequest(`/api/categories/${mockCategory.id}/ingredients`, 'GET'),
+    );
+    assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
+  } finally {
+    categoryService.getCategoryById = originalGetCategoryById;
+    ingredientService.getIngredientsByCategory = originalGetIngredients;
   }
 });

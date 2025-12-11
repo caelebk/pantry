@@ -92,7 +92,7 @@ export class IngredientsService {
       client.release();
       const results = result.rows.map(this.mapIngredientRowToIngredient);
       const updatedResult = results[0];
-      return updatedResult;
+      return updatedResult || null;
     } catch (error: unknown) {
       console.error('Error updating ingredient:', error);
       throw new Error(IngredientMessages.DB_UPDATE_ITEM_ERROR);
