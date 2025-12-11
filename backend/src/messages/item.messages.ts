@@ -1,10 +1,12 @@
+import { CommonMessages } from './common.messages.ts';
+
 export const ItemMessages = {
+  ...CommonMessages,
   FETCH_ALL_ERROR: 'Failed to fetch items',
   FETCH_EXPIRING_ERROR: 'Failed to fetch expiring soon items',
-  NOT_FOUND: 'Item not found',
-  INVALID_BODY: 'Invalid request body',
   DELETE_ERROR: 'Failed to delete item',
   DELETE_SUCCESS: (id: string) => `Item ${id} deleted`,
+  NOT_FOUND: 'Item not found',
 
   // Service errors
   DB_RETRIEVE_ITEMS_ERROR: 'Failed to retrieve items from the database.',
@@ -16,6 +18,5 @@ export const ItemMessages = {
 
   // Validation errors
   INVALID_DAYS: 'Invalid days parameter',
-  INVALID_ID: 'Invalid ID format',
   INVALID_ID_FORMAT_LOG: (id: string) => `Invalid ID format: ${id}`,
 };

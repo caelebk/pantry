@@ -1,10 +1,16 @@
+import { CommonMessages } from './common.messages.ts';
+
 export const IngredientMessages = {
-  DB_RETRIEVE_ITEM_ERROR: 'Error finding ingredient by ID',
-  DB_RETRIEVE_ITEMS_ERROR: 'Error finding ingredients',
-  DB_CREATE_ITEM_ERROR: 'Error creating ingredient',
-  DB_UPDATE_ITEM_ERROR: 'Error updating ingredient',
-  DB_DELETE_ITEM_ERROR: 'Error deleting ingredient',
-  INVALID_ID: 'Invalid or missing ID',
-  INVALID_BODY: 'Invalid request body',
+  ...CommonMessages,
   NOT_FOUND: 'Ingredient not found',
+
+  // Service errors
+  DB_RETRIEVE_ITEMS_ERROR: 'Failed to retrieve ingredients from the database.',
+  DB_RETRIEVE_ITEM_ERROR: 'Failed to retrieve ingredient from the database.',
+  DB_CREATE_ITEM_ERROR: 'Failed to create ingredient in the database.',
+  DB_UPDATE_ITEM_ERROR: 'Failed to update ingredient in the database.',
+  DB_DELETE_ITEM_ERROR: 'Failed to delete ingredient from the database.',
+
+  // Validation errors
+  INVALID_ID_FORMAT_LOG: (id: string) => `Invalid ID format: ${id}`,
 };

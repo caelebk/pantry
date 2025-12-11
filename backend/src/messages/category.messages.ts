@@ -1,6 +1,10 @@
+import { CommonMessages } from './common.messages.ts';
+
 export const CategoryMessages = {
-  DB_RETRIEVE_CATEGORIES_ERROR: 'Error finding categories',
-  DB_RETRIEVE_CATEGORY_ERROR: 'Error finding category by ID',
+  ...CommonMessages,
   NOT_FOUND: 'Category not found',
-  INVALID_ID: 'Invalid or missing ID',
+
+  // Service errors
+  DB_RETRIEVE_CATEGORIES_ERROR: 'Failed to retrieve categories from the database.',
+  DB_RETRIEVE_CATEGORY_ERROR: 'Failed to retrieve category from the database.',
 };
