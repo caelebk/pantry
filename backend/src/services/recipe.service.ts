@@ -46,7 +46,7 @@ export class RecipeService {
    */
   async delete(_id: string): Promise<boolean> {
     // TODO: Implement database delete
-    return await Promise.resolve(false);
+    return await Promise.resolve(false)
   }
 
   /**
