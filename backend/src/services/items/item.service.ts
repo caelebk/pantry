@@ -7,7 +7,6 @@ import { ItemMessages } from '../../messages/item.messages.ts';
 import { CreateItemDTO, ItemDTO, UpdateItemDTO } from '../../models/data-models/item.model.ts';
 import { ItemRow } from '../../models/schema-models/inventory-schema.model.ts';
 import { isValidUUID } from '../../utils/validators.ts';
-import { mapItemRowToItem } from './item.mapper.ts';
 
 export class ItemService {
   private readonly secondsInDay: number = 24 * 60 * 60 * 1000;
@@ -24,7 +23,7 @@ export class ItemService {
       const result = await client.queryObject<ItemRow>(
         'SELECT * FROM items ORDER BY created_at DESC',
       );
-      return result.rows.map(mapItemRowToItem);
+      return result.rows.map(this.mapItemRowToItem);
     } catch (error: unknown) {
       console.error('Error fetching all items:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEMS_ERROR);
@@ -50,7 +49,7 @@ export class ItemService {
         [id],
       );
 
-      const results = result.rows.map(mapItemRowToItem);
+      const results = result.rows.map(this.mapItemRowToItem);
       const firstResult = results[0];
       return firstResult || null;
     } catch (error: unknown) {
@@ -84,7 +83,7 @@ export class ItemService {
         ],
       );
 
-      const results = result.rows.map(mapItemRowToItem);
+      const results = result.rows.map(this.mapItemRowToItem);
       const firstResult = results[0];
       return firstResult;
     } catch (error: unknown) {
@@ -123,7 +122,7 @@ export class ItemService {
         ],
       );
 
-      const results = result.rows.map(mapItemRowToItem);
+      const results = result.rows.map(this.mapItemRowToItem);
       const firstResult = results[0];
       return firstResult || null;
     } catch (error: unknown) {
@@ -172,13 +171,30 @@ export class ItemService {
         'SELECT * FROM items WHERE expiration_date <= $1 ORDER BY expiration_date ASC',
         [new Date(Date.now() + days * this.secondsInDay)],
       );
-      return result.rows.map(mapItemRowToItem);
+      return result.rows.map(this.mapItemRowToItem);
     } catch (error: unknown) {
       console.error('Error finding expiring soon items:', error);
       throw new Error(ItemMessages.DB_FIND_EXPIRING_ERROR);
     } finally {
       client.release();
     }
+  }
+
+  private mapItemRowToItem(row: ItemRow): ItemDTO {
+    return {
+      id: row.id,
+      ingredientId: row.ingredient_id ? row.ingredient_id : undefined,
+      label: row.label,
+      quantity: row.quantity,
+      unitId: row.unit_id,
+      locationId: row.location_id,
+      expirationDate: row.expiration_date,
+      openedDate: row.opened_date ? row.opened_date : undefined,
+      purchaseDate: row.purchase_date,
+      notes: row.notes ? row.notes : undefined,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
   }
 }
 
