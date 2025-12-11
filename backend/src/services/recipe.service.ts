@@ -2,7 +2,11 @@
  * Recipe service - Business logic for recipe operations
  */
 
-import type { Recipe, CreateRecipeDTO, UpdateRecipeDTO } from "../models/data-models/recipe.model.ts";
+import type {
+  CreateRecipeDTO,
+  Recipe,
+  UpdateRecipeDTO,
+} from '../models/data-models/recipe.model.ts';
 
 export class RecipeService {
   /**
@@ -26,7 +30,7 @@ export class RecipeService {
    */
   async create(data: CreateRecipeDTO): Promise<Recipe> {
     // TODO: Implement database insert
-    throw new Error("Not implemented");
+    throw new Error('Not implemented');
   }
 
   /**
@@ -34,7 +38,7 @@ export class RecipeService {
    */
   async update(id: string, data: UpdateRecipeDTO): Promise<Recipe | null> {
     // TODO: Implement database update
-    throw new Error("Not implemented");
+    throw new Error('Not implemented');
   }
 
   /**

@@ -1,4 +1,3 @@
-
 /**
  * Database Schema Definitions
  * These interfaces match the actual database table structures (snake_case)

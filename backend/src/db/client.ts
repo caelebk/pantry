@@ -36,12 +36,12 @@ export async function initDB() {
       user: config.database.user,
       password: config.database.password,
     };
-    
+
     console.log('🔌 Attempting database connection with:', {
       ...connectionParams,
-      password: '***' // Hide password in logs
+      password: '***', // Hide password in logs
     });
-    
+
     pool = new Pool(connectionParams, 10); // pool size
 
     // Test the connection

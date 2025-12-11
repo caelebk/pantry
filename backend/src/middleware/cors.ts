@@ -2,27 +2,27 @@
  * CORS configuration middleware
  */
 
-import { Context, Next } from "hono";
+import { Context, Next } from 'hono';
 
 export async function cors(c: Context, next: Next) {
   // Allow requests from your frontend origin
-  const origin = c.req.header("Origin");
-  
+  const origin = c.req.header('Origin');
+
   // Configure allowed origins (update based on your needs)
   const allowedOrigins = [
-    "http://localhost:4200", // Angular default
-    "http://localhost:3000",
+    'http://localhost:4200', // Angular default
+    'http://localhost:3000',
   ];
 
   if (origin && allowedOrigins.includes(origin)) {
-    c.header("Access-Control-Allow-Origin", origin);
+    c.header('Access-Control-Allow-Origin', origin);
   }
 
-  c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-  c.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  c.header("Access-Control-Max-Age", "86400");
+  c.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  c.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  c.header('Access-Control-Max-Age', '86400');
 
-  if (c.req.method === "OPTIONS") {
+  if (c.req.method === 'OPTIONS') {
     return c.body(null, 204);
   }
 

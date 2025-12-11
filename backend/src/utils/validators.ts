@@ -30,13 +30,12 @@ export function isValidDate(dateString: string): boolean {
  * Validate positive number
  */
 export function isPositiveNumber(value: number): boolean {
-  return typeof value === "number" && value > 0;
+  return typeof value === 'number' && value > 0;
 }
 
 /**
  * Validate non-empty string
  */
 export function isNonEmptyString(value: string): boolean {
-  return typeof value === "string" && value.trim().length > 0;
+  return typeof value === 'string' && value.trim().length > 0;
 }
-
