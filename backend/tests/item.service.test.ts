@@ -1,9 +1,9 @@
 import { assert, assertEquals } from '@std/assert';
+import { Pool } from 'postgres';
 import { setPool } from '../src/db/client.ts';
-import { itemService } from '../src/services/item.service.ts';
 import { CreateItemDTO, UpdateItemDTO } from '../src/models/data-models/item.model.ts';
 import { ItemRow } from '../src/models/schema-models/inventory-schema.model.ts';
-import { Pool } from 'postgres';
+import { itemService } from '../src/services/item.service.ts';
 
 // Mock Types
 type QueryCallback = (query: string, args?: unknown[]) => Promise<{ rows: unknown[] }>;
@@ -44,8 +44,8 @@ const mockItemRow: ItemRow = {
 };
 
 Deno.test('ItemService - getAllItems - success', async () => {
-  const mockPool = new MockPool(async (_query, _args) => {
-    return { rows: [mockItemRow] };
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.resolve({ rows: [mockItemRow] });
   });
   setPool(mockPool as unknown as Pool);
 
@@ -55,10 +55,10 @@ Deno.test('ItemService - getAllItems - success', async () => {
 });
 
 Deno.test('ItemService - getItemById - success', async () => {
-  const mockPool = new MockPool(async (query, args) => {
+  const mockPool = new MockPool((query, args) => {
     assert(query.includes('WHERE id = $1'));
     assert(args && args[0] === mockItemRow.id);
-    return { rows: [mockItemRow] };
+    return Promise.resolve({ rows: [mockItemRow] });
   });
   setPool(mockPool as unknown as Pool);
 
@@ -68,8 +68,8 @@ Deno.test('ItemService - getItemById - success', async () => {
 });
 
 Deno.test('ItemService - getItemById - not found', async () => {
-  const mockPool = new MockPool(async (_query, _args) => {
-    return { rows: [] };
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.resolve({ rows: [] });
   });
   setPool(mockPool as unknown as Pool);
 
@@ -89,7 +89,7 @@ Deno.test('ItemService - createItem - success', async () => {
     openedDate: undefined,
   };
 
-  const mockPool = new MockPool(async (query, _args) => {
+  const mockPool = new MockPool((query, _args) => {
     assert(query.includes('INSERT INTO items'));
     const returnedRow = {
       ...mockItemRow,
@@ -98,7 +98,7 @@ Deno.test('ItemService - createItem - success', async () => {
       purchase_date: new Date(newItem.purchaseDate),
       // openedDate is undefined/null
     };
-    return { rows: [returnedRow] };
+    return Promise.resolve({ rows: [returnedRow] });
   });
   setPool(mockPool as unknown as Pool);
 
@@ -118,7 +118,7 @@ Deno.test('ItemService - updateItem - success', async () => {
     openedDate: undefined,
   };
 
-  const mockPool = new MockPool(async (query, args) => {
+  const mockPool = new MockPool((query, args) => {
     assert(query.includes('UPDATE items'));
     assert(args && args.includes(mockItemRow.id));
     const returnedRow = {
@@ -127,7 +127,7 @@ Deno.test('ItemService - updateItem - success', async () => {
       expiration_date: new Date(updateData.expirationDate),
       purchase_date: new Date(updateData.purchaseDate),
     };
-    return { rows: [returnedRow] };
+    return Promise.resolve({ rows: [returnedRow] });
   });
   setPool(mockPool as unknown as Pool);
 
@@ -137,10 +137,10 @@ Deno.test('ItemService - updateItem - success', async () => {
 });
 
 Deno.test('ItemService - deleteItemById - success', async () => {
-  const mockPool = new MockPool(async (query, args) => {
+  const mockPool = new MockPool((query, args) => {
     assert(query.includes('DELETE FROM items'));
     assert(args && args[0] === mockItemRow.id);
-    return { rows: [] };
+    return Promise.resolve({ rows: [] });
   });
   setPool(mockPool as unknown as Pool);
 

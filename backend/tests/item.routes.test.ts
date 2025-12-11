@@ -1,12 +1,12 @@
 import { assertEquals } from '@std/assert';
 import { Hono } from 'hono';
+import { CreateItemDTO, ItemDTO } from '../src/models/data-models/item.model.ts';
 import items from '../src/routes/items.routes.ts';
 import { itemService } from '../src/services/item.service.ts';
-import { CreateItemDTO, ItemDTO } from '../src/models/data-models/item.model.ts';
 import { HttpStatusCode } from '../src/utils/response.ts';
 
 // Helper to create a request
-function createRequest(path: string, method: string, body?: any) {
+function createRequest(path: string, method: string, body?: unknown) {
   return new Request(`http://localhost${path}`, {
     method,
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
@@ -32,7 +32,7 @@ const mockItem: ItemDTO = {
 Deno.test('Items API - GET /api/items - success', async () => {
   // Mock service
   const originalGetAllItems = itemService.getAllItems;
-  itemService.getAllItems = async () => [mockItem];
+  itemService.getAllItems = () => Promise.resolve([mockItem]);
 
   try {
     const app = new Hono();
@@ -50,7 +50,7 @@ Deno.test('Items API - GET /api/items - success', async () => {
 
 Deno.test('Items API - GET /api/items/:id - success', async () => {
   const originalGetItemById = itemService.getItemById;
-  itemService.getItemById = async (id) => id === mockItem.id ? mockItem : null;
+  itemService.getItemById = (id) => Promise.resolve(id === mockItem.id ? mockItem : null);
 
   try {
     const app = new Hono();
@@ -67,7 +67,7 @@ Deno.test('Items API - GET /api/items/:id - success', async () => {
 
 Deno.test('Items API - GET /api/items/:id - not found', async () => {
   const originalGetItemById = itemService.getItemById;
-  itemService.getItemById = async () => null;
+  itemService.getItemById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
@@ -83,7 +83,7 @@ Deno.test('Items API - GET /api/items/:id - not found', async () => {
 
 Deno.test('Items API - POST /api/items - success', async () => {
   const originalCreateItem = itemService.createItem;
-  itemService.createItem = async (_data) => mockItem;
+  itemService.createItem = (_data) => Promise.resolve(mockItem);
 
   try {
     const app = new Hono();
@@ -113,8 +113,8 @@ Deno.test('Items API - DELETE /api/items/:id - success', async () => {
   const originalGetItemById = itemService.getItemById;
   const originalDeleteItemById = itemService.deleteItemById;
 
-  itemService.getItemById = async () => mockItem;
-  itemService.deleteItemById = async () => true;
+  itemService.getItemById = () => Promise.resolve(mockItem);
+  itemService.deleteItemById = () => Promise.resolve(true);
 
   try {
     const app = new Hono();
