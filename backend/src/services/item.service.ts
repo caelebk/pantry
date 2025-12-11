@@ -52,7 +52,7 @@ export class ItemService {
 
       const results = result.rows.map(mapItemRowToItem);
       const firstResult = results[0];
-      return firstResult;
+      return firstResult || null;
     } catch (error: unknown) {
       console.error("Error fetching item by ID:", error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEM_ERROR);
@@ -106,7 +106,7 @@ export class ItemService {
 
       const results = result.rows.map(mapItemRowToItem);
       const firstResult = results[0];
-      return firstResult;
+      return firstResult || null;
     } catch (error: unknown) {
       console.error("Error updating item:", error);
       throw new Error(ItemMessages.DB_UPDATE_ERROR);

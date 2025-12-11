@@ -3,11 +3,12 @@
  */
 
 import { Context } from "hono";
+import { ContentfulStatusCode } from "hono/utils/http-status";
 
 export class AppError extends Error {
   constructor(
     public statusCode: number,
-    public message: string,
+    message: string,
     public isOperational = true
   ) {
     super(message);
@@ -15,7 +16,7 @@ export class AppError extends Error {
   }
 }
 
-export async function errorHandler(err: Error, c: Context) {
+export function errorHandler(err: Error, c: Context) {
   console.error("Error:", err);
 
   if (err instanceof AppError) {
@@ -24,7 +25,7 @@ export async function errorHandler(err: Error, c: Context) {
         status: "error",
         message: err.message,
       },
-      err.statusCode
+      err.statusCode as ContentfulStatusCode
     );
   }
 

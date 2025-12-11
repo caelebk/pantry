@@ -15,15 +15,15 @@ export async function cors(c: Context, next: Next) {
   ];
 
   if (origin && allowedOrigins.includes(origin)) {
-    c.res.headers.set("Access-Control-Allow-Origin", origin);
+    c.header("Access-Control-Allow-Origin", origin);
   }
 
-  c.res.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-  c.res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  c.res.headers.set("Access-Control-Max-Age", "86400");
+  c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+  c.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  c.header("Access-Control-Max-Age", "86400");
 
   if (c.req.method === "OPTIONS") {
-    return c.text("", 204);
+    return c.body(null, 204);
   }
 
   await next();
