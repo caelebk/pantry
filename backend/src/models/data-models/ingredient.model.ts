@@ -1,9 +1,9 @@
 // Ingredient (Base definition of food)
-export interface Ingredient {
+export interface IngredientDTO {
   id: string; // UUID
   name: string;
-  categoryId: number;
-  defaultUnitId: number;
+  categoryId?: number;
+  defaultUnitId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
