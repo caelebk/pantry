@@ -124,3 +124,5 @@ export class IngredientsService {
     };
   }
 }
+
+export const ingredientService = new IngredientsService();
