@@ -1,14 +1,23 @@
-// Ingredient (Base definition of food)
-export interface Ingredient {
+/**
+ * Ingredient Data Models
+ */
+
+// Full response object
+export interface IngredientDTO {
   id: string; // UUID
   name: string;
-  categoryId: number;
-  defaultUnitId: number;
+  categoryId?: number;
+  defaultUnitId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export interface Category {
-  id: number;
+// Creation DTO - omit system fields
+export interface CreateIngredientDTO {
   name: string;
+  categoryId?: number;
+  defaultUnitId?: number;
 }
+
+// Update DTO - all create fields are optional
+export interface UpdateIngredientDTO extends Partial<CreateIngredientDTO> {}

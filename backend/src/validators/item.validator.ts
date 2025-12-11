@@ -24,19 +24,18 @@ export function isValidCreateItemDTO(data: CreateItemDTO): boolean {
 
 /**
  * Validate UpdateItemDTO
+ * Use Partial to handle optional fields for updates
  */
 export function isValidUpdateItemDTO(data: UpdateItemDTO): boolean {
   if (!data) return false;
-  // For update, we might allow partial updates, but currently the interface suggests all fields are present except those marked optional (?)
-  // Looking at the interface, label, quantity, unitId, locationId, expirationDate, purchaseDate are NOT optional.
 
-  if (!isNonEmptyString(data.label)) return false;
-  if (!isPositiveNumber(data.quantity)) return false;
-  if (!isValidDate(data.expirationDate)) return false;
-  if (!isValidDate(data.purchaseDate)) return false;
+  if (data.label !== undefined && !isNonEmptyString(data.label)) return false;
+  if (data.quantity !== undefined && !isPositiveNumber(data.quantity)) return false;
+  if (data.expirationDate !== undefined && !isValidDate(data.expirationDate)) return false;
+  if (data.purchaseDate !== undefined && !isValidDate(data.purchaseDate)) return false;
 
-  if (data.ingredientId && !isValidUUID(data.ingredientId)) return false;
-  if (data.openedDate && !isValidDate(data.openedDate)) return false;
+  if (data.ingredientId !== undefined && !isValidUUID(data.ingredientId)) return false;
+  if (data.openedDate !== undefined && !isValidDate(data.openedDate)) return false;
 
   return true;
 }

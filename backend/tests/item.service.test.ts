@@ -1,8 +1,8 @@
-import { assert, assertEquals } from '@std/assert';
+import { assert, assertEquals, assertRejects } from '@std/assert';
 import { Pool } from 'postgres';
 import { setPool } from '../src/db/client.ts';
 import { CreateItemDTO, UpdateItemDTO } from '../src/models/data-models/item.model.ts';
-import { ItemRow } from '../src/models/schema-models/inventory-schema.model.ts';
+import { ItemRow } from '../src/models/schema-models/item.model.ts';
 import { itemService } from '../src/services/item.service.ts';
 
 // Mock Types
@@ -12,6 +12,22 @@ class MockClient {
   constructor(private queryCallback: QueryCallback) {}
 
   async queryObject<T>(query: string, args: unknown[] = []): Promise<{ rows: T[] }> {
+    // Validate parameter count
+    const matches = query.match(/\$(\d+)/g);
+    if (matches) {
+      const indices = matches.map((m) => parseInt(m.substring(1)));
+      const maxIndex = Math.max(...indices);
+      assert(
+        args.length === maxIndex,
+        `Parameter mismatch: Query requires ${maxIndex} parameters, but received ${args.length}`,
+      );
+    } else {
+      assert(
+        args.length === 0,
+        `Parameter mismatch: Query requires 0 parameters, but received ${args.length}`,
+      );
+    }
+
     return (await this.queryCallback(query, args)) as { rows: T[] };
   }
 
@@ -54,6 +70,25 @@ Deno.test('ItemService - getAllItems - success', async () => {
   assertEquals(items[0].id, mockItemRow.id);
 });
 
+Deno.test('ItemService - getAllItems - db error', async () => {
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Connection failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await itemService.getAllItems(),
+      Error,
+      'Failed to retrieve items',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
+});
+
 Deno.test('ItemService - getItemById - success', async () => {
   const mockPool = new MockPool((query, args) => {
     assert(query.includes('WHERE id = $1'));
@@ -94,8 +129,8 @@ Deno.test('ItemService - createItem - success', async () => {
     const returnedRow = {
       ...mockItemRow,
       ...newItem,
-      expiration_date: new Date(newItem.expirationDate),
-      purchase_date: new Date(newItem.purchaseDate),
+      expiration_date: new Date(newItem.expirationDate as string),
+      purchase_date: new Date(newItem.purchaseDate as string),
       // openedDate is undefined/null
     };
     return Promise.resolve({ rows: [returnedRow] });
@@ -104,6 +139,35 @@ Deno.test('ItemService - createItem - success', async () => {
 
   const item = await itemService.createItem(newItem);
   assertEquals(item.label, newItem.label);
+});
+
+Deno.test('ItemService - createItem - db error', async () => {
+  const newItem: CreateItemDTO = {
+    label: 'Error Item',
+    quantity: 1,
+    unitId: 1,
+    locationId: 1,
+    expirationDate: mockDate.toISOString(),
+    purchaseDate: mockDate.toISOString(),
+    notes: 'notes',
+  };
+
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Insert failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await itemService.createItem(newItem),
+      Error,
+      'Failed to create item',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
 });
 
 Deno.test('ItemService - updateItem - success', async () => {
@@ -124,8 +188,8 @@ Deno.test('ItemService - updateItem - success', async () => {
     const returnedRow = {
       ...mockItemRow,
       ...updateData,
-      expiration_date: new Date(updateData.expirationDate),
-      purchase_date: new Date(updateData.purchaseDate),
+      expiration_date: new Date(updateData.expirationDate as string),
+      purchase_date: new Date(updateData.purchaseDate as string),
     };
     return Promise.resolve({ rows: [returnedRow] });
   });
@@ -134,6 +198,37 @@ Deno.test('ItemService - updateItem - success', async () => {
   const item = await itemService.updateItem(mockItemRow.id, updateData);
   assert(item !== null);
   assertEquals(item?.label, updateData.label);
+});
+
+Deno.test('ItemService - updateItem - not found', async () => {
+  const updateData: UpdateItemDTO = { label: 'Ghost Item' };
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.resolve({ rows: [] });
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const item = await itemService.updateItem('123e4567-e89b-12d3-a456-426614174999', updateData);
+  assertEquals(item, null);
+});
+
+Deno.test('ItemService - updateItem - db error', async () => {
+  const updateData: UpdateItemDTO = { label: 'Error Item' };
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Update failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await itemService.updateItem(mockItemRow.id, updateData),
+      Error,
+      'Failed to update item',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
 });
 
 Deno.test('ItemService - deleteItemById - success', async () => {
@@ -146,4 +241,23 @@ Deno.test('ItemService - deleteItemById - success', async () => {
 
   const result = await itemService.deleteItemById(mockItemRow.id);
   assertEquals(result, true);
+});
+
+Deno.test('ItemService - deleteItemById - db error', async () => {
+  const mockPool = new MockPool((_query, _args) => {
+    return Promise.reject(new Error('Delete failed'));
+  });
+  setPool(mockPool as unknown as Pool);
+
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    await assertRejects(
+      async () => await itemService.deleteItemById(mockItemRow.id),
+      Error,
+      'Failed to delete item',
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
 });

@@ -2,12 +2,12 @@
  * Items API routes
  */
 import { Context, Hono } from 'hono';
+import { ItemMessages } from '../messages/item.messages.ts';
 import { CreateItemDTO, ItemDTO, UpdateItemDTO } from '../models/data-models/item.model.ts';
+import { itemService } from '../services/item.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isPositiveNumber, isValidUUID } from '../utils/validators.ts';
 import { isValidCreateItemDTO, isValidUpdateItemDTO } from '../validators/item.validator.ts';
-import { ItemMessages } from '../messages/item.messages.ts';
-import { itemService } from '../services/item.service.ts';
 
 const items = new Hono();
 
@@ -121,7 +121,7 @@ items.post('/', async (c: Context) => {
 
     return c.json(successResponse(item), HttpStatusCode.CREATED);
   } catch (_error: unknown) {
-    return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+    return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 });
 
@@ -162,7 +162,7 @@ items.put('/:id', async (c: Context) => {
 
     return c.json(successResponse(item), HttpStatusCode.OK);
   } catch (_error: unknown) {
-    return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+    return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 });
 

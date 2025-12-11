@@ -3,10 +3,10 @@
  */
 
 import { getPool } from '../db/client.ts';
-import { CreateItemDTO, ItemDTO, UpdateItemDTO } from '../models/data-models/item.model.ts';
-import { ItemRow } from '../models/schema-models/inventory-schema.model.ts';
-import { mapItemRowToItem } from './item.mapper.ts';
 import { ItemMessages } from '../messages/item.messages.ts';
+import { CreateItemDTO, ItemDTO, UpdateItemDTO } from '../models/data-models/item.model.ts';
+import { ItemRow } from '../models/schema-models/item.model.ts';
+import { toDate } from '../utils/dates.ts';
 import { isValidUUID } from '../utils/validators.ts';
 
 export class ItemService {
@@ -24,12 +24,11 @@ export class ItemService {
       const result = await client.queryObject<ItemRow>(
         'SELECT * FROM items ORDER BY created_at DESC',
       );
-      return result.rows.map(mapItemRowToItem);
+      client.release();
+      return result.rows.map(this.mapItemRowToItem);
     } catch (error: unknown) {
       console.error('Error fetching all items:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEMS_ERROR);
-    } finally {
-      client.release();
     }
   }
 
@@ -50,14 +49,13 @@ export class ItemService {
         [id],
       );
 
-      const results = result.rows.map(mapItemRowToItem);
+      const results = result.rows.map(this.mapItemRowToItem);
       const firstResult = results[0];
+      client.release();
       return firstResult || null;
     } catch (error: unknown) {
       console.error('Error fetching item by ID:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEM_ERROR);
-    } finally {
-      client.release();
     }
   }
 
@@ -77,21 +75,20 @@ export class ItemService {
           data.quantity,
           data.unitId,
           data.locationId,
-          data.expirationDate,
-          data.openedDate,
-          data.purchaseDate,
+          toDate(data.expirationDate),
+          data.openedDate ? toDate(data.openedDate) : null,
+          toDate(data.purchaseDate),
           data.notes,
         ],
       );
 
-      const results = result.rows.map(mapItemRowToItem);
+      const results = result.rows.map(this.mapItemRowToItem);
       const firstResult = results[0];
+      client.release();
       return firstResult;
     } catch (error: unknown) {
       console.error('Error creating item:', error);
       throw new Error(ItemMessages.DB_CREATE_ERROR);
-    } finally {
-      client.release();
     }
   }
 
@@ -109,28 +106,27 @@ export class ItemService {
     const client = await pool.connect();
     try {
       const result = await client.queryObject<ItemRow>(
-        'UPDATE items SET label = $1, quantity = $2, unit_id = $3, location_id = $4, expiration_date = $5, opened_date = $6, purchase_date = $7, notes = $8 WHERE id = $9 RETURNING *',
+        'UPDATE items SET label = COALESCE($1, label), quantity = COALESCE($2, quantity), unit_id = COALESCE($3, unit_id), location_id = COALESCE($4, location_id), expiration_date = COALESCE($5, expiration_date), opened_date = COALESCE($6, opened_date), purchase_date = COALESCE($7, purchase_date), notes = COALESCE($8, notes) WHERE id = $9 RETURNING *',
         [
           data.label,
           data.quantity,
           data.unitId,
           data.locationId,
-          data.expirationDate,
-          data.openedDate,
-          data.purchaseDate,
+          data.expirationDate !== undefined ? toDate(data.expirationDate) : null,
+          data.openedDate !== undefined ? toDate(data.openedDate) : null,
+          data.purchaseDate !== undefined ? toDate(data.purchaseDate) : null,
           data.notes,
           id,
         ],
       );
 
-      const results = result.rows.map(mapItemRowToItem);
+      const results = result.rows.map(this.mapItemRowToItem);
       const firstResult = results[0];
+      client.release();
       return firstResult || null;
     } catch (error: unknown) {
       console.error('Error updating item:', error);
       throw new Error(ItemMessages.DB_UPDATE_ERROR);
-    } finally {
-      client.release();
     }
   }
 
@@ -150,12 +146,11 @@ export class ItemService {
         'DELETE FROM items WHERE id = $1',
         [id],
       );
+      client.release();
       return true;
     } catch (error: unknown) {
       console.error('Error deleting item:', error);
       throw new Error(ItemMessages.DB_DELETE_ERROR);
-    } finally {
-      client.release();
     }
   }
 
@@ -172,13 +167,29 @@ export class ItemService {
         'SELECT * FROM items WHERE expiration_date <= $1 ORDER BY expiration_date ASC',
         [new Date(Date.now() + days * this.secondsInDay)],
       );
-      return result.rows.map(mapItemRowToItem);
+      client.release();
+      return result.rows.map(this.mapItemRowToItem);
     } catch (error: unknown) {
       console.error('Error finding expiring soon items:', error);
       throw new Error(ItemMessages.DB_FIND_EXPIRING_ERROR);
-    } finally {
-      client.release();
     }
+  }
+
+  private mapItemRowToItem(row: ItemRow): ItemDTO {
+    return {
+      id: row.id,
+      ingredientId: row.ingredient_id ? row.ingredient_id : undefined,
+      label: row.label,
+      quantity: row.quantity,
+      unitId: row.unit_id,
+      locationId: row.location_id,
+      expirationDate: row.expiration_date,
+      openedDate: row.opened_date ? row.opened_date : undefined,
+      purchaseDate: row.purchase_date,
+      notes: row.notes ? row.notes : undefined,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
   }
 }
 
