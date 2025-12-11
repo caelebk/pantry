@@ -12,7 +12,6 @@ backend/
 │   ├── db/              # Database setup
 │   │   └── client.ts    # Database client
 │   ├── messages/        # Centralized message constants
-│   │   └── item.messages.ts
 │   ├── middleware/      # Custom middleware
 │   │   ├── cors.ts      # CORS configuration
 │   │   ├── errorHandler.ts  # Global error handling
@@ -22,19 +21,19 @@ backend/
 │   │   └── schema-models/   # Database schema models
 │   ├── routes/          # API routes
 │   │   ├── index.ts     # Main router
+│   │   ├── categories.routes.ts
+│   │   ├── ingredients.routes.ts
 │   │   ├── items.routes.ts
-│   │   └── recipes.routes.ts
+│   │   ├── locations.routes.ts
+│   │   ├── recipes.routes.ts
+│   │   └── units.routes.ts
 │   ├── services/        # Business logic
-│   │   ├── item.service.ts
-│   │   └── recipe.service.ts
 │   ├── utils/           # Utility functions
 │   │   ├── response.ts  # API response helpers
 │   │   └── validators.ts # Generic validation functions
 │   ├── validators/      # Domain-specific validators
-│   │   └── item.validator.ts
 │   └── app.ts           # Main app setup
 ├── tests/               # Test files
-│   └── items.test.ts
 ├── .env                 # Environment variables (not committed)
 ├── .env.example         # Environment variables template
 ├── .gitignore
@@ -101,6 +100,31 @@ deno task db:seed     # Populate with sample data
 - `PUT /api/items/:id` - Update item
 - `DELETE /api/items/:id` - Delete item
 
+### Ingredients
+
+- `GET /api/ingredients` - Get all ingredients
+- `GET /api/ingredients/:id` - Get ingredient by ID
+- `POST /api/ingredients` - Create new ingredient
+- `PUT /api/ingredients/:id` - Update ingredient
+- `DELETE /api/ingredients/:id` - Delete ingredient
+
+### Categories
+
+- `GET /api/categories` - Get all categories
+- `GET /api/categories/:id` - Get category by ID
+- `GET /api/categories/:id/ingredients` - Get ingredients in a category
+
+### Units
+
+- `GET /api/units` - Get all units
+- `GET /api/units/:id` - Get unit by ID
+- `GET /api/units/convert` - Convert quantity (query params: `quantity`, `from`, `to`)
+
+### Locations
+
+- `GET /api/locations` - Get all locations
+- `GET /api/locations/:id` - Get location by ID
+
 ### Recipes
 
 - `GET /api/recipes` - Get all recipes
@@ -127,5 +151,5 @@ deno lint
 
 - **Runtime**: Deno
 - **Framework**: Hono
-- **Database**: PostgreSQL (to be configured)
+- **Database**: PostgreSQL
 - **Testing**: Deno's built-in test runner
