@@ -6,7 +6,7 @@ import { AddItemFormComponent } from './inventory-components/add-item-form/add-i
 import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
 import { Item } from '../../models/items.model';
-import { InventoryService } from '../../services/inventory/inventory.service';
+import { ItemService } from '../../services/inventory/item.service';
 import { isExpired, sortItemsByBestBeforeDate } from '../../utility/itemUtility';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -55,7 +55,7 @@ export class InventoryComponent {
   
   private confirmationService: ConfirmationService = inject(ConfirmationService);
   private messageService: MessageService = inject(MessageService); 
-  private inventoryService: InventoryService = inject(InventoryService);
+  private inventoryService: ItemService = inject(ItemService);
   private translocoService: TranslocoService = inject(TranslocoService);
 
   public get filteredItems(): Item[] {
