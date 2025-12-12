@@ -2,7 +2,7 @@ import { Component, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Item, Category, Unit, Location } from '../../../../models/items.model';
+import { Item, Unit, Location } from '../../../../models/items.model';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { InputNumber } from 'primeng/inputnumber';
@@ -32,7 +32,6 @@ export class AddItemFormComponent {
 
   @Output() addItem$ = new Subject<Item>();
   
-  categories: Category[] = Object.values(Category);
   units: Unit[] = Object.values(Unit);
   locations: Location[] = Object.values(Location);
 
@@ -45,7 +44,6 @@ export class AddItemFormComponent {
         this.addItem$.next(item);
         this.addItemForm.reset({
           name: '',
-          category: Category.Produce,
           quantity: 1,
           unit: Unit.Gram,
           purchaseDate: new Date(),

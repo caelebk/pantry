@@ -16,14 +16,11 @@ import { FormsModule } from '@angular/forms';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
-import { Select } from 'primeng/select';
-import { Category } from '../../models/items.model';
-import { CategoryOption } from '../../models/inventory.model';
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, AddItemFormComponent, ItemCardComponent, StatCardComponent, ConfirmDialogModule, ToastModule, Button, FormsModule, IconField, InputIcon, InputText, Select],
+  imports: [CommonModule, TranslocoModule, AddItemFormComponent, ItemCardComponent, StatCardComponent, ConfirmDialogModule, ToastModule, Button, FormsModule, IconField, InputIcon, InputText],
   providers: [ConfirmationService, MessageService],
   templateUrl: './inventory.component.html',
   animations: [
@@ -55,9 +52,7 @@ export class InventoryComponent {
   
   public showScrollTopButton: boolean = false;
   public searchQuery: string = '';
-  public selectedCategory: Category | null = null;
-  public categoryOptions: CategoryOption[] = [];
-
+  
   private confirmationService: ConfirmationService = inject(ConfirmationService);
   private messageService: MessageService = inject(MessageService); 
   private inventoryService: InventoryService = inject(InventoryService);
@@ -66,8 +61,7 @@ export class InventoryComponent {
   public get filteredItems(): Item[] {
     return this.items.filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-      const matchesCategory = this.selectedCategory ? item.category === this.selectedCategory : true;
-      return matchesSearch && matchesCategory;
+      return matchesSearch;
     });
   }
 
@@ -82,7 +76,6 @@ export class InventoryComponent {
 
   ngOnInit(): void {
     this.initParameters();
-    this.categoryOptions = Object.values(Category).map((c: Category) => ({ label: c, value: c }));
   }
 
   private initParameters(): void {

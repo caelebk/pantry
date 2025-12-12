@@ -1,9 +1,8 @@
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { Category, Item, Location, Unit } from "../models/items.model";
+import { Item, Location, Unit } from "../models/items.model";
 
 export interface ItemFormControls {
   name: FormControl<string>;
-  category: FormControl<Category>;
   quantity: FormControl<number>;
   unit: FormControl<Unit>;
   purchaseDate: FormControl<Date | null>;
@@ -17,10 +16,6 @@ export function createItemForm(): FormGroup<ItemFormControls> {
   return new FormGroup<ItemFormControls>({
     name: new FormControl<string>(
       '', 
-      { nonNullable: true, validators: Validators.required }
-    ),
-    category: new FormControl<Category>(
-      Category.Produce, 
       { nonNullable: true, validators: Validators.required }
     ),
     quantity: new FormControl<number>(
@@ -62,7 +57,6 @@ export function toItem(form: FormGroup<ItemFormControls>): Item | null {
 
   return {
     name: formValue.name!,
-    category: formValue.category!,
     quantity: formValue.quantity!,
     unit: formValue.unit!,
     purchaseDate: formValue.purchaseDate!,
