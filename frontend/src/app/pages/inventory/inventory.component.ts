@@ -79,14 +79,14 @@ export class InventoryComponent {
   }
 
   private initParameters(): void {
-    this.items = sortItemsByBestBeforeDate(this.inventoryService.getItems());
+    this.items = sortItemsByBestBeforeDate([]);
     this.totalItemsCount = this.items.length;
     this.expiringSoonItemsCount = 0;
     this.expiredItemsCount = this.items.filter((item: Item) => isExpired(item)).length;
   }
 
   public onAddItem(item: Item): void {
-    this.inventoryService.addItem(item);
+    //add Item
     this.initParameters();
     this.messageService.add({
       severity: this.successNotificationClass,

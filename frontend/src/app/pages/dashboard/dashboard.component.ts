@@ -25,8 +25,8 @@ export class DashboardComponent {
   expiredItems: Item[] = [];
 
   constructor(private inventoryService: ItemService) {
-    this.items = this.inventoryService.getItems();
-    this.expiredItems = this.items.filter(item => isExpired(item));
+    this.items = [];
+    this.expiredItems = [];
     this.totalItemsCount = this.items.length;
     this.expiredItemsCount = this.expiredItems.length;
   }

@@ -1,33 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Item } from '../../models/items.model';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ItemService {
-  private items: Item[] = [];
+  private readonly apiUrl = 'http://localhost:8000/api/items';
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   getItems(): Item[] {
-    return this.items;
+    return [];
   }
 
   addItem(item: Item) {
-    this.items.push(item);
+    
   }
 
   removeItem(item: Item) {
-    const index = this.items.indexOf(item);
-    if (index > -1) {
-      this.items.splice(index, 1);
-    }
   }
 
   updateItem(oldItem: Item, newItem: Item) {
-    const index = this.items.indexOf(oldItem);
-    if (index > -1) {
-      this.items[index] = newItem;
-    }
   }
 }
