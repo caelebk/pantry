@@ -23,7 +23,7 @@ export class ItemCardComponent {
 
   public expired = computed(() => isExpired(this.item()));
   public itemProgress = computed(() => itemProgress(this.item()));
-  public timeRemaining = computed(() => getTimeDifferenceString(new Date(), this.item().bestBeforeDate));
+  public timeRemaining = computed(() => getTimeDifferenceString(new Date(), this.item().expirationDate));
 
   public displayNoteDialog = signal(false);
   public displayEditDialog = signal(false);

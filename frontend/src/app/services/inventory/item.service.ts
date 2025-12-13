@@ -5,7 +5,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UnitService } from './unit.service';
 import { LocationService } from './location.service';
-import { mapItemDTOToItem } from '@utility/httpUtility/Mapper';
+import { mapItemDTOToItem } from '@utility/itemUtility/ItemDTOMapper';
 import { ApiResponse } from '@models/http.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 

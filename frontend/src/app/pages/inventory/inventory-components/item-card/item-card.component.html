@@ -50,7 +50,7 @@
                 </span>
                 <span [ngClass]="expired() ? 'text-red-600 dark:text-red-500' : 'text-blue-600 dark:text-blue-500'"
                     class="font-medium truncate block">
-                    {{ item().bestBeforeDate.toLocaleDateString() }}
+                    {{ item().expirationDate.toLocaleDateString() }}
                 </span>
             </div>
             <div>

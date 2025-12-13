@@ -20,7 +20,7 @@ export function mapItemDTOToItem(
         unit: unit,
         purchaseDate: new Date(itemDTO.purchaseDate),
         openedDate: itemDTO.openedDate ? new Date(itemDTO.openedDate) : undefined,
-        bestBeforeDate: new Date(itemDTO.bestBeforeDate),
+        expirationDate: new Date(itemDTO.expirationDate),
         location: location,
         notes: itemDTO.notes || '',
     };

@@ -1,7 +1,7 @@
 import { Item } from "../../models/items.model";
 
 export function isExpired(item: Item): boolean {
-    return new Date() > new Date(item.bestBeforeDate);
+    return new Date() > new Date(item.expirationDate);
 }
 
 export function isExpiringSoon(item: Item): boolean {
@@ -11,13 +11,13 @@ export function isExpiringSoon(item: Item): boolean {
 export function itemProgress(item: Item): number {
     const startDate = new Date(item.purchaseDate);
     const currentDate = new Date();
-    const endDate = new Date(item.bestBeforeDate);
+    const endDate = new Date(item.expirationDate);
     const progressPercentage = (currentDate.getTime() - startDate.getTime()) / (endDate.getTime() - startDate.getTime()) * 100;
     return progressPercentage;
 }
 
 export function sortItemsByBestBeforeDate(items: Item[]): Item[] {
-    return items.sort((a: Item, b: Item) => a.bestBeforeDate?.getTime() - b.bestBeforeDate?.getTime());
+    return items.sort((a: Item, b: Item) => a.expirationDate?.getTime() - b.expirationDate?.getTime());
 }
 
 export function getTimeDifferenceString(date1: Date, date2: Date): string {

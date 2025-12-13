@@ -48,7 +48,7 @@ export class EditItemFormComponent {
           unit: item.unit,
           purchaseDate: item.purchaseDate,
           openedDate: item.openedDate,
-          bestBeforeDate: item.bestBeforeDate,
+          bestBeforeDate: item.expirationDate,
           location: item.location,
           notes: item.notes
         });

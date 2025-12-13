@@ -6,7 +6,7 @@ export interface Item {
     unit: Unit;
     purchaseDate: Date;
     openedDate?: Date;
-    bestBeforeDate: Date;
+    expirationDate: Date;
     location: Location;
     notes: string;
 }
@@ -19,7 +19,7 @@ export interface ItemDTO {
     unitId: number;
     purchaseDate: string;
     openedDate?: string;
-    bestBeforeDate: string;
+    expirationDate: string;
     locationId: number;
     notes?: string;
 }
