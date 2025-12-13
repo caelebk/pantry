@@ -27,17 +27,19 @@ export function getTimeDifferenceString(date1: Date, date2: Date): string {
     const diffMs = d2.getTime() - d1.getTime();
     const absDiffDays = Math.floor(Math.abs(diffMs) / (1000 * 60 * 60 * 24));
     const isExpired = diffMs < 0;
+    const daysInAYear = 365;
+    const daysInAMonth = 30;
 
     if (absDiffDays === 0) {
         return "today";
     }
 
     let result: string;
-    if (absDiffDays >= 365) {
-        const years = Math.floor(absDiffDays / 365);
+    if (absDiffDays >= daysInAYear) {
+        const years = Math.floor(absDiffDays / daysInAYear);
         result = `${years} year${years > 1 ? 's' : ''}`;
-    } else if (absDiffDays >= 30) {
-        const months = Math.floor(absDiffDays / 30);
+    } else if (absDiffDays >= daysInAMonth) {
+        const months = Math.floor(absDiffDays / daysInAMonth);
         result = `${months} month${months > 1 ? 's' : ''}`;
     } else {
         result = `${absDiffDays} day${absDiffDays !== 1 ? 's' : ''}`;
