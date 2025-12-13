@@ -27,3 +27,14 @@ export interface ItemDTO {
     locationId: number;
     notes?: string;
 }
+
+export interface UpdateItemDTO {
+    ingredientId?: string;
+    quantity?: number;
+    unitId?: number;
+    purchaseDate?: string;
+    openedDate?: string;
+    expirationDate?: string;
+    locationId?: number;
+    notes?: string;
+}

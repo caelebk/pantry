@@ -60,9 +60,14 @@ export class EditItemFormComponent {
 
   onSubmit() {
     if (this.editItemForm.valid) {
-      const item: Item | null = toItem(this.editItemForm);
-      if (item) {
-        this.updateItem$.next(item);
+      const formValue = toItem(this.editItemForm);
+      if (formValue) {
+        //re-add id to item
+        const updatedItem = {
+          ...formValue,
+          id: this.itemToEdit().id
+        };
+        this.updateItem$.next(updatedItem);
       }
     } else {
       this.editItemForm.markAllAsTouched();

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Item, ItemDTO } from '@models/items.model';
+import { Item, ItemDTO, UpdateItemDTO } from '@models/items.model';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UnitService } from './unit.service';
 import { LocationService } from './location.service';
-import { mapItemDTOToItem, mapItemToItemDTO } from '@utility/itemUtility/ItemMapper';
+import { mapItemDTOToItem, mapItemToItemDTO, mapItemToUpdateItemDTO } from '@utility/itemUtility/ItemMapper';
 import { ApiResponse } from '@models/http.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 
@@ -44,6 +44,9 @@ export class ItemService {
   removeItem(item: Item) {
   }
 
-  updateItem(oldItem: Item, newItem: Item) {
+  updateItem(item: Item) {
+    const id: string = item.id;
+    const itemDTO: UpdateItemDTO = mapItemToUpdateItemDTO(item);
+    return this.http.put<ApiResponse<ItemDTO>>(`${this.apiUrl}/${id}`, itemDTO).pipe(mapResponseData<ItemDTO>());
   }
 }

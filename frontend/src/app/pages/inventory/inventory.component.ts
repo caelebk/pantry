@@ -138,13 +138,14 @@ export class InventoryComponent {
     });
   }
 
-  public onUpdateItem(originalItem: Item, updatedItem: Item): void {
-    this.inventoryService.updateItem(originalItem, updatedItem);
-    this.initParameters();
-    this.messageService.add({
-      severity: this.successNotificationClass,
-      summary: this.translocoService.translate('inventory.notificationService.itemUpdatedHeader') + updatedItem.name, 
-      detail: this.translocoService.translate('inventory.notificationService.itemUpdatedDescription')
+  public onUpdateItem(updatedItem: Item): void {
+    this.inventoryService.updateItem(updatedItem).subscribe(() => {
+      this.initParameters();
+      this.messageService.add({
+        severity: this.successNotificationClass,
+        summary: this.translocoService.translate('inventory.notificationService.itemUpdatedHeader') + updatedItem.name, 
+        detail: this.translocoService.translate('inventory.notificationService.itemUpdatedDescription')
+      });
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Item, ItemDTO } from "@models/items.model";
+import { Item, ItemDTO, UpdateItemDTO } from "@models/items.model";
 import { Unit } from "@models/unit.model";
 import { Location } from "@models/location.model";
 
@@ -43,5 +43,18 @@ export function mapItemToItemDTO(item: Item): ItemDTO {
         openedDate: item.openedDate?.toISOString(),
         expirationDate: item.expirationDate.toISOString(),
         notes: item.notes,
+    };
+}
+
+export function mapItemToUpdateItemDTO(item: Item): UpdateItemDTO {
+    return {
+        ingredientId: item.ingredientId === '' ? undefined : item.ingredientId,
+        quantity: item.quantity,
+        unitId: item.unit.id,
+        purchaseDate: item.purchaseDate.toISOString(),
+        openedDate: item.openedDate?.toISOString(),
+        expirationDate: item.expirationDate.toISOString(),
+        locationId: item.location.id,
+        notes: item.notes === '' ? undefined : item.notes,
     };
 }
