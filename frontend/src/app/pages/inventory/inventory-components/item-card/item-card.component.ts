@@ -4,7 +4,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { Item } from '../../../../models/items.model';
-import { getTimeDifferenceString, isExpired, itemProgress } from '../../../../utility/itemUtility';
+import { getTimeDifferenceString, isExpired, itemProgress } from '../../../../utility/ItemUtility';
 import { Subject } from 'rxjs';
 
 import { EditItemFormComponent } from '../edit-item-form/edit-item-form.component';

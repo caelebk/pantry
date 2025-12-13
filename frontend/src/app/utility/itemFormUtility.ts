@@ -55,14 +55,15 @@ export function toItem(form: FormGroup<ItemFormControls>): Item | null {
 
   const formValue = form.getRawValue();
 
-  return {
-    name: formValue.name!,
-    quantity: formValue.quantity!,
-    unit: formValue.unit!,
-    purchaseDate: formValue.purchaseDate!,
-    openedDate: formValue.openedDate!,
-    bestBeforeDate: formValue.bestBeforeDate!,
-    location: formValue.location!,
-    notes: formValue.notes!
-  };
+  return null;
+  // return {
+  //   name: formValue.name!,
+  //   quantity: formValue.quantity!,
+  //   unit: formValue.unit!,
+  //   purchaseDate: formValue.purchaseDate!,
+  //   openedDate: formValue.openedDate!,
+  //   bestBeforeDate: formValue.bestBeforeDate!,
+  //   location: formValue.location!,
+  //   notes: formValue.notes!
+  // };
 }

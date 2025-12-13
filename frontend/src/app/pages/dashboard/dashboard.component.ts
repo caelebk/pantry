@@ -7,7 +7,7 @@ import { CategoryContainerComponent } from './dashboard-components/category-cont
 import { QuickActionsContainerComponent } from './dashboard-components/quick-actions-container/quick-actions-container.component';
 import { Item } from '../../models/items.model';
 import { ItemService } from '../../services/inventory/item.service';
-import { isExpired } from '../../utility/itemUtility';
+import { isExpired } from '../../utility/ItemUtility';
 
 @Component({
   selector: 'app-dashboard',

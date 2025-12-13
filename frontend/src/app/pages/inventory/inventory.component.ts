@@ -7,7 +7,7 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
 import { Item } from '../../models/items.model';
 import { ItemService } from '../../services/inventory/item.service';
-import { isExpired, sortItemsByBestBeforeDate } from '../../utility/itemUtility';
+import { isExpired, sortItemsByBestBeforeDate } from '../../utility/ItemUtility';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
@@ -79,10 +79,12 @@ export class InventoryComponent {
   }
 
   private initParameters(): void {
-    this.items = sortItemsByBestBeforeDate([]);
-    this.totalItemsCount = this.items.length;
-    this.expiringSoonItemsCount = 0;
-    this.expiredItemsCount = this.items.filter((item: Item) => isExpired(item)).length;
+    this.inventoryService.getItems().subscribe((items) => {
+      this.items = sortItemsByBestBeforeDate(items);
+      this.totalItemsCount = this.items.length;
+      this.expiringSoonItemsCount = 0;
+      this.expiredItemsCount = this.items.filter((item: Item) => isExpired(item)).length;
+    });
   }
 
   public onAddItem(item: Item): void {

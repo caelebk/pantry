@@ -1,4 +1,6 @@
 export interface Item {
+    id: string;    
+    ingredientId: string;
     name: string;
     quantity: number;
     unit: Unit;
@@ -7,6 +9,19 @@ export interface Item {
     bestBeforeDate: Date;
     location: Location;
     notes: string;
+}
+
+export interface ItemDTO {
+    id: number;
+    ingredientId: string;
+    label: string;
+    quantity: number;
+    unitId: number;
+    purchaseDate: string;
+    openedDate?: string;
+    bestBeforeDate: string;
+    locationId: number;
+    notes?: string;
 }
 
 export enum Unit {

@@ -10,7 +10,7 @@ import { DatePicker } from 'primeng/datepicker';
 import { Textarea } from 'primeng/textarea';
 import { PanelModule } from 'primeng/panel';
 import { Subject } from 'rxjs';
-import { createItemForm, ItemFormControls, toItem } from '../../../../utility/itemFormUtility';
+import { createItemForm, ItemFormControls, toItem } from '../../../../utility/ItemFormUtility';
 
 @Component({
   selector: 'edit-item-form',
