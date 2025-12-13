@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LocationDTO } from '../../models/location.model';
+import { ApiResponse } from '../../models/http.model';
+import { mapResponseData } from '../../utility/HttpResponse.operator';
 
 @Injectable({
   providedIn: 'root'
@@ -12,10 +14,10 @@ export class LocationService {
   constructor(private http: HttpClient) { }
 
   getLocations(): Observable<LocationDTO[]> {
-    return this.http.get<LocationDTO[]>(this.apiUrl);
+    return this.http.get<ApiResponse<LocationDTO[]>>(this.apiUrl).pipe(mapResponseData());
   }
 
   getLocationById(id: number): Observable<LocationDTO> {
-    return this.http.get<LocationDTO>(`${this.apiUrl}/${id}`);
+    return this.http.get<ApiResponse<LocationDTO>>(`${this.apiUrl}/${id}`).pipe(mapResponseData());
   }
 }
