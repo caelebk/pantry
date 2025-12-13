@@ -1,9 +1,8 @@
 import { Location } from "./location.model";
 import { Unit } from "./unit.model";
 
-
 export interface Item {
-    id: string;    
+    id: string;
     ingredientId: string;
     name: string;
     quantity: number;
@@ -29,6 +28,7 @@ export interface ItemDTO {
 }
 
 export interface UpdateItemDTO {
+    label?: string;
     ingredientId?: string;
     quantity?: number;
     unitId?: number;
