@@ -16,7 +16,7 @@ export interface Item {
 }
 
 export interface ItemDTO {
-    id: number;
+    id: string;
     ingredientId: string;
     label: string;
     quantity: number;

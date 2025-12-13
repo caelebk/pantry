@@ -104,8 +104,9 @@ export class InventoryComponent {
   }
 
   public onAddItem(item: Item): void {
-    //add Item
-    this.initParameters();
+    this.inventoryService.addItem(item).subscribe(() => {
+      this.initParameters();
+    });
     this.messageService.add({
       severity: this.successNotificationClass,
       summary: this.translocoService.translate('inventory.notificationService.itemAddedHeader') + item.name,

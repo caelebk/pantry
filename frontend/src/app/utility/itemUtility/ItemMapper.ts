@@ -30,3 +30,18 @@ export function mapItemDTOToItem(
         notes: itemDTO.notes || '',
     };
 }
+
+export function mapItemToItemDTO(item: Item): ItemDTO {
+    return {
+        id: item.id,
+        ingredientId: item.ingredientId,
+        label: item.name,
+        quantity: item.quantity,
+        unitId: item.unit.id,
+        locationId: item.location.id,
+        purchaseDate: item.purchaseDate.toISOString(),
+        openedDate: item.openedDate?.toISOString(),
+        expirationDate: item.expirationDate.toISOString(),
+        notes: item.notes,
+    };
+}

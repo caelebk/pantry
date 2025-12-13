@@ -5,7 +5,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UnitService } from './unit.service';
 import { LocationService } from './location.service';
-import { mapItemDTOToItem } from '@utility/itemUtility/ItemMapper';
+import { mapItemDTOToItem, mapItemToItemDTO } from '@utility/itemUtility/ItemMapper';
 import { ApiResponse } from '@models/http.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 
@@ -37,7 +37,8 @@ export class ItemService {
   }
 
   addItem(item: Item) {
-    
+    const itemDTO = mapItemToItemDTO(item);
+    return this.http.post<ApiResponse<ItemDTO>>(this.apiUrl, itemDTO).pipe(mapResponseData<ItemDTO>());
   }
 
   removeItem(item: Item) {
