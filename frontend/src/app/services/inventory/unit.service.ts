@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UnitDTO } from '../../models/unit.model';
-import { ApiResponse } from '../../models/http.model';
-import { mapResponseData } from '../../utility/httpUtility/HttpResponse.operator';
+import { map } from 'rxjs/operators';
+import { UnitDTO, Unit } from '@models/unit.model';
+import { mapUnitDTOToUnit } from '@utility/itemUtility/UnitMapper';
+import { ApiResponse } from '@models/http.model';
+import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +15,15 @@ export class UnitService {
 
     constructor(private http: HttpClient) { }
 
-    getUnits(): Observable<UnitDTO[]> {
-        return this.http.get<ApiResponse<UnitDTO[]>>(this.apiUrl).pipe(mapResponseData());
+    getUnits(): Observable<Unit[]> {
+        return this.http.get<ApiResponse<UnitDTO[]>>(this.apiUrl).pipe(
+            mapResponseData(),
+            map(dtos => dtos.map(mapUnitDTOToUnit))
+        );
     }
 
-    getUnitsById(id: number): Observable<string> {
-        return this.http.get<ApiResponse<string>>(`${this.apiUrl}/${id}`).pipe(mapResponseData());
+    getUnitsById(id: number): Observable<Unit> {
+        return this.http.get<ApiResponse<UnitDTO>>(`${this.apiUrl}/${id}`).pipe(mapResponseData(), map(mapUnitDTOToUnit));
     }
 
     convertUnits(quantity: number, fromUnitId: number, toUnitId: number): Observable<number> {

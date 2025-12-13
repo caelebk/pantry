@@ -1,4 +1,4 @@
-import { Component, inject, HostListener } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -6,6 +6,8 @@ import { AddItemFormComponent } from './inventory-components/add-item-form/add-i
 import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
 import { StatCardComponent } from '@components/stat-card/stat-card.component';
 import { Item } from '@models/items.model';
+import { Unit } from '@models/unit.model';
+import { Location } from '@models/location.model';
 import { ItemService } from '@services/inventory/item.service';
 import { isExpired, sortItemsByBestBeforeDate } from '@utility/itemUtility/ItemUtility';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -16,6 +18,8 @@ import { FormsModule } from '@angular/forms';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
+import { UnitService } from '@services/inventory/unit.service';
+import { LocationService } from '@services/inventory/location.service';
 
 @Component({
   selector: 'app-inventory',
@@ -49,14 +53,11 @@ export class InventoryComponent {
   public expiringSoonItemsCount: number = 0;
   public expiredItemsCount: number = 0;
   public items: Item[] = [];
+  public units: Unit[] = [];
+  public locations: Location[] = [];
   
   public showScrollTopButton: boolean = false;
   public searchQuery: string = '';
-  
-  private confirmationService: ConfirmationService = inject(ConfirmationService);
-  private messageService: MessageService = inject(MessageService); 
-  private inventoryService: ItemService = inject(ItemService);
-  private translocoService: TranslocoService = inject(TranslocoService);
 
   public get filteredItems(): Item[] {
     return this.items.filter(item => {
@@ -74,6 +75,15 @@ export class InventoryComponent {
     window.scrollTo({ top: this.scrollLocation, behavior: 'smooth' });
   }
 
+  constructor(
+    private inventoryService: ItemService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private translocoService: TranslocoService,
+    private unitService: UnitService,
+    private locationService: LocationService,
+  ) { }
+
   ngOnInit(): void {
     this.initParameters();
   }
@@ -84,6 +94,12 @@ export class InventoryComponent {
       this.totalItemsCount = this.items.length;
       this.expiringSoonItemsCount = 0;
       this.expiredItemsCount = this.items.filter((item: Item) => isExpired(item)).length;
+    });
+    this.unitService.getUnits().subscribe((units) => {
+      this.units = units;
+    });
+    this.locationService.getLocations().subscribe((locations) => {
+      this.locations = locations;
     });
   }
 
