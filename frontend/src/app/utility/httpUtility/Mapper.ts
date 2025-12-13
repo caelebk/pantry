@@ -1,4 +1,4 @@
-import { Item, ItemDTO, Unit, Location } from "../models/items.model";
+import { Item, ItemDTO, Unit, Location } from "../../models/items.model";
 
 export function mapItemDTOToItem(
     itemDTO: ItemDTO,

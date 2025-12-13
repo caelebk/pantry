@@ -1,4 +1,4 @@
-import { Item } from "../models/items.model";
+import { Item } from "../../models/items.model";
 
 export function isExpired(item: Item): boolean {
     return new Date() > new Date(item.bestBeforeDate);

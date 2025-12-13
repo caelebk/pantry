@@ -1,5 +1,5 @@
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { Item, Location, Unit } from "../models/items.model";
+import { Item, Location, Unit } from "../../models/items.model";
 
 export interface ItemFormControls {
   name: FormControl<string>;

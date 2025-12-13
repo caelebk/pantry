@@ -7,7 +7,7 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
 import { Item } from '../../models/items.model';
 import { ItemService } from '../../services/inventory/item.service';
-import { isExpired, sortItemsByBestBeforeDate } from '../../utility/ItemUtility';
+import { isExpired, sortItemsByBestBeforeDate } from '../../utility/itemUtility/ItemUtility';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';

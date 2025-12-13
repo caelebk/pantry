@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LocationDTO } from '../../models/location.model';
 import { ApiResponse } from '../../models/http.model';
-import { mapResponseData } from '../../utility/HttpResponse.operator';
+import { mapResponseData } from '../../utility/httpUtility/HttpResponse.operator';
 
 @Injectable({
   providedIn: 'root'

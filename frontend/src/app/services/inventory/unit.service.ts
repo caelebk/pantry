@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UnitDTO } from '../../models/unit.model';
 import { ApiResponse } from '../../models/http.model';
-import { mapResponseData } from '../../utility/HttpResponse.operator';
+import { mapResponseData } from '../../utility/httpUtility/HttpResponse.operator';
 
 @Injectable({
   providedIn: 'root'
