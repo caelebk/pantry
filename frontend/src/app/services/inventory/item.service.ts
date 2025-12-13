@@ -28,8 +28,8 @@ export class ItemService {
         locations: this.locationService.getLocations()
     }).pipe(
         map(({ items, units, locations }) => {
-            const unitMap = new Map(units.map(u => [u.id, u.name]));
-            const locationMap = new Map(locations.map(l => [l.id, l.name]));
+            const unitMap = new Map(units.map(u => [u.id, u]));
+            const locationMap = new Map(locations.map(l => [l.id, l]));
 
             return items.map((item: ItemDTO) => mapItemDTOToItem(item, unitMap, locationMap));
         })

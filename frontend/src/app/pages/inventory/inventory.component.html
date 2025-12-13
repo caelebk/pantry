@@ -21,7 +21,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Add New Item Form -->
     <div class="lg:col-span-1">
-        <add-item-form (addItem$)="onAddItem($event)"></add-item-form>
+        <add-item-form (addItem$)="onAddItem($event)" [units]="units" [locations]="locations"></add-item-form>
     </div>
 
     <!-- Inventory List -->
@@ -41,7 +41,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
             @for (item of filteredItems; track item.name) {
-            <item-card [item]="item" (delete)="onDeleteItem(item)" (update)="onUpdateItem(item, $event)"></item-card>
+            <item-card [item]="item" [units]="units" [locations]="locations" (delete)="onDeleteItem(item)" (update)="onUpdateItem(item, $event)"></item-card>
             }
         </div>
     </div>

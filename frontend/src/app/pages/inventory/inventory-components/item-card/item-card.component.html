@@ -34,14 +34,14 @@
                 <span class="text-xs text-gray-500 dark:text-gray-400 block mb-0.5">
                     {{ 'itemCard.location' | transloco }}
                 </span>
-                <span class="font-medium text-gray-900 dark:text-gray-200 truncate block">{{ item().location }}</span>
+                <span class="font-medium text-gray-900 dark:text-gray-200 truncate block">{{ item().location.name }}</span>
             </div>
             <div>
                 <span class="text-xs text-gray-500 dark:text-gray-400 block mb-0.5">
                     {{ 'itemCard.quantity' | transloco }}
                 </span>
                 <span class="font-medium text-gray-900 dark:text-gray-200 truncate block">
-                    {{ item().quantity }} {{ item().unit }}
+                    {{ item().quantity }} {{ item().unit.name }}
                 </span>
             </div>
             <div>
@@ -96,5 +96,5 @@
 
 <p-dialog [visible]="displayEditDialog()" (visibleChange)="displayEditDialog.set($event)" [modal]="true"
     [dismissableMask]="true" [style]="{width: '50vw'}" [header]="'Edit ' + item().name">
-    <edit-item-form [itemToEdit]="item()" (updateItem$)="onEditItem($event)"></edit-item-form>
+    <edit-item-form [itemToEdit]="item()" [units]="units()" [locations]="locations()" (updateItem$)="onEditItem($event)"></edit-item-form>
 </p-dialog>

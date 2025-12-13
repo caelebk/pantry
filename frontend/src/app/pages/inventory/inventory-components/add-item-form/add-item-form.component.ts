@@ -1,8 +1,8 @@
-import { Component, Output } from '@angular/core';
+import { Component, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Item, Unit, Location } from '@models/items.model';
+import { Item } from '@models/items.model';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { InputNumber } from 'primeng/inputnumber';
@@ -11,6 +11,8 @@ import { Textarea } from 'primeng/textarea';
 import { PanelModule } from 'primeng/panel';
 import { Subject } from 'rxjs';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
+import { Unit } from '@models/unit.model';
+import { Location } from '@models/location.model';
 
 @Component({
   selector: 'add-item-form',
@@ -29,11 +31,10 @@ import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/I
   templateUrl: './add-item-form.component.html',
 })
 export class AddItemFormComponent {
+  @Input() units: Unit[] = [];
+  @Input() locations: Location[] = [];
 
   @Output() addItem$ = new Subject<Item>();
-  
-  units: Unit[] = Object.values(Unit);
-  locations: Location[] = Object.values(Location);
 
   addItemForm: FormGroup<ItemFormControls> = createItemForm();
 
@@ -45,11 +46,9 @@ export class AddItemFormComponent {
         this.addItemForm.reset({
           name: '',
           quantity: 1,
-          unit: Unit.Gram,
           purchaseDate: new Date(),
           openedDate: null,
           bestBeforeDate: null,
-          location: Location.Shelf,
           notes: ''
         });
       }

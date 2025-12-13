@@ -13,7 +13,7 @@
                     {{ 'addItemForm.location' | transloco }}
                     <span class="text-red-500">*</span>
                 </label>
-                <p-select [options]="locations" formControlName="location"
+                <p-select [options]="locations" formControlName="location" optionLabel="name"
                     class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"
                     appendTo="body"></p-select>
             </div>
@@ -32,7 +32,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ 'addItemForm.unit' |
                     transloco }}<span class="text-red-500">*</span></label>
-                <p-select [options]="units" formControlName="unit"
+                <p-select [options]="units" formControlName="unit" optionLabel="name"
                     class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"
                     appendTo="body"></p-select>
             </div>

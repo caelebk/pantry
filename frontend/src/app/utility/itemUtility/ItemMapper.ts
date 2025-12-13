@@ -1,16 +1,21 @@
-import { Item, ItemDTO, Unit, Location } from "../../models/items.model";
+import { Item, ItemDTO } from "@models/items.model";
+import { Unit } from "@models/unit.model";
+import { Location } from "@models/location.model";
 
 export function mapItemDTOToItem(
     itemDTO: ItemDTO,
-    unitMap: Map<number, string>,
-    locationMap: Map<number, string>
+    unitMap: Map<number, Unit>,
+    locationMap: Map<number, Location>
 ): Item {
-    const unitName = unitMap.get(itemDTO.unitId);
-    const locationName = locationMap.get(itemDTO.locationId);
+    const unit = unitMap.get(itemDTO.unitId);
+    const location = locationMap.get(itemDTO.locationId);
 
-    // Cast string name to Enum. Ideally valid validation should happen here.
-    const unit: Unit = unitName ? (unitName as unknown as Unit) : Unit.Piece;
-    const location: Location = locationName ? (locationName as unknown as Location) : Location.Pantry;
+    if (!unit) {
+        throw new Error(`Unit with ID ${itemDTO.unitId} not found for item ${itemDTO.id}`);
+    }
+    if (!location) {
+        throw new Error(`Location with ID ${itemDTO.locationId} not found for item ${itemDTO.id}`);
+    }
 
     return {
         id: itemDTO.id.toString(),
