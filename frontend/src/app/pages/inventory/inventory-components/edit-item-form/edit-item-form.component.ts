@@ -2,7 +2,7 @@ import { Component, input, Output, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Item, Unit, Location } from '../../../../models/items.model';
+import { Item, Unit, Location } from '@models/items.model';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { InputNumber } from 'primeng/inputnumber';
@@ -10,7 +10,7 @@ import { DatePicker } from 'primeng/datepicker';
 import { Textarea } from 'primeng/textarea';
 import { PanelModule } from 'primeng/panel';
 import { Subject } from 'rxjs';
-import { createItemForm, ItemFormControls, toItem } from '../../../../utility/itemUtility/ItemFormUtility';
+import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
 
 @Component({
   selector: 'edit-item-form',
