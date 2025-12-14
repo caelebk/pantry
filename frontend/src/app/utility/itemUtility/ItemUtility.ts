@@ -12,12 +12,15 @@ export function itemProgress(item: Item): number {
     const startDate = new Date(item.purchaseDate);
     const currentDate = new Date();
     const endDate = new Date(item.expirationDate);
-    const progressPercentage = (currentDate.getTime() - startDate.getTime()) / (endDate.getTime() - startDate.getTime()) * 100;
+    const progressPercentage = (currentDate.getTime() - startDate.getTime()) /
+        (endDate.getTime() - startDate.getTime()) * 100;
     return progressPercentage;
 }
 
-export function sortItemsByBestBeforeDate(items: Item[]): Item[] {
-    return items.sort((a: Item, b: Item) => a.expirationDate?.getTime() - b.expirationDate?.getTime());
+export function sortItemsByExpirationDate(items: Item[]): Item[] {
+    return items.sort((a: Item, b: Item) =>
+        a.expirationDate?.getTime() - b.expirationDate?.getTime()
+    );
 }
 
 export function getTimeDifferenceString(date1: Date, date2: Date): string {
@@ -37,12 +40,12 @@ export function getTimeDifferenceString(date1: Date, date2: Date): string {
     let result: string;
     if (absDiffDays >= daysInAYear) {
         const years = Math.floor(absDiffDays / daysInAYear);
-        result = `${years} year${years > 1 ? 's' : ''}`;
+        result = `${years} year${years > 1 ? "s" : ""}`;
     } else if (absDiffDays >= daysInAMonth) {
         const months = Math.floor(absDiffDays / daysInAMonth);
-        result = `${months} month${months > 1 ? 's' : ''}`;
+        result = `${months} month${months > 1 ? "s" : ""}`;
     } else {
-        result = `${absDiffDays} day${absDiffDays !== 1 ? 's' : ''}`;
+        result = `${absDiffDays} day${absDiffDays !== 1 ? "s" : ""}`;
     }
 
     return isExpired ? `${result} expired` : result;

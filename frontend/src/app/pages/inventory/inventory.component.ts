@@ -12,7 +12,7 @@ import { LocationService } from "@services/inventory/location.service";
 import { UnitService } from "@services/inventory/unit.service";
 import {
   isExpired,
-  sortItemsByBestBeforeDate,
+  sortItemsByExpirationDate,
 } from "@utility/itemUtility/ItemUtility";
 import { ConfirmationService, MessageService } from "primeng/api";
 import { Button } from "primeng/button";
@@ -114,7 +114,7 @@ export class InventoryComponent {
 
   private initParameters(): void {
     this.inventoryService.getItems().subscribe((items) => {
-      this.items = sortItemsByBestBeforeDate(items);
+      this.items = sortItemsByExpirationDate(items);
       this.totalItemsCount = this.items.length;
       this.expiringSoonItemsCount = 0;
       this.expiredItemsCount = this.items.filter((item: Item) =>
