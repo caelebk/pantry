@@ -22,25 +22,21 @@ export class ItemService {
   constructor(
     private http: HttpClient,
     private unitService: UnitService,
-    private locationService: LocationService
+    private locationService: LocationService,
   ) {}
 
   getItems(): Observable<Item[]> {
     return forkJoin({
-      items: this.http
-        .get<ApiResponse<ItemDTO[]>>(this.apiUrl)
-        .pipe(mapResponseData<ItemDTO[]>()),
+      items: this.http.get<ApiResponse<ItemDTO[]>>(this.apiUrl).pipe(mapResponseData<ItemDTO[]>()),
       units: this.unitService.getUnits(),
       locations: this.locationService.getLocations(),
     }).pipe(
       map(({ items, units, locations }) => {
-        const unitMap = new Map(units.map(u => [u.id, u]));
-        const locationMap = new Map(locations.map(l => [l.id, l]));
+        const unitMap = new Map(units.map((u) => [u.id, u]));
+        const locationMap = new Map(locations.map((l) => [l.id, l]));
 
-        return items.map((item: ItemDTO) =>
-          mapItemDTOToItem(item, unitMap, locationMap)
-        );
-      })
+        return items.map((item: ItemDTO) => mapItemDTOToItem(item, unitMap, locationMap));
+      }),
     );
   }
 

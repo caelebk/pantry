@@ -1,12 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  computed,
-  EventEmitter,
-  input,
-  InputSignal,
-  Output,
-} from '@angular/core';
+import { Component, computed, EventEmitter, input, InputSignal, Output } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Tab } from './tabs.model';
 
@@ -22,16 +15,10 @@ export class TabsComponent {
 
   tabs = Tab;
 
-  readonly isDashboardActive = computed(
-    () => this.activeTab() === Tab.Dashboard
-  );
-  readonly isInventoryActive = computed(
-    () => this.activeTab() === Tab.Inventory
-  );
+  readonly isDashboardActive = computed(() => this.activeTab() === Tab.Dashboard);
+  readonly isInventoryActive = computed(() => this.activeTab() === Tab.Inventory);
   readonly isRecipesActive = computed(() => this.activeTab() === Tab.Recipes);
-  readonly isMealPlannerActive = computed(
-    () => this.activeTab() === Tab.MealPlanner
-  );
+  readonly isMealPlannerActive = computed(() => this.activeTab() === Tab.MealPlanner);
 
   selectTab(tab: Tab) {
     this.tabSelected.emit(tab);

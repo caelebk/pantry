@@ -4,11 +4,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
-import {
-  getTimeDifferenceString,
-  isExpired,
-  itemProgress,
-} from '@utility/itemUtility/ItemUtility';
+import { getTimeDifferenceString, isExpired, itemProgress } from '@utility/itemUtility/ItemUtility';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { Subject } from 'rxjs';
@@ -18,13 +14,7 @@ import { EditItemFormComponent } from '../edit-item-form/edit-item-form.componen
 @Component({
   selector: 'item-card',
   standalone: true,
-  imports: [
-    CommonModule,
-    TranslocoModule,
-    DialogModule,
-    ButtonModule,
-    EditItemFormComponent,
-  ],
+  imports: [CommonModule, TranslocoModule, DialogModule, ButtonModule, EditItemFormComponent],
   templateUrl: './item-card.component.html',
   styles: [':host { display: block; height: 100%; }'],
 })
@@ -39,7 +29,7 @@ export class ItemCardComponent {
   public expired = computed(() => isExpired(this.item()));
   public itemProgress = computed(() => itemProgress(this.item()));
   public timeRemaining = computed(() =>
-    getTimeDifferenceString(new Date(), this.item().expirationDate)
+    getTimeDifferenceString(new Date(), this.item().expirationDate),
   );
 
   public displayNoteDialog = signal(false);

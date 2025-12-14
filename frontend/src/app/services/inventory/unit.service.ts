@@ -18,7 +18,7 @@ export class UnitService {
   getUnits(): Observable<Unit[]> {
     return this.http.get<ApiResponse<UnitDTO[]>>(this.apiUrl).pipe(
       mapResponseData(),
-      map(dtos => dtos.map(mapUnitDTOToUnit))
+      map((dtos) => dtos.map(mapUnitDTOToUnit)),
     );
   }
 
@@ -28,20 +28,14 @@ export class UnitService {
       .pipe(mapResponseData(), map(mapUnitDTOToUnit));
   }
 
-  convertUnits(
-    quantity: number,
-    fromUnitId: number,
-    toUnitId: number
-  ): Observable<number> {
+  convertUnits(quantity: number, fromUnitId: number, toUnitId: number): Observable<number> {
     const urlParams = new URLSearchParams({
       quantity: quantity.toString(),
       fromUnit: fromUnitId.toString(),
       toUnit: toUnitId.toString(),
     });
     return this.http
-      .get<
-        ApiResponse<number>
-      >(`${this.apiUrl}/convert?${urlParams.toString()}`)
+      .get<ApiResponse<number>>(`${this.apiUrl}/convert?${urlParams.toString()}`)
       .pipe(mapResponseData());
   }
 }

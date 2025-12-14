@@ -7,12 +7,7 @@ import { MealCardComponent } from './meal-planner-components/meal-card/meal-card
 @Component({
   selector: 'app-meal-planner',
   standalone: true,
-  imports: [
-    CommonModule,
-    TranslocoModule,
-    InventoryCardComponent,
-    MealCardComponent,
-  ],
+  imports: [CommonModule, TranslocoModule, InventoryCardComponent, MealCardComponent],
   templateUrl: './meal-planner.component.html',
 })
 export class MealPlannerComponent {}

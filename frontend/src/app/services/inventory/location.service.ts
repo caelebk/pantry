@@ -18,7 +18,7 @@ export class LocationService {
   getLocations(): Observable<Location[]> {
     return this.http.get<ApiResponse<LocationDTO[]>>(this.apiUrl).pipe(
       mapResponseData(),
-      map(dtos => dtos.map(mapLocationDTOToLocation))
+      map((dtos) => dtos.map(mapLocationDTOToLocation)),
     );
   }
 

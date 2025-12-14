@@ -10,10 +10,7 @@ import { Unit } from '@models/unit.model';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
-import {
-  isExpired,
-  sortItemsByExpirationDate,
-} from '@utility/itemUtility/ItemUtility';
+import { isExpired, sortItemsByExpirationDate } from '@utility/itemUtility/ItemUtility';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -47,16 +44,10 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
     trigger('fadeInOut', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate(
-          '300ms ease-out',
-          style({ opacity: 1, transform: 'translateY(0)' })
-        ),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
       ]),
       transition(':leave', [
-        animate(
-          '300ms ease-in',
-          style({ opacity: 0, transform: 'translateY(20px)' })
-        ),
+        animate('300ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' })),
       ]),
     ]),
   ],
@@ -82,10 +73,8 @@ export class InventoryComponent {
   public searchQuery: string = '';
 
   public get filteredItems(): Item[] {
-    return this.items.filter(item => {
-      const matchesSearch = item.name
-        .toLowerCase()
-        .includes(this.searchQuery.toLowerCase());
+    return this.items.filter((item) => {
+      const matchesSearch = item.name.toLowerCase().includes(this.searchQuery.toLowerCase());
       return matchesSearch;
     });
   }
@@ -105,7 +94,7 @@ export class InventoryComponent {
     private confirmationService: ConfirmationService,
     private translocoService: TranslocoService,
     private unitService: UnitService,
-    private locationService: LocationService
+    private locationService: LocationService,
   ) {}
 
   ngOnInit(): void {
@@ -113,18 +102,16 @@ export class InventoryComponent {
   }
 
   private initParameters(): void {
-    this.inventoryService.getItems().subscribe(items => {
+    this.inventoryService.getItems().subscribe((items) => {
       this.items = sortItemsByExpirationDate(items);
       this.totalItemsCount = this.items.length;
       this.expiringSoonItemsCount = 0;
-      this.expiredItemsCount = this.items.filter((item: Item) =>
-        isExpired(item)
-      ).length;
+      this.expiredItemsCount = this.items.filter((item: Item) => isExpired(item)).length;
     });
-    this.unitService.getUnits().subscribe(units => {
+    this.unitService.getUnits().subscribe((units) => {
       this.units = units;
     });
-    this.locationService.getLocations().subscribe(locations => {
+    this.locationService.getLocations().subscribe((locations) => {
       this.locations = locations;
     });
   }
@@ -136,23 +123,16 @@ export class InventoryComponent {
     this.messageService.add({
       severity: this.successNotificationClass,
       summary:
-        this.translocoService.translate(
-          'inventory.notificationService.itemAddedHeader'
-        ) + item.name,
-      detail: this.translocoService.translate(
-        'inventory.notificationService.itemAddedDescription'
-      ),
+        this.translocoService.translate('inventory.notificationService.itemAddedHeader') +
+        item.name,
+      detail: this.translocoService.translate('inventory.notificationService.itemAddedDescription'),
     });
   }
 
   public onDeleteItem(item: Item): void {
     this.confirmationService.confirm({
-      header: this.translocoService.translate(
-        'inventory.removeConfirmationService.header'
-      ),
-      message: this.translocoService.translate(
-        'inventory.removeConfirmationService.message'
-      ),
+      header: this.translocoService.translate('inventory.removeConfirmationService.header'),
+      message: this.translocoService.translate('inventory.removeConfirmationService.message'),
       icon: this.removeConfirmationServiceIcon,
       accept: () => {
         this.inventoryService.removeItem(item).subscribe(() => {
@@ -161,11 +141,10 @@ export class InventoryComponent {
         this.messageService.add({
           severity: this.successNotificationClass,
           summary:
-            this.translocoService.translate(
-              'inventory.notificationService.itemRemovalHeader'
-            ) + item.name,
+            this.translocoService.translate('inventory.notificationService.itemRemovalHeader') +
+            item.name,
           detail: this.translocoService.translate(
-            'inventory.notificationService.itemRemovalDescription'
+            'inventory.notificationService.itemRemovalDescription',
           ),
         });
       },
@@ -174,10 +153,10 @@ export class InventoryComponent {
           severity: this.errorNotificationClass,
           summary:
             this.translocoService.translate(
-              'inventory.notificationService.itemRemovalFailedHeader'
+              'inventory.notificationService.itemRemovalFailedHeader',
             ) + item.name,
           detail: this.translocoService.translate(
-            'inventory.notificationService.itemRemovalFailedCancelledDescription'
+            'inventory.notificationService.itemRemovalFailedCancelledDescription',
           ),
         });
       },
@@ -190,11 +169,10 @@ export class InventoryComponent {
       this.messageService.add({
         severity: this.successNotificationClass,
         summary:
-          this.translocoService.translate(
-            'inventory.notificationService.itemUpdatedHeader'
-          ) + updatedItem.name,
+          this.translocoService.translate('inventory.notificationService.itemUpdatedHeader') +
+          updatedItem.name,
         detail: this.translocoService.translate(
-          'inventory.notificationService.itemUpdatedDescription'
+          'inventory.notificationService.itemUpdatedDescription',
         ),
       });
     });

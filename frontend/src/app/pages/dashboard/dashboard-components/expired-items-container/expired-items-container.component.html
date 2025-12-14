@@ -1,13 +1,11 @@
 <div
-  class="bg-red-50 dark:bg-[#1a1a1a] rounded-xl border-l-4 border-red-500 shadow-sm p-6 transition-colors duration-200"
->
+  class="bg-red-50 dark:bg-[#1a1a1a] rounded-xl border-l-4 border-red-500 shadow-sm p-6 transition-colors duration-200">
   <div class="flex justify-between items-center mb-6">
     <h3 class="text-lg font-bold text-gray-900 dark:text-white">
       {{ 'dashboard.expiredItems.title' | transloco }}
     </h3>
     <div
-      class="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold"
-    >
+      class="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
       {{ expiredItems.length }}
     </div>
   </div>
@@ -15,12 +13,9 @@
   <div class="space-y-3">
     @for (item of visibleExpiredItems; track item.name) {
       <div
-        class="bg-white dark:bg-[#262626] p-4 rounded-lg flex justify-between items-center shadow-sm"
-      >
+        class="bg-white dark:bg-[#262626] p-4 rounded-lg flex justify-between items-center shadow-sm">
         <div>
-          <h4
-            class="font-bold text-gray-900 dark:text-white line-through decoration-gray-500"
-          >
+          <h4 class="font-bold text-gray-900 dark:text-white line-through decoration-gray-500">
             {{ item.name }}
           </h4>
           <p class="text-xs text-gray-500 dark:text-gray-400">

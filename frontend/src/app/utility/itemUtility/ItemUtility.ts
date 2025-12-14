@@ -13,16 +13,14 @@ export function itemProgress(item: Item): number {
   const currentDate = new Date();
   const endDate = new Date(item.expirationDate);
   const progressPercentage =
-    ((currentDate.getTime() - startDate.getTime()) /
-      (endDate.getTime() - startDate.getTime())) *
+    ((currentDate.getTime() - startDate.getTime()) / (endDate.getTime() - startDate.getTime())) *
     100;
   return progressPercentage;
 }
 
 export function sortItemsByExpirationDate(items: Item[]): Item[] {
   return items.sort(
-    (a: Item, b: Item) =>
-      a.expirationDate?.getTime() - b.expirationDate?.getTime()
+    (a: Item, b: Item) => a.expirationDate?.getTime() - b.expirationDate?.getTime(),
   );
 }
 

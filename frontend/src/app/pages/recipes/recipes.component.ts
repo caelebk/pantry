@@ -7,12 +7,7 @@ import { RecipeCardComponent } from './recipe-components/recipe-card/recipe-card
 @Component({
   selector: 'app-recipes',
   standalone: true,
-  imports: [
-    CommonModule,
-    TranslocoModule,
-    AddRecipeFormComponent,
-    RecipeCardComponent,
-  ],
+  imports: [CommonModule, TranslocoModule, AddRecipeFormComponent, RecipeCardComponent],
   templateUrl: './recipes.component.html',
 })
 export class RecipesComponent {

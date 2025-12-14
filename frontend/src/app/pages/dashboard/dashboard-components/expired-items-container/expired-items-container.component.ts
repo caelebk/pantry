@@ -29,9 +29,7 @@ export class ExpiredItemsContainerComponent implements OnInit {
     this.expiredItemsCount = this.expiredItems.length;
     this.hiddenItemsCount = this.expiredItemsCount - this.maxExpiredItems;
     this.hiddenItemsMessage =
-      this.hiddenItemsCount > 0
-        ? `+${this.hiddenItemsCount} more expired items`
-        : '';
+      this.hiddenItemsCount > 0 ? `+${this.hiddenItemsCount} more expired items` : '';
     this.visibleExpiredItems = this.expiredItems.slice(0, this.maxExpiredItems);
   }
 }
