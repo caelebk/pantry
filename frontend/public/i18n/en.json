@@ -1,169 +1,169 @@
 {
-    "app": {
-        "name": "Pantry"
+  "app": {
+    "name": "Pantry"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventory",
+    "recipes": "Recipes",
+    "mealPlanner": "Meal Planner"
+  },
+  "dashboard": {
+    "title": "Welcome Back",
+    "subtitle": "Here's what's happening in your kitchen today",
+    "stats": {
+      "totalItems": "Total Items",
+      "expiringSoon": "Expiring Soon",
+      "expired": "Expired",
+      "canMake": "Can Make",
+      "inInventory": "in inventory",
+      "within7Days": "within 7 days",
+      "needsRemoval": "needs removal",
+      "recipes": "recipes"
     },
-    "nav": {
-        "dashboard": "Dashboard",
-        "inventory": "Inventory",
-        "recipes": "Recipes",
-        "mealPlanner": "Meal Planner"
+    "expiredItems": {
+      "title": "Expired Items"
     },
-    "dashboard": {
-        "title": "Welcome Back",
-        "subtitle": "Here's what's happening in your kitchen today",
-        "stats": {
-            "totalItems": "Total Items",
-            "expiringSoon": "Expiring Soon",
-            "expired": "Expired",
-            "canMake": "Can Make",
-            "inInventory": "in inventory",
-            "within7Days": "within 7 days",
-            "needsRemoval": "needs removal",
-            "recipes": "recipes"
-        },
-        "expiredItems": {
-            "title": "Expired Items"
-        },
-        "byCategory": {
-            "title": "By Category"
-        },
-        "quickActions": {
-            "title": "Quick Actions",
-            "addItem": "Add Item",
-            "addRecipe": "Add Recipe",
-            "planMeals": "Plan Meals"
-        }
+    "byCategory": {
+      "title": "By Category"
     },
-    "inventory": {
-        "title": "Kitchen Inventory",
-        "subtitle": "Track your ingredients and manage expiration dates",
-        "yourInventory": "Your Inventory",
-        "stats": {
-            "totalItems": "Total Items",
-            "expiringSoon": "Expiring Soon",
-            "expired": "Expired"
-        },
-        "filters": {
-            "searchPlaceholder": "Search items...",
-            "categoryPlaceholder": "Filter by Category"
-        },
-        "notificationService": {
-            "itemAddedHeader": "Added: ",
-            "itemAddedDescription": "Item successfully added.",
-            "itemRemovalHeader": "Remove: ",
-            "itemRemovalDescription": "Item successfully removed.",
-            "itemRemovalFailedHeader": "Failed to remove: ",
-            "itemRemovalFailedCancelledDescription": "Cancelled remove item action.",
-            "itemUpdatedHeader": "Updated: ",
-            "itemUpdatedDescription": "Item successfully updated."
-        },
-        "removeConfirmationService": {
-            "header": "Remove Item",
-            "message": "Are you sure you want to remove this item?",
-            "cancelButton": "Cancel",
-            "removeButton": "Remove"
-        }
-    },
-    "recipes": {
-        "title": "My Recipes",
-        "subtitle": "Manage your favorite recipes and plan meals",
-        "yourRecipes": "Your Recipes"
-    },
-    "mealPlanner": {
-        "title": "Meal Planner",
-        "subtitle": "Find recipes you can make with your current inventory",
-        "currentInventory": "Current Inventory",
-        "almostReady": "Almost Ready",
-        "missingIngredients": "Missing ingredients:",
-        "missing": "Missing",
-        "ingredients": "ingredients",
-        "sampleData": {
-            "simplePasta": "Simple Pasta",
-            "simplePastaDesc": "Classic pasta dish with olive oil and garlic",
-            "simpleOmelette": "Simple Omelette",
-            "simpleOmeletteDesc": "Quick and easy omelette",
-            "pasta": "Pasta",
-            "oliveOil": "Olive Oil",
-            "garlic": "Garlic",
-            "allPurposeFlour": "All-Purpose Flour",
-            "boxes": "boxes",
-            "bottles": "bottles",
-            "cloves": "cloves",
-            "kg": "kg",
-            "need": "need",
-            "have": "have",
-            "eggs": "Eggs",
-            "butter": "Butter",
-            "pieces": "pieces",
-            "tbsp": "tbsp",
-            "g": "g"
-        }
-    },
-    "addItemForm": {
-        "title": "Add New Item",
-        "itemName": "Item Name",
-        "itemNamePlaceholder": "e.g., Chicken Breast",
-        "category": "Category",
-        "quantity": "Quantity",
-        "unit": "Unit",
-        "purchaseDate": "Purchase Date",
-        "expirationDate": "Expiration Date",
-        "notes": "Notes",
-        "notesPlaceholder": "Optional notes...",
-        "optionalDetails": "Optional Details",
-        "addButton": "Add Item",
-        "editTitle": "Edit Item",
-        "updateButton": "Update Item",
-        "openedDate": "Opened Date",
-        "location": "Location"
-    },
-    "addRecipeForm": {
-        "title": "Add New Recipe",
-        "recipeName": "Recipe Name",
-        "recipeNamePlaceholder": "e.g., Chocolate Cake",
-        "description": "Description",
-        "descriptionPlaceholder": "Brief description...",
-        "servings": "Servings",
-        "difficulty": "Difficulty",
-        "prepTime": "Prep Time (min)",
-        "cookTime": "Cook Time (min)",
-        "tags": "Tags",
-        "tagsLabel": "Tags (comma-separated)",
-        "tagsPlaceholder": "e.g., Italian, Quick, Vegetarian",
-        "ingredients": "Ingredients",
-        "ingredientsNamePlaceholder": "Name",
-        "ingredientsUnitPlaceholder": "Unit",
-        "instructions": "Instructions",
-        "instructionsStepPlaceholder": "Step...",
-        "addButton": "Add Recipe",
-        "addIngredientButton": "Add",
-        "addInstructionButton": "Add",
-        "difficulties": {
-            "easy": "Easy",
-            "medium": "Medium",
-            "hard": "Hard"
-        }
-    },
-    "itemCard": {
-        "category": "Category:",
-        "quantity": "Quantity:",
-        "purchaseDate": "Purchase Date:",
-        "bestBefore": "Expiration Date:",
-        "location": "Location:",
-        "openedDate": "Opened Date:",
-        "notes": "Notes:",
-        "timeRemaining": "Time Remaining",
-        "expired": "(Expired)"
-    },
-    "recipeCard": {
-        "servings": "Servings",
-        "prepTime": "Prep Time",
-        "cookTime": "Cook Time",
-        "totalTime": "Total Time",
-        "ingredients": "Ingredients",
-        "instructions": "Instructions"
-    },
-    "common": {
-        "expired": "Expired"
+    "quickActions": {
+      "title": "Quick Actions",
+      "addItem": "Add Item",
+      "addRecipe": "Add Recipe",
+      "planMeals": "Plan Meals"
     }
+  },
+  "inventory": {
+    "title": "Kitchen Inventory",
+    "subtitle": "Track your ingredients and manage expiration dates",
+    "yourInventory": "Your Inventory",
+    "stats": {
+      "totalItems": "Total Items",
+      "expiringSoon": "Expiring Soon",
+      "expired": "Expired"
+    },
+    "filters": {
+      "searchPlaceholder": "Search items...",
+      "categoryPlaceholder": "Filter by Category"
+    },
+    "notificationService": {
+      "itemAddedHeader": "Added: ",
+      "itemAddedDescription": "Item successfully added.",
+      "itemRemovalHeader": "Remove: ",
+      "itemRemovalDescription": "Item successfully removed.",
+      "itemRemovalFailedHeader": "Failed to remove: ",
+      "itemRemovalFailedCancelledDescription": "Cancelled remove item action.",
+      "itemUpdatedHeader": "Updated: ",
+      "itemUpdatedDescription": "Item successfully updated."
+    },
+    "removeConfirmationService": {
+      "header": "Remove Item",
+      "message": "Are you sure you want to remove this item?",
+      "cancelButton": "Cancel",
+      "removeButton": "Remove"
+    }
+  },
+  "recipes": {
+    "title": "My Recipes",
+    "subtitle": "Manage your favorite recipes and plan meals",
+    "yourRecipes": "Your Recipes"
+  },
+  "mealPlanner": {
+    "title": "Meal Planner",
+    "subtitle": "Find recipes you can make with your current inventory",
+    "currentInventory": "Current Inventory",
+    "almostReady": "Almost Ready",
+    "missingIngredients": "Missing ingredients:",
+    "missing": "Missing",
+    "ingredients": "ingredients",
+    "sampleData": {
+      "simplePasta": "Simple Pasta",
+      "simplePastaDesc": "Classic pasta dish with olive oil and garlic",
+      "simpleOmelette": "Simple Omelette",
+      "simpleOmeletteDesc": "Quick and easy omelette",
+      "pasta": "Pasta",
+      "oliveOil": "Olive Oil",
+      "garlic": "Garlic",
+      "allPurposeFlour": "All-Purpose Flour",
+      "boxes": "boxes",
+      "bottles": "bottles",
+      "cloves": "cloves",
+      "kg": "kg",
+      "need": "need",
+      "have": "have",
+      "eggs": "Eggs",
+      "butter": "Butter",
+      "pieces": "pieces",
+      "tbsp": "tbsp",
+      "g": "g"
+    }
+  },
+  "addItemForm": {
+    "title": "Add New Item",
+    "itemName": "Item Name",
+    "itemNamePlaceholder": "e.g., Chicken Breast",
+    "category": "Category",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "purchaseDate": "Purchase Date",
+    "expirationDate": "Expiration Date",
+    "notes": "Notes",
+    "notesPlaceholder": "Optional notes...",
+    "optionalDetails": "Optional Details",
+    "addButton": "Add Item",
+    "editTitle": "Edit Item",
+    "updateButton": "Update Item",
+    "openedDate": "Opened Date",
+    "location": "Location"
+  },
+  "addRecipeForm": {
+    "title": "Add New Recipe",
+    "recipeName": "Recipe Name",
+    "recipeNamePlaceholder": "e.g., Chocolate Cake",
+    "description": "Description",
+    "descriptionPlaceholder": "Brief description...",
+    "servings": "Servings",
+    "difficulty": "Difficulty",
+    "prepTime": "Prep Time (min)",
+    "cookTime": "Cook Time (min)",
+    "tags": "Tags",
+    "tagsLabel": "Tags (comma-separated)",
+    "tagsPlaceholder": "e.g., Italian, Quick, Vegetarian",
+    "ingredients": "Ingredients",
+    "ingredientsNamePlaceholder": "Name",
+    "ingredientsUnitPlaceholder": "Unit",
+    "instructions": "Instructions",
+    "instructionsStepPlaceholder": "Step...",
+    "addButton": "Add Recipe",
+    "addIngredientButton": "Add",
+    "addInstructionButton": "Add",
+    "difficulties": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    }
+  },
+  "itemCard": {
+    "category": "Category:",
+    "quantity": "Quantity:",
+    "purchaseDate": "Purchase Date:",
+    "bestBefore": "Expiration Date:",
+    "location": "Location:",
+    "openedDate": "Opened Date:",
+    "notes": "Notes:",
+    "timeRemaining": "Time Remaining",
+    "expired": "(Expired)"
+  },
+  "recipeCard": {
+    "servings": "Servings",
+    "prepTime": "Prep Time",
+    "cookTime": "Cook Time",
+    "totalTime": "Total Time",
+    "ingredients": "Ingredients",
+    "instructions": "Instructions"
+  },
+  "common": {
+    "expired": "Expired"
+  }
 }

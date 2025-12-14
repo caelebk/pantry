@@ -1,5 +1,5 @@
-import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, input } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
@@ -8,10 +8,12 @@ import { TranslocoModule } from '@jsverse/transloco';
   imports: [CommonModule, TranslocoModule],
   templateUrl: './meal-card.component.html',
   styles: [
-    `:host {
-      display: block;
-    }`
-  ]
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
 })
 export class MealCardComponent {
   title = input.required<string>();

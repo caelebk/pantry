@@ -1,31 +1,31 @@
-import { animate, style, transition, trigger } from "@angular/animations";
-import { CommonModule } from "@angular/common";
-import { Component, HostListener } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { StatCardComponent } from "@components/stat-card/stat-card.component";
-import { TranslocoModule, TranslocoService } from "@jsverse/transloco";
-import { Item } from "@models/items.model";
-import { Location } from "@models/location.model";
-import { Unit } from "@models/unit.model";
-import { ItemService } from "@services/inventory/item.service";
-import { LocationService } from "@services/inventory/location.service";
-import { UnitService } from "@services/inventory/unit.service";
+import { animate, style, transition, trigger } from '@angular/animations';
+import { CommonModule } from '@angular/common';
+import { Component, HostListener } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { StatCardComponent } from '@components/stat-card/stat-card.component';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { Item } from '@models/items.model';
+import { Location } from '@models/location.model';
+import { Unit } from '@models/unit.model';
+import { ItemService } from '@services/inventory/item.service';
+import { LocationService } from '@services/inventory/location.service';
+import { UnitService } from '@services/inventory/unit.service';
 import {
   isExpired,
   sortItemsByExpirationDate,
-} from "@utility/itemUtility/ItemUtility";
-import { ConfirmationService, MessageService } from "primeng/api";
-import { Button } from "primeng/button";
-import { ConfirmDialogModule } from "primeng/confirmdialog";
-import { IconField } from "primeng/iconfield";
-import { InputIcon } from "primeng/inputicon";
-import { InputText } from "primeng/inputtext";
-import { ToastModule } from "primeng/toast";
-import { AddItemFormComponent } from "./inventory-components/add-item-form/add-item-form.component";
-import { ItemCardComponent } from "./inventory-components/item-card/item-card.component";
+} from '@utility/itemUtility/ItemUtility';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import { InputText } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
+import { AddItemFormComponent } from './inventory-components/add-item-form/add-item-form.component';
+import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
 
 @Component({
-  selector: "app-inventory",
+  selector: 'app-inventory',
   standalone: true,
   imports: [
     CommonModule,
@@ -42,29 +42,29 @@ import { ItemCardComponent } from "./inventory-components/item-card/item-card.co
     InputText,
   ],
   providers: [ConfirmationService, MessageService],
-  templateUrl: "./inventory.component.html",
+  templateUrl: './inventory.component.html',
   animations: [
-    trigger("fadeInOut", [
-      transition(":enter", [
-        style({ opacity: 0, transform: "translateY(20px)" }),
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
         animate(
-          "300ms ease-out",
-          style({ opacity: 1, transform: "translateY(0)" }),
+          '300ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' })
         ),
       ]),
-      transition(":leave", [
+      transition(':leave', [
         animate(
-          "300ms ease-in",
-          style({ opacity: 0, transform: "translateY(20px)" }),
+          '300ms ease-in',
+          style({ opacity: 0, transform: 'translateY(20px)' })
         ),
       ]),
     ]),
   ],
 })
 export class InventoryComponent {
-  private readonly removeConfirmationServiceIcon = "pi pi-exclamation-triangle";
-  private readonly successNotificationClass = "success";
-  private readonly errorNotificationClass = "error";
+  private readonly removeConfirmationServiceIcon = 'pi pi-exclamation-triangle';
+  private readonly successNotificationClass = 'success';
+  private readonly errorNotificationClass = 'error';
   private readonly scrollThreshold = 300;
   private readonly scrollLocation = 0;
 
@@ -79,24 +79,24 @@ export class InventoryComponent {
   public locations: Location[] = [];
 
   public showScrollTopButton: boolean = false;
-  public searchQuery: string = "";
+  public searchQuery: string = '';
 
   public get filteredItems(): Item[] {
-    return this.items.filter((item) => {
-      const matchesSearch = item.name.toLowerCase().includes(
-        this.searchQuery.toLowerCase(),
-      );
+    return this.items.filter(item => {
+      const matchesSearch = item.name
+        .toLowerCase()
+        .includes(this.searchQuery.toLowerCase());
       return matchesSearch;
     });
   }
 
-  @HostListener("window:scroll", [])
+  @HostListener('window:scroll', [])
   onWindowScroll(): void {
     this.showScrollTopButton = window.scrollY > this.scrollThreshold;
   }
 
   public scrollToTop(): void {
-    window.scrollTo({ top: this.scrollLocation, behavior: "smooth" });
+    window.scrollTo({ top: this.scrollLocation, behavior: 'smooth' });
   }
 
   constructor(
@@ -105,7 +105,7 @@ export class InventoryComponent {
     private confirmationService: ConfirmationService,
     private translocoService: TranslocoService,
     private unitService: UnitService,
-    private locationService: LocationService,
+    private locationService: LocationService
   ) {}
 
   ngOnInit(): void {
@@ -113,7 +113,7 @@ export class InventoryComponent {
   }
 
   private initParameters(): void {
-    this.inventoryService.getItems().subscribe((items) => {
+    this.inventoryService.getItems().subscribe(items => {
       this.items = sortItemsByExpirationDate(items);
       this.totalItemsCount = this.items.length;
       this.expiringSoonItemsCount = 0;
@@ -121,10 +121,10 @@ export class InventoryComponent {
         isExpired(item)
       ).length;
     });
-    this.unitService.getUnits().subscribe((units) => {
+    this.unitService.getUnits().subscribe(units => {
       this.units = units;
     });
-    this.locationService.getLocations().subscribe((locations) => {
+    this.locationService.getLocations().subscribe(locations => {
       this.locations = locations;
     });
   }
@@ -135,11 +135,12 @@ export class InventoryComponent {
     });
     this.messageService.add({
       severity: this.successNotificationClass,
-      summary: this.translocoService.translate(
-        "inventory.notificationService.itemAddedHeader",
-      ) + item.name,
+      summary:
+        this.translocoService.translate(
+          'inventory.notificationService.itemAddedHeader'
+        ) + item.name,
       detail: this.translocoService.translate(
-        "inventory.notificationService.itemAddedDescription",
+        'inventory.notificationService.itemAddedDescription'
       ),
     });
   }
@@ -147,10 +148,10 @@ export class InventoryComponent {
   public onDeleteItem(item: Item): void {
     this.confirmationService.confirm({
       header: this.translocoService.translate(
-        "inventory.removeConfirmationService.header",
+        'inventory.removeConfirmationService.header'
       ),
       message: this.translocoService.translate(
-        "inventory.removeConfirmationService.message",
+        'inventory.removeConfirmationService.message'
       ),
       icon: this.removeConfirmationServiceIcon,
       accept: () => {
@@ -159,22 +160,24 @@ export class InventoryComponent {
         });
         this.messageService.add({
           severity: this.successNotificationClass,
-          summary: this.translocoService.translate(
-            "inventory.notificationService.itemRemovalHeader",
-          ) + item.name,
+          summary:
+            this.translocoService.translate(
+              'inventory.notificationService.itemRemovalHeader'
+            ) + item.name,
           detail: this.translocoService.translate(
-            "inventory.notificationService.itemRemovalDescription",
+            'inventory.notificationService.itemRemovalDescription'
           ),
         });
       },
       reject: () => {
         this.messageService.add({
           severity: this.errorNotificationClass,
-          summary: this.translocoService.translate(
-            "inventory.notificationService.itemRemovalFailedHeader",
-          ) + item.name,
+          summary:
+            this.translocoService.translate(
+              'inventory.notificationService.itemRemovalFailedHeader'
+            ) + item.name,
           detail: this.translocoService.translate(
-            "inventory.notificationService.itemRemovalFailedCancelledDescription",
+            'inventory.notificationService.itemRemovalFailedCancelledDescription'
           ),
         });
       },
@@ -186,11 +189,12 @@ export class InventoryComponent {
       this.initParameters();
       this.messageService.add({
         severity: this.successNotificationClass,
-        summary: this.translocoService.translate(
-          "inventory.notificationService.itemUpdatedHeader",
-        ) + updatedItem.name,
+        summary:
+          this.translocoService.translate(
+            'inventory.notificationService.itemUpdatedHeader'
+          ) + updatedItem.name,
         detail: this.translocoService.translate(
-          "inventory.notificationService.itemUpdatedDescription",
+          'inventory.notificationService.itemUpdatedDescription'
         ),
       });
     });

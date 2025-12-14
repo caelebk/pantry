@@ -1,19 +1,27 @@
 <div
-    class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">{{ 'dashboard.quickActions.title' |
-        transloco }}</h3>
-    <div class="space-y-3">
-        <button (click)="onAddItem()"
-            class="w-full cursor-pointer py-2.5 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors">
-            {{ 'dashboard.quickActions.addItem' | transloco }}
-        </button>
-        <button (click)="onAddRecipe()"
-            class="w-full cursor-pointer py-2.5 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors">
-            {{ 'dashboard.quickActions.addRecipe' | transloco }}
-        </button>
-        <button (click)="onPlanMeals()"
-            class="w-full cursor-pointer py-2.5 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors">
-            {{ 'dashboard.quickActions.planMeals' | transloco }}
-        </button>
-    </div>
+  class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200"
+>
+  <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">
+    {{ 'dashboard.quickActions.title' | transloco }}
+  </h3>
+  <div class="space-y-3">
+    <button
+      (click)="onAddItem()"
+      class="w-full cursor-pointer py-2.5 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors"
+    >
+      {{ 'dashboard.quickActions.addItem' | transloco }}
+    </button>
+    <button
+      (click)="onAddRecipe()"
+      class="w-full cursor-pointer py-2.5 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors"
+    >
+      {{ 'dashboard.quickActions.addRecipe' | transloco }}
+    </button>
+    <button
+      (click)="onPlanMeals()"
+      class="w-full cursor-pointer py-2.5 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors"
+    >
+      {{ 'dashboard.quickActions.planMeals' | transloco }}
+    </button>
+  </div>
 </div>

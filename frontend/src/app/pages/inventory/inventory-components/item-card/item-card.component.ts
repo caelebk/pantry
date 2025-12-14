@@ -1,12 +1,16 @@
-import { Component, Output, input, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, Output, computed, input, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
-import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button';
 import { Item } from '@models/items.model';
-import { Unit } from '@models/unit.model';
 import { Location } from '@models/location.model';
-import { getTimeDifferenceString, isExpired, itemProgress } from '@utility/itemUtility/ItemUtility';
+import { Unit } from '@models/unit.model';
+import {
+  getTimeDifferenceString,
+  isExpired,
+  itemProgress,
+} from '@utility/itemUtility/ItemUtility';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 import { Subject } from 'rxjs';
 
 import { EditItemFormComponent } from '../edit-item-form/edit-item-form.component';
@@ -14,9 +18,15 @@ import { EditItemFormComponent } from '../edit-item-form/edit-item-form.componen
 @Component({
   selector: 'item-card',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, DialogModule, ButtonModule, EditItemFormComponent],
+  imports: [
+    CommonModule,
+    TranslocoModule,
+    DialogModule,
+    ButtonModule,
+    EditItemFormComponent,
+  ],
   templateUrl: './item-card.component.html',
-  styles: [':host { display: block; height: 100%; }']
+  styles: [':host { display: block; height: 100%; }'],
 })
 export class ItemCardComponent {
   item = input.required<Item>();
@@ -28,7 +38,9 @@ export class ItemCardComponent {
 
   public expired = computed(() => isExpired(this.item()));
   public itemProgress = computed(() => itemProgress(this.item()));
-  public timeRemaining = computed(() => getTimeDifferenceString(new Date(), this.item().expirationDate));
+  public timeRemaining = computed(() =>
+    getTimeDifferenceString(new Date(), this.item().expirationDate)
+  );
 
   public displayNoteDialog = signal(false);
   public displayEditDialog = signal(false);
@@ -36,7 +48,7 @@ export class ItemCardComponent {
   showNote() {
     this.displayNoteDialog.set(true);
   }
-  
+
   showEdit() {
     this.displayEditDialog.set(true);
   }

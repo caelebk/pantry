@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
@@ -7,11 +7,13 @@ import { TranslocoModule } from '@jsverse/transloco';
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './quick-actions-container.component.html',
-  styles: [`
-    :host {
-      display: block;
-    }
-  `]
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
 })
 export class QuickActionsContainerComponent {
   // Action handlers can be added here
