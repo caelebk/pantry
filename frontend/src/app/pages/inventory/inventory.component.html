@@ -1,51 +1,80 @@
 <!-- Page Title -->
 <div class="mb-8">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ 'inventory.title' | transloco }}</h2>
-    <p class="text-gray-500 dark:text-gray-400 mt-1">{{ 'inventory.subtitle' | transloco }}</p>
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+        {{ "inventory.title" | transloco }}
+    </h2>
+    <p class="text-gray-500 dark:text-gray-400 mt-1">
+        {{ "inventory.subtitle" | transloco }}
+    </p>
 </div>
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <stat-card [title]="'inventory.stats.totalItems' | transloco" [value]="totalItemsCount">
+    <stat-card
+        [title]='"inventory.stats.totalItems" | transloco'
+        [value]="totalItemsCount"
+    >
     </stat-card>
 
-    <stat-card [title]="'inventory.stats.expiringSoon' | transloco" [value]="expiringSoonItemsCount"
-        [valueColor]="'text-[#d97736] dark:text-orange-500'">
+    <stat-card
+        [title]='"inventory.stats.expiringSoon" | transloco'
+        [value]="expiringSoonItemsCount"
+        [valueColor]='"text-[#d97736] dark:text-orange-500"'
+    >
     </stat-card>
 
-    <stat-card [title]="'inventory.stats.expired' | transloco" [value]="expiredItemsCount"
-        [valueColor]="'text-red-600 dark:text-red-500'">
+    <stat-card
+        [title]='"inventory.stats.expired" | transloco'
+        [value]="expiredItemsCount"
+        [valueColor]='"text-red-600 dark:text-red-500"'
+    >
     </stat-card>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Add New Item Form -->
     <div class="lg:col-span-1">
-        <add-item-form (addItem$)="onAddItem($event)"></add-item-form>
+        <add-item-form
+            (addItem$)="onAddItem($event)"
+            [units]="units"
+            [locations]="locations"
+        ></add-item-form>
     </div>
 
     <!-- Inventory List -->
     <div class="lg:col-span-2">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ 'inventory.yourInventory' | transloco }}</h3>
+        <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6"
+        >
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                {{ "inventory.yourInventory" | transloco }}
+            </h3>
 
             <div class="flex flex-col sm:flex-row gap-3">
                 <p-iconfield iconPosition="left">
-                    <p-inputicon class="pi pi-search text-gray-500 dark:text-gray-400" />
-                    <input type="text" pInputText placeholder="{{ 'inventory.filters.searchPlaceholder' | transloco }}"
+                    <p-inputicon
+                        class="pi pi-search text-gray-500 dark:text-gray-400"
+                    />
+                    <input
+                        type="text"
+                        pInputText
+                        placeholder="{{ 'inventory.filters.searchPlaceholder' | transloco }}"
                         [(ngModel)]="searchQuery"
-                        class="w-full sm:w-64 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg focus:!border-primary-500 hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors" />
+                        class="w-full sm:w-64 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg focus:!border-primary-500 hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors"
+                    />
                 </p-iconfield>
-
-                <p-select [options]="categoryOptions" [(ngModel)]="selectedCategory"
-                    placeholder="{{ 'inventory.filters.categoryPlaceholder' | transloco }}" [showClear]="true"
-                    class="w-full sm:w-56 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors"></p-select>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
             @for (item of filteredItems; track item.name) {
-            <item-card [item]="item" (delete)="onDeleteItem(item)" (update)="onUpdateItem(item, $event)"></item-card>
+                <item-card
+                    [item]="item"
+                    [units]="units"
+                    [locations]="locations"
+                    (delete)="onDeleteItem(item)"
+                    (update)="onUpdateItem($event)"
+                ></item-card>
             }
         </div>
     </div>
@@ -53,26 +82,45 @@
 
 <p-toast></p-toast>
 <p-confirmDialog [dismissableMask]="dismissableMask">
-    <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+    <ng-template
+        #headless
+        let-message
+        let-onAccept="onAccept"
+        let-onReject="onReject"
+    >
         @if (message) {
-        <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
-            <i [class]="message.icon" class="!text-5xl"></i>
-            <span class="font-bold text-2xl block mb-2 mt-6">{{ message.header }}</span>
-            <p class="mb-0">{{ message.message }}</p>
-            <div class="flex items-center gap-2 mt-6">
-                <p-button label="{{ 'inventory.removeConfirmationService.cancelButton' | transloco }}"
-                    [outlined]="outlinedCancelButton" (onClick)="onReject()" styleClass="w-32"></p-button>
-                <p-button label="{{ 'inventory.removeConfirmationService.removeButton' | transloco }}"
-                    (onClick)="onAccept()" styleClass="w-32"></p-button>
+            <div
+                class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded"
+            >
+                <i [class]="message.icon" class="!text-5xl"></i>
+                <span class="font-bold text-2xl block mb-2 mt-6">{{
+                        message.header
+                    }}</span>
+                <p class="mb-0">{{ message.message }}</p>
+                <div class="flex items-center gap-2 mt-6">
+                    <p-button
+                        label="{{ 'inventory.removeConfirmationService.cancelButton' | transloco }}"
+                        [outlined]="outlinedCancelButton"
+                        (onClick)="onReject()"
+                        styleClass="w-32"
+                    ></p-button>
+                    <p-button
+                        label="{{ 'inventory.removeConfirmationService.removeButton' | transloco }}"
+                        (onClick)="onAccept()"
+                        styleClass="w-32"
+                    ></p-button>
+                </div>
             </div>
-        </div>
         }
     </ng-template>
 </p-confirmDialog>
 
 @if (showScrollTopButton) {
-<button (click)="scrollToTop()" @fadeInOut
-    class="fixed bottom-8 right-8 p-3 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-all duration-300 z-50 cursor-pointer">
-    <i class="pi pi-arrow-up text-xl"></i>
-</button>
+    <button
+        (click)="scrollToTop()"
+        @fadeInOut
+        class="fixed bottom-8 right-8 p-3 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-all duration-300 z-50 cursor-pointer"
+    >
+        <i class="pi pi-arrow-up text-xl"></i>
+    </button>
 }

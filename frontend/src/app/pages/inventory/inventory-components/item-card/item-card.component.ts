@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-import { Item } from '../../../../models/items.model';
-import { getTimeDifferenceString, isExpired, itemProgress } from '../../../../utility/itemUtility';
+import { Item } from '@models/items.model';
+import { Unit } from '@models/unit.model';
+import { Location } from '@models/location.model';
+import { getTimeDifferenceString, isExpired, itemProgress } from '@utility/itemUtility/ItemUtility';
 import { Subject } from 'rxjs';
 
 import { EditItemFormComponent } from '../edit-item-form/edit-item-form.component';
@@ -18,12 +20,15 @@ import { EditItemFormComponent } from '../edit-item-form/edit-item-form.componen
 })
 export class ItemCardComponent {
   item = input.required<Item>();
+  units = input.required<Unit[]>();
+  locations = input.required<Location[]>();
+
   @Output() delete = new Subject<void>();
   @Output() update = new Subject<Item>();
 
   public expired = computed(() => isExpired(this.item()));
   public itemProgress = computed(() => itemProgress(this.item()));
-  public timeRemaining = computed(() => getTimeDifferenceString(new Date(), this.item().bestBeforeDate));
+  public timeRemaining = computed(() => getTimeDifferenceString(new Date(), this.item().expirationDate));
 
   public displayNoteDialog = signal(false);
   public displayEditDialog = signal(false);

@@ -6,8 +6,7 @@ import { ExpiredItemsContainerComponent } from './dashboard-components/expired-i
 import { CategoryContainerComponent } from './dashboard-components/category-container/category-container.component';
 import { QuickActionsContainerComponent } from './dashboard-components/quick-actions-container/quick-actions-container.component';
 import { Item } from '../../models/items.model';
-import { InventoryService } from '../../services/inventory/inventory.service';
-import { isExpired } from '../../utility/itemUtility';
+import { ItemService } from '../../services/inventory/item.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,9 +23,9 @@ export class DashboardComponent {
   items: Item[] = [];
   expiredItems: Item[] = [];
 
-  constructor(private inventoryService: InventoryService) {
-    this.items = this.inventoryService.getItems();
-    this.expiredItems = this.items.filter(item => isExpired(item));
+  constructor(private inventoryService: ItemService) {
+    this.items = [];
+    this.expiredItems = [];
     this.totalItemsCount = this.items.length;
     this.expiredItemsCount = this.expiredItems.length;
   }
