@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { TabsComponent } from '../tabs/tabs.component';
 import { Tab } from '../tabs/tabs.model';
 
 @Component({
-  selector: 'app-header',
+  selector: 'pantry-header',
   standalone: true,
   imports: [CommonModule, TranslocoModule, TabsComponent],
   templateUrl: './header.component.html',

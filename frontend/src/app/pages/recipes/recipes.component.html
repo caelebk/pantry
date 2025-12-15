@@ -1,21 +1,27 @@
 <!-- Page Title -->
 <div class="mb-8">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ 'recipes.title' | transloco }}</h2>
-    <p class="text-gray-500 dark:text-gray-400 mt-1">{{ 'recipes.subtitle' | transloco }}</p>
+  <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+    {{ 'recipes.title' | transloco }}
+  </h2>
+  <p class="text-gray-500 dark:text-gray-400 mt-1">
+    {{ 'recipes.subtitle' | transloco }}
+  </p>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Add New Recipe Form -->
-    <div class="lg:col-span-1">
-        <add-recipe-form></add-recipe-form>
-    </div>
+  <!-- Add New Recipe Form -->
+  <div class="lg:col-span-1">
+    <pantry-add-recipe-form></pantry-add-recipe-form>
+  </div>
 
-    <!-- Recipes List -->
-    <div class="lg:col-span-2 space-y-6">
-        <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ 'recipes.yourRecipes' | transloco }}</h3>
+  <!-- Recipes List -->
+  <div class="lg:col-span-2 space-y-6">
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+      {{ 'recipes.yourRecipes' | transloco }}
+    </h3>
 
-        @for (recipe of recipes; track recipe.name) {
-        <recipe-card [recipe]="recipe" class="mb-4"></recipe-card>
-        }
-    </div>
+    @for (recipe of recipes; track recipe.name) {
+      <pantry-recipe-card [recipe]="recipe" class="mb-4"></pantry-recipe-card>
+    }
+  </div>
 </div>

@@ -1,12 +1,12 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, NavigationEnd, RouterOutlet, Event } from '@angular/router';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Event, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { HeaderComponent } from './components/header/header.component';
 import { Tab } from './components/tabs/tabs.model';
 
 @Component({
-  selector: 'app-root',
+  selector: 'pantry-root',
   standalone: true,
   imports: [CommonModule, HeaderComponent, RouterOutlet],
   templateUrl: './app.component.html',
@@ -36,15 +36,15 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     // Sync currentTab with the current route
-    this.routerSubscription = this.router.events.pipe(
-      filter((event: Event) => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      const url = event.urlAfterRedirects;
-      if (url.length > 1) {
-        const param = url.split('/')[1];
-        this.updateCurrentTabFromUrl(param);
-      }
-    });
+    this.routerSubscription = this.router.events
+      .pipe(filter((event: Event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        const url = event.urlAfterRedirects;
+        if (url.length > 1) {
+          const param = url.split('/')[1];
+          this.updateCurrentTabFromUrl(param);
+        }
+      });
 
     // Safeguard: Initialize currentTab based on the initial URL
     const currentParam = this.router.url.split('/')[1];

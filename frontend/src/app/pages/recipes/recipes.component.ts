@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { AddRecipeFormComponent } from './recipe-components/add-recipe-form/add-recipe-form.component';
 import { RecipeCardComponent } from './recipe-components/recipe-card/recipe-card.component';
 
 @Component({
-  selector: 'app-recipes',
+  selector: 'pantry-recipes',
   standalone: true,
   imports: [CommonModule, TranslocoModule, AddRecipeFormComponent, RecipeCardComponent],
   templateUrl: './recipes.component.html',
@@ -20,19 +20,15 @@ export class RecipesComponent {
       cookTime: '20 min',
       totalTime: '30 min',
       tags: ['Easy', 'Italian', 'Quick', 'Vegetarian'],
-      ingredients: [
-        '400 g Pasta',
-        '3 tbsp Olive Oil',
-        '4 cloves Garlic'
-      ],
+      ingredients: ['400 g Pasta', '3 tbsp Olive Oil', '4 cloves Garlic'],
       instructions: [
         'Boil water in a large pot',
         'Add pasta and cook until al dente',
         'Drain and set aside',
         'Heat olive oil and sauté garlic',
         'Toss pasta with garlic oil',
-        'Serve immediately'
-      ]
-    }
+        'Serve immediately',
+      ],
+    },
   ];
 }

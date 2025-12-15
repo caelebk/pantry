@@ -1,10 +1,10 @@
-import { Component, computed, EventEmitter, InputSignal, input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, EventEmitter, input, InputSignal, Output } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Tab } from './tabs.model';
 
 @Component({
-  selector: 'app-tabs',
+  selector: 'pantry-tabs',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './tabs.component.html',

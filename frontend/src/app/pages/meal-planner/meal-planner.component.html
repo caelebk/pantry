@@ -1,44 +1,57 @@
 <!-- Page Title -->
 <div class="mb-8">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ 'mealPlanner.title' | transloco }}</h2>
-    <p class="text-gray-500 dark:text-gray-400 mt-1">{{ 'mealPlanner.subtitle' | transloco }}</p>
+  <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+    {{ 'mealPlanner.title' | transloco }}
+  </h2>
+  <p class="text-gray-500 dark:text-gray-400 mt-1">
+    {{ 'mealPlanner.subtitle' | transloco }}
+  </p>
 </div>
 
 <!-- Current Inventory -->
 <div class="mb-10">
-    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">{{ 'mealPlanner.currentInventory' | transloco }}
-    </h3>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <inventory-card [label]="'mealPlanner.sampleData.pasta' | transloco"
-            [value]="'2 ' + ('mealPlanner.sampleData.boxes' | transloco)">
-        </inventory-card>
-        <inventory-card [label]="'mealPlanner.sampleData.oliveOil' | transloco"
-            [value]="'2 ' + ('mealPlanner.sampleData.bottles' | transloco)">
-        </inventory-card>
-        <inventory-card [label]="'mealPlanner.sampleData.garlic' | transloco"
-            [value]="'10 ' + ('mealPlanner.sampleData.cloves' | transloco)">
-        </inventory-card>
-        <inventory-card [label]="'mealPlanner.sampleData.allPurposeFlour' | transloco"
-            [value]="'5 ' + ('mealPlanner.sampleData.kg' | transloco)">
-        </inventory-card>
-    </div>
+  <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">
+    {{ 'mealPlanner.currentInventory' | transloco }}
+  </h3>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <pantry-inventory-card
+      [label]="'mealPlanner.sampleData.pasta' | transloco"
+      [value]="'2 ' + ('mealPlanner.sampleData.boxes' | transloco)">
+    </pantry-inventory-card>
+    <pantry-inventory-card
+      [label]="'mealPlanner.sampleData.oliveOil' | transloco"
+      [value]="'2 ' + ('mealPlanner.sampleData.bottles' | transloco)">
+    </pantry-inventory-card>
+    <pantry-inventory-card
+      [label]="'mealPlanner.sampleData.garlic' | transloco"
+      [value]="'10 ' + ('mealPlanner.sampleData.cloves' | transloco)">
+    </pantry-inventory-card>
+    <pantry-inventory-card
+      [label]="'mealPlanner.sampleData.allPurposeFlour' | transloco"
+      [value]="'5 ' + ('mealPlanner.sampleData.kg' | transloco)">
+    </pantry-inventory-card>
+  </div>
 </div>
 
 <!-- Almost Ready -->
 <div>
-    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">{{ 'mealPlanner.almostReady' | transloco }}</h3>
+  <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
+    {{ 'mealPlanner.almostReady' | transloco }}
+  </h3>
 
-    <div class="space-y-6">
-        <!-- Recipe 1 -->
-        <meal-card [title]="'mealPlanner.sampleData.simplePasta' | transloco"
-            [description]="'mealPlanner.sampleData.simplePastaDesc' | transloco"
-            [missingIngredients]="['pasta', 'olive oil']">
-        </meal-card>
+  <div class="space-y-6">
+    <!-- Recipe 1 -->
+    <pantry-meal-card
+      [title]="'mealPlanner.sampleData.simplePasta' | transloco"
+      [description]="'mealPlanner.sampleData.simplePastaDesc' | transloco"
+      [missingIngredients]="['pasta', 'olive oil']">
+    </pantry-meal-card>
 
-        <!-- Recipe 2 -->
-        <meal-card [title]="'mealPlanner.sampleData.simpleOmelette' | transloco"
-            [description]="'mealPlanner.sampleData.simpleOmeletteDesc' | transloco"
-            [missingIngredients]="['eggs', 'butter']">
-        </meal-card>
-    </div>
+    <!-- Recipe 2 -->
+    <pantry-meal-card
+      [title]="'mealPlanner.sampleData.simpleOmelette' | transloco"
+      [description]="'mealPlanner.sampleData.simpleOmeletteDesc' | transloco"
+      [missingIngredients]="['eggs', 'butter']">
+    </pantry-meal-card>
+  </div>
 </div>

@@ -1,40 +1,54 @@
 <!-- Page Title -->
 <div class="mb-8">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ 'dashboard.title' | transloco }}</h2>
-    <p class="text-gray-500 dark:text-gray-400 mt-1">{{ 'dashboard.subtitle' | transloco }}</p>
+  <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+    {{ 'dashboard.title' | transloco }}
+  </h2>
+  <p class="text-gray-500 dark:text-gray-400 mt-1">
+    {{ 'dashboard.subtitle' | transloco }}
+  </p>
 </div>
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <stat-card [title]="'dashboard.stats.totalItems' | transloco" [value]="totalItemsCount"
-        [subtitle]="'dashboard.stats.inInventory' | transloco">
-    </stat-card>
+  <pantry-stat-card
+    [title]="'dashboard.stats.totalItems' | transloco"
+    [value]="totalItemsCount"
+    [subtitle]="'dashboard.stats.inInventory' | transloco">
+  </pantry-stat-card>
 
-    <stat-card [title]="'dashboard.stats.expiringSoon' | transloco" [value]="expiringSoonItemsCount"
-        [subtitle]="'dashboard.stats.within7Days' | transloco" [valueColor]="'text-[#d97736] dark:text-orange-500'">
-    </stat-card>
+  <pantry-stat-card
+    [title]="'dashboard.stats.expiringSoon' | transloco"
+    [value]="expiringSoonItemsCount"
+    [subtitle]="'dashboard.stats.within7Days' | transloco"
+    [valueColor]="'text-[#d97736] dark:text-orange-500'">
+  </pantry-stat-card>
 
-    <stat-card [title]="'dashboard.stats.expired' | transloco" [value]="expiredItemsCount"
-        [subtitle]="'dashboard.stats.needsRemoval' | transloco" [valueColor]="'text-red-600 dark:text-red-500'">
-    </stat-card>
+  <pantry-stat-card
+    [title]="'dashboard.stats.expired' | transloco"
+    [value]="expiredItemsCount"
+    [subtitle]="'dashboard.stats.needsRemoval' | transloco"
+    [valueColor]="'text-red-600 dark:text-red-500'">
+  </pantry-stat-card>
 
-    <stat-card [title]="'dashboard.stats.canMake' | transloco" [value]="canMakeRecipesCount"
-        [subtitle]="'dashboard.stats.recipes' | transloco">
-    </stat-card>
+  <pantry-stat-card
+    [title]="'dashboard.stats.canMake' | transloco"
+    [value]="canMakeRecipesCount"
+    [subtitle]="'dashboard.stats.recipes' | transloco">
+  </pantry-stat-card>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Left Column: Expired Items -->
-    <div class="lg:col-span-2">
-        <expired-items-container [expiredItems]="expiredItems"></expired-items-container>
-    </div>
+  <!-- Left Column: Expired Items -->
+  <div class="lg:col-span-2">
+    <pantry-expired-items-container [expiredItems]="expiredItems"></pantry-expired-items-container>
+  </div>
 
-    <!-- Right Column: Categories & Actions -->
-    <div class="lg:col-span-1 space-y-8">
-        <!-- By Category -->
-        <category-container></category-container>
+  <!-- Right Column: Categories & Actions -->
+  <div class="lg:col-span-1 space-y-8">
+    <!-- By Category -->
+    <pantry-category-container></pantry-category-container>
 
-        <!-- Quick Actions -->
-        <quick-actions-container></quick-actions-container>
-    </div>
+    <!-- Quick Actions -->
+    <pantry-quick-actions-container></pantry-quick-actions-container>
+  </div>
 </div>

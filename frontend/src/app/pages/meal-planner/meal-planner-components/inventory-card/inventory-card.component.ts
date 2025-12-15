@@ -1,16 +1,18 @@
-import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, input } from '@angular/core';
 
 @Component({
-  selector: 'inventory-card',
+  selector: 'pantry-inventory-card',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './inventory-card.component.html',
   styles: [
-    `:host {
-      display: block;
-    }`
-  ]
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
 })
 export class InventoryCardComponent {
   label = input.required<string>();
