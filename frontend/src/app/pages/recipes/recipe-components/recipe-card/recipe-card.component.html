@@ -3,10 +3,10 @@
   <div class="flex justify-between items-start mb-4">
     <div>
       <h4 class="text-xl font-bold text-gray-900 dark:text-white">
-        {{ recipe?.name }}
+        {{ recipe.name }}
       </h4>
       <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
-        {{ recipe?.description }}
+        {{ recipe.description }}
       </p>
     </div>
     <button
@@ -32,7 +32,7 @@
         'recipeCard.servings' | transloco
       }}</span>
       <span class="block font-bold text-gray-900 dark:text-white text-lg">{{
-        recipe?.servings
+        recipe.servings
       }}</span>
     </div>
     <div>
@@ -40,7 +40,7 @@
         'recipeCard.prepTime' | transloco
       }}</span>
       <span class="block font-bold text-gray-900 dark:text-white text-lg">{{
-        recipe?.prepTime
+        recipe.prepTime
       }}</span>
     </div>
     <div>
@@ -48,7 +48,7 @@
         'recipeCard.cookTime' | transloco
       }}</span>
       <span class="block font-bold text-gray-900 dark:text-white text-lg">{{
-        recipe?.cookTime
+        recipe.cookTime
       }}</span>
     </div>
     <div>
@@ -56,13 +56,13 @@
         'recipeCard.totalTime' | transloco
       }}</span>
       <span class="block font-bold text-gray-900 dark:text-white text-lg">{{
-        recipe?.totalTime
+        recipe.prepTime + recipe.cookTime
       }}</span>
     </div>
   </div>
 
   <div class="flex flex-wrap gap-2 mb-6">
-    @for (tag of recipe?.tags; track tag) {
+    @for (tag of recipe.tags; track tag) {
       <span
         class="px-3 py-1 rounded-full text-xs font-medium bg-primary-600/10 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-600/20 dark:border-primary-500/20">
         {{ tag }}
@@ -76,7 +76,7 @@
         {{ 'recipeCard.ingredients' | transloco }}
       </h5>
       <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-        @for (ingredient of recipe?.ingredients; track ingredient) {
+        @for (ingredient of recipe.ingredients; track ingredient) {
           <li class="flex items-start">
             <span class="mr-2">•</span>
             <span>{{ ingredient }}</span>
@@ -89,7 +89,7 @@
         {{ 'recipeCard.instructions' | transloco }}
       </h5>
       <ol class="space-y-2 text-sm text-gray-600 dark:text-gray-300 list-decimal list-inside">
-        @for (instruction of recipe?.instructions; track instruction) {
+        @for (instruction of recipe.instructions; track instruction) {
           <li>{{ instruction }}</li>
         }
       </ol>

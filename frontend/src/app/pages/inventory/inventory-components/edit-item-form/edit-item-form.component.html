@@ -1,11 +1,12 @@
 <div class="p-4">
   <form [formGroup]="editItemForm" (ngSubmit)="onSubmit()" class="space-y-4">
     <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="edit-name"
         >{{ 'addItemForm.itemName' | transloco }}<span class="text-red-500">*</span></label
       >
       <input
         pInputText
+        id="edit-name"
         formControlName="name"
         [placeholder]="'addItemForm.itemNamePlaceholder' | transloco"
         class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white" />
@@ -13,11 +14,14 @@
 
     <div class="grid gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          for="edit-location">
           {{ 'addItemForm.location' | transloco }}
           <span class="text-red-500">*</span>
         </label>
         <p-select
+          inputId="edit-location"
           [options]="locations"
           formControlName="location"
           optionLabel="name"
@@ -28,11 +32,14 @@
 
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          for="edit-quantity">
           {{ 'addItemForm.quantity' | transloco }}
           <span class="text-red-500">*</span>
         </label>
         <p-inputnumber
+          inputId="edit-quantity"
           formControlName="quantity"
           class="w-full"
           inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
@@ -40,10 +47,13 @@
           [showButtons]="true"></p-inputnumber>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        <label
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          for="edit-unit"
           >{{ 'addItemForm.unit' | transloco }}<span class="text-red-500">*</span></label
         >
         <p-select
+          inputId="edit-unit"
           [options]="units"
           formControlName="unit"
           optionLabel="name"
@@ -53,11 +63,14 @@
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <label
+        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        for="edit-purchaseDate">
         {{ 'addItemForm.purchaseDate' | transloco }}
         <span class="text-red-500">*</span>
       </label>
       <p-datepicker
+        inputId="edit-purchaseDate"
         formControlName="purchaseDate"
         class="w-full"
         inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
@@ -65,11 +78,14 @@
         appendTo="body"></p-datepicker>
     </div>
     <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <label
+        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        for="edit-expirationDate">
         {{ 'addItemForm.expirationDate' | transloco }}
         <span class="text-red-500">*</span>
       </label>
       <p-datepicker
+        inputId="edit-expirationDate"
         formControlName="expirationDate"
         class="w-full"
         inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
@@ -80,10 +96,13 @@
 
     <div class="flex flex-col gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          for="edit-openedDate">
           {{ 'addItemForm.openedDate' | transloco }}
         </label>
         <p-datepicker
+          inputId="edit-openedDate"
           formControlName="openedDate"
           class="w-full"
           inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
@@ -92,11 +111,14 @@
           appendTo="body"></p-datepicker>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          for="edit-notes">
           {{ 'addItemForm.notes' | transloco }}
         </label>
         <textarea
           pTextarea
+          id="edit-notes"
           formControlName="notes"
           rows="3"
           [placeholder]="'addItemForm.notesPlaceholder' | transloco"

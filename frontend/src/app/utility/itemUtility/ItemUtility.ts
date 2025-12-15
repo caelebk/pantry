@@ -5,7 +5,7 @@ export function isExpired(item: Item): boolean {
 }
 
 export function isExpiringSoon(item: Item): boolean {
-  return false;
+  return Boolean(item);
 }
 
 export function itemProgress(item: Item): number {
