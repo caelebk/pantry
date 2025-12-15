@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
-interface Recipe {
+export interface Recipe {
   id: string;
   name: string;
   description: string;
