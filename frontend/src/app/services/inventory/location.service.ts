@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ApiResponse } from '@models/http.model';
 import { Location, LocationDTO } from '@models/location.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
@@ -11,9 +11,8 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class LocationService {
+  private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:8000/api/locations';
-
-  constructor(private http: HttpClient) {}
 
   getLocations(): Observable<Location[]> {
     return this.http.get<ApiResponse<LocationDTO[]>>(this.apiUrl).pipe(

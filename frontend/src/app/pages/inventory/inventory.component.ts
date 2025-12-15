@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { StatCardComponent } from '@components/stat-card/stat-card.component';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -53,6 +53,13 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
   ],
 })
 export class InventoryComponent implements OnInit {
+  private readonly inventoryService = inject(ItemService);
+  private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
+  private readonly translocoService = inject(TranslocoService);
+  private readonly unitService = inject(UnitService);
+  private readonly locationService = inject(LocationService);
+
   private readonly removeConfirmationServiceIcon = 'pi pi-exclamation-triangle';
   private readonly successNotificationClass = 'success';
   private readonly errorNotificationClass = 'error';
@@ -87,15 +94,6 @@ export class InventoryComponent implements OnInit {
   public scrollToTop(): void {
     window.scrollTo({ top: this.scrollLocation, behavior: 'smooth' });
   }
-
-  constructor(
-    private inventoryService: ItemService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-    private translocoService: TranslocoService,
-    private unitService: UnitService,
-    private locationService: LocationService,
-  ) {}
 
   ngOnInit(): void {
     this.initParameters();

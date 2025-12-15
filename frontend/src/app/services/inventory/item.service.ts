@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ApiResponse } from '@models/http.model';
 import { Item, ItemDTO, UpdateItemDTO } from '@models/items.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
@@ -17,13 +17,10 @@ import { UnitService } from './unit.service';
   providedIn: 'root',
 })
 export class ItemService {
+  private readonly http = inject(HttpClient);
+  private readonly unitService = inject(UnitService);
+  private readonly locationService = inject(LocationService);
   private readonly apiUrl = 'http://localhost:8000/api/items';
-
-  constructor(
-    private http: HttpClient,
-    private unitService: UnitService,
-    private locationService: LocationService,
-  ) {}
 
   getItems(): Observable<Item[]> {
     return forkJoin({

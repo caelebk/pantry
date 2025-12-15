@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { StatCardComponent } from '../../components/stat-card/stat-card.component';
 import { Item } from '../../models/items.model';
@@ -22,6 +22,8 @@ import { QuickActionsContainerComponent } from './dashboard-components/quick-act
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {
+  private readonly inventoryService = inject(ItemService);
+
   totalItemsCount: number;
   expiredItemsCount: number;
   expiringSoonItemsCount = 0;
@@ -30,7 +32,7 @@ export class DashboardComponent {
   items: Item[] = [];
   expiredItems: Item[] = [];
 
-  constructor(private inventoryService: ItemService) {
+  constructor() {
     this.items = [];
     this.expiredItems = [];
     this.totalItemsCount = this.items.length;
