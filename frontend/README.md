@@ -1,59 +1,83 @@
-# Frontend
+# Pantry Frontend Application
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.7.
+A modern inventory management and meal planning application built with Angular and Tailwind CSS.
 
-## Development server
+## 🛠️ Technologies Used
 
-To start a local development server, run:
+This project leverages a robust stack of modern web technologies:
+
+- **Framework:** [Angular v20](https://angular.dev) - A platform for building mobile and desktop web applications.
+- **Styling:**
+  - [Tailwind CSS v4](https://tailwindcss.com) - A utility-first CSS framework for rapid UI development.
+  - [PrimeNG v20](https://primeng.org) - A rich set of open-source UI components for Angular.
+  - [PrimeIcons](https://primeng.org/icons) - The icon library for PrimeNG.
+- **Internationalization:** [Transloco](https://ngneat.github.io/transloco/) - The internationalization (i18n) library for Angular.
+- **Code Quality:**
+  - [ESLint](https://eslint.org/) - For identifying and reporting on patterns found in ECMAScript/JavaScript code.
+  - [Prettier](https://prettier.io/) - An opinionated code formatter.
+- **Utilities:**
+  - [RxJS](https://rxjs.dev) - Reactive Extensions for JavaScript.
+  - [Lodash](https://lodash.com) - A modern JavaScript utility library.
+
+## 📂 Project Structure
+
+The codebase is organized into a modular structure within `src/app`:
+
+```text
+src/app/
+├── components/      # Shared, reusable UI components (Header, Stat Cards, Tabs, etc.)
+├── models/          # TypeScript interfaces and DTO definitions
+├── pages/           # Main application views
+│   ├── dashboard/   # Dashboard view with summary stats and quick actions
+│   ├── inventory/   # Inventory management interface
+│   ├── meal-planner/# Meal planning functionality
+│   └── recipes/     # Recipe management and displays
+├── services/        # Angular services for API communication and state management
+└── utility/         # Helper functions, mappers, and form utilities
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher recommended)
+- npm
+
+### Installation
+
+1. Clone the repository.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Development Server
+
+Run the development server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
 ```bash
+npm start
+# or
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 📜 Available Scripts
 
-## Code scaffolding
+Here is a list of available `npm` commands:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+| Command                | Description                                                  |
+| :--------------------- | :----------------------------------------------------------- |
+| `npm start`            | Starts the development server on port 4200.                  |
+| `npm run build`        | Compiles the application into an output directory (`dist/`). |
+| `npm test`             | Runs unit tests via [Karma](https://karma-runner.github.io). |
+| `npm run lint`         | Runs ESLint to check for code quality issues.                |
+| `npm run lint:fix`     | Runs ESLint and attempts to automatically fix issues.        |
+| `npm run format`       | Formats all supported files using Prettier.                  |
+| `npm run format:check` | Checks if files are formatted according to Prettier rules.   |
 
-```bash
-ng generate component component-name
-```
+## 📐 Code Style & Quality
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+We enforce code quality through **ESLint** and **Prettier**.
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- **Linting:** We use standard Angular linting rules coupled with custom configurations. Always run `npm run lint` before committing.
+- **Formatting:** Code style is consistent thanks to Prettier. You can format your code at any time with `npm run format`.
