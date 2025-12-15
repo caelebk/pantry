@@ -21,9 +21,9 @@ export class ExpiredItemsContainerComponent implements OnInit {
   readonly maxExpiredItems = 2;
 
   visibleExpiredItems: Item[] = [];
-  expiredItemsCount: number = 0;
-  hiddenItemsCount: number = 0;
-  hiddenItemsMessage: string = '';
+  expiredItemsCount = 0;
+  hiddenItemsCount = 0;
+  hiddenItemsMessage = '';
 
   ngOnInit() {
     this.expiredItemsCount = this.expiredItems.length;

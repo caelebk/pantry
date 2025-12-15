@@ -24,8 +24,8 @@ import { QuickActionsContainerComponent } from './dashboard-components/quick-act
 export class DashboardComponent {
   totalItemsCount: number;
   expiredItemsCount: number;
-  expiringSoonItemsCount: number = 0;
-  canMakeRecipesCount: number = 0;
+  expiringSoonItemsCount = 0;
+  canMakeRecipesCount = 0;
 
   items: Item[] = [];
   expiredItems: Item[] = [];

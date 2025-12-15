@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { StatCardComponent } from '@components/stat-card/stat-card.component';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -52,7 +52,7 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
     ]),
   ],
 })
-export class InventoryComponent {
+export class InventoryComponent implements OnInit {
   private readonly removeConfirmationServiceIcon = 'pi pi-exclamation-triangle';
   private readonly successNotificationClass = 'success';
   private readonly errorNotificationClass = 'error';
@@ -62,15 +62,15 @@ export class InventoryComponent {
   public readonly dismissableMask = true;
   public readonly outlinedCancelButton = true;
 
-  public totalItemsCount: number = 0;
-  public expiringSoonItemsCount: number = 0;
-  public expiredItemsCount: number = 0;
+  public totalItemsCount = 0;
+  public expiringSoonItemsCount = 0;
+  public expiredItemsCount = 0;
   public items: Item[] = [];
   public units: Unit[] = [];
   public locations: Location[] = [];
 
-  public showScrollTopButton: boolean = false;
-  public searchQuery: string = '';
+  public showScrollTopButton = false;
+  public searchQuery = '';
 
   public get filteredItems(): Item[] {
     return this.items.filter((item) => {
