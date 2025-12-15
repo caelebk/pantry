@@ -5,7 +5,7 @@ import { InventoryCardComponent } from './meal-planner-components/inventory-card
 import { MealCardComponent } from './meal-planner-components/meal-card/meal-card.component';
 
 @Component({
-  selector: 'app-meal-planner',
+  selector: 'pantry-meal-planner',
   standalone: true,
   imports: [CommonModule, TranslocoModule, InventoryCardComponent, MealCardComponent],
   templateUrl: './meal-planner.component.html',

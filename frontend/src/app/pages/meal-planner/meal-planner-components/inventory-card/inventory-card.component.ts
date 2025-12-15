@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
 
 @Component({
-  selector: 'inventory-card',
+  selector: 'pantry-inventory-card',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './inventory-card.component.html',

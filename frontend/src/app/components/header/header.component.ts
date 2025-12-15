@@ -5,7 +5,7 @@ import { TabsComponent } from '../tabs/tabs.component';
 import { Tab } from '../tabs/tabs.model';
 
 @Component({
-  selector: 'app-header',
+  selector: 'pantry-header',
   standalone: true,
   imports: [CommonModule, TranslocoModule, TabsComponent],
   templateUrl: './header.component.html',

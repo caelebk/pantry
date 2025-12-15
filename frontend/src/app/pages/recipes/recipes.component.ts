@@ -5,7 +5,7 @@ import { AddRecipeFormComponent } from './recipe-components/add-recipe-form/add-
 import { RecipeCardComponent } from './recipe-components/recipe-card/recipe-card.component';
 
 @Component({
-  selector: 'app-recipes',
+  selector: 'pantry-recipes',
   standalone: true,
   imports: [CommonModule, TranslocoModule, AddRecipeFormComponent, RecipeCardComponent],
   templateUrl: './recipes.component.html',

@@ -4,7 +4,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Tab } from './tabs.model';
 
 @Component({
-  selector: 'app-tabs',
+  selector: 'pantry-tabs',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './tabs.component.html',

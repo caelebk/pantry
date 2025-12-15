@@ -12,7 +12,7 @@ import { Subject } from 'rxjs';
 import { EditItemFormComponent } from '../edit-item-form/edit-item-form.component';
 
 @Component({
-  selector: 'item-card',
+  selector: 'pantry-item-card',
   standalone: true,
   imports: [CommonModule, TranslocoModule, DialogModule, ButtonModule, EditItemFormComponent],
   templateUrl: './item-card.component.html',

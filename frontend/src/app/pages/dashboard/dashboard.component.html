@@ -10,45 +10,45 @@
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-  <stat-card
+  <pantry-stat-card
     [title]="'dashboard.stats.totalItems' | transloco"
     [value]="totalItemsCount"
     [subtitle]="'dashboard.stats.inInventory' | transloco">
-  </stat-card>
+  </pantry-stat-card>
 
-  <stat-card
+  <pantry-stat-card
     [title]="'dashboard.stats.expiringSoon' | transloco"
     [value]="expiringSoonItemsCount"
     [subtitle]="'dashboard.stats.within7Days' | transloco"
     [valueColor]="'text-[#d97736] dark:text-orange-500'">
-  </stat-card>
+  </pantry-stat-card>
 
-  <stat-card
+  <pantry-stat-card
     [title]="'dashboard.stats.expired' | transloco"
     [value]="expiredItemsCount"
     [subtitle]="'dashboard.stats.needsRemoval' | transloco"
     [valueColor]="'text-red-600 dark:text-red-500'">
-  </stat-card>
+  </pantry-stat-card>
 
-  <stat-card
+  <pantry-stat-card
     [title]="'dashboard.stats.canMake' | transloco"
     [value]="canMakeRecipesCount"
     [subtitle]="'dashboard.stats.recipes' | transloco">
-  </stat-card>
+  </pantry-stat-card>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
   <!-- Left Column: Expired Items -->
   <div class="lg:col-span-2">
-    <expired-items-container [expiredItems]="expiredItems"></expired-items-container>
+    <pantry-expired-items-container [expiredItems]="expiredItems"></pantry-expired-items-container>
   </div>
 
   <!-- Right Column: Categories & Actions -->
   <div class="lg:col-span-1 space-y-8">
     <!-- By Category -->
-    <category-container></category-container>
+    <pantry-category-container></pantry-category-container>
 
     <!-- Quick Actions -->
-    <quick-actions-container></quick-actions-container>
+    <pantry-quick-actions-container></pantry-quick-actions-container>
   </div>
 </div>

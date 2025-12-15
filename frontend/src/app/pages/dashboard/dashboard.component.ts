@@ -9,7 +9,7 @@ import { ExpiredItemsContainerComponent } from './dashboard-components/expired-i
 import { QuickActionsContainerComponent } from './dashboard-components/quick-actions-container/quick-actions-container.component';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'pantry-dashboard',
   standalone: true,
   imports: [
     CommonModule,

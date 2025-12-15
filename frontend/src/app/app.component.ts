@@ -6,7 +6,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { Tab } from './components/tabs/tabs.model';
 
 @Component({
-  selector: 'app-root',
+  selector: 'pantry-root',
   standalone: true,
   imports: [CommonModule, HeaderComponent, RouterOutlet],
   templateUrl: './app.component.html',

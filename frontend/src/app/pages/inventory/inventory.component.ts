@@ -22,7 +22,7 @@ import { AddItemFormComponent } from './inventory-components/add-item-form/add-i
 import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
 
 @Component({
-  selector: 'app-inventory',
+  selector: 'pantry-inventory',
   standalone: true,
   imports: [
     CommonModule,

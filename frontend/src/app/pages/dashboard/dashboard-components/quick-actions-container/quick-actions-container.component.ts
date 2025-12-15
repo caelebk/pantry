@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
-  selector: 'quick-actions-container',
+  selector: 'pantry-quick-actions-container',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './quick-actions-container.component.html',

@@ -10,29 +10,29 @@
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-  <stat-card [title]="'inventory.stats.totalItems' | transloco" [value]="totalItemsCount">
-  </stat-card>
+  <pantry-stat-card [title]="'inventory.stats.totalItems' | transloco" [value]="totalItemsCount">
+  </pantry-stat-card>
 
-  <stat-card
+  <pantry-stat-card
     [title]="'inventory.stats.expiringSoon' | transloco"
     [value]="expiringSoonItemsCount"
     [valueColor]="'text-[#d97736] dark:text-orange-500'">
-  </stat-card>
+  </pantry-stat-card>
 
-  <stat-card
+  <pantry-stat-card
     [title]="'inventory.stats.expired' | transloco"
     [value]="expiredItemsCount"
     [valueColor]="'text-red-600 dark:text-red-500'">
-  </stat-card>
+  </pantry-stat-card>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
   <!-- Add New Item Form -->
   <div class="lg:col-span-1">
-    <add-item-form
+    <pantry-add-item-form
       (addItem$)="onAddItem($event)"
       [units]="units"
-      [locations]="locations"></add-item-form>
+      [locations]="locations"></pantry-add-item-form>
   </div>
 
   <!-- Inventory List -->
@@ -57,12 +57,12 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
       @for (item of filteredItems; track item.name) {
-        <item-card
+        <pantry-item-card
           [item]="item"
           [units]="units"
           [locations]="locations"
           (delete)="onDeleteItem(item)"
-          (update)="onUpdateItem($event)"></item-card>
+          (update)="onUpdateItem($event)"></pantry-item-card>
       }
     </div>
   </div>

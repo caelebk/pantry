@@ -4,7 +4,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Item } from '../../../../models/items.model';
 
 @Component({
-  selector: 'expired-items-container',
+  selector: 'pantry-expired-items-container',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './expired-items-container.component.html',

@@ -15,7 +15,7 @@ import { Textarea } from 'primeng/textarea';
 import { Subject } from 'rxjs';
 
 @Component({
-  selector: 'edit-item-form',
+  selector: 'pantry-edit-item-form',
   standalone: true,
   imports: [
     CommonModule,

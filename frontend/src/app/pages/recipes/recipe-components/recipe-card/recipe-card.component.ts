@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
-  selector: 'recipe-card',
+  selector: 'pantry-recipe-card',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './recipe-card.component.html',

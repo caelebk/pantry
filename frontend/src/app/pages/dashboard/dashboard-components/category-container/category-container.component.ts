@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
-  selector: 'category-container',
+  selector: 'pantry-category-container',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './category-container.component.html',

@@ -14,22 +14,22 @@
     {{ 'mealPlanner.currentInventory' | transloco }}
   </h3>
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-    <inventory-card
+    <pantry-inventory-card
       [label]="'mealPlanner.sampleData.pasta' | transloco"
       [value]="'2 ' + ('mealPlanner.sampleData.boxes' | transloco)">
-    </inventory-card>
-    <inventory-card
+    </pantry-inventory-card>
+    <pantry-inventory-card
       [label]="'mealPlanner.sampleData.oliveOil' | transloco"
       [value]="'2 ' + ('mealPlanner.sampleData.bottles' | transloco)">
-    </inventory-card>
-    <inventory-card
+    </pantry-inventory-card>
+    <pantry-inventory-card
       [label]="'mealPlanner.sampleData.garlic' | transloco"
       [value]="'10 ' + ('mealPlanner.sampleData.cloves' | transloco)">
-    </inventory-card>
-    <inventory-card
+    </pantry-inventory-card>
+    <pantry-inventory-card
       [label]="'mealPlanner.sampleData.allPurposeFlour' | transloco"
       [value]="'5 ' + ('mealPlanner.sampleData.kg' | transloco)">
-    </inventory-card>
+    </pantry-inventory-card>
   </div>
 </div>
 
@@ -41,17 +41,17 @@
 
   <div class="space-y-6">
     <!-- Recipe 1 -->
-    <meal-card
+    <pantry-meal-card
       [title]="'mealPlanner.sampleData.simplePasta' | transloco"
       [description]="'mealPlanner.sampleData.simplePastaDesc' | transloco"
       [missingIngredients]="['pasta', 'olive oil']">
-    </meal-card>
+    </pantry-meal-card>
 
     <!-- Recipe 2 -->
-    <meal-card
+    <pantry-meal-card
       [title]="'mealPlanner.sampleData.simpleOmelette' | transloco"
       [description]="'mealPlanner.sampleData.simpleOmeletteDesc' | transloco"
       [missingIngredients]="['eggs', 'butter']">
-    </meal-card>
+    </pantry-meal-card>
   </div>
 </div>
