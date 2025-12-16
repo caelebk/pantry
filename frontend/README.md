@@ -15,6 +15,9 @@ This project leverages a robust stack of modern web technologies:
 - **Code Quality:**
   - [ESLint](https://eslint.org/) - For identifying and reporting on patterns found in ECMAScript/JavaScript code.
   - [Prettier](https://prettier.io/) - An opinionated code formatter.
+- **Testing:**
+  - [Jasmine](https://jasmine.github.io/) & [Karma](https://karma-runner.github.io) - For unit testing.
+  - [Playwright](https://playwright.dev/) - For reliable end-to-end (E2E) testing.
 - **Utilities:**
   - [RxJS](https://rxjs.dev) - Reactive Extensions for JavaScript.
   - [Lodash](https://lodash.com) - A modern JavaScript utility library.
@@ -50,6 +53,10 @@ src/app/
    ```bash
    npm install
    ```
+3. Install Playwright browsers:
+   ```bash
+   npx playwright install
+   ```
 
 ### Development Server
 
@@ -70,10 +77,32 @@ Here is a list of available `npm` commands:
 | `npm start`            | Starts the development server on port 4200.                  |
 | `npm run build`        | Compiles the application into an output directory (`dist/`). |
 | `npm test`             | Runs unit tests via [Karma](https://karma-runner.github.io). |
+| `npx playwright test`  | Runs end-to-end tests via Playwright.                        |
 | `npm run lint`         | Runs ESLint to check for code quality issues.                |
 | `npm run lint:fix`     | Runs ESLint and attempts to automatically fix issues.        |
 | `npm run format`       | Formats all supported files using Prettier.                  |
 | `npm run format:check` | Checks if files are formatted according to Prettier rules.   |
+
+## 🧪 End-to-End Testing
+
+We use **Playwright** for E2E testing to ensure the application works as expected from a user's perspective.
+
+### Running E2E Tests
+
+1.  **Run all tests:**
+    ```bash
+    npx playwright test
+    ```
+2.  **Run with UI Mode (Interactive):**
+    ```bash
+    npx playwright test --ui
+    ```
+3.  **Show Test Report:**
+    ```bash
+    npx playwright show-report
+    ```
+
+> **Note:** E2E tests are configured to **mock the backend API**. You do not need the backend server running to run these tests.
 
 ## 📐 Code Style & Quality
 
