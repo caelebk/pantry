@@ -113,6 +113,7 @@ export class InventoryComponent implements OnInit {
   private readonly errorNotificationClass = 'error';
   private readonly scrollThreshold = 300;
   private readonly scrollLocation = 0;
+  private readonly loadingDelayMs = 50;
 
   public readonly dismissableMask = true;
   public readonly outlinedCancelButton = true;
@@ -155,7 +156,10 @@ export class InventoryComponent implements OnInit {
       this.totalItemsCount = this.items.length;
       this.expiringSoonItemsCount = this.items.filter((item) => isExpiringSoon(item)).length;
       this.expiredItemsCount = this.items.filter((item: Item) => isExpired(item)).length;
-      this.isLoading.set(false);
+      // Small delay to ensure animation system is ready
+      setTimeout(() => {
+        this.isLoading.set(false);
+      }, this.loadingDelayMs);
     });
     this.unitService.getUnits().subscribe((units) => {
       this.units = units;
