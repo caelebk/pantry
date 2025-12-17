@@ -13,6 +13,7 @@ function createRequest(path: string, method: string) {
 const _mockUnit: UnitDTO = {
   id: 1,
   name: 'Gram',
+  shortName: 'g',
   type: 'weight',
   toBaseFactor: 1,
 };

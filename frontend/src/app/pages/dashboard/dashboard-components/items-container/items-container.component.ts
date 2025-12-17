@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, ElementRef, inject, input, signal } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, signal, ViewChild } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item, ItemsContainerTheme, ItemTimeStatus } from '@models/items.model';
-import { getItemTimeStatus } from '@utility/itemUtility/ItemUtility';
+import { STAGGER_DELAY_PER_ITEM_MS, staggeredFadeIn } from '@utility/animationUtility/animations';
+import { getItemTimeStatus, sortItemsByExpirationDate } from '@utility/itemUtility/ItemUtility';
 
 @Component({
   selector: 'pantry-items-container',
@@ -10,32 +11,33 @@ import { getItemTimeStatus } from '@utility/itemUtility/ItemUtility';
   imports: [CommonModule, TranslocoModule],
   templateUrl: './items-container.component.html',
   styleUrls: ['./items-container.component.scss'],
+  animations: [staggeredFadeIn],
 })
 export class ItemsContainerComponent {
   private readonly elementRef = inject(ElementRef);
+  private readonly delayMs = 100;
+
+  @ViewChild('itemsList') itemsListElement?: ElementRef<HTMLDivElement>;
+
+  readonly Theme = ItemsContainerTheme;
+  readonly maxVisibleItems = 3;
+  readonly staggerDelayPerItemMs = STAGGER_DELAY_PER_ITEM_MS;
 
   items = input.required<Item[]>();
   titleKey = input.required<string>();
   theme = input<ItemsContainerTheme>(ItemsContainerTheme.Gray);
   footerMessageKey = input.required<string>();
-
-  // Expose Enum to template
-  readonly Theme = ItemsContainerTheme;
-
-  private readonly delayMs = 100;
-
-  readonly maxVisibleItems = 3;
   isExpanded = signal(false);
 
   visibleItems = computed(() => {
+    const sortedItems = sortItemsByExpirationDate(this.items());
     if (this.isExpanded()) {
-      return this.items();
+      return sortedItems;
     }
-    return this.items().slice(0, this.maxVisibleItems);
+    return sortedItems.slice(0, this.maxVisibleItems);
   });
 
   hiddenItemsCount = computed(() => Math.max(0, this.items().length - this.maxVisibleItems));
-
   showToggle = computed(() => this.items().length > this.maxVisibleItems);
 
   toggleExpand() {
@@ -50,6 +52,11 @@ export class ItemsContainerComponent {
           inline: 'nearest',
         });
       }, this.delayMs);
+    } else {
+      // When collapsing, reset the scroll position of the items list to the top
+      if (this.itemsListElement) {
+        this.itemsListElement.nativeElement.scrollTop = 0;
+      }
     }
   }
 

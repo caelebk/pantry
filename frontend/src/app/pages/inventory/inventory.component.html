@@ -57,8 +57,9 @@
 
     @if (!isLoading()) {
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
-        @for (item of filteredItems; track item.name) {
+        @for (item of filteredItems; track item.name; let i = $index) {
           <pantry-item-card
+            [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
             [item]="item"
             [units]="units"
             [locations]="locations"

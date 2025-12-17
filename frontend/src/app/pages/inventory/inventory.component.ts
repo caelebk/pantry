@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +9,11 @@ import { Unit } from '@models/unit.model';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
+import {
+  STAGGER_DELAY_PER_ITEM_MS,
+  fadeInOut,
+  staggeredFadeIn,
+} from '@utility/animationUtility/animations';
 import {
   isExpired,
   isExpiringSoon,
@@ -44,17 +48,7 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './inventory.component.html',
-  animations: [
-    trigger('fadeInOut', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
-      ]),
-      transition(':leave', [
-        animate('300ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' })),
-      ]),
-    ]),
-  ],
+  animations: [fadeInOut, staggeredFadeIn],
 })
 export class InventoryComponent implements OnInit {
   private readonly inventoryService = inject(ItemService);
@@ -64,11 +58,15 @@ export class InventoryComponent implements OnInit {
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
 
+  // Make stagger delay accessible to template
+  readonly staggerDelayPerItemMs = STAGGER_DELAY_PER_ITEM_MS;
+
   private readonly removeConfirmationServiceIcon = 'pi pi-exclamation-triangle';
   private readonly successNotificationClass = 'success';
   private readonly errorNotificationClass = 'error';
   private readonly scrollThreshold = 300;
   private readonly scrollLocation = 0;
+  private readonly loadingDelayMs = 50;
 
   public readonly dismissableMask = true;
   public readonly outlinedCancelButton = true;
@@ -111,7 +109,10 @@ export class InventoryComponent implements OnInit {
       this.totalItemsCount = this.items.length;
       this.expiringSoonItemsCount = this.items.filter((item) => isExpiringSoon(item)).length;
       this.expiredItemsCount = this.items.filter((item: Item) => isExpired(item)).length;
-      this.isLoading.set(false);
+      // Small delay to ensure animation system is ready
+      setTimeout(() => {
+        this.isLoading.set(false);
+      }, this.loadingDelayMs);
     });
     this.unitService.getUnits().subscribe((units) => {
       this.units = units;
