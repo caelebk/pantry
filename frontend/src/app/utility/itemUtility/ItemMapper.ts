@@ -1,7 +1,6 @@
 import { Item, ItemDTO, UpdateItemDTO } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
-import _ from 'lodash';
 
 export function mapItemDTOToItem(
   itemDTO: ItemDTO,
@@ -50,13 +49,13 @@ export function mapItemToItemDTO(item: Item): ItemDTO {
 export function mapItemToUpdateItemDTO(item: Item): UpdateItemDTO {
   return {
     label: item.name,
-    ingredientId: _.isEmpty(item.ingredientId) ? undefined : item.ingredientId,
+    ingredientId: !item.ingredientId ? undefined : item.ingredientId,
     quantity: Number(item.quantity),
     unitId: item.unit.id,
     purchaseDate: item.purchaseDate.toISOString(),
     openedDate: item.openedDate?.toISOString(),
     expirationDate: item.expirationDate.toISOString(),
     locationId: item.location.id,
-    notes: _.isEmpty(item.notes) ? undefined : item.notes,
+    notes: !item.notes ? undefined : item.notes,
   };
 }
