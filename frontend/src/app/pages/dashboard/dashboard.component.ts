@@ -5,7 +5,6 @@ import { StatCardComponent } from '../../components/stat-card/stat-card.componen
 import { Item } from '../../models/items.model';
 import { ItemService } from '../../services/inventory/item.service';
 import { isExpired, isExpiringSoon } from '../../utility/itemUtility/ItemUtility';
-import { CategoryContainerComponent } from './dashboard-components/category-container/category-container.component';
 import { ExpiredItemsContainerComponent } from './dashboard-components/expired-items-container/expired-items-container.component';
 import { QuickActionsContainerComponent } from './dashboard-components/quick-actions-container/quick-actions-container.component';
 
@@ -17,7 +16,6 @@ import { QuickActionsContainerComponent } from './dashboard-components/quick-act
     TranslocoModule,
     StatCardComponent,
     ExpiredItemsContainerComponent,
-    CategoryContainerComponent,
     QuickActionsContainerComponent,
   ],
   templateUrl: './dashboard.component.html',
