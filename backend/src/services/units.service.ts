@@ -76,6 +76,7 @@ export class UnitService {
     return {
       id: row.id,
       name: row.name,
+      shortName: row.short_name,
       type: row.type,
       toBaseFactor: row.to_base_factor,
     };

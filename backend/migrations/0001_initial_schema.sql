@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS difficulties (
 CREATE TABLE IF NOT EXISTS units (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
+    short_name VARCHAR(10) NOT NULL,
     type VARCHAR(50) NOT NULL, -- volume vs weight
     to_base_factor FLOAT NOT NULL
 );

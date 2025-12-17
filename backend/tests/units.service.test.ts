@@ -29,6 +29,7 @@ class MockPool {
 const mockGram: UnitRow = {
   id: 1,
   name: 'Gram',
+  short_name: 'g',
   type: 'weight',
   to_base_factor: 1,
 };
@@ -36,6 +37,7 @@ const mockGram: UnitRow = {
 const mockKg: UnitRow = {
   id: 2,
   name: 'Kilogram',
+  short_name: 'kg',
   type: 'weight',
   to_base_factor: 1000,
 };
@@ -43,6 +45,7 @@ const mockKg: UnitRow = {
 const mockLiter: UnitRow = {
   id: 3,
   name: 'Liter',
+  short_name: 'l',
   type: 'volume',
   to_base_factor: 1000,
 };
