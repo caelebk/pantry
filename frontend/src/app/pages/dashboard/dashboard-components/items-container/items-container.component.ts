@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item } from '../../../../models/items.model';
 
@@ -18,6 +18,8 @@ export enum ItemsContainerTheme {
   styleUrls: ['./items-container.component.scss'],
 })
 export class ItemsContainerComponent {
+  private readonly elementRef = inject(ElementRef);
+
   items = input.required<Item[]>();
   titleKey = input.required<string>();
   theme = input<ItemsContainerTheme>(ItemsContainerTheme.Gray);
@@ -26,7 +28,9 @@ export class ItemsContainerComponent {
   // Expose Enum to template
   readonly Theme = ItemsContainerTheme;
 
-  readonly maxVisibleItems = 2;
+  private readonly delayMs = 100;
+
+  readonly maxVisibleItems = 3;
   isExpanded = signal(false);
 
   visibleItems = computed(() => {
@@ -42,6 +46,17 @@ export class ItemsContainerComponent {
 
   toggleExpand() {
     this.isExpanded.update((v) => !v);
+
+    if (this.isExpanded()) {
+      // Small timeout to allow the view to update and the list to expand before scrolling
+      setTimeout(() => {
+        this.elementRef.nativeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest',
+        });
+      }, this.delayMs);
+    }
   }
 
   getItemTimeDifference(item: Item): { label: string; isExpired: boolean; isClose: boolean } {
