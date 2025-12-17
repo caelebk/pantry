@@ -13,18 +13,15 @@ import { getItemTimeStatus } from '@utility/itemUtility/ItemUtility';
 })
 export class ItemsContainerComponent {
   private readonly elementRef = inject(ElementRef);
+  private readonly delayMs = 100;
+
+  readonly Theme = ItemsContainerTheme;
+  readonly maxVisibleItems = 3;
 
   items = input.required<Item[]>();
   titleKey = input.required<string>();
   theme = input<ItemsContainerTheme>(ItemsContainerTheme.Gray);
   footerMessageKey = input.required<string>();
-
-  // Expose Enum to template
-  readonly Theme = ItemsContainerTheme;
-
-  private readonly delayMs = 100;
-
-  readonly maxVisibleItems = 3;
   isExpanded = signal(false);
 
   visibleItems = computed(() => {
