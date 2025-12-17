@@ -22,7 +22,8 @@
       "recipes": "recipes"
     },
     "expiredItems": {
-      "title": "Expired Items"
+      "title": "Expired Items",
+      "moreItems": "more expired items"
     },
     "byCategory": {
       "title": "By Category"
@@ -164,6 +165,7 @@
     "instructions": "Instructions"
   },
   "common": {
-    "expired": "Expired"
+    "expired": "Expired",
+    "showLess": "Show Less"
   }
 }

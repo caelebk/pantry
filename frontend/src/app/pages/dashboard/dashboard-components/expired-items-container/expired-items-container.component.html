@@ -10,7 +10,7 @@
     </div>
   </div>
 
-  <div class="space-y-3">
+  <div class="space-y-3 items-list" [class.isExpanded]="isExpanded">
     @for (item of visibleExpiredItems; track item.name) {
       <div
         class="bg-white dark:bg-[#262626] p-4 rounded-lg flex justify-between items-center shadow-sm">
@@ -35,9 +35,17 @@
     }
   </div>
 
-  <div class="mt-4 text-center">
-    <p class="text-sm text-gray-500 dark:text-gray-400">
-      {{ hiddenItemsMessage }}
-    </p>
-  </div>
+  @if (showToggle) {
+    <div class="mt-4 text-center">
+      <button
+        (click)="toggleExpand()"
+        class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium focus:outline-none cursor-pointer transition-colors duration-200">
+        @if (isExpanded) {
+          {{ 'common.showLess' | transloco }}
+        } @else {
+          +{{ hiddenItemsCount }} {{ 'dashboard.expiredItems.moreItems' | transloco }}
+        }
+      </button>
+    </div>
+  }
 </div>
