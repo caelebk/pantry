@@ -3,7 +3,7 @@ import { Component, computed, ElementRef, inject, input, signal } from '@angular
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item, ItemsContainerTheme, ItemTimeStatus } from '@models/items.model';
 import { STAGGER_DELAY_PER_ITEM_MS, staggeredFadeIn } from '@utility/animationUtility/animations';
-import { getItemTimeStatus } from '@utility/itemUtility/ItemUtility';
+import { getItemTimeStatus, sortItemsByExpirationDate } from '@utility/itemUtility/ItemUtility';
 
 @Component({
   selector: 'pantry-items-container',
@@ -28,14 +28,14 @@ export class ItemsContainerComponent {
   isExpanded = signal(false);
 
   visibleItems = computed(() => {
+    const sortedItems = sortItemsByExpirationDate(this.items());
     if (this.isExpanded()) {
-      return this.items();
+      return sortedItems;
     }
-    return this.items().slice(0, this.maxVisibleItems);
+    return sortedItems.slice(0, this.maxVisibleItems);
   });
 
   hiddenItemsCount = computed(() => Math.max(0, this.items().length - this.maxVisibleItems));
-
   showToggle = computed(() => this.items().length > this.maxVisibleItems);
 
   toggleExpand() {
