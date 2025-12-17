@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { StatCardComponent } from '@components/stat-card/stat-card.component';
 import { TranslocoModule } from '@jsverse/transloco';
-import { StatCardComponent } from '../../components/stat-card/stat-card.component';
-import { Item } from '../../models/items.model';
-import { ItemService } from '../../services/inventory/item.service';
-import { CategoryContainerComponent } from './dashboard-components/category-container/category-container.component';
-import { ExpiredItemsContainerComponent } from './dashboard-components/expired-items-container/expired-items-container.component';
+import { Item, ItemsContainerTheme } from '@models/items.model';
+import { ItemService } from '@services/inventory/item.service';
+import { isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
+import { ItemsContainerComponent } from './dashboard-components/items-container/items-container.component';
 import { QuickActionsContainerComponent } from './dashboard-components/quick-actions-container/quick-actions-container.component';
 
 @Component({
@@ -15,27 +15,37 @@ import { QuickActionsContainerComponent } from './dashboard-components/quick-act
     CommonModule,
     TranslocoModule,
     StatCardComponent,
-    ExpiredItemsContainerComponent,
-    CategoryContainerComponent,
+    ItemsContainerComponent,
     QuickActionsContainerComponent,
   ],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {
-  private readonly inventoryService = inject(ItemService);
+  protected readonly Theme = ItemsContainerTheme;
+  private readonly itemService = inject(ItemService);
 
-  totalItemsCount: number;
-  expiredItemsCount: number;
-  expiringSoonItemsCount = 0;
+  items = signal<Item[]>([]);
+  expiredItems = signal<Item[]>([]);
+  soonToExpireItems = signal<Item[]>([]);
+  availableItems = signal<Item[]>([]);
+
+  totalItemsCount = computed(() => this.items().length);
+  expiredItemsCount = computed(() => this.expiredItems().length);
+  expiringSoonItemsCount = computed(() => this.soonToExpireItems().length);
   canMakeRecipesCount = 0;
 
-  items: Item[] = [];
-  expiredItems: Item[] = [];
-
   constructor() {
-    this.items = [];
-    this.expiredItems = [];
-    this.totalItemsCount = this.items.length;
-    this.expiredItemsCount = this.expiredItems.length;
+    this.fetchItems();
+  }
+
+  fetchItems() {
+    this.itemService.getItems().subscribe((items: Item[]) => {
+      this.items.set(items);
+      this.expiredItems.set(this.items().filter((item) => isExpired(item)));
+      this.soonToExpireItems.set(this.items().filter((item) => isExpiringSoon(item)));
+      this.availableItems.set(
+        this.items().filter((item) => !isExpired(item) && !isExpiringSoon(item)),
+      );
+    });
   }
 }

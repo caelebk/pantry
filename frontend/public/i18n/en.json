@@ -22,7 +22,19 @@
       "recipes": "recipes"
     },
     "expiredItems": {
-      "title": "Expired Items"
+      "title": "Expired Items",
+      "moreItems": "more expired items",
+      "moreItems_one": "more expired item"
+    },
+    "soonToExpire": {
+      "title": "Soon to Expire",
+      "moreItems": "more items",
+      "moreItems_one": "more item"
+    },
+    "availableItems": {
+      "title": "Available Items",
+      "moreItems": "more items",
+      "moreItems_one": "more item"
     },
     "byCategory": {
       "title": "By Category"
@@ -148,7 +160,7 @@
     "category": "Category:",
     "quantity": "Quantity:",
     "purchaseDate": "Purchase Date:",
-    "bestBefore": "Expiration Date:",
+    "expirationDate": "Expiration Date:",
     "location": "Location:",
     "openedDate": "Opened Date:",
     "notes": "Notes:",
@@ -164,6 +176,7 @@
     "instructions": "Instructions"
   },
   "common": {
-    "expired": "Expired"
+    "expired": "Expired",
+    "showLess": "Show Less"
   }
 }

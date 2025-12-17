@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { StatCardComponent } from '@components/stat-card/stat-card.component';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -10,7 +10,11 @@ import { Unit } from '@models/unit.model';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
-import { isExpired, sortItemsByExpirationDate } from '@utility/itemUtility/ItemUtility';
+import {
+  isExpired,
+  isExpiringSoon,
+  sortItemsByExpirationDate,
+} from '@utility/itemUtility/ItemUtility';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -78,6 +82,7 @@ export class InventoryComponent implements OnInit {
 
   public showScrollTopButton = false;
   public searchQuery = '';
+  public isLoading = signal(true);
 
   public get filteredItems(): Item[] {
     return this.items.filter((item) => {
@@ -100,11 +105,13 @@ export class InventoryComponent implements OnInit {
   }
 
   private initParameters(): void {
+    this.isLoading.set(true);
     this.inventoryService.getItems().subscribe((items) => {
       this.items = sortItemsByExpirationDate(items);
       this.totalItemsCount = this.items.length;
-      this.expiringSoonItemsCount = 0;
+      this.expiringSoonItemsCount = this.items.filter((item) => isExpiringSoon(item)).length;
       this.expiredItemsCount = this.items.filter((item: Item) => isExpired(item)).length;
+      this.isLoading.set(false);
     });
     this.unitService.getUnits().subscribe((units) => {
       this.units = units;

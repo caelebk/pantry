@@ -1,11 +1,16 @@
-import { Item } from '../../models/items.model';
+import { Item, ItemTimeStatus } from '@models/items.model';
 
 export function isExpired(item: Item): boolean {
-  return new Date() > new Date(item.expirationDate);
+  return item.expirationDate <= new Date();
 }
 
-export function isExpiringSoon(item: Item): boolean {
-  return Boolean(item);
+export function isExpiringSoon(item: Item, days = 14): boolean {
+  const currentDate = new Date();
+  const thresholdDate = new Date();
+  thresholdDate.setDate(currentDate.getDate() + days);
+
+  const expirationDate = new Date(item.expirationDate);
+  return expirationDate > currentDate && expirationDate <= thresholdDate;
 }
 
 export function itemProgress(item: Item): number {
@@ -35,7 +40,7 @@ export function getTimeDifferenceString(date1: Date, date2: Date): string {
   const daysInAMonth = 30;
 
   if (absDiffDays === 0) {
-    return 'today';
+    return isExpired ? 'Expired today' : 'Today';
   }
 
   let result: string;
@@ -49,5 +54,18 @@ export function getTimeDifferenceString(date1: Date, date2: Date): string {
     result = `${absDiffDays} day${absDiffDays !== 1 ? 's' : ''}`;
   }
 
-  return isExpired ? `${result} expired` : result;
+  return isExpired ? `${result} expired` : `${result} left`;
+}
+
+export function getItemTimeStatus(item: Item): ItemTimeStatus {
+  const now = new Date();
+  const expirationDate = new Date(item.expirationDate);
+  const diffMs = expirationDate.getTime() - now.getTime();
+
+  const label = getTimeDifferenceString(now, expirationDate);
+  const isExpired = diffMs < 0;
+  // Assuming "close" is within 14 days (matching isExpiringSoon utility default)
+  const isClose = !isExpired && diffMs <= 1209600000;
+
+  return { label, isExpired, isClose };
 }

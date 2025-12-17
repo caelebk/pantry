@@ -12,20 +12,20 @@
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
   <pantry-stat-card
     [title]="'dashboard.stats.totalItems' | transloco"
-    [value]="totalItemsCount"
+    [value]="totalItemsCount()"
     [subtitle]="'dashboard.stats.inInventory' | transloco">
   </pantry-stat-card>
 
   <pantry-stat-card
     [title]="'dashboard.stats.expiringSoon' | transloco"
-    [value]="expiringSoonItemsCount"
+    [value]="expiringSoonItemsCount()"
     [subtitle]="'dashboard.stats.within7Days' | transloco"
     [valueColor]="'text-[#d97736] dark:text-orange-500'">
   </pantry-stat-card>
 
   <pantry-stat-card
     [title]="'dashboard.stats.expired' | transloco"
-    [value]="expiredItemsCount"
+    [value]="expiredItemsCount()"
     [subtitle]="'dashboard.stats.needsRemoval' | transloco"
     [valueColor]="'text-red-600 dark:text-red-500'">
   </pantry-stat-card>
@@ -39,15 +39,34 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
   <!-- Left Column: Expired Items -->
-  <div class="lg:col-span-2">
-    <pantry-expired-items-container [expiredItems]="expiredItems"></pantry-expired-items-container>
+  <div class="lg:col-span-2 space-y-8">
+    <!-- Expired Items -->
+    <pantry-items-container
+      [titleKey]="'dashboard.expiredItems.title'"
+      [items]="expiredItems()"
+      [theme]="Theme.Red"
+      [footerMessageKey]="'dashboard.expiredItems.moreItems'">
+    </pantry-items-container>
+
+    <!-- Soon to Expire Items -->
+    <pantry-items-container
+      [titleKey]="'dashboard.soonToExpire.title'"
+      [items]="soonToExpireItems()"
+      [theme]="Theme.Orange"
+      [footerMessageKey]="'dashboard.soonToExpire.moreItems'">
+    </pantry-items-container>
+
+    <!-- Available Items -->
+    <pantry-items-container
+      [titleKey]="'dashboard.availableItems.title'"
+      [items]="availableItems()"
+      [theme]="Theme.Blue"
+      [footerMessageKey]="'dashboard.availableItems.moreItems'">
+    </pantry-items-container>
   </div>
 
   <!-- Right Column: Categories & Actions -->
   <div class="lg:col-span-1 space-y-8">
-    <!-- By Category -->
-    <pantry-category-container></pantry-category-container>
-
     <!-- Quick Actions -->
     <pantry-quick-actions-container></pantry-quick-actions-container>
   </div>
