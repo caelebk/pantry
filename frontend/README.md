@@ -20,7 +20,6 @@ This project leverages a robust stack of modern web technologies:
   - [Playwright](https://playwright.dev/) - For reliable end-to-end (E2E) testing.
 - **Utilities:**
   - [RxJS](https://rxjs.dev) - Reactive Extensions for JavaScript.
-  - [Lodash](https://lodash.com) - A modern JavaScript utility library.
 
 ## 📂 Project Structure
 
