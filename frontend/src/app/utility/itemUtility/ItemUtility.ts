@@ -4,7 +4,7 @@ export function isExpired(item: Item): boolean {
   return item.expirationDate <= new Date();
 }
 
-export function isExpiringSoon(item: Item, days: number = 14): boolean {
+export function isExpiringSoon(item: Item, days = 14): boolean {
   const currentDate = new Date();
   const thresholdDate = new Date();
   thresholdDate.setDate(currentDate.getDate() + days);
