@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { NgxNumberTickerComponent } from '@omnedia/ngx-number-ticker';
 
@@ -14,6 +14,4 @@ export class StatCardComponent {
   value = input.required<number>();
   subtitle = input<string>();
   valueColor = input<string>('text-gray-900 dark:text-white');
-
-  numberValue = computed(() => this.value());
 }
