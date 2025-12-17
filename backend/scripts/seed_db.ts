@@ -1,5 +1,5 @@
-import { seedData } from './seed_data.ts';
 import { closeDB, getPool, initDB } from '../src/db/client.ts';
+import { seedData } from './seed_data.ts';
 
 async function seedDB() {
   console.log('🌱 Starting database seed...');
@@ -42,8 +42,8 @@ async function seedDB() {
       console.log('📏 Seeding units...');
       for (const unit of seedData.units) {
         const result = await transaction.queryObject<{ id: number }>(
-          'INSERT INTO units (name, type, to_base_factor) VALUES ($1, $2, $3) RETURNING id',
-          [unit.name, unit.type, unit.to_base_factor],
+          'INSERT INTO units (name, short_name, type, to_base_factor) VALUES ($1, $2, $3, $4) RETURNING id',
+          [unit.name, unit.short_name, unit.type, unit.to_base_factor],
         );
         unitIds.set(unit.name, result.rows[0].id);
       }
@@ -87,8 +87,8 @@ async function seedDB() {
         if (!locId) throw new Error(`Location not found: ${item.location}`);
 
         await transaction.queryArray(
-          `INSERT INTO items 
-           (ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date, opened_date, notes) 
+          `INSERT INTO items
+           (ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date, opened_date, notes)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
           [
             ingId,
@@ -111,9 +111,9 @@ async function seedDB() {
         if (!difficultyId) throw new Error(`Difficulty not found: ${recipe.difficulty}`);
 
         const result = await transaction.queryObject<{ id: string }>(
-          `INSERT INTO recipes 
-           (name, description, difficulty_id, servings, prep_time, cook_time) 
-           VALUES ($1, $2, $3, $4, $5, $6) 
+          `INSERT INTO recipes
+           (name, description, difficulty_id, servings, prep_time, cook_time)
+           VALUES ($1, $2, $3, $4, $5, $6)
            RETURNING id`,
           [
             recipe.name,
@@ -135,7 +135,7 @@ async function seedDB() {
           if (!unitId) throw new Error(`Unit not found for recipe: ${ri.unit}`);
 
           await transaction.queryArray(
-            `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id) 
+            `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id)
              VALUES ($1, $2, $3, $4)`,
             [recipeId, ingId, ri.quantity, unitId],
           );

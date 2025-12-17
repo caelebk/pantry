@@ -4,6 +4,7 @@ export function mapUnitDTOToUnit(dto: UnitDTO): Unit {
   return {
     id: dto.id,
     name: dto.name,
+    shortName: dto.shortName,
     type: dto.type as UnitType,
     toBaseFactor: dto.toBaseFactor,
   };
