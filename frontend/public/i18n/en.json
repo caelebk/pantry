@@ -26,8 +26,8 @@
       "moreItems": "more expired items",
       "moreItems_one": "more expired item"
     },
-    "soonToExpire": {
-      "title": "Soon to Expire",
+    "expiringSoonItems": {
+      "title": "Expiring Soon",
       "moreItems": "more items",
       "moreItems_one": "more item"
     },

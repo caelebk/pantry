@@ -25,6 +25,17 @@ import { ToastModule } from 'primeng/toast';
 import { AddItemFormComponent } from './inventory-components/add-item-form/add-item-form.component';
 import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
 
+// Animation configuration constants
+const FADE_ANIMATION_DURATION_MS = 300;
+const FADE_TRANSLATE_DISTANCE_PX = 20;
+const STAGGER_ANIMATION_DURATION_MS = 400;
+const STAGGER_TRANSLATE_DISTANCE_PX = 20;
+const STAGGER_INITIAL_SCALE = 0.95;
+const STAGGER_FINAL_SCALE = 1;
+const STAGGER_INITIAL_OPACITY = 0;
+const STAGGER_FINAL_OPACITY = 1;
+export const STAGGER_DELAY_PER_ITEM_MS = 50;
+
 @Component({
   selector: 'pantry-inventory',
   standalone: true,
@@ -47,11 +58,41 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
   animations: [
     trigger('fadeInOut', [
       transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+        style({
+          opacity: STAGGER_INITIAL_OPACITY,
+          transform: `translateY(${FADE_TRANSLATE_DISTANCE_PX}px)`,
+        }),
+        animate(
+          `${FADE_ANIMATION_DURATION_MS}ms ease-out`,
+          style({
+            opacity: STAGGER_FINAL_OPACITY,
+            transform: 'translateY(0)',
+          }),
+        ),
       ]),
       transition(':leave', [
-        animate('300ms ease-in', style({ opacity: 0, transform: 'translateY(20px)' })),
+        animate(
+          `${FADE_ANIMATION_DURATION_MS}ms ease-in`,
+          style({
+            opacity: STAGGER_INITIAL_OPACITY,
+            transform: `translateY(${FADE_TRANSLATE_DISTANCE_PX}px)`,
+          }),
+        ),
+      ]),
+    ]),
+    trigger('staggeredFadeIn', [
+      transition(':enter', [
+        style({
+          opacity: STAGGER_INITIAL_OPACITY,
+          transform: `translateY(${STAGGER_TRANSLATE_DISTANCE_PX}px) scale(${STAGGER_INITIAL_SCALE})`,
+        }),
+        animate(
+          `${STAGGER_ANIMATION_DURATION_MS}ms {{delay}}ms cubic-bezier(0.4, 0.0, 0.2, 1)`,
+          style({
+            opacity: STAGGER_FINAL_OPACITY,
+            transform: `translateY(0) scale(${STAGGER_FINAL_SCALE})`,
+          }),
+        ),
       ]),
     ]),
   ],
@@ -63,6 +104,9 @@ export class InventoryComponent implements OnInit {
   private readonly translocoService = inject(TranslocoService);
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
+
+  // Make stagger delay accessible to template
+  readonly staggerDelayPerItemMs = STAGGER_DELAY_PER_ITEM_MS;
 
   private readonly removeConfirmationServiceIcon = 'pi pi-exclamation-triangle';
   private readonly successNotificationClass = 'success';
