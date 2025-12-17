@@ -25,6 +25,7 @@ export class StatCardComponent {
   private readonly MEDIUM_CHANGE_DURATION_MS = 1000;
   private readonly LARGE_CHANGE_DURATION_MS = 1500;
   private readonly XLARGE_CHANGE_DURATION_MS = 2000;
+  private readonly ANIMATION_DELAY_MS = 250;
 
   // Display value for the animated ticker
   displayValue = signal(0);
@@ -33,7 +34,9 @@ export class StatCardComponent {
   constructor() {
     effect(() => {
       const targetValue = this.value();
-      this.animateValue(targetValue);
+      setTimeout(() => {
+        this.animateValue(targetValue);
+      }, this.ANIMATION_DELAY_MS); // Delay for 500 milliseconds
     });
   }
 
