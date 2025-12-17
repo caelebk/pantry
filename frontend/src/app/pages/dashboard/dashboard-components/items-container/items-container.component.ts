@@ -1,14 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, ElementRef, inject, input, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Item } from '../../../../models/items.model';
-
-export enum ItemsContainerTheme {
-  Red = 'red',
-  Orange = 'orange',
-  Gray = 'gray',
-  Blue = 'blue',
-}
+import { Item, ItemsContainerTheme, ItemTimeStatus } from '@models/items.model';
+import { getItemTimeStatus } from '@utility/itemUtility/ItemUtility';
 
 @Component({
   selector: 'pantry-items-container',
@@ -59,42 +53,7 @@ export class ItemsContainerComponent {
     }
   }
 
-  getItemTimeDifference(item: Item): { label: string; isExpired: boolean; isClose: boolean } {
-    const diff = this.getTimeDiff(item.expirationDate);
-    const label = this.getTimeDiffString(diff);
-    const isExpired = diff < 0;
-    // Assuming "close" is within 14 days (matching isExpiringSoon utility default)
-    const isClose = !isExpired && diff <= 1209600000;
-
-    return { label, isExpired, isClose };
-  }
-
-  private getTimeDiff(date: Date): number {
-    return new Date(date).getTime() - new Date().getTime();
-  }
-
-  private getTimeDiffString(diffMs: number): string {
-    const absDiffDays = Math.floor(Math.abs(diffMs) / (1000 * 60 * 60 * 24));
-    const isExpired = diffMs < 0;
-    const daysInAYear = 365;
-    const daysInAMonth = 30;
-
-    let result: string;
-
-    if (absDiffDays === 0) {
-      return isExpired ? 'Expired today' : 'Today';
-    }
-
-    if (absDiffDays >= daysInAYear) {
-      const years = Math.floor(absDiffDays / daysInAYear);
-      result = `${years} year${years > 1 ? 's' : ''}`;
-    } else if (absDiffDays >= daysInAMonth) {
-      const months = Math.floor(absDiffDays / daysInAMonth);
-      result = `${months} month${months > 1 ? 's' : ''}`;
-    } else {
-      result = `${absDiffDays} day${absDiffDays !== 1 ? 's' : ''}`;
-    }
-
-    return isExpired ? `${result} expired` : `${result} left`;
+  getItemTimeDifference(item: Item): ItemTimeStatus {
+    return getItemTimeStatus(item);
   }
 }

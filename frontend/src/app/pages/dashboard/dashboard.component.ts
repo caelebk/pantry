@@ -1,14 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
+import { StatCardComponent } from '@components/stat-card/stat-card.component';
 import { TranslocoModule } from '@jsverse/transloco';
-import { StatCardComponent } from '../../components/stat-card/stat-card.component';
-import { Item } from '../../models/items.model';
-import { ItemService } from '../../services/inventory/item.service';
-import { isExpired, isExpiringSoon } from '../../utility/itemUtility/ItemUtility';
-import {
-  ItemsContainerComponent,
-  ItemsContainerTheme,
-} from './dashboard-components/items-container/items-container.component';
+import { Item, ItemsContainerTheme } from '@models/items.model';
+import { ItemService } from '@services/inventory/item.service';
+import { isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
+import { ItemsContainerComponent } from './dashboard-components/items-container/items-container.component';
 import { QuickActionsContainerComponent } from './dashboard-components/quick-actions-container/quick-actions-container.component';
 
 @Component({

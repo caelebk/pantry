@@ -1,5 +1,5 @@
-import { Location } from './location.model';
-import { Unit } from './unit.model';
+import { Location } from '@models/location.model';
+import { Unit } from '@models/unit.model';
 
 export interface Item {
   id: string;
@@ -37,4 +37,17 @@ export interface UpdateItemDTO {
   expirationDate?: string;
   locationId?: number;
   notes?: string;
+}
+
+export interface ItemTimeStatus {
+  label: string;
+  isExpired: boolean;
+  isClose: boolean;
+}
+
+export enum ItemsContainerTheme {
+  Red = 'red',
+  Orange = 'orange',
+  Gray = 'gray',
+  Blue = 'blue',
 }
