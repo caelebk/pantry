@@ -1,0 +1,86 @@
+@use 'sass:color';
+
+:host {
+  display: block;
+}
+
+// Map of theme colors to their Tailwind counterparts (approximate for SCSS usage)
+$themes: (
+  'red': (
+    base: #ef4444,
+    // red-500
+    bg: #fef2f2,
+    // red-50
+    dark-bg: #1a1a1a,
+    // custom dark
+    border: #ef4444,
+    // red-500
+    badge-bg: #fee2e2,
+    // red-100
+    badge-text: #dc2626,
+    // red-600
+  ),
+  'orange': (
+    base: #f97316,
+    // orange-500
+    bg: #fff7ed,
+    // orange-50
+    dark-bg: #1a1a1a,
+    border: #f97316,
+    badge-bg: #ffedd5,
+    // orange-100
+    badge-text: #ea580c,
+    // orange-600
+  ),
+  'gray': (
+    base: #6b7280,
+    // gray-500
+    bg: #f9fafb,
+    // gray-50
+    dark-bg: #1a1a1a,
+    border: #6b7280,
+    badge-bg: #f3f4f6,
+    // gray-100
+    badge-text: #4b5563,
+    // gray-600
+  ),
+  'blue': (
+    base: #3b82f6,
+    // blue-500
+    bg: #eff6ff,
+    // blue-50
+    dark-bg: #1a1a1a,
+    border: #3b82f6,
+    badge-bg: #dbeafe,
+    // blue-100
+    badge-text: #2563eb,
+    // blue-600
+  ),
+);
+
+.items-list {
+  transition: all 300ms ease-in-out;
+
+  &.isExpanded {
+    max-height: 24rem;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(156, 163, 175, 0.5);
+      border-radius: 20px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(107, 114, 128, 0.8);
+    }
+  }
+}

@@ -23,7 +23,18 @@
     },
     "expiredItems": {
       "title": "Expired Items",
-      "moreItems": "more expired items"
+      "moreItems": "more expired items",
+      "moreItems_one": "more expired item"
+    },
+    "soonToExpire": {
+      "title": "Soon to Expire",
+      "moreItems": "more items",
+      "moreItems_one": "more item"
+    },
+    "availableItems": {
+      "title": "Available Items",
+      "moreItems": "more items",
+      "moreItems_one": "more item"
     },
     "byCategory": {
       "title": "By Category"

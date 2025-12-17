@@ -5,7 +5,10 @@ import { StatCardComponent } from '../../components/stat-card/stat-card.componen
 import { Item } from '../../models/items.model';
 import { ItemService } from '../../services/inventory/item.service';
 import { isExpired, isExpiringSoon } from '../../utility/itemUtility/ItemUtility';
-import { ExpiredItemsContainerComponent } from './dashboard-components/expired-items-container/expired-items-container.component';
+import {
+  ItemsContainerComponent,
+  ItemsContainerTheme,
+} from './dashboard-components/items-container/items-container.component';
 import { QuickActionsContainerComponent } from './dashboard-components/quick-actions-container/quick-actions-container.component';
 
 @Component({
@@ -15,17 +18,19 @@ import { QuickActionsContainerComponent } from './dashboard-components/quick-act
     CommonModule,
     TranslocoModule,
     StatCardComponent,
-    ExpiredItemsContainerComponent,
+    ItemsContainerComponent,
     QuickActionsContainerComponent,
   ],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {
+  protected readonly Theme = ItemsContainerTheme;
   private readonly itemService = inject(ItemService);
 
   items = signal<Item[]>([]);
   expiredItems = signal<Item[]>([]);
   soonToExpireItems = signal<Item[]>([]);
+  availableItems = signal<Item[]>([]);
 
   totalItemsCount = computed(() => this.items().length);
   expiredItemsCount = computed(() => this.expiredItems().length);
@@ -41,6 +46,9 @@ export class DashboardComponent {
       this.items.set(items);
       this.expiredItems.set(this.items().filter((item) => isExpired(item)));
       this.soonToExpireItems.set(this.items().filter((item) => isExpiringSoon(item)));
+      this.availableItems.set(
+        this.items().filter((item) => !isExpired(item) && !isExpiringSoon(item)),
+      );
     });
   }
 }
