@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, ElementRef, inject, input, signal } from '@angular/core';
+import { Component, computed, ElementRef, inject, input, signal, ViewChild } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item, ItemsContainerTheme, ItemTimeStatus } from '@models/items.model';
 import { STAGGER_DELAY_PER_ITEM_MS, staggeredFadeIn } from '@utility/animationUtility/animations';
@@ -16,6 +16,8 @@ import { getItemTimeStatus, sortItemsByExpirationDate } from '@utility/itemUtili
 export class ItemsContainerComponent {
   private readonly elementRef = inject(ElementRef);
   private readonly delayMs = 100;
+
+  @ViewChild('itemsList') itemsListElement?: ElementRef<HTMLDivElement>;
 
   readonly Theme = ItemsContainerTheme;
   readonly maxVisibleItems = 3;
@@ -50,6 +52,11 @@ export class ItemsContainerComponent {
           inline: 'nearest',
         });
       }, this.delayMs);
+    } else {
+      // When collapsing, reset the scroll position of the items list to the top
+      if (this.itemsListElement) {
+        this.itemsListElement.nativeElement.scrollTop = 0;
+      }
     }
   }
 

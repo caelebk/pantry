@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  <div class="space-y-3 items-list" [class.isExpanded]="isExpanded()">
+  <div #itemsList class="space-y-3 items-list" [class.isExpanded]="isExpanded()">
     @for (item of visibleItems(); track item.name; let i = $index) {
       <div
         [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
