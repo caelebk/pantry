@@ -1,4 +1,3 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +9,11 @@ import { Unit } from '@models/unit.model';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
+import {
+  STAGGER_DELAY_PER_ITEM_MS,
+  fadeInOut,
+  staggeredFadeIn,
+} from '@utility/animationUtility/animations';
 import {
   isExpired,
   isExpiringSoon,
@@ -24,17 +28,6 @@ import { InputText } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { AddItemFormComponent } from './inventory-components/add-item-form/add-item-form.component';
 import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
-
-// Animation configuration constants
-const FADE_ANIMATION_DURATION_MS = 300;
-const FADE_TRANSLATE_DISTANCE_PX = 20;
-const STAGGER_ANIMATION_DURATION_MS = 400;
-const STAGGER_TRANSLATE_DISTANCE_PX = 20;
-const STAGGER_INITIAL_SCALE = 0.95;
-const STAGGER_FINAL_SCALE = 1;
-const STAGGER_INITIAL_OPACITY = 0;
-const STAGGER_FINAL_OPACITY = 1;
-export const STAGGER_DELAY_PER_ITEM_MS = 50;
 
 @Component({
   selector: 'pantry-inventory',
@@ -55,47 +48,7 @@ export const STAGGER_DELAY_PER_ITEM_MS = 50;
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './inventory.component.html',
-  animations: [
-    trigger('fadeInOut', [
-      transition(':enter', [
-        style({
-          opacity: STAGGER_INITIAL_OPACITY,
-          transform: `translateY(${FADE_TRANSLATE_DISTANCE_PX}px)`,
-        }),
-        animate(
-          `${FADE_ANIMATION_DURATION_MS}ms ease-out`,
-          style({
-            opacity: STAGGER_FINAL_OPACITY,
-            transform: 'translateY(0)',
-          }),
-        ),
-      ]),
-      transition(':leave', [
-        animate(
-          `${FADE_ANIMATION_DURATION_MS}ms ease-in`,
-          style({
-            opacity: STAGGER_INITIAL_OPACITY,
-            transform: `translateY(${FADE_TRANSLATE_DISTANCE_PX}px)`,
-          }),
-        ),
-      ]),
-    ]),
-    trigger('staggeredFadeIn', [
-      transition(':enter', [
-        style({
-          opacity: STAGGER_INITIAL_OPACITY,
-          transform: `translateY(${STAGGER_TRANSLATE_DISTANCE_PX}px) scale(${STAGGER_INITIAL_SCALE})`,
-        }),
-        animate(
-          `${STAGGER_ANIMATION_DURATION_MS}ms {{delay}}ms cubic-bezier(0.4, 0.0, 0.2, 1)`,
-          style({
-            opacity: STAGGER_FINAL_OPACITY,
-            transform: `translateY(0) scale(${STAGGER_FINAL_SCALE})`,
-          }),
-        ),
-      ]),
-    ]),
-  ],
+  animations: [fadeInOut, staggeredFadeIn],
 })
 export class InventoryComponent implements OnInit {
   private readonly inventoryService = inject(ItemService);

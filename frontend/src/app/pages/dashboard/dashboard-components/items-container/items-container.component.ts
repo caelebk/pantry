@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, ElementRef, inject, input, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item, ItemsContainerTheme, ItemTimeStatus } from '@models/items.model';
+import { STAGGER_DELAY_PER_ITEM_MS, staggeredFadeIn } from '@utility/animationUtility/animations';
 import { getItemTimeStatus } from '@utility/itemUtility/ItemUtility';
 
 @Component({
@@ -10,6 +11,7 @@ import { getItemTimeStatus } from '@utility/itemUtility/ItemUtility';
   imports: [CommonModule, TranslocoModule],
   templateUrl: './items-container.component.html',
   styleUrls: ['./items-container.component.scss'],
+  animations: [staggeredFadeIn],
 })
 export class ItemsContainerComponent {
   private readonly elementRef = inject(ElementRef);
@@ -17,6 +19,7 @@ export class ItemsContainerComponent {
 
   readonly Theme = ItemsContainerTheme;
   readonly maxVisibleItems = 3;
+  readonly staggerDelayPerItemMs = STAGGER_DELAY_PER_ITEM_MS;
 
   items = input.required<Item[]>();
   titleKey = input.required<string>();

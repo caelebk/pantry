@@ -23,8 +23,9 @@
   </div>
 
   <div class="space-y-3 items-list" [class.isExpanded]="isExpanded()">
-    @for (item of visibleItems(); track item.name) {
+    @for (item of visibleItems(); track item.name; let i = $index) {
       <div
+        [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
         class="bg-white dark:bg-[#262626] p-4 rounded-lg flex justify-between items-center shadow-sm">
         <div>
           <h4

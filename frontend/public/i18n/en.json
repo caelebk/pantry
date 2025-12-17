@@ -17,7 +17,7 @@
       "expired": "Expired",
       "canMake": "Can Make",
       "inInventory": "in inventory",
-      "within7Days": "within 7 days",
+      "within7Days": "within 14 days",
       "needsRemoval": "needs removal",
       "recipes": "recipes"
     },
