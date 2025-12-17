@@ -160,7 +160,7 @@
     "category": "Category:",
     "quantity": "Quantity:",
     "purchaseDate": "Purchase Date:",
-    "bestBefore": "Expiration Date:",
+    "expirationDate": "Expiration Date:",
     "location": "Location:",
     "openedDate": "Opened Date:",
     "notes": "Notes:",
