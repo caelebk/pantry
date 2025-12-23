@@ -114,7 +114,7 @@
 @if (activeTab === 'groups') {
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Left Column: Unassigned Items -->
-    <div class="lg:col-span-1">
+    <div class="lg:col-span-1 space-y-4">
       <div class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-gray-900">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Unassigned Items ({{ unassignedItemsCount }})
@@ -148,6 +148,12 @@
           </div>
         }
       </div>
+
+      <p-button
+        icon="pi pi-plus"
+        label="Add Group"
+        styleClass="w-full !bg-primary-600 hover:!bg-primary-700 !border-primary-600 !text-white !justify-center">
+      </p-button>
     </div>
 
     <!-- Right Column: Ingredient Groups List -->
@@ -159,7 +165,7 @@
             Ingredient Groups
           </h3>
 
-          <div class="flex flex-col sm:flex-row gap-3">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
             <p-iconfield iconPosition="left">
               <p-inputicon class="pi pi-search text-gray-500 dark:text-gray-400" />
               <input
@@ -169,11 +175,14 @@
                 class="w-full sm:w-64 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg focus:!border-primary-500 hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors" />
             </p-iconfield>
 
-            <p-button
-              icon="pi pi-plus"
-              label="Add Group"
-              styleClass="!bg-primary-600 hover:!bg-primary-700 !border-primary-600">
-            </p-button>
+            <p-select 
+              [options]="categories" 
+              [(ngModel)]="selectedCategory" 
+              optionLabel="name" 
+              [showClear]="true"
+              placeholder="All Categories"
+              styleClass="w-full sm:w-48 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors">
+            </p-select>
           </div>
         </div>
 

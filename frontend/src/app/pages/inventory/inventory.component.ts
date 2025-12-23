@@ -29,6 +29,7 @@ import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { IconField } from "primeng/iconfield";
 import { InputIcon } from "primeng/inputicon";
 import { InputText } from "primeng/inputtext";
+import { SelectModule } from "primeng/select";
 import { ToastModule } from "primeng/toast";
 import { AddItemFormComponent } from "./inventory-components/add-item-form/add-item-form.component";
 import { ItemCardComponent } from "./inventory-components/item-card/item-card.component";
@@ -53,7 +54,9 @@ import {
     IconField,
     InputIcon,
     InputText,
+    InputText,
     TabNavigationComponent,
+    SelectModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: "./inventory.component.html",
@@ -93,6 +96,7 @@ export class InventoryComponent implements OnInit {
 
   public showScrollTopButton = false;
   public searchQuery = "";
+  public selectedCategory: Category | null = null;
   public isLoading = signal(true);
   public activeTab: InventoryTab = "items";
 
