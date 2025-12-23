@@ -128,7 +128,7 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Left Column: Unassigned Items -->
-    <div class="lg:col-span-1 space-y-4">
+    <div class="lg:col-span-1 space-y-4 sticky top-24 self-start">
       <div class="border-2 border-dashed border-primary-600 dark:border-primary-500 rounded-lg p-6 bg-orange-50 dark:bg-orange-900/10">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Unassigned Items ({{ unassignedItemsCount }})
@@ -219,69 +219,81 @@
             @for (group of categoryGroups; track group.category.id) {
               <div class="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-gray-800">
                 <!-- Category Header -->
-                <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-orange-300/80 dark:bg-orange-900/50 rounded-t-lg">
+                <!-- Category Header -->
+                <div 
+                  class="px-4 py-3 border-gray-200 dark:border-gray-800 bg-orange-300/80 dark:bg-orange-900/50 rounded-t-lg cursor-pointer flex items-center justify-between"
+                  [class.rounded-b-lg]="!isCategoryExpanded(group.category.id)"
+                  [class.border-b]="isCategoryExpanded(group.category.id)"
+                  (click)="toggleCategory(group.category.id)">
                   <h4 class="font-semibold text-gray-900 dark:text-white">
                     {{ group.category.name }}
                   </h4>
+                  <i 
+                    class="pi text-gray-600 dark:text-gray-300 transition-transform"
+                    [class.pi-chevron-down]="isCategoryExpanded(group.category.id)"
+                    [class.pi-chevron-right]="!isCategoryExpanded(group.category.id)">
+                  </i>
                 </div>
 
                 <!-- Ingredients in Category -->
-                <div class="divide-y divide-gray-200 dark:divide-gray-800">
-                  @for (ingredient of group.ingredients; track ingredient.id) {
-                    <div class="p-4">
-                      <!-- Ingredient Header -->
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3 w-full cursor-pointer" (click)="toggleIngredient(ingredient.id)">
-                          <i
-                            [class.pi-chevron-right]="!isExpanded(ingredient.id)"
-                            [class.pi-chevron-down]="isExpanded(ingredient.id)"
-                            class="pi text-gray-500 dark:text-gray-400 text-sm transition-transform shrink-0">
-                          </i>
-                          <div class="flex items-center justify-between flex-1 min-w-0">
-                            <div class="flex items-center gap-3 overflow-hidden">
-                              <p class="font-medium text-gray-900 dark:text-white truncate">{{ ingredient.name }}</p>
-                              <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 shrink-0 whitespace-nowrap">
-                                {{ group.category.name }}
+                @if (isCategoryExpanded(group.category.id)) {
+                  <div class="divide-y divide-gray-200 dark:divide-gray-800">
+                    @for (ingredient of group.ingredients; track ingredient.id) {
+                      <div class="p-4">
+                        <!-- Ingredient Header -->
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-3 w-full cursor-pointer" (click)="toggleIngredient(ingredient.id)">
+                            <i
+                              [class.pi-chevron-right]="!isExpanded(ingredient.id)"
+                              [class.pi-chevron-down]="isExpanded(ingredient.id)"
+                              class="pi text-gray-500 dark:text-gray-400 text-sm transition-transform shrink-0">
+                            </i>
+                            <div class="flex items-center justify-between flex-1 min-w-0">
+                              <div class="flex items-center gap-3 overflow-hidden">
+                                <p class="font-medium text-gray-900 dark:text-white truncate">{{ ingredient.name }}</p>
+                                <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 shrink-0 whitespace-nowrap">
+                                  {{ group.category.name }}
+                                </span>
+                              </div>
+                              <span class="text-sm text-gray-500 dark:text-gray-400 shrink-0 ml-4">
+                                {{ ingredient.itemCount }} {{ ingredient.itemCount === 1 ? 'item' : 'items' }}
                               </span>
                             </div>
-                            <span class="text-sm text-gray-500 dark:text-gray-400 shrink-0 ml-4">
-                              {{ ingredient.itemCount }} {{ ingredient.itemCount === 1 ? 'item' : 'items' }}
-                            </span>
                           </div>
                         </div>
-                      </div>
 
-                      <!-- Expanded Items List -->
-                      @if (isExpanded(ingredient.id)) {
-                        <div class="mt-4 ml-8 space-y-2">
-                          @if (ingredient.items.length === 0) {
-                            <div class="text-center py-4 bg-gray-50 dark:bg-[#262626] rounded-lg border border-gray-200 dark:border-gray-800">
-                              <p class="text-sm text-gray-500 dark:text-gray-400">
-                                No items in this ingredient
-                              </p>
-                            </div>
-                          } @else {
-                            @for (item of ingredient.items; track item.id) {
-                              <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#262626] rounded-lg border border-gray-200 dark:border-gray-800">
-                                <div>
-                                  <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                    {{ item.name }}
-                                  </p>
-                                  <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ item.quantity }} {{ item.unit.shortName }} • {{ item.location.name }}
-                                  </p>
-                                </div>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">
-                                  Exp: {{ item.expirationDate | date: 'shortDate' }}
+                        <!-- Expanded Items List -->
+                        @if (isExpanded(ingredient.id)) {
+                          <div class="mt-4 ml-8 space-y-2">
+                            @if (ingredient.items.length === 0) {
+                              <div class="text-center py-4 bg-gray-50 dark:bg-[#262626] rounded-lg border border-gray-200 dark:border-gray-800">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                  No items in this ingredient
                                 </p>
                               </div>
+                            } @else {
+                              @for (item of ingredient.items; track item.id) {
+                                <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#262626] rounded-lg border border-gray-200 dark:border-gray-800">
+                                  <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                      {{ item.name }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                      {{ item.quantity }} {{ item.unit.shortName }} • {{ item.location.name }}
+                                    </p>
+                                  </div>
+                                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    Exp: {{ item.expirationDate | date: 'shortDate' }}
+                                  </p>
+                                </div>
+                              }
                             }
-                          }
-                        </div>
-                      }
-                    </div>
-                  }
-                </div>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             }
           }

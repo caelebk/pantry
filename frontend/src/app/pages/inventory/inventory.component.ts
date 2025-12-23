@@ -189,6 +189,7 @@ export class InventoryComponent implements OnInit {
   }
 
   public expandedIngredients = new Set<string>();
+  public expandedCategories = new Set<number>();
 
   public toggleIngredient(ingredientId: string): void {
     if (this.expandedIngredients.has(ingredientId)) {
@@ -196,6 +197,18 @@ export class InventoryComponent implements OnInit {
     } else {
       this.expandedIngredients.add(ingredientId);
     }
+  }
+
+  public toggleCategory(categoryId: number): void {
+    if (this.expandedCategories.has(categoryId)) {
+      this.expandedCategories.delete(categoryId);
+    } else {
+      this.expandedCategories.add(categoryId);
+    }
+  }
+
+  public isCategoryExpanded(categoryId: number): boolean {
+    return this.expandedCategories.has(categoryId);
   }
 
   public isExpanded(ingredientId: string): boolean {
