@@ -2,8 +2,8 @@
   <button
     (click)="onTabClick('items')"
     class="px-6 py-3 text-sm font-medium transition-colors relative"
-    [class.text-gray-900]="activeTab === 'items'"
-    [class.dark:text-white]="activeTab === 'items'"
+    [class.text-primary-600]="activeTab === 'items'"
+    [class.dark:text-primary-400]="activeTab === 'items'"
     [class.text-gray-600]="activeTab !== 'items'"
     [class.dark:text-gray-400]="activeTab !== 'items'"
     [class.hover:text-gray-900]="activeTab !== 'items'"
@@ -17,8 +17,8 @@
   <button
     (click)="onTabClick('groups')"
     class="px-6 py-3 text-sm font-medium transition-colors relative"
-    [class.text-gray-900]="activeTab === 'groups'"
-    [class.dark:text-white]="activeTab === 'groups'"
+    [class.text-primary-600]="activeTab === 'groups'"
+    [class.dark:text-primary-400]="activeTab === 'groups'"
     [class.text-gray-600]="activeTab !== 'groups'"
     [class.dark:text-gray-400]="activeTab !== 'groups'"
     [class.hover:text-gray-900]="activeTab !== 'groups'"

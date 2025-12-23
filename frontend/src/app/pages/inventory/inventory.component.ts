@@ -126,6 +126,63 @@ export class InventoryComponent implements OnInit {
     return this.items.filter((item) => !item.ingredientId);
   }
 
+  public get categoryGroups() {
+    // Create a map of ingredients with their items
+    const ingredientMap = new Map();
+
+    this.ingredients.forEach((ingredient) => {
+      const ingredientItems = this.items.filter(
+        (item) => item.ingredientId === ingredient.id,
+      );
+      ingredientMap.set(ingredient.id, {
+        ...ingredient,
+        items: ingredientItems,
+        itemCount: ingredientItems.length,
+      });
+    });
+
+    // Group by category
+    const categoryMap = new Map();
+
+    ingredientMap.forEach((ingredient) => {
+      const categoryId = ingredient.category?.id ?? -1;
+      if (!categoryMap.has(categoryId)) {
+        categoryMap.set(categoryId, []);
+      }
+      categoryMap.get(categoryId).push(ingredient);
+    });
+
+    // Convert to array of category groups
+    const groups: any[] = [];
+
+    categoryMap.forEach((ingredients, categoryId) => {
+      const category = categoryId === -1
+        ? { id: -1, name: "Uncategorized" }
+        : this.categories.find((c) => c.id === categoryId) ??
+          { id: -1, name: "Unknown" };
+
+      groups.push({ category, ingredients });
+    });
+
+    return groups.sort((a, b) =>
+      a.category.name.localeCompare(b.category.name)
+    );
+  }
+
+  public expandedIngredients = new Set<string>();
+
+  public toggleIngredient(ingredientId: string): void {
+    if (this.expandedIngredients.has(ingredientId)) {
+      this.expandedIngredients.delete(ingredientId);
+    } else {
+      this.expandedIngredients.add(ingredientId);
+    }
+  }
+
+  public isExpanded(ingredientId: string): boolean {
+    return this.expandedIngredients.has(ingredientId);
+  }
+
   @HostListener("window:scroll", [])
   onWindowScroll(): void {
     this.showScrollTopButton = window.scrollY > this.scrollThreshold;

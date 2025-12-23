@@ -50,6 +50,10 @@
     "title": "Kitchen Inventory",
     "subtitle": "Track your ingredients and manage expiration dates",
     "yourInventory": "Your Inventory",
+    "tabs": {
+      "inventoryItems": "Inventory Items",
+      "ingredientGroups": "Ingredient Groups"
+    },
     "stats": {
       "totalItems": "Total Items",
       "expiringSoon": "Expiring Soon",
