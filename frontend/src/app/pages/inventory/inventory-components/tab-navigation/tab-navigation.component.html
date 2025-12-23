@@ -1,0 +1,31 @@
+<div class="flex border-b border-gray-300 dark:border-gray-800 mb-6">
+  <button
+    (click)="onTabClick('items')"
+    class="px-6 py-3 text-sm font-medium transition-colors relative"
+    [class.text-gray-900]="activeTab === 'items'"
+    [class.dark:text-white]="activeTab === 'items'"
+    [class.text-gray-600]="activeTab !== 'items'"
+    [class.dark:text-gray-400]="activeTab !== 'items'"
+    [class.hover:text-gray-900]="activeTab !== 'items'"
+    [class.dark:hover:text-gray-100]="activeTab !== 'items'">
+    {{ 'inventory.tabs.inventoryItems' | transloco }}
+    @if (activeTab === 'items') {
+      <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"></span>
+    }
+  </button>
+
+  <button
+    (click)="onTabClick('groups')"
+    class="px-6 py-3 text-sm font-medium transition-colors relative"
+    [class.text-gray-900]="activeTab === 'groups'"
+    [class.dark:text-white]="activeTab === 'groups'"
+    [class.text-gray-600]="activeTab !== 'groups'"
+    [class.dark:text-gray-400]="activeTab !== 'groups'"
+    [class.hover:text-gray-900]="activeTab !== 'groups'"
+    [class.dark:hover:text-gray-100]="activeTab !== 'groups'">
+    {{ 'inventory.tabs.ingredientGroups' | transloco }}
+    @if (activeTab === 'groups') {
+      <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"></span>
+    }
+  </button>
+</div>

@@ -8,103 +8,283 @@
   </p>
 </div>
 
-<!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-  <pantry-stat-card [title]="'inventory.stats.totalItems' | transloco" [value]="totalItemsCount">
-  </pantry-stat-card>
+<!-- Tab Navigation -->
+<pantry-tab-navigation
+  [activeTab]="activeTab"
+  (tabChange)="onTabChange($event)">
+</pantry-tab-navigation>
 
-  <pantry-stat-card
-    [title]="'inventory.stats.expiringSoon' | transloco"
-    [value]="expiringSoonItemsCount"
-    [valueColor]="'text-[#d97736] dark:text-orange-500'">
-  </pantry-stat-card>
+<!-- Stats Cards - Inventory Items Tab -->
+@if (activeTab === 'items') {
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <pantry-stat-card [title]="'inventory.stats.totalItems' | transloco" [value]="totalItemsCount">
+    </pantry-stat-card>
 
-  <pantry-stat-card
-    [title]="'inventory.stats.expired' | transloco"
-    [value]="expiredItemsCount"
-    [valueColor]="'text-red-600 dark:text-red-500'">
-  </pantry-stat-card>
-</div>
+    <pantry-stat-card
+      [title]="'inventory.stats.expiringSoon' | transloco"
+      [value]="expiringSoonItemsCount"
+      [valueColor]="'text-[#d97736] dark:text-orange-500'">
+    </pantry-stat-card>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-  <!-- Add New Item Form -->
-  <div class="lg:col-span-1">
-    <pantry-add-item-form
-      (addItem$)="onAddItem($event)"
-      [units]="units"
-      [locations]="locations"></pantry-add-item-form>
+    <pantry-stat-card
+      [title]="'inventory.stats.expired' | transloco"
+      [value]="expiredItemsCount"
+      [valueColor]="'text-red-600 dark:text-red-500'">
+    </pantry-stat-card>
   </div>
+}
 
-  <!-- Inventory List -->
-  <div class="lg:col-span-2">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-        {{ 'inventory.yourInventory' | transloco }}
-      </h3>
+<!-- Stats Cards - Ingredient Groups Tab -->
+@if (activeTab === 'groups') {
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <pantry-stat-card
+      [title]="'In Stock'"
+      [value]="inStockIngredientsCount">
+    </pantry-stat-card>
 
-      <div class="flex flex-col sm:flex-row gap-3">
-        <p-iconfield iconPosition="left">
-          <p-inputicon class="pi pi-search text-gray-500 dark:text-gray-400" />
-          <input
-            type="text"
-            pInputText
-            placeholder="{{ 'inventory.filters.searchPlaceholder' | transloco }}"
-            [(ngModel)]="searchQuery"
-            class="w-full sm:w-64 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg focus:!border-primary-500 hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors" />
-        </p-iconfield>
+    <pantry-stat-card
+      [title]="'Out of Stock'"
+      [value]="outOfStockIngredientsCount"
+      [valueColor]="'text-gray-500 dark:text-gray-400'">
+    </pantry-stat-card>
+
+    <pantry-stat-card
+      [title]="'Unassigned Items'"
+      [value]="unassignedItemsCount"
+      [valueColor]="'text-[#d97736] dark:text-orange-500'">
+    </pantry-stat-card>
+  </div>
+}
+
+
+<!-- Inventory Items View -->
+@if (activeTab === 'items') {
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Add New Item Form -->
+    <div class="lg:col-span-1">
+      <pantry-add-item-form
+        (addItem$)="onAddItem($event)"
+        [units]="units"
+        [locations]="locations"></pantry-add-item-form>
+    </div>
+
+    <!-- Inventory List -->
+    <div class="lg:col-span-2">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+          {{ 'inventory.yourInventory' | transloco }}
+        </h3>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <p-iconfield iconPosition="left">
+            <p-inputicon class="pi pi-search text-gray-500 dark:text-gray-400" />
+            <input
+              type="text"
+              pInputText
+              placeholder="{{ 'inventory.filters.searchPlaceholder' | transloco }}"
+              [(ngModel)]="searchQuery"
+              class="w-full sm:w-64 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg focus:!border-primary-500 hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors" />
+          </p-iconfield>
+        </div>
+      </div>
+
+      @if (!isLoading()) {
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
+          @for (item of filteredItems; track item.name; let i = $index) {
+            <pantry-item-card
+              [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
+              [item]="item"
+              [units]="units"
+              [locations]="locations"
+              (delete)="onDeleteItem(item)"
+              (update)="onUpdateItem($event)"></pantry-item-card>
+          }
+        </div>
+      } @else {
+        <div class="flex justify-center items-center h-64">
+          <div
+            class="w-12 h-12 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin dark:border-gray-700 dark:border-t-primary-400"></div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- Ingredient Groups View -->
+@if (activeTab === 'groups') {
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left Column: Unassigned Items -->
+    <div class="lg:col-span-1">
+      <div class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-gray-900">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Unassigned Items
+        </h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Items that haven't been assigned to an ingredient group yet
+        </p>
+        
+        <!-- Placeholder for unassigned items list -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-3 flex-1">
+              <i class="pi pi-grip-vertical text-gray-400"></i>
+              <div class="flex-1">
+                <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-3 flex-1">
+              <i class="pi pi-grip-vertical text-gray-400"></i>
+              <div class="flex-1">
+                <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-2"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    @if (!isLoading()) {
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
-        @for (item of filteredItems; track item.name; let i = $index) {
-          <pantry-item-card
-            [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
-            [item]="item"
-            [units]="units"
-            [locations]="locations"
-            (delete)="onDeleteItem(item)"
-            (update)="onUpdateItem($event)"></pantry-item-card>
-        }
+    <!-- Right Column: Ingredient Groups List -->
+    <div class="lg:col-span-2">
+      <div class="space-y-6">
+        <!-- Header with Search and Add Button -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+            Ingredient Groups
+          </h3>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <p-iconfield iconPosition="left">
+              <p-inputicon class="pi pi-search text-gray-500 dark:text-gray-400" />
+              <input
+                type="text"
+                pInputText
+                placeholder="Search ingredient groups..."
+                class="w-full sm:w-64 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg focus:!border-primary-500 hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors" />
+            </p-iconfield>
+
+            <p-button
+              icon="pi pi-plus"
+              label="Add Group"
+              styleClass="!bg-primary-600 hover:!bg-primary-700 !border-primary-600">
+            </p-button>
+          </div>
+        </div>
+
+        <!-- Ingredient Groups Skeleton -->
+        <div class="space-y-4">
+          <!-- Category Group 1 -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            <!-- Category Header -->
+            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+            </div>
+
+            <!-- Ingredients in Category -->
+            <div class="divide-y divide-gray-200 dark:divide-gray-700">
+              <div class="p-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3 flex-1">
+                    <i class="pi pi-chevron-right text-gray-500 dark:text-gray-400 text-sm"></i>
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-2">
+                        <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
+                        <div class="h-5 bg-primary-100 dark:bg-primary-900 rounded-full w-20"></div>
+                      </div>
+                      <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                    </div>
+                  </div>
+                  <div class="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                </div>
+              </div>
+
+              <div class="p-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3 flex-1">
+                    <i class="pi pi-chevron-right text-gray-500 dark:text-gray-400 text-sm"></i>
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-2">
+                        <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-36"></div>
+                        <div class="h-5 bg-primary-100 dark:bg-primary-900 rounded-full w-20"></div>
+                      </div>
+                      <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+                    </div>
+                  </div>
+                  <div class="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Group 2 -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3 flex-1">
+                  <i class="pi pi-chevron-right text-gray-500 dark:text-gray-400 text-sm"></i>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-2">
+                      <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                      <div class="h-5 bg-primary-100 dark:bg-primary-900 rounded-full w-20"></div>
+                    </div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+                  </div>
+                </div>
+                <div class="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    } @else {
-      <div class="flex justify-center items-center h-64">
-        <div
-          class="w-12 h-12 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin dark:border-gray-700 dark:border-t-primary-400"></div>
-      </div>
-    }
+    </div>
   </div>
-</div>
+}
 
 <p-toast></p-toast>
 <p-confirmDialog [dismissableMask]="dismissableMask">
   <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
     @if (message) {
-      <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
-        <i [class]="message.icon" class="!text-5xl"></i>
-        <span class="font-bold text-2xl block mb-2 mt-6">{{ message.header }}</span>
-        <p class="mb-0">{{ message.message }}</p>
-        <div class="flex items-center gap-2 mt-6">
-          <p-button
-            label="{{ 'inventory.removeConfirmationService.cancelButton' | transloco }}"
-            [outlined]="outlinedCancelButton"
-            (onClick)="onReject()"
-            styleClass="w-32"></p-button>
-          <p-button
-            label="{{ 'inventory.removeConfirmationService.removeButton' | transloco }}"
-            (onClick)="onAccept()"
-            styleClass="w-32"></p-button>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md">
+        <div class="flex items-start gap-4">
+          <i [class]="message.icon" class="text-3xl text-orange-500"></i>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              {{ message.header }}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">
+              {{ message.message }}
+            </p>
+            <div class="flex gap-3 justify-end">
+              <button
+                (click)="onReject()"
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                {{ 'inventory.removeConfirmationService.cancelButton' | transloco }}
+              </button>
+              <button
+                (click)="onAccept()"
+                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+                {{ 'inventory.removeConfirmationService.removeButton' | transloco }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     }
   </ng-template>
 </p-confirmDialog>
 
+<!-- Scroll to Top Button -->
 @if (showScrollTopButton) {
   <button
     (click)="scrollToTop()"
-    @fadeInOut
-    class="fixed bottom-8 right-8 p-3 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-all duration-300 z-50 cursor-pointer">
+    class="fixed bottom-8 right-8 p-4 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-all duration-300 z-50"
+    aria-label="Scroll to top">
     <i class="pi pi-arrow-up text-xl"></i>
   </button>
 }
