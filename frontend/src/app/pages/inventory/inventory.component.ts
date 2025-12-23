@@ -159,13 +159,28 @@ export class InventoryComponent implements OnInit {
     // Convert to array of category groups
     const groups: any[] = [];
 
+    const normalizedQuery = this.searchQuery.toLowerCase().trim();
+
     categoryMap.forEach((ingredients, categoryId) => {
       const category = categoryId === -1
         ? { id: -1, name: "Uncategorized" }
         : this.categories.find((c) => c.id === categoryId) ??
           { id: -1, name: "Unknown" };
 
-      groups.push({ category, ingredients });
+      // Filter groups by category selection
+      if (this.selectedCategory && this.selectedCategory.id !== category.id) {
+        return;
+      }
+
+      // Filter ingredients by search query
+      const filteredIngredients = ingredients.filter((ing: any) =>
+        ing.name.toLowerCase().includes(normalizedQuery)
+      );
+
+      // Only add group if it has matching ingredients
+      if (filteredIngredients.length > 0) {
+        groups.push({ category, ingredients: filteredIngredients });
+      }
     });
 
     return groups.sort((a, b) =>
