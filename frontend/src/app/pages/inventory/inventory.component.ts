@@ -5,6 +5,7 @@ import { StatCardComponent } from "@components/stat-card/stat-card.component";
 import { TranslocoModule, TranslocoService } from "@jsverse/transloco";
 import { Category } from "@models/category.model";
 import { Ingredient } from "@models/ingredient.model";
+import { EnrichedIngredient, IngredientGroup } from "@models/inventory.models";
 import { Item } from "@models/items.model";
 import { Location } from "@models/location.model";
 import { Unit } from "@models/unit.model";
@@ -32,11 +33,13 @@ import { InputText } from "primeng/inputtext";
 import { SelectModule } from "primeng/select";
 import { ToastModule } from "primeng/toast";
 import { AddItemFormComponent } from "./inventory-components/add-item-form/add-item-form.component";
+import { IngredientGroupContainerComponent } from "./inventory-components/ingredient-group-container/ingredient-group-container.component";
 import { ItemCardComponent } from "./inventory-components/item-card/item-card.component";
 import {
   InventoryTab,
   TabNavigationComponent,
 } from "./inventory-components/tab-navigation/tab-navigation.component";
+import { UnassignedItemsContainerComponent } from "./inventory-components/unassigned-items-container/unassigned-items-container.component";
 
 @Component({
   selector: "pantry-inventory",
@@ -54,9 +57,10 @@ import {
     IconField,
     InputIcon,
     InputText,
-    InputText,
     TabNavigationComponent,
     SelectModule,
+    IngredientGroupContainerComponent,
+    UnassignedItemsContainerComponent,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: "./inventory.component.html",
@@ -157,7 +161,7 @@ export class InventoryComponent implements OnInit {
     });
 
     // Convert to array of category groups
-    const groups: any[] = [];
+    const groups: IngredientGroup[] = [];
 
     const normalizedQuery = this.searchQuery.toLowerCase().trim();
 
@@ -188,9 +192,57 @@ export class InventoryComponent implements OnInit {
     );
   }
 
+  // Remove local toggle methods as they are now handled by sub-components
+  // public toggleIngredient(ingredientId: string): void ...
+  // public toggleCategory(categoryId: number): void ...
+  // public isCategoryExpanded(categoryId: number): boolean ...
+  // public isExpanded(ingredientId: string): boolean ...
+
   public expandedIngredients = new Set<string>();
   public expandedCategories = new Set<number>();
 
+  // Loading state
+  public loading = false;
+
+  public getTotalIngredientCount(): number {
+    let count = 0;
+    this.categoryGroups.forEach((group) => {
+      count += group.ingredients.length;
+    });
+    return count;
+  }
+
+  public getTotalItemCount(): number {
+    let count = this.unassignedItems.length;
+    this.categoryGroups.forEach((group) => {
+      group.ingredients.forEach((ing) => {
+        count += ing.items.length;
+      });
+    });
+    return count;
+  }
+
+  public getExpiringSoonParams(): { count: number } {
+    // This is a placeholder logic, simpler implementation for now
+    // In a real app, you'd filter by expiration date
+    return { count: 0 };
+  }
+
+  public onAssignItem(
+    event: { item: Item; ingredient: EnrichedIngredient },
+  ): void {
+    console.log(
+      "Assigning item:",
+      event.item.name,
+      "to ingredient:",
+      event.ingredient.name,
+    );
+    // TODO: Implement actual assignment logic via service
+    // For now, optimistically update UI or just log
+
+    // Example: remove from unassigned and add to ingredient
+    // This requires strict state management which is part of Phase 3
+  }
   public toggleIngredient(ingredientId: string): void {
     if (this.expandedIngredients.has(ingredientId)) {
       this.expandedIngredients.delete(ingredientId);

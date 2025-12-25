@@ -1,0 +1,28 @@
+<div class="space-y-4">
+  <div class="border-2 border-dashed border-primary-600 dark:border-primary-500 rounded-lg p-6 bg-orange-50 dark:bg-orange-900/10">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      Unassigned Items ({{ unassignedItems().length }})
+    </h3>
+    <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
+      Items that haven't been assigned to an ingredient group yet
+    </p>
+
+    @if (loading()) {
+      <div class="space-y-4">
+        @for (i of [1,2,3]; track i) {
+          <div class="h-24 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse"></div>
+        }
+      </div>
+    } @else {
+      <div class="space-y-4">
+        @for (item of unassignedItems(); track item.id) {
+          <pantry-unassigned-item-card
+            [item]="item"
+            [categoryGroups]="categoryGroups()"
+            (assign)="onAssignItem($event)">
+          </pantry-unassigned-item-card>
+        }
+      </div>
+    }
+  </div>
+</div>

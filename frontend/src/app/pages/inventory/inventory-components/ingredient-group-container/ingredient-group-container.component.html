@@ -1,0 +1,47 @@
+<div class="space-y-6">
+  <!-- Search Bar and Category Filter -->
+  <div class="flex flex-col sm:flex-row gap-3">
+    <p-iconfield iconPosition="left" class="flex-1">
+      <p-inputicon class="pi pi-search text-gray-500 dark:text-gray-400" />
+      <input
+        type="text"
+        pInputText
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearch($event)"
+        placeholder="Search ingredient groups..."
+        class="w-full !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg focus:!border-primary-500 hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors p-3" />
+    </p-iconfield>
+
+    <p-select 
+      [options]="categories()" 
+      [ngModel]="selectedCategory()" 
+      (ngModelChange)="onCategorySelect($event)"
+      optionLabel="name" 
+      [showClear]="true"
+      placeholder="All Categories"
+      styleClass="w-full sm:w-48 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors">
+    </p-select>
+  </div>
+
+  <!-- Ingredient Groups List -->
+  <div class="space-y-4">
+    @if (categoryGroups().length === 0) {
+      <div class="text-center py-12 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-gray-800">
+        <i class="pi pi-inbox text-5xl text-gray-400 dark:text-gray-600 mb-3"></i>
+        <p class="text-gray-500 dark:text-gray-400">
+          No ingredient groups found
+        </p>
+      </div>
+    } @else {
+      @for (group of categoryGroups(); track group.category.id) {
+        <pantry-ingredient-group
+          [group]="group"
+          [isExpanded]="isCategoryExpanded(group.category.id)"
+          [expandedIngredients]="expandedIngredients()"
+          (toggle)="onToggleCategory($event)"
+          (toggleIngredient)="onToggleIngredient($event)">
+        </pantry-ingredient-group>
+      }
+    }
+  </div>
+</div>

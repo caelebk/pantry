@@ -111,7 +111,9 @@
 }
 
 <!-- Ingredient Groups View -->
+<!-- Ingredient Groups View -->
 @if (activeTab === 'groups') {
+  <!-- Header & Add Button -->
   <div class="flex items-center justify-between mb-6">
     <div>
       <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Ingredient Groups</h2>
@@ -119,186 +121,30 @@
         Organize items by clicking assign buttons or drag and drop
       </p>
     </div>
-    <p-button
-      icon="pi pi-plus"
-      label="Add Group"
-      styleClass="!bg-primary-600 hover:!bg-primary-700 !border-primary-600 !text-white">
-    </p-button>
+    <div class="flex gap-2">
+      <p-button
+        icon="pi pi-plus"
+        label="Add Group"
+        styleClass="!bg-primary-600 hover:!bg-primary-700 !border-primary-600 !text-white">
+      </p-button>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Left Column: Unassigned Items -->
-    <div class="lg:col-span-1 space-y-4 sticky top-24 self-start">
-      <div class="border-2 border-dashed border-primary-600 dark:border-primary-500 rounded-lg p-6 bg-orange-50 dark:bg-orange-900/10">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Unassigned Items ({{ unassignedItemsCount }})
-        </h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-          Items that haven't been assigned to an ingredient group yet
-        </p>
-        
-        @if (unassignedItems.length === 0) {
-          <div class="text-center py-8">
-            <i class="pi pi-check-circle text-4xl text-gray-400 dark:text-gray-600 mb-2"></i>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              All items are assigned!
-            </p>
-          </div>
-        } @else {
-          <div class="space-y-4">
-            @for (item of unassignedItems; track item.id) {
-              <div class="flex flex-col gap-3 p-4 bg-white dark:bg-[#121212] rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm">
-                <div class="flex items-start gap-3">
-                  <div class="mt-1 cursor-grab opacity-50 hover:opacity-100 transition-opacity">
-                    <!-- 6-dot grip icon -->
-                    <svg width="10" height="16" viewBox="0 0 10 16" fill="navajowhite" xmlns="http://www.w3.org/2000/svg" class="fill-gray-400">
-                       <circle cx="2" cy="2" r="1.5"/>
-                       <circle cx="2" cy="8" r="1.5"/>
-                       <circle cx="2" cy="14" r="1.5"/>
-                       <circle cx="8" cy="2" r="1.5"/>
-                       <circle cx="8" cy="8" r="1.5"/>
-                       <circle cx="8" cy="14" r="1.5"/>
-                    </svg>
-                  </div>
-                  <div class="flex-1">
-                    <p class="font-bold text-gray-900 dark:text-gray-100 text-[15px] leading-tight">{{ item.name }}</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {{ item.quantity }} {{ item.unit.shortName }}
-                    </p>
-                  </div>
-                </div>
-                
-                <p-select 
-                  [options]="categoryGroups" 
-                  optionLabel="ingredients.name"
-                  placeholder="Assign to group..." 
-                  styleClass="w-full !h-9 !text-sm !flex !items-center !bg-gray-50 dark:!bg-[#1e1e1e] !border-gray-200 dark:!border-gray-700 !rounded-md">
-                </p-select>
-              </div>
-            }
-          </div>
-        }
-      </div>
+  <div class="grid grid-cols-3  gap-8 items-start">
+    <div class="col-span-1">
+      <pantry-unassigned-items-container [unassignedItems]="unassignedItems" [categoryGroups]="categoryGroups"
+        [loading]="loading" (assignItem)="onAssignItem($event)">
+      </pantry-unassigned-items-container>
     </div>
-
-    <!-- Right Column: Ingredient Groups List -->
-    <div class="lg:col-span-2">
-      <div class="space-y-6">
-        <!-- Search Bar and Category Filter -->
-        <div class="flex flex-col sm:flex-row gap-3">
-          <p-iconfield iconPosition="left" class="flex-1">
-            <p-inputicon class="pi pi-search text-gray-500 dark:text-gray-400" />
-            <input
-              type="text"
-              pInputText
-              [(ngModel)]="searchQuery"
-              placeholder="Search ingredient groups..."
-              class="w-full !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg focus:!border-primary-500 hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors p-3" />
-          </p-iconfield>
-
-          <p-select 
-            [options]="categories" 
-            [(ngModel)]="selectedCategory" 
-            optionLabel="name" 
-            [showClear]="true"
-            placeholder="All Categories"
-            styleClass="w-full sm:w-48 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors">
-          </p-select>
-        </div>
-
-        <!-- Ingredient Groups List -->
-        <div class="space-y-4">
-          @if (categoryGroups.length === 0) {
-            <div class="text-center py-12 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-gray-800">
-              <i class="pi pi-inbox text-5xl text-gray-400 dark:text-gray-600 mb-3"></i>
-              <p class="text-gray-500 dark:text-gray-400">
-                No ingredient groups found
-              </p>
-            </div>
-          } @else {
-            @for (group of categoryGroups; track group.category.id) {
-              <div class="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-gray-800">
-                <!-- Category Header -->
-                <!-- Category Header -->
-                <div 
-                  class="px-4 py-3 border-gray-200 dark:border-gray-800 bg-orange-300/80 dark:bg-orange-900/50 rounded-t-lg cursor-pointer flex items-center justify-between"
-                  [class.rounded-b-lg]="!isCategoryExpanded(group.category.id)"
-                  [class.border-b]="isCategoryExpanded(group.category.id)"
-                  (click)="toggleCategory(group.category.id)">
-                  <h4 class="font-semibold text-gray-900 dark:text-white">
-                    {{ group.category.name }}
-                  </h4>
-                  <i 
-                    class="pi text-gray-600 dark:text-gray-300 transition-transform"
-                    [class.pi-chevron-down]="isCategoryExpanded(group.category.id)"
-                    [class.pi-chevron-right]="!isCategoryExpanded(group.category.id)">
-                  </i>
-                </div>
-
-                <!-- Ingredients in Category -->
-                @if (isCategoryExpanded(group.category.id)) {
-                  <div class="divide-y divide-gray-200 dark:divide-gray-800">
-                    @for (ingredient of group.ingredients; track ingredient.id) {
-                      <div class="p-4">
-                        <!-- Ingredient Header -->
-                        <div class="flex items-center justify-between">
-                          <div class="flex items-center gap-3 w-full cursor-pointer" (click)="toggleIngredient(ingredient.id)">
-                            <i
-                              [class.pi-chevron-right]="!isExpanded(ingredient.id)"
-                              [class.pi-chevron-down]="isExpanded(ingredient.id)"
-                              class="pi text-gray-500 dark:text-gray-400 text-sm transition-transform shrink-0">
-                            </i>
-                            <div class="flex items-center justify-between flex-1 min-w-0">
-                              <div class="flex items-center gap-3 overflow-hidden">
-                                <p class="font-medium text-gray-900 dark:text-white truncate">{{ ingredient.name }}</p>
-                                <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 shrink-0 whitespace-nowrap">
-                                  {{ group.category.name }}
-                                </span>
-                              </div>
-                              <span class="text-sm text-gray-500 dark:text-gray-400 shrink-0 ml-4">
-                                {{ ingredient.itemCount }} {{ ingredient.itemCount === 1 ? 'item' : 'items' }}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Expanded Items List -->
-                        @if (isExpanded(ingredient.id)) {
-                          <div class="mt-4 ml-8 space-y-2">
-                            @if (ingredient.items.length === 0) {
-                              <div class="text-center py-4 bg-gray-50 dark:bg-[#262626] rounded-lg border border-gray-200 dark:border-gray-800">
-                                <p class="text-sm text-gray-500 dark:text-gray-400">
-                                  No items in this ingredient
-                                </p>
-                              </div>
-                            } @else {
-                              @for (item of ingredient.items; track item.id) {
-                                <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#262626] rounded-lg border border-gray-200 dark:border-gray-800">
-                                  <div>
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                      {{ item.name }}
-                                    </p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                                      {{ item.quantity }} {{ item.unit.shortName }} • {{ item.location.name }}
-                                    </p>
-                                  </div>
-                                  <p class="text-xs text-gray-500 dark:text-gray-400">
-                                    Exp: {{ item.expirationDate | date: 'shortDate' }}
-                                  </p>
-                                </div>
-                              }
-                            }
-                          </div>
-                        }
-                      </div>
-                    }
-                  </div>
-                }
-              </div>
-            }
-          }
-        </div>
-      </div>
+    <div class="col-span-2">
+      <pantry-ingredient-group-container
+        [categoryGroups]="categoryGroups"
+        [categories]="categories"
+        [searchQuery]="searchQuery"
+        [selectedCategory]="selectedCategory"
+        (searchChange)="searchQuery = $event"
+      (categorySelect)="selectedCategory = $event">
+    </pantry-ingredient-group-container>
     </div>
   </div>
 }
