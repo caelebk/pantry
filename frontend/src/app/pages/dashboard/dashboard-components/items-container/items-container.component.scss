@@ -20,17 +20,17 @@ $themes: (
     badge-text: #dc2626,
     // red-600
   ),
-  'orange': (
-    base: #f97316,
-    // orange-500
-    bg: #fff7ed,
-    // orange-50
+  'amber': (
+    base: #d97706,
+    // amber-600
+    bg: #fffbeb,
+    // amber-50
     dark-bg: #1a1a1a,
-    border: #f97316,
-    badge-bg: #ffedd5,
-    // orange-100
-    badge-text: #ea580c,
-    // orange-600
+    border: #d97706,
+    badge-bg: #fef3c7,
+    // amber-100
+    badge-text: #b45309,
+    // amber-700
   ),
   'gray': (
     base: #6b7280,
@@ -43,18 +43,6 @@ $themes: (
     // gray-100
     badge-text: #4b5563,
     // gray-600
-  ),
-  'blue': (
-    base: #3b82f6,
-    // blue-500
-    bg: #eff6ff,
-    // blue-50
-    dark-bg: #1a1a1a,
-    border: #3b82f6,
-    badge-bg: #dbeafe,
-    // blue-100
-    badge-text: #2563eb,
-    // blue-600
   ),
 );
 

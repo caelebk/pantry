@@ -20,7 +20,7 @@
     [title]="'dashboard.stats.expiringSoon' | transloco"
     [value]="expiringSoonItemsCount()"
     [subtitle]="'dashboard.stats.within7Days' | transloco"
-    [valueColor]="'text-[#d97736] dark:text-orange-500'">
+    [valueColor]="'text-amber-600 dark:text-amber-500'">
   </pantry-stat-card>
 
   <pantry-stat-card
@@ -60,7 +60,7 @@
     <pantry-items-container
       [titleKey]="'dashboard.availableItems.title'"
       [items]="availableItems()"
-      [theme]="Theme.Blue"
+      [theme]="Theme.Orange"
       [footerMessageKey]="'dashboard.availableItems.moreItems'">
     </pantry-items-container>
   </div>

@@ -1,11 +1,11 @@
 <div
-  [ngClass]="expired() ? 'bg-red-50 border-red-500' : 'bg-blue-50 border-blue-500'"
+  [ngClass]="expired() ? 'bg-red-50 border-red-500' : 'bg-primary-50 border-primary-500'"
   class="dark:bg-[#1a1a1a] rounded-xl p-4 border-l-4 shadow-sm relative transition-colors duration-200 h-full flex flex-col justify-between">
   <div>
     <div class="flex justify-between items-center mb-2">
       <h4 class="text-base font-bold text-gray-900 dark:text-white leading-tight pr-4">
         @if (expired()) {
-          <span class="text-yellow-600 dark:text-yellow-500 inline-flex items-center">
+          <span class="text-primary-600 dark:text-primary-500 inline-flex items-center">
             <i class="pi pi-exclamation-triangle text-sm mr-1"></i>
           </span>
         }
@@ -54,7 +54,7 @@
         </span>
         <span
           [ngClass]="
-            expired() ? 'text-red-600 dark:text-red-500' : 'text-blue-600 dark:text-blue-500'
+            expired() ? 'text-red-600 dark:text-red-500' : 'text-primary-600 dark:text-primary-500'
           "
           class="font-medium truncate block">
           {{ item().expirationDate.toLocaleDateString() }}
@@ -90,10 +90,10 @@
     </div>
     <!-- Progress Bar -->
     <div
-      [ngClass]="expired() ? 'bg-red-200 dark:bg-red-900/30' : 'bg-blue-200 dark:bg-blue-900/30'"
+      [ngClass]="expired() ? 'bg-red-200 dark:bg-red-900/30' : 'bg-primary-200 dark:bg-primary-900/30'"
       class="w-full rounded-full h-1.5">
       <div
-        [ngClass]="expired() ? 'bg-red-600 dark:bg-red-500' : 'bg-blue-600 dark:bg-blue-500'"
+        [ngClass]="expired() ? 'bg-red-600 dark:bg-red-500' : 'bg-primary-600 dark:bg-primary-500'"
         class="h-1.5 rounded-full max-w-full"
         [style.width.%]="itemProgress()"></div>
     </div>

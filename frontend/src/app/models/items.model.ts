@@ -49,5 +49,5 @@ export enum ItemsContainerTheme {
   Red = 'red',
   Orange = 'orange',
   Gray = 'gray',
-  Blue = 'blue',
+  Amber = 'amber',
 }

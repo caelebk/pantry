@@ -23,7 +23,7 @@
     <pantry-stat-card
       [title]="'inventory.stats.expiringSoon' | transloco"
       [value]="expiringSoonItemsCount"
-      [valueColor]="'text-[#d97736] dark:text-orange-500'">
+      [valueColor]="'text-amber-600 dark:text-amber-500'">
     </pantry-stat-card>
 
     <pantry-stat-card
@@ -51,7 +51,7 @@
     <pantry-stat-card
       [title]="'Unassigned Items'"
       [value]="unassignedItemsCount"
-      [valueColor]="'text-[#d97736] dark:text-orange-500'">
+      [valueColor]="'text-amber-600 dark:text-amber-500'">
     </pantry-stat-card>
   </div>
 }
@@ -155,7 +155,7 @@
     @if (message) {
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md">
         <div class="flex items-start gap-4">
-          <i [class]="message.icon" class="text-3xl text-orange-500"></i>
+          <i [class]="message.icon" class="text-3xl text-primary-500"></i>
           <div class="flex-1">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               {{ message.header }}

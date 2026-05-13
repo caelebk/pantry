@@ -1,7 +1,7 @@
-<div class="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-orange-600/50 mb-4">
+<div class="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-primary-600/50 mb-4">
   <!-- Category Header -->
   <div 
-    class="px-4 py-3 border-gray-200 dark:border-orange-600/50 bg-orange-300/80 dark:bg-[#262626] rounded-t-lg cursor-pointer flex items-center justify-between"
+    class="px-4 py-3 border-gray-200 dark:border-primary-600/50 bg-primary-300/80 dark:bg-[#262626] rounded-t-lg cursor-pointer flex items-center justify-between"
     [class.rounded-b-lg]="!isExpanded"
     [class.border-b]="isExpanded"
     (click)="toggle.emit(group.category.id)">
