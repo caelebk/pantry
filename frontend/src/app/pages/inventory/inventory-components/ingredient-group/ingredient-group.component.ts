@@ -4,6 +4,8 @@ import { Router } from "@angular/router";
 import { IngredientGroup } from "@models/inventory.models";
 import { IngredientRowComponent } from "../ingredient-row/ingredient-row.component";
 
+import { Item } from "@models/items.model";
+
 @Component({
   selector: "pantry-ingredient-group",
   standalone: true,
@@ -24,6 +26,13 @@ export class IngredientGroupComponent {
   toggle = new EventEmitter<number>();
   @Output()
   toggleIngredient = new EventEmitter<string>();
+  @Output()
+  unassignItem = new EventEmitter<Item>();
+
+  onUnassign(item: Item, event: Event) {
+    event.stopPropagation();
+    this.unassignItem.emit(item);
+  }
 
   navigateToEdit(itemId: string, event: Event) {
     event.stopPropagation();

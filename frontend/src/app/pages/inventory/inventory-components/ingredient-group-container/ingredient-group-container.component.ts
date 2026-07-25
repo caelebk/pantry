@@ -2,12 +2,13 @@ import { CommonModule } from "@angular/common";
 import { Component, input, output, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Category } from "@models/category.model";
-import { IngredientGroup } from "@models/inventory.models";
+import { NutrientGroup } from "@models/inventory.models";
 import { IconFieldModule } from "primeng/iconfield";
 import { InputIconModule } from "primeng/inputicon";
 import { InputTextModule } from "primeng/inputtext";
 import { SelectModule } from "primeng/select";
-import { IngredientGroupComponent } from "../ingredient-group/ingredient-group.component";
+import { Item } from "@models/items.model";
+import { NutrientGroupComponent } from "../nutrient-group/nutrient-group.component";
 
 @Component({
   selector: "pantry-ingredient-group-container",
@@ -19,13 +20,13 @@ import { IngredientGroupComponent } from "../ingredient-group/ingredient-group.c
     InputIconModule,
     InputTextModule,
     SelectModule,
-    IngredientGroupComponent,
+    NutrientGroupComponent,
   ],
   templateUrl: "./ingredient-group-container.component.html",
 })
 export class IngredientGroupContainerComponent {
   // Inputs
-  categoryGroups = input.required<IngredientGroup[]>();
+  nutrientGroups = input.required<NutrientGroup[]>();
   categories = input.required<Category[]>();
   searchQuery = input<string>("");
   selectedCategory = input<Category | null>(null);
@@ -33,10 +34,28 @@ export class IngredientGroupContainerComponent {
   // Outputs
   searchChange = output<string>();
   categorySelect = output<Category | null>();
+  unassignItem = output<Item>();
 
   // Local State
+  selectedNutrientTypeId = signal<number | null>(null);
+  expandedNutrientGroups = signal<Set<number>>(new Set());
   expandedCategories = signal<Set<number>>(new Set());
   expandedIngredients = signal<Set<string>>(new Set());
+
+  selectNutrientType(id: number | null) {
+    if (this.selectedNutrientTypeId() === id) {
+      this.selectedNutrientTypeId.set(null);
+    } else {
+      this.selectedNutrientTypeId.set(id);
+    }
+  }
+
+  get filteredNutrientGroups(): NutrientGroup[] {
+    const selectedNt = this.selectedNutrientTypeId();
+    const groups = this.nutrientGroups();
+    if (!selectedNt) return groups;
+    return groups.filter((ng) => ng.nutrientType.id === selectedNt);
+  }
 
   // Event Handlers
   onSearch(query: string) {
@@ -45,6 +64,18 @@ export class IngredientGroupContainerComponent {
 
   onCategorySelect(category: Category | null) {
     this.categorySelect.emit(category);
+  }
+
+  onToggleNutrientGroup(nutrientTypeId: number) {
+    this.expandedNutrientGroups.update((current) => {
+      const newSet = new Set(current);
+      if (newSet.has(nutrientTypeId)) {
+        newSet.delete(nutrientTypeId);
+      } else {
+        newSet.add(nutrientTypeId);
+      }
+      return newSet;
+    });
   }
 
   onToggleCategory(categoryId: number) {
@@ -72,20 +103,21 @@ export class IngredientGroupContainerComponent {
   }
 
   // Helpers
-  isCategoryExpanded(categoryId: number): boolean {
-    return this.expandedCategories().has(categoryId);
+  isNutrientGroupExpanded(nutrientTypeId: number): boolean {
+    return this.expandedNutrientGroups().has(nutrientTypeId);
   }
 
   expandAll() {
-    const allIds = new Set(this.categoryGroups().map((g) => g.category.id));
-    const allIngIds = new Set(
-      this.categoryGroups().flatMap((g) => g.ingredients.map((i) => i.id))
+    const allNtIds = new Set(this.nutrientGroups().map((ng) => ng.nutrientType.id));
+    const allCatIds = new Set(
+      this.nutrientGroups().flatMap((ng) => ng.categoryGroups.map((cg) => cg.category.id))
     );
-    this.expandedCategories.set(allIds);
-    this.expandedIngredients.set(allIngIds);
+    this.expandedNutrientGroups.set(allNtIds);
+    this.expandedCategories.set(allCatIds);
   }
 
   collapseAll() {
+    this.expandedNutrientGroups.set(new Set());
     this.expandedCategories.set(new Set());
     this.expandedIngredients.set(new Set());
   }

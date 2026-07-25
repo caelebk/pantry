@@ -437,12 +437,13 @@
     </div>
     <div class="lg:col-span-2">
       <pantry-ingredient-group-container
-        [categoryGroups]="categoryGroups"
+        [nutrientGroups]="nutrientGroups"
         [categories]="categories"
         [searchQuery]="searchQuery"
         [selectedCategory]="selectedCategory"
         (searchChange)="searchQuery = $event"
-        (categorySelect)="selectedCategory = $event">
+        (categorySelect)="selectedCategory = $event"
+        (unassignItem)="onUnassignItem($event)">
       </pantry-ingredient-group-container>
     </div>
   </div>

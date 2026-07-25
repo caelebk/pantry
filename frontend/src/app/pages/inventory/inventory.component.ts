@@ -4,10 +4,12 @@ import { FormsModule } from "@angular/forms";
 import { TranslocoModule, TranslocoService } from "@jsverse/transloco";
 import { Category } from "@models/category.model";
 import { Ingredient } from "@models/ingredient.model";
-import { EnrichedIngredient, IngredientGroup } from "@models/inventory.models";
+import { EnrichedIngredient, IngredientGroup, NutrientGroup } from "@models/inventory.models";
 import { Item } from "@models/items.model";
 import { Location } from "@models/location.model";
 import { Unit } from "@models/unit.model";
+import { NutrientType } from "@models/nutrient-type.model";
+import { NutrientTypeService } from "@services/inventory/nutrient-type.service";
 import { CategoryService } from "@services/inventory/category.service";
 import { IngredientService } from "@services/inventory/ingredient.service";
 import { ItemService } from "@services/inventory/item.service";
@@ -68,6 +70,7 @@ export class InventoryComponent implements OnInit {
   private readonly inventoryService = inject(ItemService);
   private readonly ingredientService = inject(IngredientService);
   private readonly categoryService = inject(CategoryService);
+  private readonly nutrientTypeService = inject(NutrientTypeService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly toastService = inject(ToastService);
   private readonly unitService = inject(UnitService);
@@ -87,6 +90,7 @@ export class InventoryComponent implements OnInit {
   public locations: Location[] = [];
   public ingredients: Ingredient[] = [];
   public categories: Category[] = [];
+  public nutrientTypes: NutrientType[] = [];
 
   public showScrollTopButton = false;
   public searchQuery = "";
@@ -269,6 +273,37 @@ export class InventoryComponent implements OnInit {
     );
   }
 
+  public get nutrientGroups(): NutrientGroup[] {
+    const catGroups = this.categoryGroups;
+    const nutrientMap = new Map<number, IngredientGroup[]>();
+
+    catGroups.forEach((group) => {
+      const cat = this.categories.find((c) => c.id === group.category.id);
+      const ntId = cat?.nutrientTypeId ?? -1;
+      if (!nutrientMap.has(ntId)) {
+        nutrientMap.set(ntId, []);
+      }
+      nutrientMap.get(ntId)!.push(group);
+    });
+
+    const result: NutrientGroup[] = [];
+
+    nutrientMap.forEach((categoryGroups, ntId) => {
+      const nutrientType: NutrientType = ntId === -1
+        ? { id: -1, name: "Unclassified", icon: "📦", color: "#94a3b8", description: "Categories without an assigned nutrient group" }
+        : this.nutrientTypes.find((nt) => nt.id === ntId) ??
+          { id: ntId, name: "Other", icon: "📦", color: "#94a3b8" };
+
+      result.push({ nutrientType, categoryGroups });
+    });
+
+    return result.sort((a, b) => {
+      if (a.nutrientType.id === -1) return 1;
+      if (b.nutrientType.id === -1) return -1;
+      return a.nutrientType.name.localeCompare(b.nutrientType.name);
+    });
+  }
+
   public expandedIngredients = new Set<string>();
   public expandedCategories = new Set<number>();
   public loading = false;
@@ -276,7 +311,41 @@ export class InventoryComponent implements OnInit {
   public onAssignItem(
     event: { item: Item; ingredient: EnrichedIngredient },
   ): void {
-    console.log("Assigning item:", event.item.name, "to ingredient:", event.ingredient.name);
+    const updatedItem: Item = {
+      ...event.item,
+      ingredientId: event.ingredient.id,
+    };
+    this.inventoryService.updateItem(updatedItem).subscribe({
+      next: () => {
+        this.toastService.showSuccess(
+          `Assigned "${event.item.name}" to ${event.ingredient.name}`,
+          "Item Assigned",
+        );
+        this.initParameters();
+      },
+      error: (err) => {
+        this.toastService.showError("Failed to assign item.", "Error");
+      },
+    });
+  }
+
+  public onUnassignItem(item: Item): void {
+    const updatedItem: Item = {
+      ...item,
+      ingredientId: undefined,
+    };
+    this.inventoryService.updateItem(updatedItem).subscribe({
+      next: () => {
+        this.toastService.showSuccess(
+          `Unassigned "${item.name}"`,
+          "Item Unassigned",
+        );
+        this.initParameters();
+      },
+      error: (err) => {
+        this.toastService.showError("Failed to unassign item.", "Error");
+      },
+    });
   }
 
   @HostListener("window:scroll", [])
@@ -347,6 +416,10 @@ export class InventoryComponent implements OnInit {
 
     this.categoryService.getCategories().subscribe({
       next: (categories) => (this.categories = categories),
+    });
+
+    this.nutrientTypeService.getNutrientTypes().subscribe({
+      next: (nutrientTypes) => (this.nutrientTypes = nutrientTypes),
     });
   }
 
