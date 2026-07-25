@@ -80,35 +80,35 @@
       </div>
     }
 
-    <!-- Dashboard Link -->
+    <!-- Home Link -->
     <button
-      (click)="selectTab(tabs.Dashboard)"
-      [attr.title]="'nav.dashboard' | transloco"
+      (click)="selectTab(tabs.Home)"
+      [attr.title]="'nav.home' | transloco"
       [class.justify-center]="isCollapsed"
       [class.px-2.5]="isCollapsed"
       [class.px-3.5]="!isCollapsed"
-      [class.bg-primary-500/10]="isDashboardActive()"
-      [class.dark:bg-primary-500/15]="isDashboardActive()"
-      [class.text-primary-600]="isDashboardActive()"
-      [class.dark:text-primary-400]="isDashboardActive()"
-      [class.font-semibold]="isDashboardActive()"
-      [class.text-surface-600]="!isDashboardActive()"
-      [class.dark:text-surface-400]="!isDashboardActive()"
-      [class.hover:bg-surface-100]="!isDashboardActive()"
-      [class.dark:hover:bg-surface-800/60]="!isDashboardActive()"
-      [class.hover:text-surface-900]="!isDashboardActive()"
-      [class.dark:hover:text-surface-100]="!isDashboardActive()"
+      [class.bg-primary-500/10]="isHomeActive()"
+      [class.dark:bg-primary-500/15]="isHomeActive()"
+      [class.text-primary-600]="isHomeActive()"
+      [class.dark:text-primary-400]="isHomeActive()"
+      [class.font-semibold]="isHomeActive()"
+      [class.text-surface-600]="!isHomeActive()"
+      [class.dark:text-surface-400]="!isHomeActive()"
+      [class.hover:bg-surface-100]="!isHomeActive()"
+      [class.dark:hover:bg-surface-800/60]="!isHomeActive()"
+      [class.hover:text-surface-900]="!isHomeActive()"
+      [class.dark:hover:text-surface-100]="!isHomeActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative">
-      @if (isDashboardActive()) {
+      @if (isHomeActive()) {
         <div class="absolute left-0 top-2 bottom-2 w-1 bg-primary-500 rounded-r-full"></div>
       }
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5" />
       </svg>
       @if (!isCollapsed) {
-        <span class="whitespace-nowrap hidden md:inline">{{ 'nav.dashboard' | transloco }}</span>
+        <span class="whitespace-nowrap hidden md:inline">{{ 'nav.home' | transloco }}</span>
       }
-      <span class="whitespace-nowrap md:hidden">{{ 'nav.dashboard' | transloco }}</span>
+      <span class="whitespace-nowrap md:hidden">{{ 'nav.home' | transloco }}</span>
     </button>
 
     <!-- Inventory Link -->

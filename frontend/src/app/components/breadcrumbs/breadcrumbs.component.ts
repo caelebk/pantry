@@ -39,10 +39,10 @@ export class BreadcrumbsComponent implements OnInit {
     const tabParam = queryParams.get('tab');
 
     const items: BreadcrumbItem[] = [
-      { label: 'Dashboard', url: '/dashboard', icon: 'pi pi-home' },
+      { label: 'Home', url: '/home', icon: 'pi pi-home' },
     ];
 
-    if (segments.length === 0 || segments[0] === 'dashboard') {
+    if (segments.length === 0 || segments[0] === 'home' || segments[0] === 'dashboard') {
       this.breadcrumbs.set(items);
       return;
     }

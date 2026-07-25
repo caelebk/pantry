@@ -3,10 +3,75 @@
     "name": "Pantry"
   },
   "nav": {
-    "dashboard": "Dashboard",
+    "home": "Home",
+    "dashboard": "Home",
     "inventory": "Inventory",
     "recipes": "Recipes",
     "mealPlanner": "Meal Planner"
+  },
+  "home": {
+    "title": "Kitchen Command Center",
+    "subtitle": "Monitor pantry stock, manage expirations, and discover recipes",
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "chef": "Chef 👋"
+    },
+    "hero": {
+      "freshness": "Freshness Index",
+      "actionItems": "Action Required",
+      "cookNow": "Ready to Cook"
+    },
+    "alerts": {
+      "expiredTitle": "Expired Items Notice",
+      "expiredMessage": "items in your inventory have expired. Remove them to keep your pantry clean.",
+      "expiringTitle": "Expiring Soon Notice",
+      "expiringMessage": "items expiring within 7 days. Plan your meals today to reduce food waste.",
+      "clearExpiredBtn": "Quick Clear Expired",
+      "viewExpiringRecipesBtn": "View Recipes with Expiring Ingredients"
+    },
+    "shortcuts": {
+      "title": "Quick Launchpad",
+      "addItem": "Add Pantry Item",
+      "addItemDesc": "Register new stock items",
+      "addRecipe": "Create Recipe",
+      "addRecipeDesc": "Add custom recipe to collection",
+      "assignIngredients": "Assign Ingredients",
+      "assignIngredientsDesc": "Triage & group unassigned items",
+      "cookableRecipes": "What to Cook",
+      "cookableRecipesDesc": "Recipes matching current stock",
+      "manageInventory": "Full Inventory",
+      "manageInventoryDesc": "Search & filter all ingredients"
+    },
+    "stats": {
+      "totalItems": "Total Stock",
+      "expiringSoon": "Expiring Soon",
+      "expired": "Expired",
+      "canMake": "Ready to Cook",
+      "inInventory": "items in inventory",
+      "within7Days": "within 7 days",
+      "needsRemoval": "needs removal",
+      "recipes": "recipes available"
+    },
+    "locations": {
+      "title": "Storage Locations",
+      "subtitle": "Item distribution across storage areas",
+      "fridge": "Refrigerator",
+      "pantry": "Pantry Cabinet",
+      "freezer": "Freezer",
+      "other": "Other Storage"
+    },
+    "cookSpotlight": {
+      "title": "What You Can Cook Today",
+      "subtitle": "Recipes fully matched with ingredients currently in stock",
+      "cookBtn": "View Recipe & Cook",
+      "noRecipes": "No recipes fully matched yet. Add more ingredients to unlock delicious dishes!"
+    },
+    "tips": {
+      "title": "Zero-Waste Kitchen Tip",
+      "tipContent": "Group ingredients nearing expiration into a stir-fry, soup base, or casserole to maximize freshness and prevent food waste!"
+    }
   },
   "dashboard": {
     "title": "Welcome Back",
