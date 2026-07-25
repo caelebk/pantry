@@ -101,6 +101,18 @@ export class InventoryComponent implements OnInit {
   public isLoading = signal(true);
   public activeTab: InventoryTab = "items";
 
+  public viewMode: 'table' | 'grid' = 'table';
+  public sortDirection: 'asc' | 'desc' = 'asc';
+
+  public toggleSort(field: SortOption): void {
+    if (this.sortBy === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = field;
+      this.sortDirection = 'asc';
+    }
+  }
+
   public get filteredItems(): Item[] {
     return this.items
       .filter((item) => {
@@ -123,20 +135,21 @@ export class InventoryComponent implements OnInit {
         return matchesSearch && matchesLocation && matchesStatus;
       })
       .sort((a, b) => {
+        let result = 0;
         if (this.sortBy === 'expiration') {
           const dateA = a.expirationDate ? new Date(a.expirationDate).getTime() : 0;
           const dateB = b.expirationDate ? new Date(b.expirationDate).getTime() : 0;
-          return dateA - dateB;
+          result = dateA - dateB;
         } else if (this.sortBy === 'name') {
-          return a.name.localeCompare(b.name);
+          result = a.name.localeCompare(b.name);
         } else if (this.sortBy === 'quantity') {
-          return b.quantity - a.quantity;
+          result = b.quantity - a.quantity;
         } else if (this.sortBy === 'purchase') {
           const dateA = a.purchaseDate ? new Date(a.purchaseDate).getTime() : 0;
           const dateB = b.purchaseDate ? new Date(b.purchaseDate).getTime() : 0;
-          return dateB - dateA;
+          result = dateB - dateA;
         }
-        return 0;
+        return this.sortDirection === 'asc' ? result : -result;
       });
   }
 
@@ -316,6 +329,38 @@ export class InventoryComponent implements OnInit {
         });
       },
     });
+  }
+
+  public onEditItem(item: Item): void {
+    this.router.navigate(['/inventory', item.id, 'edit']);
+  }
+
+  public isExpiredItem(item: Item): boolean {
+    return isExpired(item);
+  }
+
+  public isExpiringSoonItem(item: Item): boolean {
+    return isExpiringSoon(item);
+  }
+
+  public incrementItemQty(item: Item, event: Event): void {
+    event.stopPropagation();
+    this.onUpdateItem({
+      ...item,
+      quantity: item.quantity + 1,
+    });
+  }
+
+  public decrementItemQty(item: Item, event: Event): void {
+    event.stopPropagation();
+    if (item.quantity > 1) {
+      this.onUpdateItem({
+        ...item,
+        quantity: item.quantity - 1,
+      });
+    } else {
+      this.onDeleteItem(item);
+    }
   }
 
   public onUpdateItem(updatedItem: Item): void {

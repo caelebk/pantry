@@ -223,34 +223,235 @@
           }
         </div>
 
-        <!-- Sort Selector -->
-        <select
-          [(ngModel)]="sortBy"
-          class="px-3 py-2 bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-700/80 text-surface-800 dark:text-surface-200 text-xs font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500">
-          <option value="expiration">↕️ Expiration Date</option>
-          <option value="name">↕️ Name (A-Z)</option>
-          <option value="quantity">↕️ Quantity (Highest)</option>
-          <option value="purchase">↕️ Purchase Date</option>
-        </select>
+        <!-- View Mode Toggle (Table / Grid) -->
+        <div class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs">
+          <button
+            (click)="viewMode = 'table'"
+            [class.bg-white]="viewMode === 'table'"
+            [class.dark:bg-surface-700]="viewMode === 'table'"
+            [class.shadow-xs]="viewMode === 'table'"
+            [class.text-primary-600]="viewMode === 'table'"
+            [class.dark:text-primary-400]="viewMode === 'table'"
+            [class.font-bold]="viewMode === 'table'"
+            [class.text-surface-600]="viewMode !== 'table'"
+            [class.dark:text-surface-400]="viewMode !== 'table'"
+            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
+            title="Table View">
+            <i class="pi pi-list text-xs"></i>
+            <span>Table</span>
+          </button>
+          <button
+            (click)="viewMode = 'grid'"
+            [class.bg-white]="viewMode === 'grid'"
+            [class.dark:bg-surface-700]="viewMode === 'grid'"
+            [class.shadow-xs]="viewMode === 'grid'"
+            [class.text-primary-600]="viewMode === 'grid'"
+            [class.dark:text-primary-400]="viewMode === 'grid'"
+            [class.font-bold]="viewMode === 'grid'"
+            [class.text-surface-600]="viewMode !== 'grid'"
+            [class.dark:text-surface-400]="viewMode !== 'grid'"
+            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
+            title="Grid Cards View">
+            <i class="pi pi-th-large text-xs"></i>
+            <span>Grid</span>
+          </button>
+        </div>
 
       </div>
     </div>
   </div>
 
-  <!-- Full-Width Inventory Grid (100% viewport width) -->
+  <!-- Inventory Content Area (Table View or Grid Cards) -->
   @if (!isLoading()) {
     @if (filteredItems.length > 0) {
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        @for (item of filteredItems; track item.name; let i = $index) {
-          <pantry-item-card
-            [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
-            [item]="item"
-            [units]="units"
-            [locations]="locations"
-            (delete)="onDeleteItem(item)"
-            (update)="onUpdateItem($event)"></pantry-item-card>
-        }
-      </div>
+      @if (viewMode === 'table') {
+        <!-- High-Density Interactive Data Table -->
+        <div class="glass-card rounded-2xl overflow-hidden border border-surface-200/70 dark:border-surface-800/80 shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-surface-100/70 dark:bg-surface-800/50 border-b border-surface-200/80 dark:border-surface-800 text-[11px] font-extrabold uppercase tracking-wider text-surface-500 dark:text-surface-400 select-none">
+                  
+                  <!-- Item Name Column Header -->
+                  <th (click)="toggleSort('name')" class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                    <div class="flex items-center gap-1.5">
+                      <span>Item Name</span>
+                      @if (sortBy === 'name') {
+                        <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'" [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
+                      } @else {
+                        <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+                      }
+                    </div>
+                  </th>
+
+                  <!-- Location Column Header -->
+                  <th class="py-3.5 px-4">
+                    <span>Location</span>
+                  </th>
+
+                  <!-- Quantity Column Header -->
+                  <th (click)="toggleSort('quantity')" class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                    <div class="flex items-center gap-1.5">
+                      <span>Quantity</span>
+                      @if (sortBy === 'quantity') {
+                        <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'" [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
+                      } @else {
+                        <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+                      }
+                    </div>
+                  </th>
+
+                  <!-- Expiration Date Column Header -->
+                  <th (click)="toggleSort('expiration')" class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                    <div class="flex items-center gap-1.5">
+                      <span>Expiration Date</span>
+                      @if (sortBy === 'expiration') {
+                        <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'" [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
+                      } @else {
+                        <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+                      }
+                    </div>
+                  </th>
+
+                  <!-- Purchase Date Column Header -->
+                  <th (click)="toggleSort('purchase')" class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors hidden md:table-cell">
+                    <div class="flex items-center gap-1.5">
+                      <span>Purchased</span>
+                      @if (sortBy === 'purchase') {
+                        <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'" [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
+                      } @else {
+                        <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+                      }
+                    </div>
+                  </th>
+
+                  <!-- Actions Header -->
+                  <th class="py-3.5 px-4 text-right">
+                    <span>Actions</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-200/60 dark:divide-surface-800/60 text-xs font-medium">
+                @for (item of filteredItems; track item.id; let i = $index) {
+                  <tr
+                    [@staggeredFadeIn]="{ value: '', params: { delay: i * (staggerDelayPerItemMs / 2) } }"
+                    class="hover:bg-primary-50/40 dark:hover:bg-surface-800/40 transition-colors group">
+                    
+                    <!-- Item Name & Freshness Badge -->
+                    <td class="py-3.5 px-4 font-bold text-surface-900 dark:text-white">
+                      <div class="flex items-center gap-2">
+                        <span class="truncate max-w-[200px] sm:max-w-xs">{{ item.name }}</span>
+                        @if (isExpiredItem(item)) {
+                          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
+                            🚨 Expired
+                          </span>
+                        } @else if (isExpiringSoonItem(item)) {
+                          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                            ⚠️ Expiring Soon
+                          </span>
+                        } @else {
+                          <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                            ✨ Fresh
+                          </span>
+                        }
+                      </div>
+                    </td>
+
+                    <!-- Location Pill -->
+                    <td class="py-3.5 px-4">
+                      <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 px-2.5 py-1 rounded-lg">
+                        <span>
+                          @if (item.location.name === 'Fridge') { ❄️ }
+                          @else if (item.location.name === 'Freezer') { 🧊 }
+                          @else { 🥫 }
+                        </span>
+                        <span>{{ item.location.name }}</span>
+                      </span>
+                    </td>
+
+                    <!-- Quantity with +/- Quick Adjust -->
+                    <td class="py-3.5 px-4">
+                      <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-surface-900 dark:text-white min-w-8">
+                          {{ item.quantity }} <span class="text-xs font-normal text-surface-500">{{ item.unit.shortName }}</span>
+                        </span>
+                        <div class="inline-flex items-center gap-1 bg-surface-100 dark:bg-surface-800 rounded-lg p-0.5 border border-surface-200 dark:border-surface-700">
+                          <button
+                            type="button"
+                            (click)="decrementItemQty(item, $event)"
+                            class="w-5 h-5 rounded bg-white hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 text-surface-700 dark:text-white font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
+                            title="Decrease">
+                            -
+                          </button>
+                          <button
+                            type="button"
+                            (click)="incrementItemQty(item, $event)"
+                            class="w-5 h-5 rounded bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
+                            title="Increase">
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Expiration Date -->
+                    <td class="py-3.5 px-4">
+                      <span
+                        [class.text-rose-600]="isExpiredItem(item)"
+                        [class.dark:text-rose-400]="isExpiredItem(item)"
+                        [class.text-amber-600]="isExpiringSoonItem(item)"
+                        [class.dark:text-amber-400]="isExpiringSoonItem(item)"
+                        [class.font-bold]="isExpiredItem(item) || isExpiringSoonItem(item)"
+                        class="text-surface-700 dark:text-surface-300">
+                        {{ item.expirationDate | date: 'mediumDate' }}
+                      </span>
+                    </td>
+
+                    <!-- Purchased Date -->
+                    <td class="py-3.5 px-4 text-surface-500 dark:text-surface-400 hidden md:table-cell">
+                      {{ item.purchaseDate | date: 'mediumDate' }}
+                    </td>
+
+                    <!-- Actions Column -->
+                    <td class="py-3.5 px-4 text-right">
+                      <div class="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          (click)="onEditItem(item)"
+                          class="p-2 rounded-lg text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer"
+                          title="Edit Item">
+                          <i class="pi pi-pencil text-xs"></i>
+                        </button>
+                        <button
+                          type="button"
+                          (click)="onDeleteItem(item)"
+                          class="p-2 rounded-lg text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+                          title="Delete Item">
+                          <i class="pi pi-trash text-xs"></i>
+                        </button>
+                      </div>
+                    </td>
+
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      } @else {
+        <!-- Grid View -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          @for (item of filteredItems; track item.name; let i = $index) {
+            <pantry-item-card
+              [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
+              [item]="item"
+              [units]="units"
+              [locations]="locations"
+              (delete)="onDeleteItem(item)"
+              (update)="onUpdateItem($event)"></pantry-item-card>
+          }
+        </div>
+      }
     } @else {
       <!-- Empty Filter State -->
       <div class="glass-card rounded-2xl p-12 text-center max-w-md mx-auto border border-surface-200/60 dark:border-surface-800/80">
