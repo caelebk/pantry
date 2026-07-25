@@ -39,6 +39,8 @@ import {
 } from "./inventory-components/tab-navigation/tab-navigation.component";
 import { UnassignedItemsContainerComponent } from "./inventory-components/unassigned-items-container/unassigned-items-container.component";
 
+import { Router, RouterLink } from "@angular/router";
+
 export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh';
 export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase';
 
@@ -278,8 +280,10 @@ export class InventoryComponent implements OnInit {
     });
   }
 
+  private readonly router = inject(Router);
+
   public openAddModal(): void {
-    this.displayAddModal = true;
+    this.router.navigate(['/inventory/new']);
   }
 
   public onAddItem(item: Item): void {
