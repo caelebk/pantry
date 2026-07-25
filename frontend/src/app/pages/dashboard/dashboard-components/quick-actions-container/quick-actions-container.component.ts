@@ -16,16 +16,11 @@ import { TranslocoModule } from '@jsverse/transloco';
   ],
 })
 export class QuickActionsContainerComponent {
-  // Action handlers can be added here
   onAddItem() {
     console.log('Add item clicked');
   }
 
   onAddRecipe() {
     console.log('Add recipe clicked');
-  }
-
-  onPlanMeals() {
-    console.log('Plan meals clicked');
   }
 }

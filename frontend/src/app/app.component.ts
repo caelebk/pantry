@@ -70,9 +70,6 @@ export class AppComponent implements OnInit, OnDestroy {
       case Tab.Recipes:
         this.currentTab = Tab.Recipes;
         break;
-      case Tab.MealPlanner:
-        this.currentTab = Tab.MealPlanner;
-        break;
       default:
         this.currentTab = Tab.Dashboard;
     }
