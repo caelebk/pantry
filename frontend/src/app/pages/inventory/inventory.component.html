@@ -252,18 +252,6 @@
                     </div>
                   </th>
 
-                  <!-- Status / Freshness Column Header -->
-                  <th (click)="toggleSort('status')" class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                    <div class="flex items-center gap-1.5">
-                      <span>Status</span>
-                      @if (sortBy === 'status') {
-                        <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'" [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
-                      } @else {
-                        <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
-                      }
-                    </div>
-                  </th>
-
                   <!-- Actions Header -->
                   <th class="py-3.5 px-4 text-right">
                     <span>Actions</span>
