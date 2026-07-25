@@ -64,14 +64,14 @@
               }
             </div>
 
-            <!-- Storage Location Quick Cards & Dropdown -->
+            <!-- Storage Location Buttons -->
             <div>
-              <label for="location" class="block text-xs font-semibold text-surface-700 dark:text-surface-300 mb-1.5 uppercase tracking-wider">
+              <label for="location" class="block text-xs font-semibold text-surface-700 dark:text-surface-300 mb-2 uppercase tracking-wider">
                 Storage Location <span class="text-rose-500">*</span>
               </label>
 
-              <!-- Quick Selection Chips -->
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+              <!-- Interactive Location Buttons -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 @for (loc of locations(); track loc.id) {
                   <button
                     type="button"
@@ -79,25 +79,23 @@
                     [class.bg-primary-600]="addItemForm.controls.location.value?.id === loc.id"
                     [class.text-white]="addItemForm.controls.location.value?.id === loc.id"
                     [class.border-primary-600]="addItemForm.controls.location.value?.id === loc.id"
-                    [class.bg-surface-100/80]="addItemForm.controls.location.value?.id !== loc.id"
-                    [class.dark:bg-surface-800/60]="addItemForm.controls.location.value?.id !== loc.id"
+                    [class.shadow-md]="addItemForm.controls.location.value?.id === loc.id"
+                    [class.bg-white/80]="addItemForm.controls.location.value?.id !== loc.id"
+                    [class.dark:bg-surface-800/80]="addItemForm.controls.location.value?.id !== loc.id"
                     [class.text-surface-700]="addItemForm.controls.location.value?.id !== loc.id"
                     [class.dark:text-surface-300]="addItemForm.controls.location.value?.id !== loc.id"
-                    class="px-3 py-2.5 rounded-xl border border-surface-200 dark:border-surface-700 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]">
-                    <span>📍 {{ loc.name }}</span>
+                    class="p-3.5 rounded-xl border border-surface-200 dark:border-surface-700 text-xs font-bold transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]">
+                    <span class="text-lg">
+                      @if (loc.name === 'Fridge') { ❄️ }
+                      @else if (loc.name === 'Freezer') { 🧊 }
+                      @else if (loc.name === 'Pantry') { 🥫 }
+                      @else if (loc.name === 'Countertop' || loc.name === 'Shelf') { 🍌 }
+                      @else { 📍 }
+                    </span>
+                    <span>{{ loc.name }}</span>
                   </button>
                 }
               </div>
-
-              <p-select
-                inputId="location"
-                [options]="locations()"
-                formControlName="location"
-                optionLabel="name"
-                placeholder="Select Location"
-                class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700"
-                appendTo="body">
-              </p-select>
             </div>
 
             <!-- Quantity & Unit Grid -->

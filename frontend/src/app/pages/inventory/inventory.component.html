@@ -186,15 +186,44 @@
           </button>
         </div>
 
-        <!-- Location Selector -->
-        <select
-          [(ngModel)]="selectedLocationId"
-          class="px-3 py-2 bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-700/80 text-surface-800 dark:text-surface-200 text-xs font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500">
-          <option [ngValue]="null">📍 All Locations</option>
+        <!-- Location Filter Button Pills -->
+        <div class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs">
+          <button
+            (click)="selectedLocationId = null"
+            [class.bg-white]="selectedLocationId === null"
+            [class.dark:bg-surface-700]="selectedLocationId === null"
+            [class.shadow-xs]="selectedLocationId === null"
+            [class.text-primary-600]="selectedLocationId === null"
+            [class.dark:text-primary-400]="selectedLocationId === null"
+            [class.font-bold]="selectedLocationId === null"
+            [class.text-surface-600]="selectedLocationId !== null"
+            [class.dark:text-surface-400]="selectedLocationId !== null"
+            class="px-2.5 py-1.5 rounded-lg transition-all cursor-pointer">
+            All Locations
+          </button>
           @for (loc of locations; track loc.id) {
-            <option [ngValue]="loc.id">{{ loc.name }}</option>
+            <button
+              (click)="selectedLocationId = loc.id"
+              [class.bg-white]="selectedLocationId === loc.id"
+              [class.dark:bg-surface-700]="selectedLocationId === loc.id"
+              [class.shadow-xs]="selectedLocationId === loc.id"
+              [class.text-primary-600]="selectedLocationId === loc.id"
+              [class.dark:text-primary-400]="selectedLocationId === loc.id"
+              [class.font-bold]="selectedLocationId === loc.id"
+              [class.text-surface-600]="selectedLocationId !== loc.id"
+              [class.dark:text-surface-400]="selectedLocationId !== loc.id"
+              class="px-2.5 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
+              <span>
+                @if (loc.name === 'Fridge') { ❄️ }
+                @else if (loc.name === 'Freezer') { 🧊 }
+                @else if (loc.name === 'Pantry') { 🥫 }
+                @else if (loc.name === 'Countertop' || loc.name === 'Shelf') { 🍌 }
+                @else { 📍 }
+              </span>
+              <span>{{ loc.name }}</span>
+            </button>
           }
-        </select>
+        </div>
 
         <!-- Sort Selector -->
         <select

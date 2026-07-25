@@ -61,6 +61,10 @@ export class EditItemFormComponent {
     });
   }
 
+  selectLocation(loc: Location): void {
+    this.editItemForm.controls.location.setValue(loc);
+  }
+
   onSubmit() {
     if (this.editItemForm.valid) {
       const formValue = toItem(this.editItemForm);

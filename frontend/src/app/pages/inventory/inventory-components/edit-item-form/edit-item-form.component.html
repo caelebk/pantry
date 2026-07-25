@@ -12,23 +12,38 @@
         class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white" />
     </div>
 
-    <div class="grid gap-4">
       <div>
         <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          for="edit-location">
+          class="block text-xs font-semibold text-surface-700 dark:text-surface-300 mb-2 uppercase tracking-wider">
           {{ 'addItemForm.location' | transloco }}
-          <span class="text-red-500">*</span>
+          <span class="text-rose-500">*</span>
         </label>
-        <p-select
-          inputId="edit-location"
-          [options]="locations"
-          formControlName="location"
-          optionLabel="name"
-          class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"
-          appendTo="body"></p-select>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          @for (loc of locations; track loc.id) {
+            <button
+              type="button"
+              (click)="selectLocation(loc)"
+              [class.bg-primary-600]="editItemForm.controls.location.value?.id === loc.id"
+              [class.text-white]="editItemForm.controls.location.value?.id === loc.id"
+              [class.border-primary-600]="editItemForm.controls.location.value?.id === loc.id"
+              [class.shadow-md]="editItemForm.controls.location.value?.id === loc.id"
+              [class.bg-surface-100]="editItemForm.controls.location.value?.id !== loc.id"
+              [class.dark:bg-surface-800]="editItemForm.controls.location.value?.id !== loc.id"
+              [class.text-surface-700]="editItemForm.controls.location.value?.id !== loc.id"
+              [class.dark:text-surface-300]="editItemForm.controls.location.value?.id !== loc.id"
+              class="p-2.5 rounded-xl border border-surface-200 dark:border-surface-700 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]">
+              <span>
+                @if (loc.name === 'Fridge') { ❄️ }
+                @else if (loc.name === 'Freezer') { 🧊 }
+                @else if (loc.name === 'Pantry') { 🥫 }
+                @else if (loc.name === 'Countertop' || loc.name === 'Shelf') { 🍌 }
+                @else { 📍 }
+              </span>
+              <span>{{ loc.name }}</span>
+            </button>
+          }
+        </div>
       </div>
-    </div>
 
     <div class="grid grid-cols-2 gap-4">
       <div>
