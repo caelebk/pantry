@@ -1,16 +1,18 @@
 <div>
   <div
-    class="min-h-screen animated-gradient-bg font-sans text-surface-900 dark:text-surface-100 transition-colors duration-300">
-    <pantry-header
+    class="min-h-screen animated-gradient-bg font-sans text-surface-900 dark:text-surface-100 transition-colors duration-300 flex flex-col md:flex-row">
+    <pantry-sidebar
       [darkMode]="darkMode"
       (themeToggled)="toggleTheme()"
       [activeTab]="currentTab"
-      (tabSelected)="onTabSelected($event)"></pantry-header>
+      (tabSelected)="onTabSelected($event)"></pantry-sidebar>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <pantry-breadcrumbs></pantry-breadcrumbs>
-      <router-outlet></router-outlet>
-    </main>
+    <div class="flex-1 min-w-0 flex flex-col min-h-screen">
+      <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <pantry-breadcrumbs></pantry-breadcrumbs>
+        <router-outlet></router-outlet>
+      </main>
+    </div>
 
     <pantry-toast-container></pantry-toast-container>
   </div>
