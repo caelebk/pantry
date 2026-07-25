@@ -14,6 +14,7 @@ import { IngredientService } from "@services/inventory/ingredient.service";
 import { ItemService } from "@services/inventory/item.service";
 import { LocationService } from "@services/inventory/location.service";
 import { UnitService } from "@services/inventory/unit.service";
+import { ToastService } from "@services/toast.service";
 import {
   fadeInOut,
   STAGGER_DELAY_PER_ITEM_MS,
@@ -24,12 +25,9 @@ import {
   isExpiringSoon,
   sortItemsByExpirationDate,
 } from "@utility/itemUtility/ItemUtility";
-import { ConfirmationService, MessageService } from "primeng/api";
-import { Button } from "primeng/button";
+import { ConfirmationService } from "primeng/api";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
-import { IconField } from "primeng/iconfield";
-import { InputIcon } from "primeng/inputicon";
-import { InputText } from "primeng/inputtext";
+import { DialogModule } from "primeng/dialog";
 import { SelectModule } from "primeng/select";
 import { ToastModule } from "primeng/toast";
 import { AddItemFormComponent } from "./inventory-components/add-item-form/add-item-form.component";
@@ -40,6 +38,9 @@ import {
   TabNavigationComponent,
 } from "./inventory-components/tab-navigation/tab-navigation.component";
 import { UnassignedItemsContainerComponent } from "./inventory-components/unassigned-items-container/unassigned-items-container.component";
+
+export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh';
+export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase';
 
 @Component({
   selector: "pantry-inventory",
@@ -52,17 +53,14 @@ import { UnassignedItemsContainerComponent } from "./inventory-components/unassi
     StatCardComponent,
     ConfirmDialogModule,
     ToastModule,
-    Button,
     FormsModule,
-    IconField,
-    InputIcon,
-    InputText,
     TabNavigationComponent,
     SelectModule,
+    DialogModule,
     IngredientGroupContainerComponent,
     UnassignedItemsContainerComponent,
   ],
-  providers: [ConfirmationService, MessageService],
+  providers: [ConfirmationService],
   templateUrl: "./inventory.component.html",
   animations: [fadeInOut, staggeredFadeIn],
 })
@@ -70,28 +68,20 @@ export class InventoryComponent implements OnInit {
   private readonly inventoryService = inject(ItemService);
   private readonly ingredientService = inject(IngredientService);
   private readonly categoryService = inject(CategoryService);
-  private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
-  private readonly translocoService = inject(TranslocoService);
+  private readonly toastService = inject(ToastService);
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
 
-  // Make stagger delay accessible to template
   readonly staggerDelayPerItemMs = STAGGER_DELAY_PER_ITEM_MS;
 
-  private readonly removeConfirmationServiceIcon = "pi pi-exclamation-triangle";
-  private readonly successNotificationClass = "success";
-  private readonly errorNotificationClass = "error";
-  private readonly scrollThreshold = 300;
-  private readonly scrollLocation = 0;
-  private readonly loadingDelayMs = 50;
-
   public readonly dismissableMask = true;
-  public readonly outlinedCancelButton = true;
 
   public totalItemsCount = 0;
   public expiringSoonItemsCount = 0;
   public expiredItemsCount = 0;
+  public freshItemsCount = 0;
+
   public items: Item[] = [];
   public units: Unit[] = [];
   public locations: Location[] = [];
@@ -100,17 +90,60 @@ export class InventoryComponent implements OnInit {
 
   public showScrollTopButton = false;
   public searchQuery = "";
+  public selectedLocationId: number | null = null;
+  public selectedStatusFilter: StatusFilter = "all";
+  public sortBy: SortOption = "expiration";
+  public displayAddModal = false;
+
   public selectedCategory: Category | null = null;
   public isLoading = signal(true);
   public activeTab: InventoryTab = "items";
 
   public get filteredItems(): Item[] {
-    return this.items.filter((item) => {
-      const matchesSearch = item.name.toLowerCase().includes(
-        this.searchQuery.toLowerCase(),
-      );
-      return matchesSearch;
-    });
+    return this.items
+      .filter((item) => {
+        // 1. Text Search
+        const matchesSearch = !this.searchQuery || item.name.toLowerCase().includes(this.searchQuery.toLowerCase().trim());
+
+        // 2. Location Filter
+        const matchesLocation = this.selectedLocationId === null || item.location?.id === this.selectedLocationId;
+
+        // 3. Status Filter
+        let matchesStatus = true;
+        if (this.selectedStatusFilter === 'expiring') {
+          matchesStatus = isExpiringSoon(item);
+        } else if (this.selectedStatusFilter === 'expired') {
+          matchesStatus = isExpired(item);
+        } else if (this.selectedStatusFilter === 'fresh') {
+          matchesStatus = !isExpired(item) && !isExpiringSoon(item);
+        }
+
+        return matchesSearch && matchesLocation && matchesStatus;
+      })
+      .sort((a, b) => {
+        if (this.sortBy === 'expiration') {
+          const dateA = a.expirationDate ? new Date(a.expirationDate).getTime() : 0;
+          const dateB = b.expirationDate ? new Date(b.expirationDate).getTime() : 0;
+          return dateA - dateB;
+        } else if (this.sortBy === 'name') {
+          return a.name.localeCompare(b.name);
+        } else if (this.sortBy === 'quantity') {
+          return b.quantity - a.quantity;
+        } else if (this.sortBy === 'purchase') {
+          const dateA = a.purchaseDate ? new Date(a.purchaseDate).getTime() : 0;
+          const dateB = b.purchaseDate ? new Date(b.purchaseDate).getTime() : 0;
+          return dateB - dateA;
+        }
+        return 0;
+      });
+  }
+
+  setStatusFilter(status: StatusFilter): void {
+    if (this.selectedStatusFilter === status && status !== 'all') {
+      this.selectedStatusFilter = 'all'; // Toggle back off
+    } else {
+      this.selectedStatusFilter = status;
+    }
   }
 
   // Ingredient Groups stats
@@ -135,7 +168,6 @@ export class InventoryComponent implements OnInit {
   }
 
   public get categoryGroups() {
-    // Create a map of ingredients with their items
     const ingredientMap = new Map();
 
     this.ingredients.forEach((ingredient) => {
@@ -149,7 +181,6 @@ export class InventoryComponent implements OnInit {
       });
     });
 
-    // Group by category
     const categoryMap = new Map();
 
     ingredientMap.forEach((ingredient) => {
@@ -160,9 +191,7 @@ export class InventoryComponent implements OnInit {
       categoryMap.get(categoryId).push(ingredient);
     });
 
-    // Convert to array of category groups
     const groups: IngredientGroup[] = [];
-
     const normalizedQuery = this.searchQuery.toLowerCase().trim();
 
     categoryMap.forEach((ingredients, categoryId) => {
@@ -171,17 +200,14 @@ export class InventoryComponent implements OnInit {
         : this.categories.find((c) => c.id === categoryId) ??
           { id: -1, name: "Unknown" };
 
-      // Filter groups by category selection
       if (this.selectedCategory && this.selectedCategory.id !== category.id) {
         return;
       }
 
-      // Filter ingredients by search query
       const filteredIngredients = ingredients.filter((ing: any) =>
         ing.name.toLowerCase().includes(normalizedQuery)
       );
 
-      // Only add group if it has matching ingredients
       if (filteredIngredients.length > 0) {
         groups.push({ category, ingredients: filteredIngredients });
       }
@@ -192,88 +218,23 @@ export class InventoryComponent implements OnInit {
     );
   }
 
-  // Remove local toggle methods as they are now handled by sub-components
-  // public toggleIngredient(ingredientId: string): void ...
-  // public toggleCategory(categoryId: number): void ...
-  // public isCategoryExpanded(categoryId: number): boolean ...
-  // public isExpanded(ingredientId: string): boolean ...
-
   public expandedIngredients = new Set<string>();
   public expandedCategories = new Set<number>();
-
-  // Loading state
   public loading = false;
-
-  public getTotalIngredientCount(): number {
-    let count = 0;
-    this.categoryGroups.forEach((group) => {
-      count += group.ingredients.length;
-    });
-    return count;
-  }
-
-  public getTotalItemCount(): number {
-    let count = this.unassignedItems.length;
-    this.categoryGroups.forEach((group) => {
-      group.ingredients.forEach((ing) => {
-        count += ing.items.length;
-      });
-    });
-    return count;
-  }
-
-  public getExpiringSoonParams(): { count: number } {
-    // This is a placeholder logic, simpler implementation for now
-    // In a real app, you'd filter by expiration date
-    return { count: 0 };
-  }
 
   public onAssignItem(
     event: { item: Item; ingredient: EnrichedIngredient },
   ): void {
-    console.log(
-      "Assigning item:",
-      event.item.name,
-      "to ingredient:",
-      event.ingredient.name,
-    );
-    // TODO: Implement actual assignment logic via service
-    // For now, optimistically update UI or just log
-
-    // Example: remove from unassigned and add to ingredient
-    // This requires strict state management which is part of Phase 3
-  }
-  public toggleIngredient(ingredientId: string): void {
-    if (this.expandedIngredients.has(ingredientId)) {
-      this.expandedIngredients.delete(ingredientId);
-    } else {
-      this.expandedIngredients.add(ingredientId);
-    }
-  }
-
-  public toggleCategory(categoryId: number): void {
-    if (this.expandedCategories.has(categoryId)) {
-      this.expandedCategories.delete(categoryId);
-    } else {
-      this.expandedCategories.add(categoryId);
-    }
-  }
-
-  public isCategoryExpanded(categoryId: number): boolean {
-    return this.expandedCategories.has(categoryId);
-  }
-
-  public isExpanded(ingredientId: string): boolean {
-    return this.expandedIngredients.has(ingredientId);
+    console.log("Assigning item:", event.item.name, "to ingredient:", event.ingredient.name);
   }
 
   @HostListener("window:scroll", [])
   onWindowScroll(): void {
-    this.showScrollTopButton = window.scrollY > this.scrollThreshold;
+    this.showScrollTopButton = window.scrollY > 300;
   }
 
   public scrollToTop(): void {
-    window.scrollTo({ top: this.scrollLocation, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   ngOnInit(): void {
@@ -282,100 +243,86 @@ export class InventoryComponent implements OnInit {
 
   private initParameters(): void {
     this.isLoading.set(true);
-    this.inventoryService.getItems().subscribe((items) => {
-      this.items = sortItemsByExpirationDate(items);
-      this.totalItemsCount = this.items.length;
-      this.expiringSoonItemsCount = this.items.filter((item) =>
-        isExpiringSoon(item)
-      ).length;
-      this.expiredItemsCount =
-        this.items.filter((item: Item) => isExpired(item)).length;
-      // Small delay to ensure animation system is ready
-      setTimeout(() => {
+    this.inventoryService.getItems().subscribe({
+      next: (items) => {
+        this.items = sortItemsByExpirationDate(items);
+        this.totalItemsCount = this.items.length;
+        this.expiringSoonItemsCount = this.items.filter((item) => isExpiringSoon(item)).length;
+        this.expiredItemsCount = this.items.filter((item) => isExpired(item)).length;
+        this.freshItemsCount = this.totalItemsCount - this.expiringSoonItemsCount - this.expiredItemsCount;
+
+        setTimeout(() => {
+          this.isLoading.set(false);
+        }, 50);
+      },
+      error: () => {
         this.isLoading.set(false);
-      }, this.loadingDelayMs);
+        this.toastService.showError("Unable to load inventory items.", "Network Error");
+      },
     });
-    this.unitService.getUnits().subscribe((units) => {
-      this.units = units;
+
+    this.unitService.getUnits().subscribe({
+      next: (units) => (this.units = units),
     });
-    this.locationService.getLocations().subscribe((locations) => {
-      this.locations = locations;
+
+    this.locationService.getLocations().subscribe({
+      next: (locations) => (this.locations = locations),
     });
-    this.ingredientService.getIngredients().subscribe((ingredients) => {
-      this.ingredients = ingredients;
+
+    this.ingredientService.getIngredients().subscribe({
+      next: (ingredients) => (this.ingredients = ingredients),
     });
-    this.categoryService.getCategories().subscribe((categories) => {
-      this.categories = categories;
+
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => (this.categories = categories),
     });
   }
 
+  public openAddModal(): void {
+    this.displayAddModal = true;
+  }
+
   public onAddItem(item: Item): void {
-    this.inventoryService.addItem(item).subscribe(() => {
-      this.initParameters();
-    });
-    this.messageService.add({
-      severity: this.successNotificationClass,
-      summary: this.translocoService.translate(
-        "inventory.notificationService.itemAddedHeader",
-      ) +
-        item.name,
-      detail: this.translocoService.translate(
-        "inventory.notificationService.itemAddedDescription",
-      ),
+    this.inventoryService.addItem(item).subscribe({
+      next: () => {
+        this.displayAddModal = false;
+        this.toastService.showSuccess(`"${item.name}" added to inventory!`, "Item Added");
+        this.initParameters();
+      },
+      error: (err) => {
+        this.toastService.showError(err?.message || "Failed to add item.", "Error");
+      },
     });
   }
 
   public onDeleteItem(item: Item): void {
     this.confirmationService.confirm({
-      header: this.translocoService.translate(
-        "inventory.removeConfirmationService.header",
-      ),
-      message: this.translocoService.translate(
-        "inventory.removeConfirmationService.message",
-      ),
-      icon: this.removeConfirmationServiceIcon,
+      header: "Remove Item",
+      message: `Are you sure you want to remove "${item.name}" from inventory?`,
+      icon: "pi pi-exclamation-triangle",
       accept: () => {
-        this.inventoryService.removeItem(item).subscribe(() => {
-          this.initParameters();
-        });
-        this.messageService.add({
-          severity: this.successNotificationClass,
-          summary: this.translocoService.translate(
-            "inventory.notificationService.itemRemovalHeader",
-          ) +
-            item.name,
-          detail: this.translocoService.translate(
-            "inventory.notificationService.itemRemovalDescription",
-          ),
-        });
-      },
-      reject: () => {
-        this.messageService.add({
-          severity: this.errorNotificationClass,
-          summary: this.translocoService.translate(
-            "inventory.notificationService.itemRemovalFailedHeader",
-          ) + item.name,
-          detail: this.translocoService.translate(
-            "inventory.notificationService.itemRemovalFailedCancelledDescription",
-          ),
+        this.inventoryService.removeItem(item).subscribe({
+          next: () => {
+            this.toastService.showSuccess(`"${item.name}" removed from inventory.`, "Item Removed");
+            this.initParameters();
+          },
+          error: () => {
+            this.toastService.showError(`Failed to remove "${item.name}".`, "Error");
+          },
         });
       },
     });
   }
 
   public onUpdateItem(updatedItem: Item): void {
-    this.inventoryService.updateItem(updatedItem).subscribe(() => {
-      this.initParameters();
-      this.messageService.add({
-        severity: this.successNotificationClass,
-        summary: this.translocoService.translate(
-          "inventory.notificationService.itemUpdatedHeader",
-        ) +
-          updatedItem.name,
-        detail: this.translocoService.translate(
-          "inventory.notificationService.itemUpdatedDescription",
-        ),
-      });
+    this.inventoryService.updateItem(updatedItem).subscribe({
+      next: () => {
+        this.toastService.showSuccess(`Updated "${updatedItem.name}".`, "Item Updated");
+        this.initParameters();
+      },
+      error: () => {
+        this.toastService.showError(`Failed to update "${updatedItem.name}".`, "Error");
+      },
     });
   }
 

@@ -4,7 +4,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
-import { getTimeDifferenceString, isExpired, itemProgress } from '@utility/itemUtility/ItemUtility';
+import { getTimeDifferenceString, isExpired, isExpiringSoon, itemProgress } from '@utility/itemUtility/ItemUtility';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { Subject } from 'rxjs';
@@ -27,6 +27,7 @@ export class ItemCardComponent {
   @Output() update = new Subject<Item>();
 
   public expired = computed(() => isExpired(this.item()));
+  public expiringSoon = computed(() => isExpiringSoon(this.item()));
   public itemProgress = computed(() => itemProgress(this.item()));
   public timeRemaining = computed(() =>
     getTimeDifferenceString(new Date(), this.item().expirationDate),
@@ -46,5 +47,29 @@ export class ItemCardComponent {
   onEditItem(updatedItem: Item) {
     this.update.next(updatedItem);
     this.displayEditDialog.set(false);
+  }
+
+  incrementQuantity(event: Event) {
+    event.stopPropagation();
+    const current = this.item();
+    const updated: Item = {
+      ...current,
+      quantity: current.quantity + 1,
+    };
+    this.update.next(updated);
+  }
+
+  decrementQuantity(event: Event) {
+    event.stopPropagation();
+    const current = this.item();
+    if (current.quantity > 1) {
+      const updated: Item = {
+        ...current,
+        quantity: current.quantity - 1,
+      };
+      this.update.next(updated);
+    } else {
+      this.delete.next();
+    }
   }
 }
