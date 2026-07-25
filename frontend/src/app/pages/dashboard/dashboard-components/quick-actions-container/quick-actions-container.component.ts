@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
@@ -16,11 +17,13 @@ import { TranslocoModule } from '@jsverse/transloco';
   ],
 })
 export class QuickActionsContainerComponent {
+  private readonly router = inject(Router);
+
   onAddItem() {
-    console.log('Add item clicked');
+    this.router.navigate(['/inventory/new']);
   }
 
   onAddRecipe() {
-    console.log('Add recipe clicked');
+    this.router.navigate(['/recipes/new']);
   }
 }

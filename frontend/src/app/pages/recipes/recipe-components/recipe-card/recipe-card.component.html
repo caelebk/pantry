@@ -46,27 +46,8 @@
         }
       </div>
 
-      <!-- Action Buttons: Edit & Delete -->
+      <!-- Action Buttons: Delete -->
       <div class="flex items-center gap-1 shrink-0">
-        <button
-          type="button"
-          (click)="onEdit($event)"
-          class="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950/30 rounded-lg transition-colors cursor-pointer"
-          title="Edit Recipe">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.75"
-            stroke="currentColor"
-            class="w-4 h-4">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-          </svg>
-        </button>
-
         <button
           type="button"
           (click)="onDelete($event)"
@@ -155,9 +136,11 @@
         <ul class="space-y-1 text-xs">
           @for (ing of sortedIngredients; track $index) {
             @let avail = getIngredientAvailability(ing);
-            <li class="flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors"
+            <li (click)="onIngredientClick($event, ing)"
+                class="flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors cursor-pointer hover:bg-gray-100 dark:hover:bg-[#262626]"
                 [class.bg-rose-500/5]="!avail.isAvailable"
-                [class.bg-emerald-500/5]="avail.isAvailable">
+                [class.bg-emerald-500/5]="avail.isAvailable"
+                title="View ingredient in inventory">
               <div class="flex items-center gap-1.5 min-w-0">
                 @if (avail.isAvailable) {
                   <span class="w-3.5 h-3.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-extrabold flex items-center justify-center shrink-0">
@@ -168,7 +151,7 @@
                     ✕
                   </span>
                 }
-                <span class="truncate text-gray-700 dark:text-gray-200 text-xs" [class.font-semibold]="!avail.isAvailable" [class.text-rose-600]="!avail.isAvailable">
+                <span class="truncate text-gray-700 dark:text-gray-200 text-xs hover:underline hover:text-primary-600 dark:hover:text-primary-400" [class.font-semibold]="!avail.isAvailable" [class.text-rose-600]="!avail.isAvailable">
                   {{ getIngredientDisplay(ing) }}
                 </span>
               </div>

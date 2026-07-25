@@ -5,6 +5,7 @@ import {
   UpdateIngredientDTO,
 } from '../models/data-models/ingredient.model.ts';
 import { ingredientService } from '../services/ingredients.service.ts';
+import { substitutionService } from '../services/substitution.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isValidUUID } from '../utils/validators.ts';
 import {
@@ -169,6 +170,34 @@ ingredients.delete('/:id', async (c: Context) => {
   } catch (_error: unknown) {
     return c.json(
       errorResponse(IngredientMessages.DB_DELETE_ITEM_ERROR),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
+
+/**
+ * GET /api/ingredients/:id/substitutions
+ * @summary Get smart substitution suggestions for an ingredient
+ * @param {string} id.path - The ID of the ingredient to find substitutions for
+ * @returns {object} 200 - Array of substitution suggestions ranked by relevance
+ */
+ingredients.get('/:id/substitutions', async (c: Context) => {
+  try {
+    const id = c.req.param('id')!;
+    if (!isValidUUID(id)) {
+      return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+    }
+
+    const ingredient = await ingredientService.getIngredientById(id);
+    if (!ingredient) {
+      return c.json(errorResponse(IngredientMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
+    }
+
+    const substitutions = await substitutionService.getSubstitutions(id);
+    return c.json(successResponse(substitutions), HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    return c.json(
+      errorResponse('Failed to retrieve substitution suggestions.'),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }

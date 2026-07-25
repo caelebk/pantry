@@ -49,7 +49,7 @@ export function mapItemToItemDTO(item: Item): ItemDTO {
 export function mapItemToUpdateItemDTO(item: Item): UpdateItemDTO {
   return {
     label: item.name,
-    ingredientId: !item.ingredientId ? undefined : item.ingredientId,
+    ingredientId: item.ingredientId ?? null,
     quantity: Number(item.quantity),
     unitId: item.unit.id,
     purchaseDate: item.purchaseDate.toISOString(),

@@ -26,10 +26,11 @@ function seedDB() {
       db.exec('DELETE FROM difficulties;');
       db.exec('DELETE FROM units;');
       db.exec('DELETE FROM categories;');
+      db.exec('DELETE FROM nutrient_types;');
       db.exec('DELETE FROM locations;');
       // Reset autoincrement sequences
       db.exec(
-        "DELETE FROM sqlite_sequence WHERE name IN ('locations', 'categories', 'units', 'difficulties');",
+        "DELETE FROM sqlite_sequence WHERE name IN ('locations', 'nutrient_types', 'categories', 'units', 'difficulties');",
       );
 
       // 1. Insert Locations
@@ -41,11 +42,25 @@ function seedDB() {
         locationIds.set(loc.name, row.id);
       }
 
+      // 1.5. Insert Nutrient Types
+      console.log('🧬 Seeding nutrient types...');
+      const nutrientTypeIds = new Map<string, number>();
+      const insertNutrientType = db.prepare(
+        'INSERT INTO nutrient_types (name, icon, color, description) VALUES (?, ?, ?, ?)',
+      );
+      for (const nt of seedData.nutrient_types) {
+        // @ts-ignore description is optional/removed
+        insertNutrientType.run(nt.name, nt.icon, nt.color, nt.description || null);
+        const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
+        nutrientTypeIds.set(nt.name, row.id);
+      }
+
       // 2. Insert Categories
       console.log('🏷️  Seeding categories...');
-      const insertCategory = db.prepare('INSERT INTO categories (name) VALUES (?)');
+      const insertCategory = db.prepare('INSERT INTO categories (name, nutrient_type_id) VALUES (?, ?)');
       for (const cat of seedData.categories) {
-        insertCategory.run(cat.name);
+        const ntId = nutrientTypeIds.get(cat.nutrient_type);
+        insertCategory.run(cat.name, ntId ?? null);
         const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
         categoryIds.set(cat.name, row.id);
       }

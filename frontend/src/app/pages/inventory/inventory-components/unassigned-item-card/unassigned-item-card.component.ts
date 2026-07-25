@@ -20,6 +20,21 @@ export class UnassignedItemCardComponent {
   @Output()
   assign = new EventEmitter<{ item: Item; ingredient: EnrichedIngredient }>();
 
+  get suggestedIngredient(): EnrichedIngredient | null {
+    if (!this.item || !this.item.name || !this.categoryGroups) return null;
+    const itemName = this.item.name.toLowerCase().trim();
+
+    for (const group of this.categoryGroups) {
+      for (const ing of group.ingredients) {
+        const ingName = ing.name.toLowerCase().trim();
+        if (itemName.includes(ingName) || ingName.includes(itemName)) {
+          return ing;
+        }
+      }
+    }
+    return null;
+  }
+
   onAssign(ingredient: EnrichedIngredient) {
     if (ingredient) {
       this.assign.emit({ item: this.item, ingredient });

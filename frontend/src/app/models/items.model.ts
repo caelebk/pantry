@@ -3,7 +3,7 @@ import { Unit } from '@models/unit.model';
 
 export interface Item {
   id: string;
-  ingredientId: string;
+  ingredientId?: string;
   name: string;
   quantity: number;
   unit: Unit;
@@ -16,7 +16,7 @@ export interface Item {
 
 export interface ItemDTO {
   id: string;
-  ingredientId: string;
+  ingredientId?: string;
   label: string;
   quantity: number;
   unitId: number;
@@ -29,7 +29,7 @@ export interface ItemDTO {
 
 export interface UpdateItemDTO {
   label?: string;
-  ingredientId?: string;
+  ingredientId?: string | null;
   quantity?: number;
   unitId?: number;
   purchaseDate?: string;

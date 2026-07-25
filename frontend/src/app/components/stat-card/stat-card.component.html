@@ -1,17 +1,17 @@
 <div
-  class="glass-card card-shine rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/5 dark:hover:shadow-primary-500/5 group">
-  <div class="flex items-center justify-between mb-3">
-    <h3 class="text-sm font-medium text-surface-500 dark:text-surface-400 tracking-wide uppercase">
+  class="glass-card card-shine rounded-xl p-3.5 sm:p-4 transition-all duration-300 hover:shadow-md hover:shadow-primary-500/5 dark:hover:shadow-primary-500/5 group">
+  <div class="flex items-center justify-between mb-1.5">
+    <h3 class="text-[11px] font-bold text-surface-500 dark:text-surface-400 tracking-wider uppercase">
       {{ title() }}
     </h3>
-    <div class="w-8 h-8 rounded-xl bg-primary-500/10 dark:bg-primary-500/10 flex items-center justify-center transition-all duration-300 group-hover:bg-primary-500/15 group-hover:scale-110">
-      <div class="w-2 h-2 rounded-full bg-primary-500"></div>
+    <div class="w-6 h-6 rounded-lg bg-primary-500/10 dark:bg-primary-500/10 flex items-center justify-center transition-all duration-300 group-hover:bg-primary-500/15 group-hover:scale-110">
+      <div class="w-1.5 h-1.5 rounded-full bg-primary-500"></div>
     </div>
   </div>
-  <div class="text-4xl font-extrabold tracking-tight" [ngClass]="valueColor()">
+  <div class="text-2xl font-extrabold tracking-tight" [ngClass]="valueColor()">
     {{ displayValue() }}
   </div>
   @if (subtitle()) {
-    <p class="text-xs text-surface-400 dark:text-surface-500 mt-3 font-medium">{{ subtitle() }}</p>
+    <p class="text-[11px] text-surface-400 dark:text-surface-500 mt-1 font-medium">{{ subtitle() }}</p>
   }
 </div>

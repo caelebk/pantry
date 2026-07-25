@@ -59,9 +59,10 @@ export class ItemService {
       const now = new Date().toISOString();
 
       db.prepare(
-        'INSERT INTO items (id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       ).run(
         id,
+        data.ingredientId ?? null,
         data.label,
         data.quantity,
         data.unitId,
@@ -96,7 +97,18 @@ export class ItemService {
       const db = getDB();
 
       db.prepare(
-        'UPDATE items SET label = COALESCE(?, label), quantity = COALESCE(?, quantity), unit_id = COALESCE(?, unit_id), location_id = COALESCE(?, location_id), expiration_date = COALESCE(?, expiration_date), opened_date = COALESCE(?, opened_date), purchase_date = COALESCE(?, purchase_date), notes = COALESCE(?, notes) WHERE id = ?',
+        `UPDATE items SET 
+          label = COALESCE(?, label), 
+          quantity = COALESCE(?, quantity), 
+          unit_id = COALESCE(?, unit_id), 
+          location_id = COALESCE(?, location_id), 
+          expiration_date = COALESCE(?, expiration_date), 
+          opened_date = COALESCE(?, opened_date), 
+          purchase_date = COALESCE(?, purchase_date), 
+          notes = COALESCE(?, notes),
+          ingredient_id = CASE WHEN ? = 1 THEN ? ELSE ingredient_id END,
+          updated_at = ?
+        WHERE id = ?`,
       ).run(
         data.label ?? null,
         data.quantity ?? null,
@@ -106,6 +118,9 @@ export class ItemService {
         data.openedDate !== undefined ? toDate(data.openedDate).toISOString() : null,
         data.purchaseDate !== undefined ? toDate(data.purchaseDate).toISOString() : null,
         data.notes ?? null,
+        data.ingredientId !== undefined ? 1 : 0,
+        data.ingredientId ?? null,
+        new Date().toISOString(),
         id,
       );
 

@@ -3,23 +3,62 @@ export const seedData = {
     { name: 'Pantry' },
     { name: 'Fridge' },
     { name: 'Freezer' },
-    { name: 'Shelf' },
+  ],
+  nutrient_types: [
+    { name: 'Protein', icon: '🥩', color: '#ef4444' },
+    { name: 'Carbohydrate', icon: '🌾', color: '#f59e0b' },
+    { name: 'Fat & Oil', icon: '🫒', color: '#22c55e' },
+    { name: 'Fiber & Produce', icon: '🥬', color: '#10b981' },
+    { name: 'Seasoning', icon: '🧂', color: '#8b5cf6' },
+    { name: 'Condiment', icon: '🍶', color: '#06b6d4' },
+    { name: 'Beverage', icon: '☕', color: '#64748b' },
+    { name: 'Quick Foods', icon: '📦', color: '#94a3b8' },
   ],
   categories: [
-    { name: 'Produce' },
-    { name: 'Meat & Seafood' },
-    { name: 'Dairy & Eggs' },
-    { name: 'Bakery & Grains' },
-    { name: 'Pantry Staples' },
-    { name: 'Canned Goods' },
-    { name: 'Oils & Condiments' },
-    { name: 'Spices & Seasonings' },
-    { name: 'Snacks' },
-    { name: 'Frozen Foods' },
-    { name: 'Beverages' },
-    { name: 'Breakfast' },
-    { name: 'Ready-to-Eat' },
-    { name: 'Baking' },
+    // Fiber & Produce
+    { name: 'Fruits', nutrient_type: 'Fiber & Produce' },
+    { name: 'Vegetables', nutrient_type: 'Fiber & Produce' },
+    { name: 'Fresh Herbs & Greens', nutrient_type: 'Fiber & Produce' },
+    { name: 'Aromatics', nutrient_type: 'Fiber & Produce' },
+
+    // Protein
+    { name: 'Meat', nutrient_type: 'Protein' },
+    { name: 'Seafood', nutrient_type: 'Protein' },
+    { name: 'Dairy & Eggs', nutrient_type: 'Protein' },
+    { name: 'Beans', nutrient_type: 'Protein' },
+
+    // Carbohydrate
+    { name: 'Grains', nutrient_type: 'Carbohydrate' },
+    { name: 'Pasta', nutrient_type: 'Carbohydrate' },
+    { name: 'Bakery', nutrient_type: 'Carbohydrate' },
+    { name: 'Baking', nutrient_type: 'Carbohydrate' },
+
+    // Fat & Oil
+    { name: 'Oils', nutrient_type: 'Fat & Oil' },
+    { name: 'Protein fats', nutrient_type: 'Fat & Oil' },
+    { name: 'Butter', nutrient_type: 'Fat & Oil' },
+    { name: 'Nuts', nutrient_type: 'Fat & Oil' },
+
+    // Seasoning
+    { name: 'Seasoning', nutrient_type: 'Seasoning' },
+    { name: 'Spices', nutrient_type: 'Seasoning' },
+
+    // Condiment
+    { name: 'Condiment', nutrient_type: 'Condiment' },
+    { name: 'Sauce', nutrient_type: 'Condiment' },
+
+    // Beverage
+    { name: 'Hot Beverages', nutrient_type: 'Beverage' },
+    { name: 'Cold Juice', nutrient_type: 'Beverage' },
+    { name: 'Cold Drinks', nutrient_type: 'Beverage' },
+
+    // Quick Foods
+    { name: 'Snacks', nutrient_type: 'Quick Foods' },
+    { name: 'Sweets', nutrient_type: 'Quick Foods' },
+    { name: 'Frozen Foods', nutrient_type: 'Quick Foods' },
+    { name: 'Desserts', nutrient_type: 'Quick Foods' },
+    { name: 'Instant Foods', nutrient_type: 'Quick Foods' },
+    { name: 'Instant Sauces', nutrient_type: 'Quick Foods' },
   ],
   units: [
     { name: 'piece', short_name: 'pc', type: 'count', to_base_factor: 1 },
@@ -42,96 +81,90 @@ export const seedData = {
     { name: 'Hard' },
   ],
   ingredients: [
-    // Produce
-    { name: 'Apples', category: 'Produce', default_unit: 'piece' },
-    { name: 'Bananas', category: 'Produce', default_unit: 'piece' },
-    { name: 'Spinach', category: 'Produce', default_unit: 'gram' },
-    { name: 'Onions', category: 'Produce', default_unit: 'piece' },
-    { name: 'Garlic', category: 'Produce', default_unit: 'clove' },
-    { name: 'Carrots', category: 'Produce', default_unit: 'piece' },
-    { name: 'Potatoes', category: 'Produce', default_unit: 'kilogram' },
-    { name: 'Tomatoes', category: 'Produce', default_unit: 'piece' },
-    { name: 'Avocados', category: 'Produce', default_unit: 'piece' },
-    { name: 'Lemons', category: 'Produce', default_unit: 'piece' },
-    { name: 'Fresh Basil', category: 'Produce', default_unit: 'gram' },
+    // Fruits & Vegetables & Greens & Aromatics (Fiber & Produce)
+    { name: 'Apples', category: 'Fruits', default_unit: 'piece' },
+    { name: 'Bananas', category: 'Fruits', default_unit: 'piece' },
+    { name: 'Lemons', category: 'Fruits', default_unit: 'piece' },
+    { name: 'Avocados', category: 'Fruits', default_unit: 'piece' },
+    { name: 'Spinach', category: 'Vegetables', default_unit: 'gram' },
+    { name: 'Onions', category: 'Vegetables', default_unit: 'piece' },
+    { name: 'Carrots', category: 'Vegetables', default_unit: 'piece' },
+    { name: 'Potatoes', category: 'Vegetables', default_unit: 'kilogram' },
+    { name: 'Tomatoes', category: 'Vegetables', default_unit: 'piece' },
+    { name: 'Garlic', category: 'Aromatics', default_unit: 'clove' },
+    { name: 'Fresh Basil', category: 'Fresh Herbs & Greens', default_unit: 'gram' },
 
-    // Meat & Seafood
-    { name: 'Chicken Breast', category: 'Meat & Seafood', default_unit: 'kilogram' },
-    { name: 'Ground Beef', category: 'Meat & Seafood', default_unit: 'kilogram' },
-    { name: 'Salmon Fillet', category: 'Meat & Seafood', default_unit: 'kilogram' },
-    { name: 'Bacon', category: 'Meat & Seafood', default_unit: 'gram' },
-    { name: 'Pork Chops', category: 'Meat & Seafood', default_unit: 'piece' },
-
-    // Dairy & Eggs
+    // Meat, Seafood, Dairy, Beans (Protein)
+    { name: 'Chicken Breast', category: 'Meat', default_unit: 'kilogram' },
+    { name: 'Ground Beef', category: 'Meat', default_unit: 'kilogram' },
+    { name: 'Pork Chops', category: 'Meat', default_unit: 'piece' },
+    { name: 'Bacon', category: 'Meat', default_unit: 'gram' },
+    { name: 'Salmon Fillet', category: 'Seafood', default_unit: 'kilogram' },
+    { name: 'Canned Tuna', category: 'Seafood', default_unit: 'can' },
     { name: 'Milk', category: 'Dairy & Eggs', default_unit: 'liter' },
     { name: 'Large Eggs', category: 'Dairy & Eggs', default_unit: 'piece' },
     { name: 'Cheddar Cheese', category: 'Dairy & Eggs', default_unit: 'gram' },
     { name: 'Greek Yogurt', category: 'Dairy & Eggs', default_unit: 'gram' },
-    { name: 'Unsalted Butter', category: 'Dairy & Eggs', default_unit: 'gram' },
     { name: 'Heavy Cream', category: 'Dairy & Eggs', default_unit: 'milliliter' },
     { name: 'Parmesan Cheese', category: 'Dairy & Eggs', default_unit: 'gram' },
     { name: 'Feta Cheese', category: 'Dairy & Eggs', default_unit: 'gram' },
+    { name: 'Chickpeas', category: 'Beans', default_unit: 'can' },
+    { name: 'Black Beans', category: 'Beans', default_unit: 'can' },
 
-    // Bakery & Grains
-    { name: 'Sourdough Bread', category: 'Bakery & Grains', default_unit: 'piece' },
-    { name: 'Basmati Rice', category: 'Bakery & Grains', default_unit: 'kilogram' },
-    { name: 'Spaghetti', category: 'Bakery & Grains', default_unit: 'gram' },
-    { name: 'Penne Pasta', category: 'Bakery & Grains', default_unit: 'gram' },
-    { name: 'Quinoa', category: 'Bakery & Grains', default_unit: 'gram' },
-    { name: 'Rolled Oats', category: 'Bakery & Grains', default_unit: 'gram' },
+    // Grains, Pasta, Bakery, Baking (Carbohydrate)
+    { name: 'Basmati Rice', category: 'Grains', default_unit: 'kilogram' },
+    { name: 'Quinoa', category: 'Grains', default_unit: 'gram' },
+    { name: 'Rolled Oats', category: 'Grains', default_unit: 'gram' },
+    { name: 'Spaghetti', category: 'Pasta', default_unit: 'gram' },
+    { name: 'Penne Pasta', category: 'Pasta', default_unit: 'gram' },
+    { name: 'Sourdough Bread', category: 'Bakery', default_unit: 'piece' },
+    { name: 'All-Purpose Flour', category: 'Baking', default_unit: 'kilogram' },
+    { name: 'Granulated Sugar', category: 'Baking', default_unit: 'kilogram' },
+    { name: 'Brown Sugar', category: 'Baking', default_unit: 'kilogram' },
+    { name: 'Baking Powder', category: 'Baking', default_unit: 'teaspoon' },
+    { name: 'Honey', category: 'Baking', default_unit: 'milliliter' },
+    { name: 'Vanilla Extract', category: 'Baking', default_unit: 'teaspoon' },
 
-    // Pantry Staples
-    { name: 'All-Purpose Flour', category: 'Pantry Staples', default_unit: 'kilogram' },
-    { name: 'Granulated Sugar', category: 'Pantry Staples', default_unit: 'kilogram' },
-    { name: 'Brown Sugar', category: 'Pantry Staples', default_unit: 'kilogram' },
-    { name: 'Baking Powder', category: 'Pantry Staples', default_unit: 'teaspoon' },
-    { name: 'Honey', category: 'Pantry Staples', default_unit: 'milliliter' },
-    { name: 'Peanut Butter', category: 'Pantry Staples', default_unit: 'gram' },
-    { name: 'Vanilla Extract', category: 'Pantry Staples', default_unit: 'teaspoon' },
+    // Oils, Butter, Nuts, Protein fats (Fat & Oil)
+    { name: 'Olive Oil', category: 'Oils', default_unit: 'milliliter' },
+    { name: 'Vegetable Oil', category: 'Oils', default_unit: 'milliliter' },
+    { name: 'Unsalted Butter', category: 'Butter', default_unit: 'gram' },
+    { name: 'Peanut Butter', category: 'Nuts', default_unit: 'gram' },
+    { name: 'Almonds', category: 'Nuts', default_unit: 'gram' },
 
-    // Canned Goods
-    { name: 'Chickpeas', category: 'Canned Goods', default_unit: 'can' },
-    { name: 'Black Beans', category: 'Canned Goods', default_unit: 'can' },
-    { name: 'Diced Tomatoes', category: 'Canned Goods', default_unit: 'can' },
-    { name: 'Coconut Milk', category: 'Canned Goods', default_unit: 'milliliter' },
-    { name: 'Canned Tuna', category: 'Canned Goods', default_unit: 'can' },
-    { name: 'Marinara Sauce', category: 'Canned Goods', default_unit: 'milliliter' },
+    // Condiments & Sauces
+    { name: 'Soy Sauce', category: 'Condiment', default_unit: 'milliliter' },
+    { name: 'Balsamic Vinegar', category: 'Condiment', default_unit: 'milliliter' },
+    { name: 'Ketchup', category: 'Condiment', default_unit: 'milliliter' },
+    { name: 'Mayonnaise', category: 'Condiment', default_unit: 'milliliter' },
+    { name: 'Dijon Mustard', category: 'Condiment', default_unit: 'teaspoon' },
+    { name: 'Marinara Sauce', category: 'Sauce', default_unit: 'milliliter' },
+    { name: 'Diced Tomatoes', category: 'Sauce', default_unit: 'can' },
+    { name: 'Coconut Milk', category: 'Sauce', default_unit: 'milliliter' },
 
-    // Oils & Condiments
-    { name: 'Olive Oil', category: 'Oils & Condiments', default_unit: 'milliliter' },
-    { name: 'Vegetable Oil', category: 'Oils & Condiments', default_unit: 'milliliter' },
-    { name: 'Soy Sauce', category: 'Oils & Condiments', default_unit: 'milliliter' },
-    { name: 'Balsamic Vinegar', category: 'Oils & Condiments', default_unit: 'milliliter' },
-    { name: 'Ketchup', category: 'Oils & Condiments', default_unit: 'milliliter' },
-    { name: 'Mayonnaise', category: 'Oils & Condiments', default_unit: 'milliliter' },
-    { name: 'Dijon Mustard', category: 'Oils & Condiments', default_unit: 'teaspoon' },
+    // Seasoning & Spices
+    { name: 'Salt', category: 'Seasoning', default_unit: 'gram' },
+    { name: 'Black Pepper', category: 'Spices', default_unit: 'gram' },
+    { name: 'Cumin', category: 'Spices', default_unit: 'teaspoon' },
+    { name: 'Paprika', category: 'Spices', default_unit: 'teaspoon' },
+    { name: 'Dried Oregano', category: 'Spices', default_unit: 'teaspoon' },
+    { name: 'Cinnamon', category: 'Spices', default_unit: 'teaspoon' },
+    { name: 'Garlic Powder', category: 'Spices', default_unit: 'teaspoon' },
 
-    // Spices & Seasonings
-    { name: 'Salt', category: 'Spices & Seasonings', default_unit: 'gram' },
-    { name: 'Black Pepper', category: 'Spices & Seasonings', default_unit: 'gram' },
-    { name: 'Cumin', category: 'Spices & Seasonings', default_unit: 'teaspoon' },
-    { name: 'Paprika', category: 'Spices & Seasonings', default_unit: 'teaspoon' },
-    { name: 'Dried Oregano', category: 'Spices & Seasonings', default_unit: 'teaspoon' },
-    { name: 'Cinnamon', category: 'Spices & Seasonings', default_unit: 'teaspoon' },
-    { name: 'Garlic Powder', category: 'Spices & Seasonings', default_unit: 'teaspoon' },
-
-    // Frozen Foods
+    // Quick Foods (Snacks, Sweets, Frozen, Desserts, etc.)
     { name: 'Frozen Peas', category: 'Frozen Foods', default_unit: 'gram' },
     { name: 'Frozen Berries', category: 'Frozen Foods', default_unit: 'gram' },
-    { name: 'Vanilla Ice Cream', category: 'Frozen Foods', default_unit: 'liter' },
     { name: 'Frozen Pizza', category: 'Frozen Foods', default_unit: 'piece' },
-
-    // Snacks
+    { name: 'Vanilla Ice Cream', category: 'Desserts', default_unit: 'liter' },
     { name: 'Potato Chips', category: 'Snacks', default_unit: 'gram' },
     { name: 'Pretzels', category: 'Snacks', default_unit: 'gram' },
-    { name: 'Almonds', category: 'Snacks', default_unit: 'gram' },
-    { name: 'Dark Chocolate', category: 'Snacks', default_unit: 'gram' },
+    { name: 'Dark Chocolate', category: 'Sweets', default_unit: 'gram' },
 
     // Beverages
-    { name: 'Coffee Beans', category: 'Beverages', default_unit: 'kilogram' },
-    { name: 'Earl Grey Tea', category: 'Beverages', default_unit: 'piece' },
-    { name: 'Orange Juice', category: 'Beverages', default_unit: 'liter' },
-    { name: 'Cola', category: 'Beverages', default_unit: 'can' },
+    { name: 'Coffee Beans', category: 'Hot Beverages', default_unit: 'kilogram' },
+    { name: 'Earl Grey Tea', category: 'Hot Beverages', default_unit: 'piece' },
+    { name: 'Orange Juice', category: 'Cold Juice', default_unit: 'liter' },
+    { name: 'Cola', category: 'Cold Drinks', default_unit: 'can' },
   ],
   items: [
     // Fridge Items
@@ -329,7 +362,7 @@ export const seedData = {
       label: 'Apples',
       quantity: 6,
       unit: 'piece',
-      location: 'Shelf',
+      location: 'Pantry',
       expiration_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       purchase_date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
     },
@@ -338,7 +371,7 @@ export const seedData = {
       label: 'Bananas',
       quantity: 4,
       unit: 'piece',
-      location: 'Shelf',
+      location: 'Pantry',
       expiration_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
       purchase_date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
       notes: 'Getting ripe, good for banana bread soon',
@@ -348,7 +381,7 @@ export const seedData = {
       label: 'Onions',
       quantity: 5,
       unit: 'piece',
-      location: 'Shelf',
+      location: 'Pantry',
       expiration_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       purchase_date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
     },
@@ -357,7 +390,7 @@ export const seedData = {
       label: 'Potatoes',
       quantity: 2,
       unit: 'kilogram',
-      location: 'Shelf',
+      location: 'Pantry',
       expiration_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       purchase_date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
     },

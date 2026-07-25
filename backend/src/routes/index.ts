@@ -7,6 +7,7 @@ import categories from './categories.routes.ts';
 import ingredients from './ingredients.routes.ts';
 import items from './items.routes.ts';
 import locations from './locations.routes.ts';
+import nutrientTypes from './nutrient-types.routes.ts';
 import recipes from './recipes.routes.ts';
 import units from './units.routes.ts';
 
@@ -19,6 +20,7 @@ api.route('/ingredients', ingredients);
 api.route('/categories', categories);
 api.route('/units', units);
 api.route('/locations', locations);
+api.route('/nutrient-types', nutrientTypes);
 
 // Health check endpoint
 api.get('/health', (c) => {

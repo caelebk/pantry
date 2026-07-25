@@ -1,47 +1,168 @@
-<div class="space-y-6">
-  <!-- Search Bar and Category Filter -->
-  <div class="flex flex-col sm:flex-row gap-3">
-    <p-iconfield iconPosition="left" class="flex-1">
-      <p-inputicon class="pi pi-search text-gray-500 dark:text-gray-400" />
-      <input
-        type="text"
-        pInputText
-        [ngModel]="searchQuery()"
-        (ngModelChange)="onSearch($event)"
-        placeholder="Search ingredient groups..."
-        class="w-full !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg focus:!border-primary-500 hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors p-3" />
-    </p-iconfield>
+  <!-- Filter & Control Bar -->
+  <div class="glass-card rounded-2xl p-4 mb-8 border border-surface-200/60 dark:border-surface-800/80 relative z-20">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
 
-    <p-select 
-      [options]="categories()" 
-      [ngModel]="selectedCategory()" 
-      (ngModelChange)="onCategorySelect($event)"
-      optionLabel="name" 
-      [showClear]="true"
-      placeholder="All Categories"
-      styleClass="w-full sm:w-48 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors">
-    </p-select>
+      <!-- Search Box -->
+      <div class="relative flex-1 min-w-[240px]">
+        <i class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 text-sm"></i>
+        <input
+          type="text"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="onSearch($event)"
+          placeholder="Search ingredients by name..."
+          class="w-full pl-10 pr-9 py-2.5 bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-700/80 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
+        @if (searchQuery()) {
+          <button
+            (click)="onSearch('')"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200">
+            <i class="pi pi-times text-xs"></i>
+          </button>
+        }
+      </div>
+
+      <!-- Controls Group -->
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Nutrient Group MultiSelect Dropdown -->
+        <div class="flex items-center gap-1">
+          <p-multiselect
+            [options]="nutrientSelectOptions()"
+            [ngModel]="selectedNutrientTypeIds()"
+            (ngModelChange)="onNutrientTypesSelect($event)"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="false"
+            [showToggleAll]="false"
+            [filter]="true"
+            filterPlaceholder="Search nutrients..."
+            appendTo="body"
+            placeholder="✨ All Nutrients"
+            styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
+            <ng-template pTemplate="selectedItems" let-selectedItems>
+              @if (selectedItems && selectedItems.length > 0) {
+                <div class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-surface-200">
+                  @if (selectedItems.length === 1) {
+                    <span>{{ getNutrientIcon(selectedItems[0]) }}</span>
+                    <span>{{ getNutrientName(selectedItems[0]) }}</span>
+                  } @else {
+                    <span>✨</span>
+                    <span>{{ selectedItems.length }} Nutrients</span>
+                  }
+                </div>
+              }
+            </ng-template>
+            <ng-template pTemplate="item" let-item>
+              <div class="flex items-center gap-2 text-xs font-medium py-0.5">
+                <span>{{ item.icon }}</span>
+                <span>{{ item.name }}</span>
+              </div>
+            </ng-template>
+          </p-multiselect>
+
+          @if (selectedNutrientTypeIds().length > 0) {
+            <button
+              type="button"
+              (click)="onNutrientTypesSelect([])"
+              class="p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+              title="Reset nutrient filter">
+              <i class="pi pi-times text-xs font-bold"></i>
+            </button>
+          }
+        </div>
+
+        <!-- Ingredient Group MultiSelect Dropdown -->
+        <div class="flex items-center gap-1">
+          <p-multiselect
+            [options]="categoryGroupOptions()"
+            [ngModel]="selectedCategoryIds()"
+            (ngModelChange)="onCategoryIdsSelect($event)"
+            optionLabel="name"
+            optionValue="id"
+            [showClear]="false"
+            [showToggleAll]="false"
+            [filter]="true"
+            filterPlaceholder="Search groups..."
+            appendTo="body"
+            placeholder="🏷️ All Groups"
+            styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
+            <ng-template pTemplate="selectedItems" let-selectedItems>
+              @if (selectedItems && selectedItems.length > 0) {
+                <div class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-surface-200">
+                  @if (selectedItems.length === 1) {
+                    <span>🏷️</span>
+                    <span>{{ getCategoryName(selectedItems[0]) }}</span>
+                  } @else {
+                    <span>🏷️</span>
+                    <span>{{ selectedItems.length }} Groups</span>
+                  }
+                </div>
+              }
+            </ng-template>
+            <ng-template pTemplate="item" let-item>
+              <div class="flex items-center gap-2 text-xs font-medium py-0.5">
+                <span>{{ item.icon }}</span>
+                <span>{{ item.name }}</span>
+              </div>
+            </ng-template>
+          </p-multiselect>
+
+          @if (selectedCategoryIds().length > 0) {
+            <button
+              type="button"
+              (click)="onCategoryIdsSelect([])"
+              class="p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+              title="Reset group filter">
+              <i class="pi pi-times text-xs font-bold"></i>
+            </button>
+          }
+        </div>
+
+        <!-- Expand / Collapse Controls -->
+        <div class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs shrink-0">
+          <button
+            type="button"
+            (click)="expandAll()"
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+            title="Expand All Groups">
+            <i class="pi pi-arrows-alt text-xs"></i>
+            <span>Expand All</span>
+          </button>
+          <button
+            type="button"
+            (click)="collapseAll()"
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+            title="Collapse All Groups">
+            <i class="pi pi-minus text-xs"></i>
+            <span>Collapse</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Ingredient Groups List -->
+  <!-- Nutrient Group Accordions -->
   <div class="space-y-4">
-    @if (categoryGroups().length === 0) {
-      <div class="text-center py-12 bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-gray-800">
-        <i class="pi pi-inbox text-5xl text-gray-400 dark:text-gray-600 mb-3"></i>
-        <p class="text-gray-500 dark:text-gray-400">
-          No ingredient groups found
+    @if (filteredNutrientGroups.length === 0) {
+      <div class="glass-card rounded-2xl p-12 text-center border border-surface-200/80 dark:border-surface-800/80">
+        <div class="w-16 h-16 rounded-2xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center mx-auto mb-4 text-surface-400 dark:text-surface-500 text-2xl">
+          <i class="pi pi-folder-open"></i>
+        </div>
+        <h4 class="text-base font-bold text-surface-900 dark:text-white mb-1">No Nutrient Groups Found</h4>
+        <p class="text-xs text-surface-500 dark:text-surface-400">
+          No nutrient groups or categories match your search or filter criteria.
         </p>
       </div>
     } @else {
-      @for (group of categoryGroups(); track group.category.id) {
-        <pantry-ingredient-group
-          [group]="group"
-          [isExpanded]="isCategoryExpanded(group.category.id)"
+      @for (ng of filteredNutrientGroups; track ng.nutrientType.id) {
+        <pantry-nutrient-group
+          [nutrientGroup]="ng"
+          [isExpanded]="isNutrientGroupExpanded(ng.nutrientType.id)"
+          [expandedCategories]="expandedCategories()"
           [expandedIngredients]="expandedIngredients()"
-          (toggle)="onToggleCategory($event)"
-          (toggleIngredient)="onToggleIngredient($event)">
-        </pantry-ingredient-group>
+          (toggleNutrientGroup)="onToggleNutrientGroup($event)"
+          (toggleCategory)="onToggleCategory($event)"
+          (toggleIngredient)="onToggleIngredient($event)"
+          (unassignItem)="unassignItem.emit($event)">
+        </pantry-nutrient-group>
       }
     }
   </div>
-</div>

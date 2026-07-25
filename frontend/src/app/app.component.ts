@@ -2,14 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Event, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
-import { HeaderComponent } from './components/header/header.component';
+import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { Tab } from './components/tabs/tabs.model';
 import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 
 @Component({
   selector: 'pantry-root',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, RouterOutlet, ToastContainerComponent],
+  imports: [CommonModule, SidebarComponent, RouterOutlet, ToastContainerComponent, BreadcrumbsComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

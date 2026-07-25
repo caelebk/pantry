@@ -5,4 +5,6 @@
 export interface CategoryDTO {
   id: number;
   name: string;
+  nutrientTypeId?: number;
+  nutrientTypeName?: string;
 }
