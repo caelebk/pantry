@@ -186,18 +186,30 @@
           </button>
         </div>
 
-        <!-- Location Filter Dropdown -->
-        <select
+        <!-- Location Filter Styled Dropdown (PrimeNG p-select) -->
+        <p-select
           [(ngModel)]="selectedLocationId"
-          (change)="resetPagination()"
-          class="px-3 py-2 bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-700/80 text-surface-800 dark:text-surface-200 text-xs font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer">
-          <option [ngValue]="null">📍 All Locations</option>
-          @for (loc of locations; track loc.id) {
-            <option [ngValue]="loc.id">
-              {{ loc.name === 'Fridge' ? '❄️' : (loc.name === 'Freezer' ? '🧊' : '🥫') }} {{ loc.name }}
-            </option>
-          }
-        </select>
+          (onChange)="resetPagination()"
+          [options]="locationSelectOptions"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Location"
+          styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
+          <ng-template pTemplate="selectedItem" let-selected>
+            @if (selected) {
+              <div class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-surface-200">
+                <span>{{ selected.icon }}</span>
+                <span>{{ selected.name }}</span>
+              </div>
+            }
+          </ng-template>
+          <ng-template pTemplate="item" let-item>
+            <div class="flex items-center gap-2 text-xs font-medium py-0.5">
+              <span>{{ item.icon }}</span>
+              <span>{{ item.name }}</span>
+            </div>
+          </ng-template>
+        </p-select>
 
         <!-- View Mode Toggle (Table / Grid) -->
         <div class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs">

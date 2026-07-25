@@ -161,6 +161,17 @@ export class InventoryComponent implements OnInit {
     return this.filteredItems.slice(0, this.displayLimit);
   }
 
+  public get locationSelectOptions(): { id: number | null; name: string; icon: string }[] {
+    return [
+      { id: null, name: 'All Locations', icon: '📍' },
+      ...this.locations.map(loc => ({
+        id: loc.id,
+        name: loc.name,
+        icon: loc.name === 'Fridge' ? '❄️' : (loc.name === 'Freezer' ? '🧊' : '🥫')
+      }))
+    ];
+  }
+
   public loadMoreItems(): void {
     if (this.displayLimit < this.filteredItems.length) {
       this.displayLimit += this.batchSize;
