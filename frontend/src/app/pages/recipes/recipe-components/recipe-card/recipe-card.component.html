@@ -155,9 +155,11 @@
         <ul class="space-y-1 text-xs">
           @for (ing of sortedIngredients; track $index) {
             @let avail = getIngredientAvailability(ing);
-            <li class="flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors"
+            <li (click)="onIngredientClick($event, ing)"
+                class="flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors cursor-pointer hover:bg-gray-100 dark:hover:bg-[#262626]"
                 [class.bg-rose-500/5]="!avail.isAvailable"
-                [class.bg-emerald-500/5]="avail.isAvailable">
+                [class.bg-emerald-500/5]="avail.isAvailable"
+                title="View ingredient in inventory">
               <div class="flex items-center gap-1.5 min-w-0">
                 @if (avail.isAvailable) {
                   <span class="w-3.5 h-3.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-extrabold flex items-center justify-center shrink-0">
@@ -168,7 +170,7 @@
                     ✕
                   </span>
                 }
-                <span class="truncate text-gray-700 dark:text-gray-200 text-xs" [class.font-semibold]="!avail.isAvailable" [class.text-rose-600]="!avail.isAvailable">
+                <span class="truncate text-gray-700 dark:text-gray-200 text-xs hover:underline hover:text-primary-600 dark:hover:text-primary-400" [class.font-semibold]="!avail.isAvailable" [class.text-rose-600]="!avail.isAvailable">
                   {{ getIngredientDisplay(ing) }}
                 </span>
               </div>

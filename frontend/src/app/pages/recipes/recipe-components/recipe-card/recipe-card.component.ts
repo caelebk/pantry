@@ -9,6 +9,8 @@ import { IngredientService } from '../../../../services/inventory/ingredient.ser
 import { ItemService } from '../../../../services/inventory/item.service';
 import { UnitService } from '../../../../services/inventory/unit.service';
 
+import { Item } from '@models/items.model';
+
 @Component({
   selector: 'pantry-recipe-card',
   standalone: true,
@@ -28,6 +30,7 @@ export class RecipeCardComponent implements OnInit {
   ingredientMap = new Map<string, Ingredient>();
   unitMap = new Map<number, Unit>();
   availableBaseMap = new Map<string, number>();
+  pantryItems: Item[] = [];
 
   ngOnInit(): void {
     this.ingredientService.getIngredients().subscribe({
@@ -48,6 +51,7 @@ export class RecipeCardComponent implements OnInit {
   private loadPantryItems(): void {
     this.itemService.getItems().subscribe({
       next: (items) => {
+        this.pantryItems = items;
         const map = new Map<string, number>();
         const now = new Date();
         for (const item of items) {
@@ -63,6 +67,25 @@ export class RecipeCardComponent implements OnInit {
         this.availableBaseMap = map;
       },
     });
+  }
+
+  onIngredientClick(event: Event, ing: { ingredientId: string }): void {
+    event.stopPropagation();
+    const ingredientObj = this.ingredientMap.get(ing.ingredientId);
+    const ingredientName = ingredientObj?.name || ing.ingredientId;
+
+    // Search pantry items matching ingredientId or ingredient name
+    const matchingItems = this.pantryItems.filter(
+      (item) => item.ingredientId === ing.ingredientId || (ingredientName && item.name.toLowerCase().includes(ingredientName.toLowerCase()))
+    );
+
+    if (matchingItems.length === 1) {
+      // 1 item in inventory -> go directly to edit page
+      this.router.navigate(['/inventory', matchingItems[0].id, 'edit']);
+    } else {
+      // Multiple or 0 items -> go to inventory search
+      this.router.navigate(['/inventory'], { queryParams: { search: ingredientName } });
+    }
   }
 
   get difficultyText(): string {

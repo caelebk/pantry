@@ -38,7 +38,7 @@ import {
 } from "./inventory-components/tab-navigation/tab-navigation.component";
 import { UnassignedItemsContainerComponent } from "./inventory-components/unassigned-items-container/unassigned-items-container.component";
 
-import { Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 
 export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh';
 export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase';
@@ -288,7 +288,20 @@ export class InventoryComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  private readonly route = inject(ActivatedRoute);
+
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      if (params['search']) {
+        this.searchQuery = params['search'];
+      }
+      if (params['tab']) {
+        this.activeTab = params['tab'] as InventoryTab;
+      }
+      if (params['status']) {
+        this.selectedStatusFilter = params['status'] as StatusFilter;
+      }
+    });
     this.initParameters();
   }
 
