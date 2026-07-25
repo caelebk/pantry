@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 export interface BreadcrumbItem {
   label: string;
   url?: string;
+  queryParams?: Record<string, string>;
   icon?: string;
 }
 
@@ -29,9 +30,13 @@ export class BreadcrumbsComponent implements OnInit {
       });
   }
 
-  private buildBreadcrumbs(url: string): void {
-    const cleanUrl = url.split('?')[0].split('#')[0];
+  private buildBreadcrumbs(rawUrl: string): void {
+    const [pathPart, queryPart] = rawUrl.split('?');
+    const cleanUrl = pathPart.split('#')[0];
     const segments = cleanUrl.split('/').filter((s) => s.length > 0);
+
+    const queryParams = new URLSearchParams(queryPart || '');
+    const tabParam = queryParams.get('tab');
 
     const items: BreadcrumbItem[] = [
       { label: 'Dashboard', url: '/dashboard', icon: 'pi pi-home' },
@@ -45,12 +50,22 @@ export class BreadcrumbsComponent implements OnInit {
     const firstSegment = segments[0];
 
     if (firstSegment === 'inventory') {
-      items.push({ label: 'Inventory', url: '/inventory', icon: 'pi pi-box' });
+      items.push({ label: 'Inventory', url: '/inventory', queryParams: { tab: 'items' }, icon: 'pi pi-box' });
 
       if (segments[1] === 'new') {
+        items.push({ label: 'Items', url: '/inventory', queryParams: { tab: 'items' }, icon: 'pi pi-list' });
         items.push({ label: 'Add New Item', icon: 'pi pi-plus-circle' });
       } else if (segments[2] === 'edit') {
+        items.push({ label: 'Items', url: '/inventory', queryParams: { tab: 'items' }, icon: 'pi pi-list' });
         items.push({ label: 'Edit Item', icon: 'pi pi-pencil' });
+      } else {
+        if (tabParam === 'groups') {
+          items.push({ label: 'Ingredient Groups', icon: 'pi pi-sitemap' });
+        } else if (tabParam === 'assign') {
+          items.push({ label: 'Assign Items', icon: 'pi pi-bolt' });
+        } else {
+          items.push({ label: 'Items', icon: 'pi pi-list' });
+        }
       }
     } else if (firstSegment === 'recipes') {
       items.push({ label: 'Recipes', url: '/recipes', icon: 'pi pi-book' });

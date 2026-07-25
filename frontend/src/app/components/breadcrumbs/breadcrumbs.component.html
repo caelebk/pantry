@@ -4,6 +4,7 @@
       @if (!last && item.url) {
         <a
           [routerLink]="item.url"
+          [queryParams]="item.queryParams"
           class="inline-flex items-center gap-1.5 text-surface-600 hover:text-primary-600 dark:text-surface-400 dark:hover:text-primary-400 transition-colors py-1 px-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800/60">
           @if (item.icon) {
             <i [class]="item.icon + ' text-[12px]'"></i>
