@@ -2,29 +2,16 @@
  * Recipe Models
  */
 
-export interface Recipe {
-  id: string; // UUID
-  name: string;
-  description?: string;
-  difficulty?: string; // 'Easy', 'Medium', 'Hard'
-  servings?: number;
-  prepTime?: number; // minutes
-  cookTime?: number; // minutes
-  imageUrl?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface RecipeIngredient {
+export interface RecipeIngredientDTO {
   recipeId: string;
   ingredientId: string;
   quantity: number;
-  unitId: number;
+  unitId: number | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export interface RecipeStep {
+export interface RecipeStepDTO {
   id: string; // UUID
   recipeId: string;
   stepNumber: number;
@@ -33,23 +20,44 @@ export interface RecipeStep {
   timerSeconds?: number;
 }
 
+export interface RecipeDTO {
+  id: string; // UUID
+  name: string;
+  description?: string;
+  difficultyId?: number;
+  difficulty?: string; // 'Easy', 'Medium', 'Hard'
+  servings?: number;
+  prepTime?: number; // minutes
+  cookTime?: number; // minutes
+  imageUrl?: string;
+  ingredients?: RecipeIngredientDTO[];
+  steps?: RecipeStepDTO[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Alias Recipe to RecipeDTO for compatibility
+export type Recipe = RecipeDTO;
+
 // DTOs for API interaction
 export interface CreateRecipeDTO {
   name: string;
   description?: string;
-  difficulty?: string;
+  difficultyId?: number;
   servings?: number;
   prepTime?: number;
   cookTime?: number;
   imageUrl?: string;
-  ingredients: {
+  ingredients?: {
     ingredientId: string;
     quantity: number;
-    unitId: number;
+    unitId?: number;
   }[];
-  steps: {
-    stepNumber: number;
-    instructionText: string;
+  steps?: {
+    stepNumber?: number;
+    step_number?: number;
+    instructionText?: string;
+    instruction_text?: string;
     timerSeconds?: number;
     imageUrl?: string;
   }[];
@@ -58,10 +66,22 @@ export interface CreateRecipeDTO {
 export interface UpdateRecipeDTO {
   name?: string;
   description?: string;
-  difficulty?: string;
+  difficultyId?: number;
   servings?: number;
   prepTime?: number;
   cookTime?: number;
   imageUrl?: string;
-  // Deep updates might be handled separately or require full replacement arrays
+  ingredients?: {
+    ingredientId: string;
+    quantity: number;
+    unitId?: number;
+  }[];
+  steps?: {
+    stepNumber?: number;
+    step_number?: number;
+    instructionText?: string;
+    instruction_text?: string;
+    timerSeconds?: number;
+    imageUrl?: string;
+  }[];
 }
