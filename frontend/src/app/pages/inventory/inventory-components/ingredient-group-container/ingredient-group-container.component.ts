@@ -1,11 +1,12 @@
 import { CommonModule } from "@angular/common";
-import { Component, input, output, signal } from "@angular/core";
+import { Component, computed, input, output, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Category } from "@models/category.model";
 import { NutrientGroup } from "@models/inventory.models";
 import { IconFieldModule } from "primeng/iconfield";
 import { InputIconModule } from "primeng/inputicon";
 import { InputTextModule } from "primeng/inputtext";
+import { MultiSelectModule } from "primeng/multiselect";
 import { SelectModule } from "primeng/select";
 import { Item } from "@models/items.model";
 import { NutrientGroupComponent } from "../nutrient-group/nutrient-group.component";
@@ -20,6 +21,7 @@ import { NutrientGroupComponent } from "../nutrient-group/nutrient-group.compone
     InputIconModule,
     InputTextModule,
     SelectModule,
+    MultiSelectModule,
     NutrientGroupComponent,
   ],
   templateUrl: "./ingredient-group-container.component.html",
@@ -37,24 +39,83 @@ export class IngredientGroupContainerComponent {
   unassignItem = output<Item>();
 
   // Local State
-  selectedNutrientTypeId = signal<number | null>(null);
+  selectedNutrientTypeIds = signal<number[]>([]);
+  selectedCategoryIds = signal<number[]>([]);
   expandedNutrientGroups = signal<Set<number>>(new Set());
   expandedCategories = signal<Set<number>>(new Set());
   expandedIngredients = signal<Set<string>>(new Set());
 
-  selectNutrientType(id: number | null) {
-    if (this.selectedNutrientTypeId() === id) {
-      this.selectedNutrientTypeId.set(null);
-    } else {
-      this.selectedNutrientTypeId.set(id);
+  // Computed options for the dropdowns
+  nutrientSelectOptions = computed<{ id: number; name: string; icon: string }[]>(() => {
+    return this.nutrientGroups().map((ng) => ({
+      id: ng.nutrientType.id,
+      name: ng.nutrientType.name,
+      icon: ng.nutrientType.icon || "📦",
+    }));
+  });
+
+  categoryGroupOptions = computed<{ id: number; name: string; icon: string }[]>(() => {
+    return this.categories().map((c) => ({
+      id: c.id,
+      name: c.name,
+      icon: "🏷️",
+    }));
+  });
+
+  onNutrientTypesSelect(ids: number[] | null) {
+    this.selectedNutrientTypeIds.set(ids ?? []);
+  }
+
+  onCategoryIdsSelect(ids: number[] | null) {
+    this.selectedCategoryIds.set(ids ?? []);
+  }
+
+  getNutrientName(itemOrId: any): string {
+    if (itemOrId == null) return "";
+    if (typeof itemOrId === "object") {
+      return itemOrId.name || itemOrId.label || "";
     }
+    const option = this.nutrientSelectOptions().find((opt) => opt.id === itemOrId);
+    return option ? option.name : "";
+  }
+
+  getNutrientIcon(itemOrId: any): string {
+    if (itemOrId == null) return "✨";
+    if (typeof itemOrId === "object" && itemOrId.icon) {
+      return itemOrId.icon;
+    }
+    const option = this.nutrientSelectOptions().find((opt) => opt.id === (typeof itemOrId === "object" ? itemOrId.id : itemOrId));
+    return option ? option.icon : "✨";
+  }
+
+  getCategoryName(itemOrId: any): string {
+    if (itemOrId == null) return "";
+    if (typeof itemOrId === "object") {
+      return itemOrId.name || itemOrId.label || "";
+    }
+    const option = this.categoryGroupOptions().find((opt) => opt.id === itemOrId);
+    return option ? option.name : "";
   }
 
   get filteredNutrientGroups(): NutrientGroup[] {
-    const selectedNt = this.selectedNutrientTypeId();
-    const groups = this.nutrientGroups();
-    if (!selectedNt) return groups;
-    return groups.filter((ng) => ng.nutrientType.id === selectedNt);
+    const selectedNtIds = this.selectedNutrientTypeIds();
+    const selectedCatIds = this.selectedCategoryIds();
+    let groups = this.nutrientGroups();
+
+    if (selectedNtIds && selectedNtIds.length > 0) {
+      groups = groups.filter((ng) => selectedNtIds.includes(ng.nutrientType.id));
+    }
+
+    if (selectedCatIds && selectedCatIds.length > 0) {
+      groups = groups
+        .map((ng) => ({
+          ...ng,
+          categoryGroups: ng.categoryGroups.filter((cg) => selectedCatIds.includes(cg.category.id)),
+        }))
+        .filter((ng) => ng.categoryGroups.length > 0);
+    }
+
+    return groups;
   }
 
   // Event Handlers

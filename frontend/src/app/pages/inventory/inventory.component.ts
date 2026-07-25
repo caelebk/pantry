@@ -490,5 +490,10 @@ export class InventoryComponent implements OnInit {
 
   public onTabChange(tab: InventoryTab): void {
     this.activeTab = tab;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge',
+    });
   }
 }

@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { TranslocoModule } from "@jsverse/transloco";
 
-export type InventoryTab = "items" | "groups";
+export type InventoryTab = "items" | "groups" | "assign";
 
 @Component({
     selector: "pantry-tab-navigation",
@@ -14,6 +14,10 @@ export type InventoryTab = "items" | "groups";
 export class TabNavigationComponent {
     @Input()
     activeTab: InventoryTab = "items";
+
+    @Input()
+    unassignedCount: number = 0;
+
     @Output()
     tabChange = new EventEmitter<InventoryTab>();
 

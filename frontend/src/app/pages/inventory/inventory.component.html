@@ -23,6 +23,7 @@
 <div class="mb-6">
   <pantry-tab-navigation
     [activeTab]="activeTab"
+    [unassignedCount]="unassignedItems.length"
     (tabChange)="onTabChange($event)">
   </pantry-tab-navigation>
 </div>
@@ -402,51 +403,26 @@
 
 <!-- Ingredient Groups View -->
 @if (activeTab === 'groups') {
-  <div class="glass-card p-6 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 mb-8 shadow-xs relative overflow-hidden">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <div class="flex items-center gap-2 mb-1">
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20">
-            Categorized Pantry
-          </span>
-        </div>
-        <h2 class="text-2xl font-extrabold text-surface-900 dark:text-white tracking-tight">Ingredient Groups & Taxonomy</h2>
-        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1 font-medium max-w-xl">
-          Browse categorized ingredients, inspect physical stock items, or assign orphan pantry items into their respective ingredient groups.
-        </p>
-      </div>
+  <pantry-ingredient-group-container
+    [nutrientGroups]="nutrientGroups"
+    [categories]="categories"
+    [searchQuery]="searchQuery"
+    [selectedCategory]="selectedCategory"
+    (searchChange)="searchQuery = $event"
+    (categorySelect)="selectedCategory = $event"
+    (unassignItem)="onUnassignItem($event)">
+  </pantry-ingredient-group-container>
+}
 
-      <div class="flex items-center gap-2 shrink-0">
-        <div class="px-3.5 py-2 rounded-xl bg-surface-100/80 dark:bg-surface-800/60 border border-surface-200/60 dark:border-surface-700/60 text-center">
-          <span class="block text-xs text-surface-400 font-semibold uppercase tracking-wider">Categories</span>
-          <span class="text-sm font-extrabold text-surface-900 dark:text-white">{{ categoryGroups.length }}</span>
-        </div>
-        <div class="px-3.5 py-2 rounded-xl bg-surface-100/80 dark:bg-surface-800/60 border border-surface-200/60 dark:border-surface-700/60 text-center">
-          <span class="block text-xs text-surface-400 font-semibold uppercase tracking-wider">Unassigned</span>
-          <span class="text-sm font-extrabold text-amber-600 dark:text-amber-400">{{ unassignedItems.length }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-    <div class="lg:col-span-1">
-      <pantry-unassigned-items-container [unassignedItems]="unassignedItems" [categoryGroups]="categoryGroups"
-        [loading]="loading" (assignItem)="onAssignItem($event)">
-      </pantry-unassigned-items-container>
-    </div>
-    <div class="lg:col-span-2">
-      <pantry-ingredient-group-container
-        [nutrientGroups]="nutrientGroups"
-        [categories]="categories"
-        [searchQuery]="searchQuery"
-        [selectedCategory]="selectedCategory"
-        (searchChange)="searchQuery = $event"
-        (categorySelect)="selectedCategory = $event"
-        (unassignItem)="onUnassignItem($event)">
-      </pantry-ingredient-group-container>
-    </div>
-  </div>
+<!-- Assign Items View (Dedicated Triage Workspace) -->
+@if (activeTab === 'assign') {
+  <pantry-unassigned-items-container
+    [unassignedItems]="unassignedItems"
+    [categoryGroups]="categoryGroups"
+    [loading]="loading"
+    (assignItem)="onAssignItem($event)"
+    (switchToGroupsTab)="onTabChange('groups')">
+  </pantry-unassigned-items-container>
 }
 
 <!-- Add Item Modal Dialog -->

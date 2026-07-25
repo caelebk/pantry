@@ -34,4 +34,27 @@
     [class.dark:hover:bg-surface-700/50]="activeTab !== 'groups'">
     {{ 'inventory.tabs.ingredientGroups' | transloco }}
   </button>
+
+  <button
+    (click)="onTabClick('assign')"
+    class="px-5 py-2 text-sm font-medium transition-all duration-200 rounded-lg flex items-center gap-2"
+    [class.bg-white]="activeTab === 'assign'"
+    [class.dark:bg-surface-700]="activeTab === 'assign'"
+    [class.shadow-sm]="activeTab === 'assign'"
+    [class.text-amber-600]="activeTab === 'assign'"
+    [class.dark:text-amber-400]="activeTab === 'assign'"
+    [class.font-semibold]="activeTab === 'assign'"
+    [class.text-surface-500]="activeTab !== 'assign'"
+    [class.dark:text-surface-400]="activeTab !== 'assign'"
+    [class.hover:text-surface-700]="activeTab !== 'assign'"
+    [class.dark:hover:text-surface-300]="activeTab !== 'assign'"
+    [class.hover:bg-white/50]="activeTab !== 'assign'"
+    [class.dark:hover:bg-surface-700/50]="activeTab !== 'assign'">
+    <span>⚡ Assign Items</span>
+    @if (unassignedCount > 0) {
+      <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-amber-500 text-white shadow-xs">
+        {{ unassignedCount }}
+      </span>
+    }
+  </button>
 </div>

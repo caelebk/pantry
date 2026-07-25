@@ -9,7 +9,7 @@ import { Item } from "@models/items.model";
 @Component({
   selector: "pantry-ingredient-group",
   standalone: true,
-  imports: [CommonModule, IngredientRowComponent],
+  imports: [CommonModule],
   templateUrl: "./ingredient-group.component.html",
 })
 export class IngredientGroupComponent {
@@ -60,6 +60,11 @@ export class IngredientGroupComponent {
     const now = new Date();
     const threeDays = 3 * 24 * 60 * 60 * 1000;
     return exp >= now && exp.getTime() - now.getTime() <= threeDays;
+  }
+
+  getIngredientQuantitySummary(ingredient: any): string {
+    if (!ingredient || !ingredient.items || ingredient.items.length === 0) return '—';
+    return ingredient.items.map((i: Item) => `${i.quantity} ${i.unit?.shortName || ''}`).join(', ');
   }
 
   isIngredientExpanded(id: string): boolean {
