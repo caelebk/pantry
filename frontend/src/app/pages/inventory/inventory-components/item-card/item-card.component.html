@@ -4,7 +4,7 @@
   <!-- Top accent bar -->
   <div
     class="h-1.5"
-    [ngClass]="expired() ? 'bg-gradient-to-r from-rose-500 to-rose-400' : (expiringSoon() ? 'bg-gradient-to-r from-amber-500 to-amber-400' : 'bg-gradient-to-r from-emerald-500 to-primary-500')">
+    [ngClass]="expired() ? 'bg-rose-500' : (expiringSoon() ? 'bg-amber-500' : 'bg-primary-500')">
   </div>
 
   <div class="p-5 flex flex-col flex-1">
