@@ -9,8 +9,6 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { Subject } from 'rxjs';
 
-import { EditItemFormComponent } from '../edit-item-form/edit-item-form.component';
-
 import { Router } from '@angular/router';
 
 @Component({
@@ -48,29 +46,5 @@ export class ItemCardComponent {
       event.stopPropagation();
     }
     this.router.navigate(['/inventory', this.item().id, 'edit']);
-  }
-
-  incrementQuantity(event: Event) {
-    event.stopPropagation();
-    const current = this.item();
-    const updated: Item = {
-      ...current,
-      quantity: current.quantity + 1,
-    };
-    this.update.next(updated);
-  }
-
-  decrementQuantity(event: Event) {
-    event.stopPropagation();
-    const current = this.item();
-    if (current.quantity > 1) {
-      const updated: Item = {
-        ...current,
-        quantity: current.quantity - 1,
-      };
-      this.update.next(updated);
-    } else {
-      this.delete.next();
-    }
   }
 }

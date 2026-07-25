@@ -61,34 +61,13 @@
       </div>
     </div>
 
-    <!-- Quick Quantity Counter & Details Grid -->
+    <!-- Quantity Display -->
     <div class="bg-surface-50/80 dark:bg-surface-800/30 rounded-xl p-3 mb-3 border border-surface-100 dark:border-surface-800/80 flex items-center justify-between">
       <div>
         <span class="text-[10px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider block">Quantity</span>
         <span class="text-sm font-extrabold text-surface-900 dark:text-white">
           {{ item().quantity }} <span class="text-xs font-normal text-surface-500">{{ item().unit.name }}</span>
         </span>
-      </div>
-
-      <!-- Quick Qty +/- Buttons -->
-      <div class="flex items-center gap-1.5 bg-white dark:bg-surface-800 rounded-lg p-1 border border-surface-200/80 dark:border-surface-700 shadow-sm">
-        <button
-          type="button"
-          (click)="decrementQuantity($event)"
-          class="w-6 h-6 rounded-md bg-surface-100 hover:bg-surface-200 dark:bg-surface-700 dark:hover:bg-surface-600 text-surface-700 dark:text-white font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
-          title="Decrease Quantity">
-          -
-        </button>
-        <span class="text-xs font-bold px-1 min-w-4 text-center text-surface-800 dark:text-surface-200">
-          {{ item().quantity }}
-        </span>
-        <button
-          type="button"
-          (click)="incrementQuantity($event)"
-          class="w-6 h-6 rounded-md bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs flex items-center justify-center transition-colors cursor-pointer shadow-xs"
-          title="Increase Quantity">
-          +
-        </button>
       </div>
     </div>
 

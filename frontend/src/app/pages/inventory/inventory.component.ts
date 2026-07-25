@@ -370,26 +370,6 @@ export class InventoryComponent implements OnInit {
     return isExpiringSoon(item);
   }
 
-  public incrementItemQty(item: Item, event: Event): void {
-    event.stopPropagation();
-    this.onUpdateItem({
-      ...item,
-      quantity: item.quantity + 1,
-    });
-  }
-
-  public decrementItemQty(item: Item, event: Event): void {
-    event.stopPropagation();
-    if (item.quantity > 1) {
-      this.onUpdateItem({
-        ...item,
-        quantity: item.quantity - 1,
-      });
-    } else {
-      this.onDeleteItem(item);
-    }
-  }
-
   public onUpdateItem(updatedItem: Item): void {
     this.inventoryService.updateItem(updatedItem).subscribe({
       next: () => {
