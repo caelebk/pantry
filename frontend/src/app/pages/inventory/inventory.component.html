@@ -40,14 +40,27 @@
       </pantry-stat-card>
     </div>
 
-    <!-- Expiring Soon -->
+    <!-- Fresh Items -->
+    <div
+      (click)="setStatusFilter('fresh')"
+      [class.ring-2]="selectedStatusFilter === 'fresh'"
+      [class.ring-emerald-500]="selectedStatusFilter === 'fresh'"
+      class="cursor-pointer transition-all duration-200 hover:scale-[1.01]">
+      <pantry-stat-card
+        [title]="'Fresh Stock'"
+        [value]="freshItemsCount"
+        [valueColor]="'text-emerald-600 dark:text-emerald-400'">
+      </pantry-stat-card>
+    </div>
+
+    <!-- Near Expiry -->
     <div
       (click)="setStatusFilter('expiring')"
       [class.ring-2]="selectedStatusFilter === 'expiring'"
       [class.ring-amber-500]="selectedStatusFilter === 'expiring'"
       class="cursor-pointer transition-all duration-200 hover:scale-[1.01]">
       <pantry-stat-card
-        [title]="'Expiring Soon'"
+        [title]="'Near Expiry'"
         [value]="expiringSoonItemsCount"
         [valueColor]="'text-amber-600 dark:text-amber-400'">
       </pantry-stat-card>
@@ -63,19 +76,6 @@
         [title]="'Expired'"
         [value]="expiredItemsCount"
         [valueColor]="'text-rose-600 dark:text-rose-400'">
-      </pantry-stat-card>
-    </div>
-
-    <!-- Fresh Items -->
-    <div
-      (click)="setStatusFilter('fresh')"
-      [class.ring-2]="selectedStatusFilter === 'fresh'"
-      [class.ring-emerald-500]="selectedStatusFilter === 'fresh'"
-      class="cursor-pointer transition-all duration-200 hover:scale-[1.01]">
-      <pantry-stat-card
-        [title]="'Fresh Stock'"
-        [value]="freshItemsCount"
-        [valueColor]="'text-emerald-600 dark:text-emerald-400'">
       </pantry-stat-card>
     </div>
   </div>
@@ -143,6 +143,20 @@
             All
           </button>
           <button
+            (click)="setStatusFilter('fresh')"
+            [class.bg-white]="selectedStatusFilter === 'fresh'"
+            [class.dark:bg-surface-700]="selectedStatusFilter === 'fresh'"
+            [class.shadow-xs]="selectedStatusFilter === 'fresh'"
+            [class.text-emerald-600]="selectedStatusFilter === 'fresh'"
+            [class.dark:text-emerald-400]="selectedStatusFilter === 'fresh'"
+            [class.font-bold]="selectedStatusFilter === 'fresh'"
+            [class.text-surface-600]="selectedStatusFilter !== 'fresh'"
+            [class.dark:text-surface-400]="selectedStatusFilter !== 'fresh'"
+            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
+            <span>Fresh</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </button>
+          <button
             (click)="setStatusFilter('expiring')"
             [class.bg-white]="selectedStatusFilter === 'expiring'"
             [class.dark:bg-surface-700]="selectedStatusFilter === 'expiring'"
@@ -153,7 +167,7 @@
             [class.text-surface-600]="selectedStatusFilter !== 'expiring'"
             [class.dark:text-surface-400]="selectedStatusFilter !== 'expiring'"
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
-            <span>Expiring</span>
+            <span>Near Expiry</span>
             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
           </button>
           <button
@@ -169,20 +183,6 @@
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
             <span>Expired</span>
             <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-          </button>
-          <button
-            (click)="setStatusFilter('fresh')"
-            [class.bg-white]="selectedStatusFilter === 'fresh'"
-            [class.dark:bg-surface-700]="selectedStatusFilter === 'fresh'"
-            [class.shadow-xs]="selectedStatusFilter === 'fresh'"
-            [class.text-emerald-600]="selectedStatusFilter === 'fresh'"
-            [class.dark:text-emerald-400]="selectedStatusFilter === 'fresh'"
-            [class.font-bold]="selectedStatusFilter === 'fresh'"
-            [class.text-surface-600]="selectedStatusFilter !== 'fresh'"
-            [class.dark:text-surface-400]="selectedStatusFilter !== 'fresh'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
-            <span>Fresh</span>
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
           </button>
         </div>
 
