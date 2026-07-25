@@ -18,7 +18,7 @@
           {{ 'addItemForm.location' | transloco }}
           <span class="text-rose-500">*</span>
         </label>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div class="grid grid-cols-3 gap-2">
           @for (loc of locations; track loc.id) {
             <button
               type="button"
@@ -35,9 +35,7 @@
               <span>
                 @if (loc.name === 'Fridge') { ❄️ }
                 @else if (loc.name === 'Freezer') { 🧊 }
-                @else if (loc.name === 'Pantry') { 🥫 }
-                @else if (loc.name === 'Countertop' || loc.name === 'Shelf') { 🍌 }
-                @else { 📍 }
+                @else { 🥫 }
               </span>
               <span>{{ loc.name }}</span>
             </button>
