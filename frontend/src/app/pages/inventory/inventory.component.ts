@@ -41,7 +41,7 @@ import { UnassignedItemsContainerComponent } from "./inventory-components/unassi
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 
 export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh';
-export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase';
+export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'status';
 
 @Component({
   selector: "pantry-inventory",
@@ -150,6 +150,14 @@ export class InventoryComponent implements OnInit {
           const dateA = a.purchaseDate ? new Date(a.purchaseDate).getTime() : 0;
           const dateB = b.purchaseDate ? new Date(b.purchaseDate).getTime() : 0;
           result = dateB - dateA;
+        } else if (this.sortBy === 'status') {
+          // Status order score: Fresh (1), Expiring (2), Expired (3)
+          const getStatusRank = (item: Item) => {
+            if (isExpired(item)) return 3;
+            if (isExpiringSoon(item)) return 2;
+            return 1;
+          };
+          result = getStatusRank(a) - getStatusRank(b);
         }
         return this.sortDirection === 'asc' ? result : -result;
       });
