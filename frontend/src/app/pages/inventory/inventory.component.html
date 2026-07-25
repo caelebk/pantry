@@ -29,7 +29,7 @@
 
 <!-- Interactive Stats Cards - Inventory Items Tab -->
 @if (activeTab === 'items') {
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
     <!-- Total Items -->
     <div
       (click)="setStatusFilter('all')"
@@ -83,7 +83,7 @@
 
 <!-- Stats Cards - Ingredient Groups Tab -->
 @if (activeTab === 'groups') {
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
     <pantry-stat-card
       [title]="'In Stock'"
       [value]="inStockIngredientsCount">
