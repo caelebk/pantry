@@ -21,7 +21,7 @@ export class AppComponent implements OnInit, OnDestroy {
   Tab = Tab; // Expose enum to template
   title = 'Pantry';
   darkMode = true;
-  currentTab: Tab = Tab.Dashboard;
+  currentTab: Tab = Tab.Home;
 
   toggleTheme() {
     this.darkMode = !this.darkMode;
@@ -62,8 +62,9 @@ export class AppComponent implements OnInit, OnDestroy {
   private updateCurrentTabFromUrl(url: string) {
     const path = url.split('?')[0];
     switch (path) {
-      case Tab.Dashboard:
-        this.currentTab = Tab.Dashboard;
+      case 'home':
+      case 'dashboard':
+        this.currentTab = Tab.Home;
         break;
       case Tab.Inventory:
         this.currentTab = Tab.Inventory;
@@ -72,7 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.currentTab = Tab.Recipes;
         break;
       default:
-        this.currentTab = Tab.Dashboard;
+        this.currentTab = Tab.Home;
     }
   }
 

@@ -1,5 +1,6 @@
 export enum Tab {
-  Dashboard = 'dashboard',
+  Home = 'home',
+  Dashboard = 'home',
   Inventory = 'inventory',
   Recipes = 'recipes',
 }

@@ -1,20 +1,20 @@
 <div class="flex items-center gap-1 bg-surface-100/60 dark:bg-surface-800/40 rounded-xl p-1">
   <button
-    (click)="selectTab(tabs.Dashboard)"
-    [class.bg-white]="isDashboardActive()"
-    [class.dark:bg-surface-700]="isDashboardActive()"
-    [class.shadow-sm]="isDashboardActive()"
-    [class.text-primary-600]="isDashboardActive()"
-    [class.dark:text-primary-400]="isDashboardActive()"
-    [class.font-semibold]="isDashboardActive()"
-    [class.text-surface-500]="!isDashboardActive()"
-    [class.dark:text-surface-400]="!isDashboardActive()"
-    [class.hover:text-surface-700]="!isDashboardActive()"
-    [class.dark:hover:text-surface-300]="!isDashboardActive()"
-    [class.hover:bg-white/50]="!isDashboardActive()"
-    [class.dark:hover:bg-surface-700/50]="!isDashboardActive()"
+    (click)="selectTab(tabs.Home)"
+    [class.bg-white]="isHomeActive()"
+    [class.dark:bg-surface-700]="isHomeActive()"
+    [class.shadow-sm]="isHomeActive()"
+    [class.text-primary-600]="isHomeActive()"
+    [class.dark:text-primary-400]="isHomeActive()"
+    [class.font-semibold]="isHomeActive()"
+    [class.text-surface-500]="!isHomeActive()"
+    [class.dark:text-surface-400]="!isHomeActive()"
+    [class.hover:text-surface-700]="!isHomeActive()"
+    [class.dark:hover:text-surface-300]="!isHomeActive()"
+    [class.hover:bg-white/50]="!isHomeActive()"
+    [class.dark:hover:bg-surface-700/50]="!isHomeActive()"
     class="px-4 py-1.5 cursor-pointer text-sm font-medium rounded-lg transition-all duration-200">
-    {{ 'nav.dashboard' | transloco }}
+    {{ 'nav.home' | transloco }}
   </button>
   <button
     (click)="selectTab(tabs.Inventory)"

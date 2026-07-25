@@ -11,7 +11,7 @@ import { Tab } from '../tabs/tabs.model';
 })
 export class SidebarComponent {
   @Input() darkMode = true;
-  @Input() activeTab: Tab = Tab.Dashboard;
+  @Input() activeTab: Tab = Tab.Home;
   @Output() themeToggled = new EventEmitter<void>();
   @Output() tabSelected = new EventEmitter<Tab>();
 
@@ -36,8 +36,12 @@ export class SidebarComponent {
     this.themeToggled.emit();
   }
 
+  isHomeActive(): boolean {
+    return this.activeTab === Tab.Home;
+  }
+
   isDashboardActive(): boolean {
-    return this.activeTab === Tab.Dashboard;
+    return this.isHomeActive();
   }
 
   isInventoryActive(): boolean {
