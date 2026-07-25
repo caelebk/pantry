@@ -49,7 +49,8 @@ function seedDB() {
         'INSERT INTO nutrient_types (name, icon, color, description) VALUES (?, ?, ?, ?)',
       );
       for (const nt of seedData.nutrient_types) {
-        insertNutrientType.run(nt.name, nt.icon, nt.color, nt.description);
+        // @ts-ignore description is optional/removed
+        insertNutrientType.run(nt.name, nt.icon, nt.color, nt.description || null);
         const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
         nutrientTypeIds.set(nt.name, row.id);
       }

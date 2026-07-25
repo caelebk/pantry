@@ -29,7 +29,7 @@ export interface ItemDTO {
 
 export interface UpdateItemDTO {
   label?: string;
-  ingredientId?: string;
+  ingredientId?: string | null;
   quantity?: number;
   unitId?: number;
   purchaseDate?: string;

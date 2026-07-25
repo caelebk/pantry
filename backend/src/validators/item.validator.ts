@@ -16,7 +16,7 @@ export function isValidCreateItemDTO(data: CreateItemDTO): boolean {
   if (!isValidDate(data.expirationDate)) return false;
   if (!isValidDate(data.purchaseDate)) return false;
 
-  if (data.ingredientId && !isValidUUID(data.ingredientId)) return false;
+  if (data.ingredientId !== undefined && data.ingredientId !== null && !isValidUUID(data.ingredientId)) return false;
   if (data.openedDate && !isValidDate(data.openedDate)) return false;
 
   return true;
@@ -34,8 +34,8 @@ export function isValidUpdateItemDTO(data: UpdateItemDTO): boolean {
   if (data.expirationDate !== undefined && !isValidDate(data.expirationDate)) return false;
   if (data.purchaseDate !== undefined && !isValidDate(data.purchaseDate)) return false;
 
-  if (data.ingredientId !== undefined && !isValidUUID(data.ingredientId)) return false;
-  if (data.openedDate !== undefined && !isValidDate(data.openedDate)) return false;
+  if (data.ingredientId !== undefined && data.ingredientId !== null && !isValidUUID(data.ingredientId)) return false;
+  if (data.openedDate !== undefined && data.openedDate !== null && !isValidDate(data.openedDate)) return false;
 
   return true;
 }

@@ -29,7 +29,7 @@ export interface CreateItemDTO {
   purchaseDate: string | Date; // Allow string from JSON
 
   // Optional
-  ingredientId?: string;
+  ingredientId?: string | null;
   openedDate?: string | Date; // Allow string from JSON
   notes?: string;
 }
