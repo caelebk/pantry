@@ -1,5 +1,5 @@
 /**
- * Item Database Schema
+ * Item Database Schema (SQLite returns dates as strings)
  */
 export interface ItemRow {
   id: string; // UUID
@@ -8,10 +8,10 @@ export interface ItemRow {
   quantity: number;
   unit_id: number;
   location_id: number;
-  expiration_date: Date;
-  opened_date: Date | null;
-  purchase_date: Date;
+  expiration_date: string;
+  opened_date: string | null;
+  purchase_date: string;
   notes: string | null;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
 }

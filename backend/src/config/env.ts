@@ -11,11 +11,7 @@ export const config = {
   port: Number(Deno.env.get('PORT')) || 8000,
   env: Deno.env.get('ENVIRONMENT') || 'development',
   database: {
-    host: Deno.env.get('DB_HOST') || 'localhost',
-    port: Number(Deno.env.get('DB_PORT')) || 5432,
-    database: Deno.env.get('DB_NAME') || 'pantry',
-    user: Deno.env.get('DB_USER') || 'postgres',
-    password: Deno.env.get('DB_PASSWORD') || '',
+    path: Deno.env.get('DB_PATH') || 'pantry.db',
   },
   jwt: {
     secret: Deno.env.get('JWT_SECRET') || 'your-secret-key',

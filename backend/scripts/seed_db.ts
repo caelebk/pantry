@@ -27,7 +27,6 @@ function seedDB() {
       db.exec('DELETE FROM units;');
       db.exec('DELETE FROM categories;');
       db.exec('DELETE FROM locations;');
-
       // Reset autoincrement sequences
       db.exec(
         "DELETE FROM sqlite_sequence WHERE name IN ('locations', 'categories', 'units', 'difficulties');",

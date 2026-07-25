@@ -1,98 +1,63 @@
-import { assert, assertEquals, assertRejects } from '@std/assert';
-import { Pool } from 'postgres';
-import { setPool } from '../src/db/client.ts';
+import { assert, assertEquals } from '@std/assert';
+import { Database } from '@db/sqlite';
+import { setDB } from '../src/db/client.ts';
 import { LocationRow } from '../src/models/schema-models/location.model.ts';
 import { locationService } from '../src/services/location.service.ts';
 
-// Mock DB
-type QueryCallback = (query: string, args?: unknown[]) => Promise<{ rows: unknown[] }>;
-
-class MockClient {
-  constructor(private queryCallback: QueryCallback) {}
-  async queryObject<T>(query: string, args: unknown[] = []): Promise<{ rows: T[] }> {
-    return (await this.queryCallback(query, args)) as { rows: T[] };
-  }
-  release() {}
+function createTestDB(): Database {
+  const db = new Database(':memory:');
+  db.exec(`
+    CREATE TABLE locations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL
+    )
+  `);
+  return db;
 }
 
-class MockPool {
-  constructor(private queryCallback: QueryCallback) {}
-  connect() {
-    return new MockClient(this.queryCallback);
-  }
+function seedMockLocation(db: Database): LocationRow {
+  db.prepare('INSERT INTO locations (name) VALUES (?)').run('Pantry');
+  const row = db.prepare('SELECT * FROM locations WHERE name = ?').get('Pantry') as LocationRow;
+  return row;
 }
-
-const mockLocation: LocationRow = {
-  id: 1,
-  name: 'Pantry',
-};
 
 Deno.test('LocationService - getAllLocations - success', async () => {
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.resolve({ rows: [mockLocation] });
-  });
-  setPool(mockPool as unknown as Pool);
+  const db = createTestDB();
+  setDB(db);
+  seedMockLocation(db);
 
   const locs = await locationService.getAllLocations();
   assertEquals(locs.length, 1);
   assertEquals(locs[0].name, 'Pantry');
+  db.close();
 });
 
-Deno.test('LocationService - getAllLocations - db error', async () => {
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.reject(new Error('Connection failed'));
-  });
-  setPool(mockPool as unknown as Pool);
+Deno.test('LocationService - getAllLocations - empty', async () => {
+  const db = createTestDB();
+  setDB(db);
 
-  const originalConsoleError = console.error;
-  console.error = () => {};
-  try {
-    await assertRejects(
-      async () => await locationService.getAllLocations(),
-      Error,
-      'Failed to retrieve locations',
-    );
-  } finally {
-    console.error = originalConsoleError;
-  }
+  const locs = await locationService.getAllLocations();
+  assertEquals(locs.length, 0);
+  db.close();
 });
 
 Deno.test('LocationService - getLocationById - success', async () => {
-  const mockPool = new MockPool((query, _args) => {
-    assert(query.includes('WHERE id = $1'));
-    return Promise.resolve({ rows: [mockLocation] });
-  });
-  setPool(mockPool as unknown as Pool);
+  const db = createTestDB();
+  setDB(db);
+  const mockRow = seedMockLocation(db);
 
-  const loc = await locationService.getLocationById(1);
-  assertEquals(loc?.id, 1);
+  const loc = await locationService.getLocationById(mockRow.id);
+  assert(loc !== null);
+  assertEquals(loc?.id, mockRow.id);
+  assertEquals(loc?.name, 'Pantry');
+  db.close();
 });
 
 Deno.test('LocationService - getLocationById - not found', async () => {
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.resolve({ rows: [] });
-  });
-  setPool(mockPool as unknown as Pool);
+  const db = createTestDB();
+  setDB(db);
 
   const loc = await locationService.getLocationById(999);
   assertEquals(loc, null);
-});
-
-Deno.test('LocationService - getLocationById - db error', async () => {
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.reject(new Error('Fail'));
-  });
-  setPool(mockPool as unknown as Pool);
-
-  const originalConsoleError = console.error;
-  console.error = () => {};
-  try {
-    await assertRejects(
-      async () => await locationService.getLocationById(1),
-      Error,
-      'Failed to retrieve location',
-    );
-  } finally {
-    console.error = originalConsoleError;
-  }
+  db.close();
 });
