@@ -23,7 +23,6 @@ import { TextareaModule } from 'primeng/textarea';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterLink,
     InputTextModule,
     InputNumberModule,
     SelectModule,
