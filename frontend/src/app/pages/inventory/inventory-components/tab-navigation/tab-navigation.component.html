@@ -1,31 +1,37 @@
-<div class="flex border-b border-gray-300 dark:border-gray-800 mb-6">
+<div class="flex gap-1 bg-surface-100/60 dark:bg-surface-800/40 rounded-xl p-1 mb-8 w-fit">
   <button
     (click)="onTabClick('items')"
-    class="px-6 py-3 text-sm font-medium transition-colors relative"
+    class="px-5 py-2 text-sm font-medium transition-all duration-200 rounded-lg"
+    [class.bg-white]="activeTab === 'items'"
+    [class.dark:bg-surface-700]="activeTab === 'items'"
+    [class.shadow-sm]="activeTab === 'items'"
     [class.text-primary-600]="activeTab === 'items'"
     [class.dark:text-primary-400]="activeTab === 'items'"
-    [class.text-gray-600]="activeTab !== 'items'"
-    [class.dark:text-gray-400]="activeTab !== 'items'"
-    [class.hover:text-gray-900]="activeTab !== 'items'"
-    [class.dark:hover:text-gray-100]="activeTab !== 'items'">
+    [class.font-semibold]="activeTab === 'items'"
+    [class.text-surface-500]="activeTab !== 'items'"
+    [class.dark:text-surface-400]="activeTab !== 'items'"
+    [class.hover:text-surface-700]="activeTab !== 'items'"
+    [class.dark:hover:text-surface-300]="activeTab !== 'items'"
+    [class.hover:bg-white/50]="activeTab !== 'items'"
+    [class.dark:hover:bg-surface-700/50]="activeTab !== 'items'">
     {{ 'inventory.tabs.inventoryItems' | transloco }}
-    @if (activeTab === 'items') {
-      <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"></span>
-    }
   </button>
 
   <button
     (click)="onTabClick('groups')"
-    class="px-6 py-3 text-sm font-medium transition-colors relative"
+    class="px-5 py-2 text-sm font-medium transition-all duration-200 rounded-lg"
+    [class.bg-white]="activeTab === 'groups'"
+    [class.dark:bg-surface-700]="activeTab === 'groups'"
+    [class.shadow-sm]="activeTab === 'groups'"
     [class.text-primary-600]="activeTab === 'groups'"
     [class.dark:text-primary-400]="activeTab === 'groups'"
-    [class.text-gray-600]="activeTab !== 'groups'"
-    [class.dark:text-gray-400]="activeTab !== 'groups'"
-    [class.hover:text-gray-900]="activeTab !== 'groups'"
-    [class.dark:hover:text-gray-100]="activeTab !== 'groups'">
+    [class.font-semibold]="activeTab === 'groups'"
+    [class.text-surface-500]="activeTab !== 'groups'"
+    [class.dark:text-surface-400]="activeTab !== 'groups'"
+    [class.hover:text-surface-700]="activeTab !== 'groups'"
+    [class.dark:hover:text-surface-300]="activeTab !== 'groups'"
+    [class.hover:bg-white/50]="activeTab !== 'groups'"
+    [class.dark:hover:bg-surface-700/50]="activeTab !== 'groups'">
     {{ 'inventory.tabs.ingredientGroups' | transloco }}
-    @if (activeTab === 'groups') {
-      <span class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"></span>
-    }
   </button>
 </div>

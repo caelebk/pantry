@@ -1,22 +1,22 @@
 <div
-  class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-  <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">
+  class="glass-card rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/5">
+  <h3 class="text-base font-bold text-surface-900 dark:text-white mb-5 tracking-tight">
     {{ 'dashboard.quickActions.title' | transloco }}
   </h3>
   <div class="space-y-3">
     <button
       (click)="onAddItem()"
-      class="w-full cursor-pointer py-2.5 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors">
+      class="w-full cursor-pointer py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl font-semibold text-sm hover:from-primary-700 hover:to-primary-600 transition-all duration-300 shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 hover:scale-[1.02] active:scale-[0.98]">
       {{ 'dashboard.quickActions.addItem' | transloco }}
     </button>
     <button
       (click)="onAddRecipe()"
-      class="w-full cursor-pointer py-2.5 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors">
+      class="w-full cursor-pointer py-3 bg-white/60 dark:bg-surface-800/60 text-surface-700 dark:text-surface-200 rounded-xl font-semibold text-sm border border-surface-200/80 dark:border-surface-700/80 hover:bg-white dark:hover:bg-surface-800 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]">
       {{ 'dashboard.quickActions.addRecipe' | transloco }}
     </button>
     <button
       (click)="onPlanMeals()"
-      class="w-full cursor-pointer py-2.5 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 transition-colors">
+      class="w-full cursor-pointer py-3 bg-white/60 dark:bg-surface-800/60 text-surface-700 dark:text-surface-200 rounded-xl font-semibold text-sm border border-surface-200/80 dark:border-surface-700/80 hover:bg-white dark:hover:bg-surface-800 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]">
       {{ 'dashboard.quickActions.planMeals' | transloco }}
     </button>
   </div>
