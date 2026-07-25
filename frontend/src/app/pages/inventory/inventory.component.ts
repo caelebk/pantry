@@ -1,7 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, HostListener, inject, OnInit, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { StatCardComponent } from "@components/stat-card/stat-card.component";
 import { TranslocoModule, TranslocoService } from "@jsverse/transloco";
 import { Category } from "@models/category.model";
 import { Ingredient } from "@models/ingredient.model";
@@ -52,7 +51,6 @@ export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase';
     TranslocoModule,
     AddItemFormComponent,
     ItemCardComponent,
-    StatCardComponent,
     ConfirmDialogModule,
     ToastModule,
     FormsModule,
