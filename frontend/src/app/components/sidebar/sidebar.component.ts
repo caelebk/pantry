@@ -17,6 +17,11 @@ export class SidebarComponent {
 
   tabs = Tab;
   mobileMenuOpen = false;
+  isCollapsed = false;
+
+  toggleCollapse(): void {
+    this.isCollapsed = !this.isCollapsed;
+  }
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
