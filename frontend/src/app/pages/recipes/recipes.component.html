@@ -1,5 +1,5 @@
 <!-- Page Header -->
-<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
   <div>
     <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
       {{ 'recipes.title' | transloco }}
@@ -9,66 +9,91 @@
     </p>
   </div>
 
-  <!-- Filter Buttons: All vs Available -->
-  <div class="mt-4 md:mt-0 flex bg-gray-100 dark:bg-[#1a1a1a] p-1 rounded-lg border border-gray-200 dark:border-gray-800">
+  <div class="flex items-center gap-3">
+    <!-- Filter Buttons: All vs Available -->
+    <div class="flex bg-gray-100 dark:bg-[#1a1a1a] p-1 rounded-lg border border-gray-200 dark:border-gray-800">
+      <button
+        type="button"
+        (click)="setFilterMode('all')"
+        [class]="
+          filterMode === 'all'
+            ? 'px-4 py-2 text-sm font-medium rounded-md bg-white dark:bg-[#262626] text-primary-600 dark:text-primary-400 shadow-sm transition-all'
+            : 'px-4 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all'
+        ">
+        All Recipes
+      </button>
+      <button
+        type="button"
+        (click)="setFilterMode('available')"
+        [class]="
+          filterMode === 'available'
+            ? 'px-4 py-2 text-sm font-medium rounded-md bg-white dark:bg-[#262626] text-primary-600 dark:text-primary-400 shadow-sm transition-all'
+            : 'px-4 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all'
+        ">
+        Available to Make
+      </button>
+    </div>
+
+    <!-- Add Recipe Button -->
     <button
       type="button"
-      (click)="setFilterMode('all')"
-      [class]="
-        filterMode === 'all'
-          ? 'px-4 py-2 text-sm font-medium rounded-md bg-white dark:bg-[#262626] text-primary-600 dark:text-primary-400 shadow-sm transition-all'
-          : 'px-4 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all'
-      ">
-      All Recipes
-    </button>
-    <button
-      type="button"
-      (click)="setFilterMode('available')"
-      [class]="
-        filterMode === 'available'
-          ? 'px-4 py-2 text-sm font-medium rounded-md bg-white dark:bg-[#262626] text-primary-600 dark:text-primary-400 shadow-sm transition-all'
-          : 'px-4 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all'
-      ">
-      Available to Make
+      (click)="goToCreateRecipe()"
+      class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm transition-all cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Create Recipe
     </button>
   </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-  <!-- Add New Recipe Form -->
-  <div class="lg:col-span-1">
-    <pantry-add-recipe-form (recipeCreated)="loadRecipes()"></pantry-add-recipe-form>
+<!-- Recipes List Grid -->
+<div class="space-y-6">
+  <div class="flex justify-between items-center">
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+      {{ filterMode === 'available' ? 'Available Recipes' : ('recipes.yourRecipes' | transloco) }}
+    </h3>
+    <span class="text-sm text-gray-500 dark:text-gray-400">
+      {{ recipes.length }} recipe{{ recipes.length === 1 ? '' : 's' }}
+    </span>
   </div>
 
-  <!-- Recipes List -->
-  <div class="lg:col-span-2 space-y-6">
-    <div class="flex justify-between items-center">
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-        {{ filterMode === 'available' ? 'Available Recipes' : ('recipes.yourRecipes' | transloco) }}
-      </h3>
-      <span class="text-sm text-gray-500 dark:text-gray-400">
-        {{ recipes.length }} recipe{{ recipes.length === 1 ? '' : 's' }}
-      </span>
+  @if (isLoading) {
+    <div class="p-12 text-center text-gray-500 dark:text-gray-400">
+      Loading recipes...
     </div>
-
-    @if (isLoading) {
-      <div class="p-8 text-center text-gray-500 dark:text-gray-400">
-        Loading recipes...
-      </div>
-    } @else if (recipes.length === 0) {
-      <div class="bg-white dark:bg-[#1a1a1a] rounded-xl p-8 text-center border border-gray-100 dark:border-gray-800">
-        <p class="text-gray-500 dark:text-gray-400">
-          {{ filterMode === 'available' ? 'No recipes can be made with your current pantry stock.' : 'No recipes found. Add a recipe using the form!' }}
+  } @else if (recipes.length === 0) {
+    <div class="bg-white dark:bg-[#1a1a1a] rounded-xl p-12 text-center border border-gray-100 dark:border-gray-800">
+      <div class="max-w-sm mx-auto">
+        <div class="w-12 h-12 rounded-full bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+          </svg>
+        </div>
+        <p class="text-gray-700 dark:text-gray-300 font-medium mb-1">
+          {{ filterMode === 'available' ? 'No makeable recipes found.' : 'No recipes created yet.' }}
         </p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
+          {{ filterMode === 'available' ? 'Check your inventory stock or add new recipes!' : 'Click "Create Recipe" to start building your cookbook!' }}
+        </p>
+        @if (filterMode === 'all') {
+          <button
+            type="button"
+            (click)="goToCreateRecipe()"
+            class="bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-4 py-2 rounded-md transition-colors">
+            Create First Recipe
+          </button>
+        }
       </div>
-    } @else {
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       @for (recipe of recipes; track recipe.id) {
         <pantry-recipe-card
           [recipe]="recipe"
-          (delete)="onDeleteRecipe($event)"
-          class="mb-4">
+          (delete)="onDeleteRecipe($event)">
         </pantry-recipe-card>
       }
-    }
-  </div>
+    </div>
+  }
 </div>

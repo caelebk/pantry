@@ -1,276 +1,380 @@
-<div
-  class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 sticky top-24 transition-colors duration-200">
-  <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
-    {{ 'addRecipeForm.title' | transloco }}
-  </h3>
-
-  <form (submit)="$event.preventDefault(); submitForm()" class="space-y-4">
-    <!-- Recipe Name -->
+<div class="max-w-6xl mx-auto pb-16">
+  <!-- Top Navigation Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
     <div>
-      <label
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        for="recipe-name">
-        {{ 'addRecipeForm.recipeName' | transloco }} *
-      </label>
-      <input
-        type="text"
-        id="recipe-name"
-        [(ngModel)]="name"
-        name="name"
-        required
-        [placeholder]="'addRecipeForm.recipeNamePlaceholder' | transloco"
-        class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 dark:focus:border-primary-500 focus:ring-primary-600 dark:focus:ring-primary-500 sm:text-sm p-2 border transition-colors duration-200" />
+      <button
+        type="button"
+        (click)="goBack()"
+        class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors mb-2 cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+        Back to Recipes
+      </button>
+      <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+        Create New Recipe
+      </h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+        Add ingredients, steps, and timings to build your recipe.
+      </p>
     </div>
 
-    <!-- Description -->
-    <div>
-      <label
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-        for="recipe-description">
-        {{ 'addRecipeForm.description' | transloco }}
-      </label>
-      <textarea
-        id="recipe-description"
-        rows="2"
-        [(ngModel)]="description"
-        name="description"
-        [placeholder]="'addRecipeForm.descriptionPlaceholder' | transloco"
-        class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 dark:focus:border-primary-500 focus:ring-primary-600 dark:focus:ring-primary-500 sm:text-sm p-2 border transition-colors duration-200"></textarea>
+    <!-- Header Actions -->
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        (click)="goBack()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#262626] rounded-lg transition-colors cursor-pointer">
+        Cancel
+      </button>
+      <button
+        type="button"
+        (click)="submitForm()"
+        [disabled]="isSubmitting"
+        class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm px-5 py-2.5 rounded-lg shadow-sm transition-all disabled:opacity-50 cursor-pointer">
+        @if (isSubmitting) {
+          <span>Saving...</span>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+          <span>Save Recipe</span>
+        }
+      </button>
     </div>
+  </div>
 
-    <!-- Servings & Difficulty -->
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          for="recipe-servings">
-          {{ 'addRecipeForm.servings' | transloco }}
-        </label>
-        <input
-          type="number"
-          id="recipe-servings"
-          [(ngModel)]="servings"
-          name="servings"
-          min="1"
-          class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 dark:focus:border-primary-500 focus:ring-primary-600 dark:focus:ring-primary-500 sm:text-sm p-2 border transition-colors duration-200" />
-      </div>
+  <form (submit)="$event.preventDefault(); submitForm()">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Left Column: Basic Details -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-5">
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-primary-600"></span>
+            Basic Information
+          </h3>
 
-      <div>
-        <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          for="recipe-difficulty">
-          {{ 'addRecipeForm.difficulty' | transloco }}
-        </label>
-        <select
-          id="recipe-difficulty"
-          [(ngModel)]="difficultyId"
-          name="difficultyId"
-          class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 dark:focus:border-primary-500 focus:ring-primary-600 dark:focus:ring-primary-500 sm:text-sm p-2 border transition-colors duration-200">
-          <option [ngValue]="1">{{ 'addRecipeForm.difficulties.easy' | transloco }}</option>
-          <option [ngValue]="2">{{ 'addRecipeForm.difficulties.medium' | transloco }}</option>
-          <option [ngValue]="3">{{ 'addRecipeForm.difficulties.hard' | transloco }}</option>
-        </select>
-      </div>
-    </div>
+          <!-- Recipe Name -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5" for="recipe-name">
+              Recipe Name *
+            </label>
+            <input
+              type="text"
+              id="recipe-name"
+              [(ngModel)]="name"
+              name="name"
+              required
+              placeholder="e.g., Creamy Tuscan Chicken"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 focus:ring-1 focus:ring-primary-600 sm:text-sm p-3 border transition-colors" />
+          </div>
 
-    <!-- Prep & Cook Time -->
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          for="recipe-prep-time">
-          {{ 'addRecipeForm.prepTime' | transloco }} (min)
-        </label>
-        <input
-          type="number"
-          id="recipe-prep-time"
-          [(ngModel)]="prepTime"
-          name="prepTime"
-          min="0"
-          class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 dark:focus:border-primary-500 focus:ring-primary-600 dark:focus:ring-primary-500 sm:text-sm p-2 border transition-colors duration-200" />
-      </div>
+          <!-- Description -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5" for="recipe-description">
+              Description
+            </label>
+            <textarea
+              id="recipe-description"
+              rows="3"
+              [(ngModel)]="description"
+              name="description"
+              placeholder="Describe what makes this dish special..."
+              class="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 focus:ring-1 focus:ring-primary-600 sm:text-sm p-3 border transition-colors"></textarea>
+          </div>
 
-      <div>
-        <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          for="recipe-cook-time">
-          {{ 'addRecipeForm.cookTime' | transloco }} (min)
-        </label>
-        <input
-          type="number"
-          id="recipe-cook-time"
-          [(ngModel)]="cookTime"
-          name="cookTime"
-          min="0"
-          class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 dark:focus:border-primary-500 focus:ring-primary-600 dark:focus:ring-primary-500 sm:text-sm p-2 border transition-colors duration-200" />
-      </div>
-    </div>
-
-    <!-- Tags Input -->
-    <div>
-      <div class="flex justify-between items-center mb-1">
-        <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-          for="recipe-tags">
-          {{ 'addRecipeForm.tagsLabel' | transloco }}
-        </label>
-        <span class="text-xs text-gray-400 dark:text-gray-500">Press Enter to add tag</span>
-      </div>
-
-      <input
-        type="text"
-        id="recipe-tags"
-        [(ngModel)]="tagInput"
-        name="tagInput"
-        (keydown.enter)="addTag($event)"
-        [placeholder]="'addRecipeForm.tagsPlaceholder' | transloco"
-        class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 dark:focus:border-primary-500 focus:ring-primary-600 dark:focus:ring-primary-500 sm:text-sm p-2 border transition-colors duration-200 mb-2" />
-
-      <!-- Rendered Tag Pills -->
-      @if (tags.length > 0) {
-        <div class="flex flex-wrap gap-1.5 mb-2">
-          @for (tag of tags; track tag; let i = $index) {
-            <span
-              class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-600/10 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-600/20 dark:border-primary-500/20">
-              {{ tag }}
+          <!-- Difficulty Selector -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+              Difficulty
+            </label>
+            <div class="grid grid-cols-3 gap-2">
               <button
                 type="button"
-                (click)="removeTag(i)"
-                class="hover:text-red-500 focus:outline-none ml-1">
-                &times;
+                (click)="difficultyId = 1"
+                [class]="
+                  difficultyId === 1
+                    ? 'py-2 px-3 text-xs font-semibold rounded-lg border-2 border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 transition-all'
+                    : 'py-2 px-3 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 transition-all'
+                ">
+                Easy
               </button>
-            </span>
-          }
-        </div>
-      }
-    </div>
+              <button
+                type="button"
+                (click)="difficultyId = 2"
+                [class]="
+                  difficultyId === 2
+                    ? 'py-2 px-3 text-xs font-semibold rounded-lg border-2 border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400 transition-all'
+                    : 'py-2 px-3 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 transition-all'
+                ">
+                Medium
+              </button>
+              <button
+                type="button"
+                (click)="difficultyId = 3"
+                [class]="
+                  difficultyId === 3
+                    ? 'py-2 px-3 text-xs font-semibold rounded-lg border-2 border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400 transition-all'
+                    : 'py-2 px-3 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 transition-all'
+                ">
+                Hard
+              </button>
+            </div>
+          </div>
 
-    <!-- Ingredients Section -->
-    <div>
-      <div class="flex justify-between items-center mb-2">
-        <h4 class="text-sm font-bold text-gray-700 dark:text-gray-300">
-          {{ 'addRecipeForm.ingredients' | transloco }}
-        </h4>
-        <button
-          type="button"
-          (click)="addIngredientRow()"
-          class="text-xs bg-primary-600 text-white px-2 py-1 rounded hover:bg-primary-700 transition-colors">
-          + {{ 'addRecipeForm.addIngredientButton' | transloco }}
-        </button>
-      </div>
-
-      <div class="space-y-2">
-        @for (row of recipeIngredients; track $index; let i = $index) {
-          <div class="flex gap-2 items-start relative">
-            <!-- Searchable Ingredient Input -->
-            <div class="flex-1 relative">
+          <!-- Servings, Prep Time, Cook Time -->
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1" for="recipe-servings">
+                Servings
+              </label>
               <input
-                type="text"
-                [(ngModel)]="row.searchFilter"
-                [name]="'ingSearch_' + i"
-                (focus)="row.dropdownOpen = true"
-                (input)="row.dropdownOpen = true; row.ingredientId = ''"
-                placeholder="Search ingredient..."
-                class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2 border transition-colors" />
-
-              <!-- Search Suggestions Dropdown -->
-              @if (row.dropdownOpen && getFilteredIngredients(row.searchFilter).length > 0) {
-                <ul
-                  class="absolute z-50 left-0 right-0 top-full mt-1 max-h-40 overflow-y-auto bg-white dark:bg-[#262626] border border-gray-200 dark:border-gray-700 rounded-md shadow-lg py-1 text-sm">
-                  @for (ing of getFilteredIngredients(row.searchFilter); track ing.id) {
-                    <li
-                      (mousedown)="selectIngredient(row, ing)"
-                      class="px-3 py-1.5 hover:bg-primary-50 dark:hover:bg-gray-700 cursor-pointer text-gray-900 dark:text-white flex justify-between items-center">
-                      <span>{{ ing.name }}</span>
-                      <span class="text-xs text-gray-400">{{ ing.category?.name }}</span>
-                    </li>
-                  }
-                </ul>
-              }
+                type="number"
+                id="recipe-servings"
+                [(ngModel)]="servings"
+                name="servings"
+                min="1"
+                class="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 text-sm p-2.5 border text-center transition-colors" />
             </div>
 
-            <!-- Quantity -->
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1" for="recipe-prep-time">
+                Prep (min)
+              </label>
+              <input
+                type="number"
+                id="recipe-prep-time"
+                [(ngModel)]="prepTime"
+                name="prepTime"
+                min="0"
+                class="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 text-sm p-2.5 border text-center transition-colors" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1" for="recipe-cook-time">
+                Cook (min)
+              </label>
+              <input
+                type="number"
+                id="recipe-cook-time"
+                [(ngModel)]="cookTime"
+                name="cookTime"
+                min="0"
+                class="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 text-sm p-2.5 border text-center transition-colors" />
+            </div>
+          </div>
+
+          <!-- Total Time Badge -->
+          <div class="bg-gray-50 dark:bg-[#262626]/50 rounded-lg p-3 flex justify-between items-center text-xs">
+            <span class="text-gray-500 dark:text-gray-400 font-medium">Estimated Total Time:</span>
+            <span class="font-bold text-gray-900 dark:text-white text-sm">{{ totalTime }} mins</span>
+          </div>
+
+          <!-- Tags Input -->
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider" for="recipe-tags">
+                Tags
+              </label>
+              <span class="text-[11px] text-gray-400">Press Enter to add tag</span>
+            </div>
+
             <input
-              type="number"
-              [(ngModel)]="row.quantity"
-              [name]="'ingQty_' + i"
-              min="0.1"
-              step="any"
-              class="w-16 rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2 border transition-colors" />
+              type="text"
+              id="recipe-tags"
+              [(ngModel)]="tagInput"
+              name="tagInput"
+              (keydown.enter)="addTag($event)"
+              placeholder="e.g., Italian, Dinner, Quick"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2.5 border transition-colors mb-2" />
 
-            <!-- Unit Select -->
-            <select
-              [(ngModel)]="row.unitId"
-              [name]="'ingUnit_' + i"
-              class="w-24 rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2 border transition-colors">
-              <option [ngValue]="null">Unit</option>
-              @for (unit of availableUnits; track unit.id) {
-                <option [ngValue]="unit.id">{{ unit.shortName || unit.name }}</option>
-              }
-            </select>
-
-            <!-- Remove Row Button -->
-            @if (recipeIngredients.length > 1) {
-              <button
-                type="button"
-                (click)="removeIngredientRow(i)"
-                class="p-2 text-red-500 hover:text-red-700 text-sm">
-                ✕
-              </button>
+            @if (tags.length > 0) {
+              <div class="flex flex-wrap gap-1.5">
+                @for (tag of tags; track tag; let i = $index) {
+                  <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary-600/10 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-600/20 dark:border-primary-500/20">
+                    {{ tag }}
+                    <button
+                      type="button"
+                      (click)="removeTag(i)"
+                      class="hover:text-red-500 focus:outline-none cursor-pointer">
+                      &times;
+                    </button>
+                  </span>
+                }
+              </div>
             }
           </div>
-        }
+        </div>
+      </div>
+
+      <!-- Right Column: Ingredients & Instructions -->
+      <div class="lg:col-span-7 space-y-6">
+        <!-- Ingredients Card -->
+        <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+          <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
+            <div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                Ingredients
+              </h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400">Search and pick ingredients required for this recipe.</p>
+            </div>
+            <button
+              type="button"
+              (click)="addIngredientRow()"
+              class="inline-flex items-center gap-1 text-xs font-semibold bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 hover:bg-primary-100 px-3 py-1.5 rounded-md transition-colors cursor-pointer">
+              + Add Ingredient
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            @for (row of recipeIngredients; track $index; let i = $index) {
+              <div class="flex gap-2 items-start relative bg-gray-50/50 dark:bg-[#262626]/30 p-2.5 rounded-xl border border-gray-100 dark:border-gray-800/80">
+                <!-- Searchable Ingredient Input -->
+                <div class="flex-1 relative">
+                  <input
+                    type="text"
+                    [(ngModel)]="row.searchFilter"
+                    [name]="'ingSearch_' + i"
+                    (focus)="row.dropdownOpen = true"
+                    (input)="row.dropdownOpen = true; row.ingredientId = ''"
+                    placeholder="Search ingredient..."
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2 border transition-colors" />
+
+                  <!-- Search Suggestions Dropdown -->
+                  @if (row.dropdownOpen && getFilteredIngredients(row.searchFilter).length > 0) {
+                    <ul
+                      class="absolute z-50 left-0 right-0 top-full mt-1 max-h-48 overflow-y-auto bg-white dark:bg-[#262626] border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl py-1 text-sm">
+                      @for (ing of getFilteredIngredients(row.searchFilter); track ing.id) {
+                        <li
+                          (mousedown)="selectIngredient(row, ing)"
+                          class="px-3 py-2 hover:bg-primary-50 dark:hover:bg-gray-700 cursor-pointer text-gray-900 dark:text-white flex justify-between items-center">
+                          <span class="font-medium">{{ ing.name }}</span>
+                          @if (ing.category) {
+                            <span class="text-[11px] px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500">{{ ing.category.name }}</span>
+                          }
+                        </li>
+                      }
+                    </ul>
+                  }
+                </div>
+
+                <!-- Quantity -->
+                <input
+                  type="number"
+                  [(ngModel)]="row.quantity"
+                  [name]="'ingQty_' + i"
+                  min="0.1"
+                  step="any"
+                  placeholder="Qty"
+                  class="w-20 rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2 border text-center transition-colors" />
+
+                <!-- Unit Select -->
+                <select
+                  [(ngModel)]="row.unitId"
+                  [name]="'ingUnit_' + i"
+                  class="w-28 rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2 border transition-colors">
+                  <option [ngValue]="null">Unit</option>
+                  @for (unit of availableUnits; track unit.id) {
+                    <option [ngValue]="unit.id">{{ unit.shortName || unit.name }}</option>
+                  }
+                </select>
+
+                <!-- Remove Row Button -->
+                @if (recipeIngredients.length > 1) {
+                  <button
+                    type="button"
+                    (click)="removeIngredientRow(i)"
+                    class="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
+                    title="Remove ingredient">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Instructions Card -->
+        <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+          <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
+            <div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                Instructions & Steps
+              </h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400">Outline step-by-step preparation and cooking instructions.</p>
+            </div>
+            <button
+              type="button"
+              (click)="addStepRow()"
+              class="inline-flex items-center gap-1 text-xs font-semibold bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 hover:bg-primary-100 px-3 py-1.5 rounded-md transition-colors cursor-pointer">
+              + Add Step
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            @for (step of recipeSteps; track $index; let i = $index) {
+              <div class="flex gap-3 items-start bg-gray-50/50 dark:bg-[#262626]/30 p-3 rounded-xl border border-gray-100 dark:border-gray-800/80">
+                <span class="w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-1">
+                  {{ i + 1 }}
+                </span>
+
+                <div class="flex-1 space-y-2">
+                  <textarea
+                    rows="2"
+                    [(ngModel)]="step.instructionText"
+                    [name]="'step_' + i"
+                    placeholder="Describe this step..."
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2.5 border transition-colors"></textarea>
+                </div>
+
+                @if (recipeSteps.length > 1) {
+                  <button
+                    type="button"
+                    (click)="removeStepRow(i)"
+                    class="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer shrink-0 mt-1"
+                    title="Remove step">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Instructions / Steps Section -->
-    <div>
-      <div class="flex justify-between items-center mb-2">
-        <h4 class="text-sm font-bold text-gray-700 dark:text-gray-300">
-          {{ 'addRecipeForm.instructions' | transloco }}
-        </h4>
-        <button
-          type="button"
-          (click)="addStepRow()"
-          class="text-xs bg-primary-600 text-white px-2 py-1 rounded hover:bg-primary-700 transition-colors">
-          + {{ 'addRecipeForm.addInstructionButton' | transloco }}
-        </button>
-      </div>
-
-      <div class="space-y-2">
-        @for (step of recipeSteps; track $index; let i = $index) {
-          <div class="flex gap-2 items-start">
-            <span class="text-sm text-gray-500 dark:text-gray-400 mt-2 font-bold">{{ i + 1 }}.</span>
-            <textarea
-              rows="2"
-              [(ngModel)]="step.instructionText"
-              [name]="'step_' + i"
-              [placeholder]="'addRecipeForm.instructionsStepPlaceholder' | transloco"
-              class="flex-1 rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-[#262626] text-gray-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2 border transition-colors"></textarea>
-
-            @if (recipeSteps.length > 1) {
-              <button
-                type="button"
-                (click)="removeStepRow(i)"
-                class="p-2 text-red-500 hover:text-red-700 text-sm mt-1">
-                ✕
-              </button>
+    <!-- Bottom Sticky Action Bar -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 py-3 px-6 z-40">
+      <div class="max-w-6xl mx-auto flex justify-between items-center">
+        <span class="text-xs text-gray-500 dark:text-gray-400">
+          * Required fields
+        </span>
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            (click)="goBack()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#262626] rounded-lg transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            [disabled]="isSubmitting"
+            class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-sm px-6 py-2.5 rounded-lg shadow-md transition-all disabled:opacity-50 cursor-pointer">
+            @if (isSubmitting) {
+              <span>Saving...</span>
+            } @else {
+              <span>Save Recipe</span>
             }
-          </div>
-        }
+          </button>
+        </div>
       </div>
     </div>
-
-    <!-- Submit Button -->
-    <button
-      type="submit"
-      [disabled]="isSubmitting"
-      class="w-full bg-primary-600 text-white font-medium py-2.5 rounded-md hover:bg-primary-700 transition-colors shadow-sm disabled:opacity-50 flex justify-center items-center gap-2">
-      @if (isSubmitting) {
-        <span>Saving...</span>
-      } @else {
-        <span>{{ 'addRecipeForm.addButton' | transloco }}</span>
-      }
-    </button>
   </form>
 </div>

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { CreateRecipeDTO } from '@models/recipe.model';
@@ -19,6 +20,7 @@ interface FormIngredientRow {
 
 interface FormStepRow {
   instructionText: string;
+  timerSeconds?: number | null;
 }
 
 @Component({
@@ -33,6 +35,7 @@ export class AddRecipeFormComponent implements OnInit {
   private readonly recipeService = inject(RecipeService);
   private readonly ingredientService = inject(IngredientService);
   private readonly unitService = inject(UnitService);
+  private readonly router = inject(Router);
 
   availableIngredients: Ingredient[] = [];
   availableUnits: Unit[] = [];
@@ -48,7 +51,7 @@ export class AddRecipeFormComponent implements OnInit {
   tags: string[] = [];
 
   recipeIngredients: FormIngredientRow[] = [];
-  recipeSteps: FormStepRow[] = [{ instructionText: '' }];
+  recipeSteps: FormStepRow[] = [{ instructionText: '', timerSeconds: null }];
 
   isSubmitting = false;
 
@@ -63,11 +66,18 @@ export class AddRecipeFormComponent implements OnInit {
       error: (err) => console.error('Failed to load units', err),
     });
 
-    // Add initial ingredient row
     this.addIngredientRow();
   }
 
-  // --- Tag Input Handlers ---
+  get totalTime(): number {
+    return (Number(this.prepTime) || 0) + (Number(this.cookTime) || 0);
+  }
+
+  goBack(): void {
+    this.router.navigate(['/recipes']);
+  }
+
+  // --- Tag Handlers ---
   addTag(event?: Event): void {
     if (event) {
       event.preventDefault();
@@ -117,7 +127,7 @@ export class AddRecipeFormComponent implements OnInit {
 
   // --- Step Row Handlers ---
   addStepRow(): void {
-    this.recipeSteps.push({ instructionText: '' });
+    this.recipeSteps.push({ instructionText: '', timerSeconds: null });
   }
 
   removeStepRow(index: number): void {
@@ -144,6 +154,7 @@ export class AddRecipeFormComponent implements OnInit {
       .map((row, index) => ({
         stepNumber: index + 1,
         instructionText: row.instructionText.trim(),
+        timerSeconds: row.timerSeconds ? Number(row.timerSeconds) : undefined,
       }));
 
     const dto: CreateRecipeDTO = {
@@ -161,8 +172,8 @@ export class AddRecipeFormComponent implements OnInit {
     this.recipeService.createRecipe(dto).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.resetForm();
         this.recipeCreated.emit();
+        this.router.navigate(['/recipes']);
       },
       error: (err) => {
         this.isSubmitting = false;
@@ -170,19 +181,5 @@ export class AddRecipeFormComponent implements OnInit {
         alert('Failed to create recipe. Please check inputs.');
       },
     });
-  }
-
-  private resetForm(): void {
-    this.name = '';
-    this.description = '';
-    this.servings = 4;
-    this.prepTime = 10;
-    this.cookTime = 20;
-    this.difficultyId = 1;
-    this.tagInput = '';
-    this.tags = [];
-    this.recipeIngredients = [];
-    this.addIngredientRow();
-    this.recipeSteps = [{ instructionText: '' }];
   }
 }

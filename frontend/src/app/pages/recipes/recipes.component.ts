@@ -1,19 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Recipe } from '@models/recipe.model';
 import { RecipeService } from '../../services/recipe.service';
-import { AddRecipeFormComponent } from './recipe-components/add-recipe-form/add-recipe-form.component';
 import { RecipeCardComponent } from './recipe-components/recipe-card/recipe-card.component';
 
 @Component({
   selector: 'pantry-recipes',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, AddRecipeFormComponent, RecipeCardComponent],
+  imports: [CommonModule, TranslocoModule, RecipeCardComponent],
   templateUrl: './recipes.component.html',
 })
 export class RecipesComponent implements OnInit {
   private readonly recipeService = inject(RecipeService);
+  private readonly router = inject(Router);
 
   recipes: Recipe[] = [];
   isLoading = false;
@@ -47,6 +48,10 @@ export class RecipesComponent implements OnInit {
       this.filterMode = mode;
       this.loadRecipes();
     }
+  }
+
+  goToCreateRecipe(): void {
+    this.router.navigate(['/recipes/new']);
   }
 
   onDeleteRecipe(id: string): void {
