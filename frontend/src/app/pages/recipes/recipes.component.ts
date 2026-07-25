@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Recipe } from '@models/recipe.model';
@@ -9,7 +10,7 @@ import { RecipeCardComponent } from './recipe-components/recipe-card/recipe-card
 @Component({
   selector: 'pantry-recipes',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, RecipeCardComponent],
+  imports: [CommonModule, TranslocoModule, FormsModule, RecipeCardComponent],
   templateUrl: './recipes.component.html',
 })
 export class RecipesComponent implements OnInit {
@@ -19,6 +20,7 @@ export class RecipesComponent implements OnInit {
   recipes: Recipe[] = [];
   isLoading = false;
   filterMode: 'all' | 'available' = 'all';
+  searchQuery = '';
 
   ngOnInit(): void {
     this.loadRecipes();
@@ -41,6 +43,16 @@ export class RecipesComponent implements OnInit {
         this.isLoading = false;
       },
     });
+  }
+
+  get filteredRecipes(): Recipe[] {
+    const term = this.searchQuery.toLowerCase().trim();
+    if (!term) return this.recipes;
+    return this.recipes.filter(
+      (r) =>
+        r.name.toLowerCase().includes(term) ||
+        (r.description && r.description.toLowerCase().includes(term))
+    );
   }
 
   setFilterMode(mode: 'all' | 'available'): void {

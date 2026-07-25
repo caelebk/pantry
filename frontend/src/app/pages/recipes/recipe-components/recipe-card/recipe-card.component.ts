@@ -38,6 +38,31 @@ export class RecipeCardComponent implements OnInit {
     });
   }
 
+  get difficultyText(): string {
+    if (this.recipe.difficulty) return this.recipe.difficulty;
+    switch (this.recipe.difficultyId) {
+      case 1:
+        return 'Easy';
+      case 2:
+        return 'Medium';
+      case 3:
+        return 'Hard';
+      default:
+        return 'Easy';
+    }
+  }
+
+  get difficultyClass(): string {
+    const text = this.difficultyText.toLowerCase();
+    if (text.includes('easy')) {
+      return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
+    } else if (text.includes('medium')) {
+      return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
+    } else {
+      return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20';
+    }
+  }
+
   getIngredientDisplay(ing: { ingredientId: string; quantity: number; unitId?: number | null }): string {
     const ingredientName = this.ingredientMap.get(ing.ingredientId)?.name || ing.ingredientId;
     const unitName = ing.unitId ? (this.unitMap.get(ing.unitId)?.shortName || this.unitMap.get(ing.unitId)?.name || '') : '';
