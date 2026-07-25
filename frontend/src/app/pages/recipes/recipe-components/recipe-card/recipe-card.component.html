@@ -5,12 +5,19 @@
       <h4 class="text-xl font-bold text-gray-900 dark:text-white">
         {{ recipe.name }}
       </h4>
-      <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
-        {{ recipe.description }}
-      </p>
+      @if (recipe.description) {
+        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
+          {{ recipe.description }}
+        </p>
+      }
     </div>
+
+    <!-- Delete Button -->
     <button
-      class="p-2 cursor-pointer bg-red-600 dark:bg-red-700 text-white rounded-md hover:bg-red-700 dark:hover:bg-red-600 shadow-sm transition-colors">
+      type="button"
+      (click)="onDelete()"
+      class="p-2 cursor-pointer bg-red-600 dark:bg-red-700 text-white rounded-md hover:bg-red-700 dark:hover:bg-red-600 shadow-sm transition-colors"
+      title="Delete Recipe">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -26,13 +33,14 @@
     </button>
   </div>
 
+  <!-- Servings & Times -->
   <div class="grid grid-cols-4 gap-4 mb-6 text-center">
     <div>
       <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{
         'recipeCard.servings' | transloco
       }}</span>
       <span class="block font-bold text-gray-900 dark:text-white text-lg">{{
-        recipe.servings
+        recipe.servings || '-'
       }}</span>
     </div>
     <div>
@@ -40,57 +48,63 @@
         'recipeCard.prepTime' | transloco
       }}</span>
       <span class="block font-bold text-gray-900 dark:text-white text-lg">{{
-        recipe.prepTime
-      }}</span>
+        recipe.prepTime || 0
+      }} min</span>
     </div>
     <div>
       <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{
         'recipeCard.cookTime' | transloco
       }}</span>
       <span class="block font-bold text-gray-900 dark:text-white text-lg">{{
-        recipe.cookTime
-      }}</span>
+        recipe.cookTime || 0
+      }} min</span>
     </div>
     <div>
       <span class="block text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{
         'recipeCard.totalTime' | transloco
       }}</span>
       <span class="block font-bold text-gray-900 dark:text-white text-lg">{{
-        recipe.prepTime + recipe.cookTime
-      }}</span>
+        (recipe.prepTime || 0) + (recipe.cookTime || 0)
+      }} min</span>
     </div>
   </div>
 
-  <div class="flex flex-wrap gap-2 mb-6">
-    @for (tag of recipe.tags; track tag) {
-      <span
-        class="px-3 py-1 rounded-full text-xs font-medium bg-primary-600/10 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-600/20 dark:border-primary-500/20">
-        {{ tag }}
-      </span>
-    }
-  </div>
+  <!-- Tags -->
+  @if (recipe.tags && recipe.tags.length > 0) {
+    <div class="flex flex-wrap gap-2 mb-6">
+      @for (tag of recipe.tags; track tag) {
+        <span
+          class="px-3 py-1 rounded-full text-xs font-medium bg-primary-600/10 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-600/20 dark:border-primary-500/20">
+          {{ tag }}
+        </span>
+      }
+    </div>
+  }
 
   <div class="grid md:grid-cols-2 gap-8 pt-6 border-t border-gray-100 dark:border-gray-800">
+    <!-- Ingredients -->
     <div>
       <h5 class="font-bold text-gray-900 dark:text-white mb-3">
         {{ 'recipeCard.ingredients' | transloco }}
       </h5>
       <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-        @for (ingredient of recipe.ingredients; track ingredient) {
+        @for (ing of recipe.ingredients; track $index) {
           <li class="flex items-start">
             <span class="mr-2">•</span>
-            <span>{{ ingredient }}</span>
+            <span>{{ getIngredientDisplay(ing) }}</span>
           </li>
         }
       </ul>
     </div>
+
+    <!-- Instructions / Steps -->
     <div>
       <h5 class="font-bold text-gray-900 dark:text-white mb-3">
         {{ 'recipeCard.instructions' | transloco }}
       </h5>
       <ol class="space-y-2 text-sm text-gray-600 dark:text-gray-300 list-decimal list-inside">
-        @for (instruction of recipe.instructions; track instruction) {
-          <li>{{ instruction }}</li>
+        @for (step of recipe.steps; track step.stepNumber) {
+          <li>{{ step.instructionText }}</li>
         }
       </ol>
     </div>
