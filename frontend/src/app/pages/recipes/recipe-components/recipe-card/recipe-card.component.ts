@@ -147,6 +147,11 @@ export class RecipeCardComponent implements OnInit {
     this.router.navigate(['/recipes', this.recipe.id]);
   }
 
+  onEdit(event: Event): void {
+    event.stopPropagation();
+    this.router.navigate(['/recipes', this.recipe.id, 'edit']);
+  }
+
   onDelete(event: Event): void {
     event.stopPropagation();
     if (confirm(`Are you sure you want to delete "${this.recipe.name}"?`)) {
