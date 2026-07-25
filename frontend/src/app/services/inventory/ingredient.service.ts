@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Category } from "@models/category.model";
 import { ApiResponse } from "@models/http.model";
+import { SubstitutionSuggestion } from "@models/inventory.models";
 import {
     CreateIngredientDTO,
     Ingredient,
@@ -111,5 +112,11 @@ export class IngredientService {
         return this.http
             .delete<ApiResponse<boolean>>(`${this.apiUrl}/${id}`)
             .pipe(mapResponseData<boolean>());
+    }
+
+    getSubstitutions(id: string): Observable<SubstitutionSuggestion[]> {
+        return this.http
+            .get<ApiResponse<SubstitutionSuggestion[]>>(`${this.apiUrl}/${id}/substitutions`)
+            .pipe(mapResponseData<SubstitutionSuggestion[]>());
     }
 }

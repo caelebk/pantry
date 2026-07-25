@@ -34,6 +34,35 @@ export class RecipeDetailComponent implements OnInit {
   availableBaseMap = new Map<string, number>();
   pantryItems: Item[] = [];
 
+  activeSubstitutionIngredient: { ingredientId: string; name: string } | null = null;
+  activeSubstitutionSuggestions: any[] = [];
+  isLoadingSubstitutions = false;
+
+  openSubstitutionModal(event: Event, ing: { ingredientId: string }): void {
+    event.stopPropagation();
+    const ingredientObj = this.ingredientMap.get(ing.ingredientId);
+    const name = ingredientObj?.name || 'Ingredient';
+    this.activeSubstitutionIngredient = { ingredientId: ing.ingredientId, name };
+    this.isLoadingSubstitutions = true;
+    this.activeSubstitutionSuggestions = [];
+
+    this.ingredientService.getSubstitutions(ing.ingredientId).subscribe({
+      next: (subs) => {
+        this.activeSubstitutionSuggestions = subs;
+        this.isLoadingSubstitutions = false;
+      },
+      error: (err) => {
+        console.error('Failed to load substitutions', err);
+        this.isLoadingSubstitutions = false;
+      },
+    });
+  }
+
+  closeSubstitutionModal(): void {
+    this.activeSubstitutionIngredient = null;
+    this.activeSubstitutionSuggestions = [];
+  }
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {

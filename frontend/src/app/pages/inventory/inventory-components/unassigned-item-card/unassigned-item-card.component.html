@@ -15,12 +15,27 @@
     </div>
   </div>
   
+  @if (suggestedIngredient; as suggested) {
+    <div class="px-2.5 py-1.5 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 flex items-center justify-between gap-2">
+      <span class="text-[11px] font-semibold text-amber-700 dark:text-amber-300 truncate">
+        💡 Match: <b>{{ suggested.name }}</b>
+      </span>
+      <button
+        type="button"
+        (click)="onAssign(suggested)"
+        class="px-2 py-0.5 rounded-md bg-amber-600 hover:bg-amber-700 text-white text-[10px] font-bold shadow-xs cursor-pointer shrink-0 transition-colors">
+        Quick Assign
+      </button>
+    </div>
+  }
+
   <p-select 
     [options]="categoryGroups" 
     [group]="true"
     optionGroupLabel="category.name"
     optionGroupChildren="ingredients"
     optionLabel="name"
+    appendTo="body"
     placeholder="Assign to ingredient..."
     (onChange)="onAssign($event.value)"
     styleClass="w-full !h-8 !text-xs !flex !items-center !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200/80 dark:!border-surface-700/80 !rounded-lg font-semibold shadow-xs">

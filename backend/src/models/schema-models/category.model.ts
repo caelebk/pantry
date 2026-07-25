@@ -4,4 +4,5 @@
 export interface CategoryRow {
   id: number;
   name: string;
+  nutrient_type_id: number | null;
 }

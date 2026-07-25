@@ -7,10 +7,18 @@ import { categoryService } from '../src/services/category.service.ts';
 function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec(`
+    CREATE TABLE nutrient_types (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      icon TEXT,
+      color TEXT,
+      description TEXT
+    );
     CREATE TABLE categories (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL
-    )
+      name TEXT NOT NULL,
+      nutrient_type_id INTEGER REFERENCES nutrient_types(id)
+    );
   `);
   return db;
 }
