@@ -334,13 +334,14 @@
               <tbody class="divide-y divide-surface-200/60 dark:divide-surface-800/60 text-xs font-medium">
                 @for (item of displayedItems; track item.id; let i = $index) {
                   <tr
+                    (click)="onEditItem(item)"
                     [@staggeredFadeIn]="{ value: '', params: { delay: i * (staggerDelayPerItemMs / 2) } }"
-                    class="hover:bg-primary-50/40 dark:hover:bg-surface-800/40 transition-colors group">
+                    class="hover:bg-primary-50/50 dark:hover:bg-surface-800/60 transition-colors group cursor-pointer">
                     
                     <!-- Item Name & Freshness Badge -->
                     <td class="py-3.5 px-4 font-bold text-surface-900 dark:text-white">
                       <div class="flex items-center gap-2">
-                        <span class="truncate max-w-[200px] sm:max-w-xs">{{ item.name }}</span>
+                        <span class="truncate max-w-[200px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{{ item.name }}</span>
                         @if (isExpiredItem(item)) {
                           <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
                             🚨 Expired
@@ -399,14 +400,7 @@
                       <div class="flex items-center justify-end gap-1">
                         <button
                           type="button"
-                          (click)="onEditItem(item)"
-                          class="p-2 rounded-lg text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer"
-                          title="Edit Item">
-                          <i class="pi pi-pencil text-xs"></i>
-                        </button>
-                        <button
-                          type="button"
-                          (click)="onDeleteItem(item)"
+                          (click)="onDeleteItem(item, $event)"
                           class="p-2 rounded-lg text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
                           title="Delete Item">
                           <i class="pi pi-trash text-xs"></i>

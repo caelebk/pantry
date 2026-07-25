@@ -339,7 +339,10 @@ export class InventoryComponent implements OnInit {
     });
   }
 
-  public onDeleteItem(item: Item): void {
+  public onDeleteItem(item: Item, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.confirmationService.confirm({
       header: "Remove Item",
       message: `Are you sure you want to remove "${item.name}" from inventory?`,
