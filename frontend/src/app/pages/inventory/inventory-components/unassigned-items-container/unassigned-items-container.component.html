@@ -1,28 +1,46 @@
-<div class="space-y-4">
-  <div class="border-2 border-dashed border-primary-600 dark:border-primary-500 rounded-lg p-6 bg-primary-50 dark:bg-primary-900/10">
-    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-      Unassigned Items ({{ unassignedItems().length }})
-    </h3>
-    <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
-      Items that haven't been assigned to an ingredient group yet
-    </p>
+<div class="glass-card rounded-2xl p-5 border border-surface-200/80 dark:border-surface-800/80 shadow-xs relative overflow-hidden">
+  <!-- Accent Gradient Header Strip -->
+  <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-primary-500 to-amber-500"></div>
 
-    @if (loading()) {
-      <div class="space-y-4">
-        @for (i of [1,2,3]; track i) {
-          <div class="h-24 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse"></div>
-        }
+  <div class="flex items-center justify-between mb-3 pt-1">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-sm">
+        ⚠️
       </div>
-    } @else {
-      <div class="space-y-4">
-        @for (item of unassignedItems(); track item.id) {
-          <pantry-unassigned-item-card
-            [item]="item"
-            [categoryGroups]="categoryGroups()"
-            (assign)="onAssignItem($event)">
-          </pantry-unassigned-item-card>
-        }
+      <div>
+        <h3 class="text-sm font-extrabold text-surface-900 dark:text-white tracking-tight">
+          Unassigned Items ({{ unassignedItems().length }})
+        </h3>
+        <p class="text-[11px] text-surface-500 dark:text-surface-400 font-medium">
+          Assign these pantry items to an ingredient group
+        </p>
       </div>
-    }
+    </div>
   </div>
+
+  @if (loading()) {
+    <div class="space-y-3 mt-4">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="h-20 bg-surface-100 dark:bg-surface-800/60 rounded-xl animate-pulse"></div>
+      }
+    </div>
+  } @else if (unassignedItems().length === 0) {
+    <div class="text-center py-8 bg-surface-50/60 dark:bg-surface-800/30 rounded-xl border border-dashed border-surface-200 dark:border-surface-800 mt-3">
+      <div class="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-2 text-base font-bold">
+        ✓
+      </div>
+      <p class="text-xs font-bold text-surface-900 dark:text-white">All Items Assigned!</p>
+      <p class="text-[11px] text-surface-400 dark:text-surface-500 mt-0.5">Every pantry item is mapped to an ingredient.</p>
+    </div>
+  } @else {
+    <div class="space-y-3 mt-4 max-h-[600px] overflow-y-auto pr-1">
+      @for (item of unassignedItems(); track item.id) {
+        <pantry-unassigned-item-card
+          [item]="item"
+          [categoryGroups]="categoryGroups()"
+          (assign)="onAssignItem($event)">
+        </pantry-unassigned-item-card>
+      }
+    </div>
+  }
 </div>

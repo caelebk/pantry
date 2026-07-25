@@ -30,6 +30,29 @@ export class IngredientGroupComponent {
     this.router.navigate(['/inventory', itemId, 'edit']);
   }
 
+  get totalItemsCount(): number {
+    if (!this.group || !this.group.ingredients) return 0;
+    return this.group.ingredients.reduce((acc, ing) => acc + (ing.itemCount || 0), 0);
+  }
+
+  get inStockCount(): number {
+    if (!this.group || !this.group.ingredients) return 0;
+    return this.group.ingredients.filter((ing) => ing.itemCount > 0).length;
+  }
+
+  isExpired(expirationDate: string | Date | undefined): boolean {
+    if (!expirationDate) return false;
+    return new Date(expirationDate) < new Date();
+  }
+
+  isExpiringSoon(expirationDate: string | Date | undefined): boolean {
+    if (!expirationDate) return false;
+    const exp = new Date(expirationDate);
+    const now = new Date();
+    const threeDays = 3 * 24 * 60 * 60 * 1000;
+    return exp >= now && exp.getTime() - now.getTime() <= threeDays;
+  }
+
   isIngredientExpanded(id: string): boolean {
     return this.expandedIngredients.has(id);
   }

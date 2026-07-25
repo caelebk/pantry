@@ -1,25 +1,49 @@
-<div class="bg-white dark:bg-[#1a1a1a] rounded-lg border border-gray-200 dark:border-primary-600/50 mb-4">
-  <!-- Category Header -->
+<div class="glass-card rounded-2xl overflow-hidden border border-surface-200/80 dark:border-surface-800/80 shadow-xs mb-4 transition-all duration-200">
+  <!-- Category Header Accordion Bar -->
   <div 
-    class="px-4 py-3 border-gray-200 dark:border-primary-600/50 bg-primary-300/80 dark:bg-[#262626] rounded-t-lg cursor-pointer flex items-center justify-between"
-    [class.rounded-b-lg]="!isExpanded"
+    class="px-5 py-4 bg-surface-50/80 dark:bg-surface-800/50 hover:bg-surface-100/80 dark:hover:bg-surface-800/80 cursor-pointer flex items-center justify-between transition-colors select-none"
     [class.border-b]="isExpanded"
+    [class.border-surface-200/80]="isExpanded"
+    [class.dark:border-surface-800/80]="isExpanded"
     (click)="toggle.emit(group.category.id)">
-    <h4 class="font-semibold text-gray-900 dark:text-white">
-      {{ group.category.name }}
-    </h4>
-    <i 
-      class="pi text-gray-600 dark:text-gray-300 transition-transform"
-      [class.pi-chevron-down]="isExpanded"
-      [class.pi-chevron-right]="!isExpanded">
-    </i>
+    
+    <div class="flex items-center gap-3">
+      <!-- Category Icon Badge -->
+      <div class="w-9 h-9 rounded-xl bg-primary-500/10 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400 flex items-center justify-center font-bold text-base shrink-0">
+        @if (group.category.name === 'Dairy') { 🥛 }
+        @else if (group.category.name === 'Produce' || group.category.name === 'Vegetables' || group.category.name === 'Fruits') { 🥬 }
+        @else if (group.category.name === 'Meat' || group.category.name === 'Poultry' || group.category.name === 'Seafood') { 🥩 }
+        @else if (group.category.name === 'Bakery') { 🍞 }
+        @else if (group.category.name === 'Pantry' || group.category.name === 'Spices') { 🥫 }
+        @else { 📦 }
+      </div>
+
+      <div>
+        <h4 class="font-extrabold text-base text-surface-900 dark:text-white tracking-tight flex items-center gap-2">
+          <span>{{ group.category.name }}</span>
+        </h4>
+        <p class="text-xs text-surface-500 dark:text-surface-400 font-medium mt-0.5">
+          {{ group.ingredients.length }} {{ group.ingredients.length === 1 ? 'ingredient' : 'ingredients' }} • {{ totalItemsCount }} {{ totalItemsCount === 1 ? 'item' : 'items' }} in stock
+        </p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-200/70 dark:bg-surface-700/60 text-surface-700 dark:text-surface-300 hidden sm:inline-block">
+        {{ inStockCount }}/{{ group.ingredients.length }} Active
+      </span>
+      <div class="w-8 h-8 rounded-xl bg-surface-200/50 dark:bg-surface-700/50 flex items-center justify-center text-surface-600 dark:text-surface-300 transition-transform"
+           [class.rotate-180]="isExpanded">
+        <i class="pi pi-chevron-down text-xs font-bold"></i>
+      </div>
+    </div>
   </div>
 
-  <!-- Ingredients in Category -->
+  <!-- Ingredients in Category List -->
   @if (isExpanded) {
-    <div class="divide-y divide-gray-200 dark:divide-gray-800">
+    <div class="divide-y divide-surface-100 dark:divide-surface-800/60">
       @for (ingredient of group.ingredients; track ingredient.id) {
-        <div class="p-4">
+        <div class="p-4 transition-colors hover:bg-surface-50/40 dark:hover:bg-surface-800/20">
           <pantry-ingredient-row
             [ingredient]="ingredient"
             [categoryName]="group.category.name"
@@ -27,32 +51,69 @@
             (toggleExpand)="onToggleIngredient($event)">
           </pantry-ingredient-row>
 
-          <!-- Expanded Items List -->
+          <!-- Expanded Pantry Items Card Breakdown -->
           @if (isIngredientExpanded(ingredient.id)) {
-            <div class="mt-4 ml-8 space-y-2">
+            <div class="mt-3 ml-6 sm:ml-8 space-y-2">
               @if (ingredient.items.length === 0) {
-                <div class="text-center py-4 bg-gray-50 dark:bg-[#262626] rounded-lg border border-gray-200 dark:border-gray-800">
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
-                    No items in this ingredient
+                <div class="text-center py-4 bg-surface-50/60 dark:bg-surface-900/40 rounded-xl border border-dashed border-surface-200 dark:border-surface-800">
+                  <p class="text-xs font-medium text-surface-400 dark:text-surface-500">
+                    No physical items currently logged for this ingredient.
                   </p>
                 </div>
               } @else {
                 @for (item of ingredient.items; track item.id) {
                   <div
                     (click)="navigateToEdit(item.id, $event)"
-                    class="flex items-center justify-between p-3 bg-surface-50/80 dark:bg-surface-800/40 rounded-xl border border-surface-200/80 dark:border-surface-700/80 cursor-pointer hover:bg-primary-50/50 dark:hover:bg-surface-700/50 transition-colors group">
-                    <div>
-                      <p class="text-sm font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                        {{ item.name }}
-                      </p>
-                      <p class="text-xs text-surface-500 dark:text-surface-400">
-                        {{ item.quantity }} {{ item.unit.shortName }} • 📍 {{ item.location.name }}
-                      </p>
-                    </div>
+                    class="flex items-center justify-between p-3 bg-white dark:bg-surface-900/80 rounded-xl border border-surface-200/70 dark:border-surface-800/80 cursor-pointer hover:border-primary-500/40 dark:hover:border-primary-500/40 hover:shadow-xs transition-all duration-200 group">
+                    
                     <div class="flex items-center gap-3">
-                      <span class="text-xs font-semibold text-surface-600 dark:text-surface-300">
-                        Exp: {{ item.expirationDate | date: 'shortDate' }}
-                      </span>
+                      <div class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center text-xs text-surface-500">
+                        📦
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <p class="text-xs font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                            {{ item.name }}
+                          </p>
+                          @if (isExpired(item.expirationDate)) {
+                            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                              Expired
+                            </span>
+                          } @else if (isExpiringSoon(item.expirationDate)) {
+                            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                              Expiring Soon
+                            </span>
+                          }
+                        </div>
+
+                        <div class="flex items-center gap-2 text-[11px] text-surface-500 dark:text-surface-400 mt-0.5 font-medium">
+                          <span class="font-bold text-surface-700 dark:text-surface-300">
+                            {{ item.quantity }} {{ item.unit.shortName }}
+                          </span>
+                          <span>•</span>
+                          <span class="inline-flex items-center gap-1">
+                            @if (item.location.name === 'Fridge') { ❄️ }
+                            @else if (item.location.name === 'Freezer') { 🧊 }
+                            @else { 🥫 }
+                            {{ item.location.name }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 text-right">
+                      <div class="hidden sm:block">
+                        <span class="block text-[10px] uppercase font-bold text-surface-400 tracking-wider">Expiration</span>
+                        <span
+                          [class.text-rose-600]="isExpired(item.expirationDate)"
+                          [class.dark:text-rose-400]="isExpired(item.expirationDate)"
+                          [class.text-amber-600]="isExpiringSoon(item.expirationDate)"
+                          [class.dark:text-amber-400]="isExpiringSoon(item.expirationDate)"
+                          class="text-xs font-semibold text-surface-700 dark:text-surface-300">
+                          {{ item.expirationDate | date: 'mediumDate' }}
+                        </span>
+                      </div>
+                      <i class="pi pi-chevron-right text-xs text-surface-400 group-hover:text-primary-500 transform group-hover:translate-x-0.5 transition-all"></i>
                     </div>
                   </div>
                 }

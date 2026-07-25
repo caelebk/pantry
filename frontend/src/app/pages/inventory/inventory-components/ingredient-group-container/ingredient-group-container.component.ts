@@ -75,4 +75,18 @@ export class IngredientGroupContainerComponent {
   isCategoryExpanded(categoryId: number): boolean {
     return this.expandedCategories().has(categoryId);
   }
+
+  expandAll() {
+    const allIds = new Set(this.categoryGroups().map((g) => g.category.id));
+    const allIngIds = new Set(
+      this.categoryGroups().flatMap((g) => g.ingredients.map((i) => i.id))
+    );
+    this.expandedCategories.set(allIds);
+    this.expandedIngredients.set(allIngIds);
+  }
+
+  collapseAll() {
+    this.expandedCategories.set(new Set());
+    this.expandedIngredients.set(new Set());
+  }
 }
