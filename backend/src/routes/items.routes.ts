@@ -80,7 +80,7 @@ items.get('/expiring-soon', async (c: Context) => {
  * }
  */
 items.get('/:id', async (c: Context) => {
-  const id = c.req.param('id');
+  const id = c.req.param('id')!;
   if (!isValidUUID(id)) {
     return c.json(errorResponse(ItemMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
   }
@@ -146,7 +146,7 @@ items.post('/', async (c: Context) => {
  */
 items.put('/:id', async (c: Context) => {
   try {
-    const id = c.req.param('id');
+    const id = c.req.param('id')!;
     if (!isValidUUID(id)) {
       return c.json(errorResponse(ItemMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
@@ -179,7 +179,7 @@ items.put('/:id', async (c: Context) => {
  * }
  */
 items.delete('/:id', async (c: Context) => {
-  const id = c.req.param('id');
+  const id = c.req.param('id')!;
   if (!isValidUUID(id)) {
     return c.json(errorResponse(ItemMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
   }

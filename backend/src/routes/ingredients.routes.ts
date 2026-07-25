@@ -50,7 +50,7 @@ ingredients.get('/', async (c: Context) => {
  */
 ingredients.get('/:id', async (c: Context) => {
   try {
-    const id = c.req.param('id');
+    const id = c.req.param('id')!;
     if (!isValidUUID(id)) {
       return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
@@ -119,7 +119,7 @@ ingredients.post('/', async (c: Context) => {
  */
 ingredients.put('/:id', async (c: Context) => {
   try {
-    const id = c.req.param('id');
+    const id = c.req.param('id')!;
     if (!isValidUUID(id)) {
       return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
@@ -154,7 +154,7 @@ ingredients.put('/:id', async (c: Context) => {
  */
 ingredients.delete('/:id', async (c: Context) => {
   try {
-    const id = c.req.param('id');
+    const id = c.req.param('id')!;
     if (!isValidUUID(id)) {
       return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }

@@ -1,34 +1,31 @@
 import { join } from '@std/path';
-import { closeDB, getPool, initDB } from '../src/db/client.ts';
+import { closeDB, getDB, initDB } from '../src/db/client.ts';
 
-export async function runMigrations() {
+export function runMigrations() {
   console.log('🚀 Starting migrations...');
 
-  await initDB();
-  const pool = getPool();
-  const client = await pool.connect();
+  initDB();
+  const db = getDB();
 
   try {
     // 1. Create migrations table if not exists
-    await client.queryObject(`
+    db.exec(`
       CREATE TABLE IF NOT EXISTS _migrations (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        applied_at TEXT DEFAULT (datetime('now'))
       );
     `);
 
     // 2. Get executed migrations
-    const { rows: executedRows } = await client.queryObject<{ name: string }>(
-      'SELECT name FROM _migrations',
-    );
+    const executedRows = db.prepare('SELECT name FROM _migrations').all() as { name: string }[];
     const executed = new Set(executedRows.map((r) => r.name));
 
     // 3. Read migration files
     const migrationsDir = join(Deno.cwd(), 'migrations');
     const files = [];
     try {
-      for await (const entry of Deno.readDir(migrationsDir)) {
+      for (const entry of Deno.readDirSync(migrationsDir)) {
         if (entry.isFile && entry.name.endsWith('.sql')) {
           files.push(entry.name);
         }
@@ -45,21 +42,18 @@ export async function runMigrations() {
       if (!executed.has(file)) {
         console.log(`▶️ Running migration: ${file}`);
         const filePath = join(migrationsDir, file);
-        const sql = await Deno.readTextFile(filePath);
+        const sql = Deno.readTextFileSync(filePath);
 
-        const transaction = client.createTransaction('migration_' + file);
-        await transaction.begin();
+        // Use a transaction for each migration
+        db.exec('BEGIN');
         try {
-          await transaction.queryArray(sql);
-          await transaction.queryArray(
-            'INSERT INTO _migrations (name) VALUES ($1)',
-            [file],
-          );
-          await transaction.commit();
+          db.exec(sql);
+          db.prepare('INSERT INTO _migrations (name) VALUES (?)').run(file);
+          db.exec('COMMIT');
           console.log(`✅ Applied: ${file}`);
         } catch (err) {
           console.error(`❌ Failed migration ${file}:`, err);
-          await transaction.rollback();
+          db.exec('ROLLBACK');
           throw err;
         }
       }
@@ -70,8 +64,7 @@ export async function runMigrations() {
     console.error('❌ Migration failed:', error);
     Deno.exit(1);
   } finally {
-    client.release();
-    await closeDB();
+    closeDB();
   }
 }
 

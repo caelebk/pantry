@@ -1,4 +1,4 @@
-import { getPool } from '../db/client.ts';
+import { getDB } from '../db/client.ts';
 import { UnitMessages } from '../messages/unit.messages.ts';
 import { UnitDTO } from '../models/data-models/unit.model.ts';
 import { UnitRow } from '../models/schema-models/unit.model.ts';
@@ -9,12 +9,10 @@ export class UnitService {
    * @returns {Promise<UnitDTO[]>}
    */
   async getAllUnits(): Promise<UnitDTO[]> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<UnitRow>('SELECT * FROM units');
-      client.release();
-      return result.rows.map(this.mapRowToDTO);
+      const db = getDB();
+      const rows = db.prepare('SELECT * FROM units').all() as UnitRow[];
+      return rows.map(this.mapRowToDTO);
     } catch (error: unknown) {
       console.error('Error finding units:', error);
       throw new Error(UnitMessages.DB_RETRIEVE_UNITS_ERROR);
@@ -27,16 +25,10 @@ export class UnitService {
    * @returns {Promise<UnitDTO | null>}
    */
   async getUnitById(id: number): Promise<UnitDTO | null> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<UnitRow>(
-        'SELECT * FROM units WHERE id = $1',
-        [id],
-      );
-      client.release();
-      const results = result.rows.map(this.mapRowToDTO);
-      return results[0] || null;
+      const db = getDB();
+      const row = db.prepare('SELECT * FROM units WHERE id = ?').get(id) as UnitRow | undefined;
+      return row ? this.mapRowToDTO(row) : null;
     } catch (error: unknown) {
       console.error('Error finding unit by ID:', error);
       throw new Error(UnitMessages.DB_RETRIEVE_UNIT_ERROR);

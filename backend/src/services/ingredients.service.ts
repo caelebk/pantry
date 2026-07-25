@@ -1,4 +1,4 @@
-import { getPool } from '../db/client.ts';
+import { getDB } from '../db/client.ts';
 import { IngredientMessages } from '../messages/ingredient.messages.ts';
 import {
   CreateIngredientDTO,
@@ -13,12 +13,10 @@ export class IngredientsService {
    * @returns {Promise<IngredientDTO[]>} A promise that resolves to an array of Ingredient objects.
    */
   async getAllIngredients(): Promise<IngredientDTO[]> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<IngredientRow>('SELECT * FROM ingredients');
-      client.release();
-      return result.rows.map(this.mapIngredientRowToIngredient);
+      const db = getDB();
+      const rows = db.prepare('SELECT * FROM ingredients').all() as IngredientRow[];
+      return rows.map(this.mapIngredientRowToIngredient);
     } catch (error: unknown) {
       console.error('Error finding ingredients:', error);
       throw new Error(IngredientMessages.DB_RETRIEVE_ITEMS_ERROR);
@@ -31,18 +29,10 @@ export class IngredientsService {
    * @returns {Promise<IngredientDTO | null>} A promise that resolves to the Ingredient object if found, or null if not found.
    */
   async getIngredientById(id: string): Promise<IngredientDTO | null> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<IngredientRow>(
-        'SELECT * FROM ingredients WHERE id = $1',
-        [id],
-      );
-      client.release();
-
-      const results = result.rows.map(this.mapIngredientRowToIngredient);
-      const firstResult = results[0];
-      return firstResult || null;
+      const db = getDB();
+      const row = db.prepare('SELECT * FROM ingredients WHERE id = ?').get(id) as IngredientRow | undefined;
+      return row ? this.mapIngredientRowToIngredient(row) : null;
     } catch (error: unknown) {
       console.error('Error finding ingredient by ID:', error);
       throw new Error(IngredientMessages.DB_RETRIEVE_ITEM_ERROR);
@@ -55,17 +45,17 @@ export class IngredientsService {
    * @returns {Promise<IngredientDTO>} A promise that resolves to the created Ingredient object.
    */
   async createIngredient(ingredient: CreateIngredientDTO): Promise<IngredientDTO> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<IngredientRow>(
-        'INSERT INTO ingredients (name, category_id, default_unit_id) VALUES ($1, $2, $3) RETURNING *',
-        [ingredient.name, ingredient.categoryId, ingredient.defaultUnitId],
-      );
-      client.release();
-      const results = result.rows.map(this.mapIngredientRowToIngredient);
-      const createdResult = results[0];
-      return createdResult;
+      const db = getDB();
+      const id = crypto.randomUUID();
+      const now = new Date().toISOString();
+
+      db.prepare(
+        'INSERT INTO ingredients (id, name, category_id, default_unit_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+      ).run(id, ingredient.name, ingredient.categoryId ?? null, ingredient.defaultUnitId ?? null, now, now);
+
+      const row = db.prepare('SELECT * FROM ingredients WHERE id = ?').get(id) as IngredientRow;
+      return this.mapIngredientRowToIngredient(row);
     } catch (error: unknown) {
       console.error('Error creating ingredient:', error);
       throw new Error(IngredientMessages.DB_CREATE_ITEM_ERROR);
@@ -82,17 +72,20 @@ export class IngredientsService {
     id: string,
     ingredient: UpdateIngredientDTO,
   ): Promise<IngredientDTO | null> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<IngredientRow>(
-        'UPDATE ingredients SET name = COALESCE($2, name), category_id = COALESCE($3, category_id), default_unit_id = COALESCE($4, default_unit_id) WHERE id = $1 RETURNING *',
-        [id, ingredient.name, ingredient.categoryId, ingredient.defaultUnitId],
+      const db = getDB();
+
+      db.prepare(
+        'UPDATE ingredients SET name = COALESCE(?, name), category_id = COALESCE(?, category_id), default_unit_id = COALESCE(?, default_unit_id) WHERE id = ?',
+      ).run(
+        ingredient.name ?? null,
+        ingredient.categoryId ?? null,
+        ingredient.defaultUnitId ?? null,
+        id,
       );
-      client.release();
-      const results = result.rows.map(this.mapIngredientRowToIngredient);
-      const updatedResult = results[0];
-      return updatedResult || null;
+
+      const row = db.prepare('SELECT * FROM ingredients WHERE id = ?').get(id) as IngredientRow | undefined;
+      return row ? this.mapIngredientRowToIngredient(row) : null;
     } catch (error: unknown) {
       console.error('Error updating ingredient:', error);
       throw new Error(IngredientMessages.DB_UPDATE_ITEM_ERROR);
@@ -105,14 +98,9 @@ export class IngredientsService {
    * @returns {Promise<boolean>} A promise that resolves to true if the ingredient was successfully deleted, false otherwise.
    */
   async deleteIngredient(id: string): Promise<boolean> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      await client.queryObject<IngredientRow>(
-        'DELETE FROM ingredients WHERE id = $1',
-        [id],
-      );
-      client.release();
+      const db = getDB();
+      db.prepare('DELETE FROM ingredients WHERE id = ?').run(id);
       return true;
     } catch (error: unknown) {
       console.error('Error deleting ingredient:', error);
@@ -126,15 +114,10 @@ export class IngredientsService {
    * @returns {Promise<IngredientDTO[]>} A promise that resolves to an array of Ingredient objects.
    */
   async getIngredientsByCategory(categoryId: number): Promise<IngredientDTO[]> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<IngredientRow>(
-        'SELECT * FROM ingredients WHERE category_id = $1',
-        [categoryId],
-      );
-      client.release();
-      return result.rows.map(this.mapIngredientRowToIngredient);
+      const db = getDB();
+      const rows = db.prepare('SELECT * FROM ingredients WHERE category_id = ?').all(categoryId) as IngredientRow[];
+      return rows.map(this.mapIngredientRowToIngredient);
     } catch (error: unknown) {
       console.error('Error finding ingredients by category:', error);
       throw new Error(IngredientMessages.DB_RETRIEVE_ITEMS_ERROR);
@@ -147,8 +130,8 @@ export class IngredientsService {
       name: row.name,
       categoryId: row.category_id ? row.category_id : undefined,
       defaultUnitId: row.default_unit_id ? row.default_unit_id : undefined,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      createdAt: new Date(row.created_at),
+      updatedAt: new Date(row.updated_at),
     };
   }
 }

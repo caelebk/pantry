@@ -2,7 +2,7 @@
  * Item service - Business logic for item operations
  */
 
-import { getPool } from '../db/client.ts';
+import { getDB } from '../db/client.ts';
 import { ItemMessages } from '../messages/item.messages.ts';
 import { CreateItemDTO, ItemDTO, UpdateItemDTO } from '../models/data-models/item.model.ts';
 import { ItemRow } from '../models/schema-models/item.model.ts';
@@ -18,14 +18,10 @@ export class ItemService {
    * @returns {Promise<ItemDTO[]>} A promise that resolves to an array of Item objects.
    */
   async getAllItems(): Promise<ItemDTO[]> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<ItemRow>(
-        'SELECT * FROM items ORDER BY created_at DESC',
-      );
-      client.release();
-      return result.rows.map(this.mapItemRowToItem);
+      const db = getDB();
+      const rows = db.prepare('SELECT * FROM items ORDER BY created_at DESC').all() as ItemRow[];
+      return rows.map(this.mapItemRowToItem);
     } catch (error: unknown) {
       console.error('Error fetching all items:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEMS_ERROR);
@@ -41,18 +37,10 @@ export class ItemService {
     if (!isValidUUID(id)) {
       throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
     }
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<ItemRow>(
-        'SELECT * FROM items WHERE id = $1',
-        [id],
-      );
-
-      const results = result.rows.map(this.mapItemRowToItem);
-      const firstResult = results[0];
-      client.release();
-      return firstResult || null;
+      const db = getDB();
+      const row = db.prepare('SELECT * FROM items WHERE id = ?').get(id) as ItemRow | undefined;
+      return row ? this.mapItemRowToItem(row) : null;
     } catch (error: unknown) {
       console.error('Error fetching item by ID:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEM_ERROR);
@@ -65,27 +53,29 @@ export class ItemService {
    * @returns {Promise<ItemDTO>} A promise that resolves to the newly created Item object.
    */
   async createItem(data: CreateItemDTO): Promise<ItemDTO> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<ItemRow>(
-        'INSERT INTO items (label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-        [
-          data.label,
-          data.quantity,
-          data.unitId,
-          data.locationId,
-          toDate(data.expirationDate),
-          data.openedDate ? toDate(data.openedDate) : null,
-          toDate(data.purchaseDate),
-          data.notes,
-        ],
+      const db = getDB();
+      const id = crypto.randomUUID();
+      const now = new Date().toISOString();
+
+      db.prepare(
+        'INSERT INTO items (id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      ).run(
+        id,
+        data.label,
+        data.quantity,
+        data.unitId,
+        data.locationId,
+        toDate(data.expirationDate).toISOString(),
+        data.openedDate ? toDate(data.openedDate).toISOString() : null,
+        toDate(data.purchaseDate).toISOString(),
+        data.notes ?? null,
+        now,
+        now,
       );
 
-      const results = result.rows.map(this.mapItemRowToItem);
-      const firstResult = results[0];
-      client.release();
-      return firstResult;
+      const row = db.prepare('SELECT * FROM items WHERE id = ?').get(id) as ItemRow;
+      return this.mapItemRowToItem(row);
     } catch (error: unknown) {
       console.error('Error creating item:', error);
       throw new Error(ItemMessages.DB_CREATE_ERROR);
@@ -102,28 +92,25 @@ export class ItemService {
     if (!isValidUUID(id)) {
       throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
     }
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<ItemRow>(
-        'UPDATE items SET label = COALESCE($1, label), quantity = COALESCE($2, quantity), unit_id = COALESCE($3, unit_id), location_id = COALESCE($4, location_id), expiration_date = COALESCE($5, expiration_date), opened_date = COALESCE($6, opened_date), purchase_date = COALESCE($7, purchase_date), notes = COALESCE($8, notes) WHERE id = $9 RETURNING *',
-        [
-          data.label,
-          data.quantity,
-          data.unitId,
-          data.locationId,
-          data.expirationDate !== undefined ? toDate(data.expirationDate) : null,
-          data.openedDate !== undefined ? toDate(data.openedDate) : null,
-          data.purchaseDate !== undefined ? toDate(data.purchaseDate) : null,
-          data.notes,
-          id,
-        ],
+      const db = getDB();
+
+      db.prepare(
+        'UPDATE items SET label = COALESCE(?, label), quantity = COALESCE(?, quantity), unit_id = COALESCE(?, unit_id), location_id = COALESCE(?, location_id), expiration_date = COALESCE(?, expiration_date), opened_date = COALESCE(?, opened_date), purchase_date = COALESCE(?, purchase_date), notes = COALESCE(?, notes) WHERE id = ?',
+      ).run(
+        data.label ?? null,
+        data.quantity ?? null,
+        data.unitId ?? null,
+        data.locationId ?? null,
+        data.expirationDate !== undefined ? toDate(data.expirationDate).toISOString() : null,
+        data.openedDate !== undefined ? toDate(data.openedDate).toISOString() : null,
+        data.purchaseDate !== undefined ? toDate(data.purchaseDate).toISOString() : null,
+        data.notes ?? null,
+        id,
       );
 
-      const results = result.rows.map(this.mapItemRowToItem);
-      const firstResult = results[0];
-      client.release();
-      return firstResult || null;
+      const row = db.prepare('SELECT * FROM items WHERE id = ?').get(id) as ItemRow | undefined;
+      return row ? this.mapItemRowToItem(row) : null;
     } catch (error: unknown) {
       console.error('Error updating item:', error);
       throw new Error(ItemMessages.DB_UPDATE_ERROR);
@@ -139,14 +126,9 @@ export class ItemService {
     if (!isValidUUID(id)) {
       throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
     }
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      await client.queryObject<ItemRow>(
-        'DELETE FROM items WHERE id = $1',
-        [id],
-      );
-      client.release();
+      const db = getDB();
+      db.prepare('DELETE FROM items WHERE id = ?').run(id);
       return true;
     } catch (error: unknown) {
       console.error('Error deleting item:', error);
@@ -160,15 +142,13 @@ export class ItemService {
    * @returns {Promise<ItemDTO[]>} A promise that resolves to an array of Item objects expiring soon.
    */
   async findExpiringSoon(days: number = this.soonExpiryDays): Promise<ItemDTO[]> {
-    const pool = getPool();
-    const client = await pool.connect();
     try {
-      const result = await client.queryObject<ItemRow>(
-        'SELECT * FROM items WHERE expiration_date <= $1 ORDER BY expiration_date ASC',
-        [new Date(Date.now() + days * this.secondsInDay)],
-      );
-      client.release();
-      return result.rows.map(this.mapItemRowToItem);
+      const db = getDB();
+      const futureDate = new Date(Date.now() + days * this.secondsInDay).toISOString();
+      const rows = db.prepare(
+        'SELECT * FROM items WHERE expiration_date <= ? ORDER BY expiration_date ASC',
+      ).all(futureDate) as ItemRow[];
+      return rows.map(this.mapItemRowToItem);
     } catch (error: unknown) {
       console.error('Error finding expiring soon items:', error);
       throw new Error(ItemMessages.DB_FIND_EXPIRING_ERROR);
@@ -183,12 +163,12 @@ export class ItemService {
       quantity: row.quantity,
       unitId: row.unit_id,
       locationId: row.location_id,
-      expirationDate: row.expiration_date,
-      openedDate: row.opened_date ? row.opened_date : undefined,
-      purchaseDate: row.purchase_date,
+      expirationDate: new Date(row.expiration_date),
+      openedDate: row.opened_date ? new Date(row.opened_date) : undefined,
+      purchaseDate: new Date(row.purchase_date),
       notes: row.notes ? row.notes : undefined,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      createdAt: new Date(row.created_at),
+      updatedAt: new Date(row.updated_at),
     };
   }
 }

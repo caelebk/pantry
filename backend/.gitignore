@@ -9,3 +9,6 @@ vendor/
 reference.md
 *.bak
 plan.md
+*.db
+*.db-wal
+*.db-shm
