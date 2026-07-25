@@ -170,6 +170,20 @@
             <span>Expired</span>
             <span class="w-2 h-2 rounded-full bg-rose-500"></span>
           </button>
+          <button
+            (click)="setStatusFilter('fresh')"
+            [class.bg-white]="selectedStatusFilter === 'fresh'"
+            [class.dark:bg-surface-700]="selectedStatusFilter === 'fresh'"
+            [class.shadow-xs]="selectedStatusFilter === 'fresh'"
+            [class.text-emerald-600]="selectedStatusFilter === 'fresh'"
+            [class.dark:text-emerald-400]="selectedStatusFilter === 'fresh'"
+            [class.font-bold]="selectedStatusFilter === 'fresh'"
+            [class.text-surface-600]="selectedStatusFilter !== 'fresh'"
+            [class.dark:text-surface-400]="selectedStatusFilter !== 'fresh'"
+            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
+            <span>Fresh</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </button>
         </div>
 
         <!-- Location Selector -->
