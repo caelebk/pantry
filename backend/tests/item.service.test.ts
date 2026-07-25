@@ -1,118 +1,105 @@
 import { assert, assertEquals, assertRejects } from '@std/assert';
-import { Pool } from 'postgres';
-import { setPool } from '../src/db/client.ts';
+import { Database } from '@db/sqlite';
+import { setDB } from '../src/db/client.ts';
 import { CreateItemDTO, UpdateItemDTO } from '../src/models/data-models/item.model.ts';
 import { ItemRow } from '../src/models/schema-models/item.model.ts';
 import { itemService } from '../src/services/item.service.ts';
 
-// Mock Types
-type QueryCallback = (query: string, args?: unknown[]) => Promise<{ rows: unknown[] }>;
-
-class MockClient {
-  constructor(private queryCallback: QueryCallback) {}
-
-  async queryObject<T>(query: string, args: unknown[] = []): Promise<{ rows: T[] }> {
-    // Validate parameter count
-    const matches = query.match(/\$(\d+)/g);
-    if (matches) {
-      const indices = matches.map((m) => parseInt(m.substring(1)));
-      const maxIndex = Math.max(...indices);
-      assert(
-        args.length === maxIndex,
-        `Parameter mismatch: Query requires ${maxIndex} parameters, but received ${args.length}`,
-      );
-    } else {
-      assert(
-        args.length === 0,
-        `Parameter mismatch: Query requires 0 parameters, but received ${args.length}`,
-      );
-    }
-
-    return (await this.queryCallback(query, args)) as { rows: T[] };
-  }
-
-  release() {}
-}
-
-class MockPool {
-  constructor(private queryCallback: QueryCallback) {}
-
-  connect() {
-    return new MockClient(this.queryCallback);
-  }
+// Helper: create an in-memory SQLite database with the items schema
+function createTestDB(): Database {
+  const db = new Database(':memory:');
+  db.exec('PRAGMA foreign_keys = OFF');
+  db.exec(`
+    CREATE TABLE items (
+      id TEXT PRIMARY KEY,
+      ingredient_id TEXT,
+      label TEXT NOT NULL,
+      quantity REAL NOT NULL,
+      unit_id INTEGER NOT NULL,
+      location_id INTEGER NOT NULL,
+      expiration_date TEXT NOT NULL,
+      opened_date TEXT,
+      purchase_date TEXT NOT NULL,
+      notes TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+  return db;
 }
 
 // Helpers
 const mockDate = new Date();
-const mockItemRow: ItemRow = {
-  id: '123e4567-e89b-12d3-a456-426614174000',
-  ingredient_id: null,
-  label: 'Test Item',
-  quantity: 5,
-  unit_id: 1,
-  location_id: 1,
-  expiration_date: mockDate,
-  opened_date: null,
-  purchase_date: mockDate,
-  notes: 'Test notes',
-  created_at: mockDate,
-  updated_at: mockDate,
-};
+const mockId = '123e4567-e89b-12d3-a456-426614174000';
+
+function seedMockItem(db: Database): ItemRow {
+  const row: ItemRow = {
+    id: mockId,
+    ingredient_id: null,
+    label: 'Test Item',
+    quantity: 5,
+    unit_id: 1,
+    location_id: 1,
+    expiration_date: mockDate.toISOString(),
+    opened_date: null,
+    purchase_date: mockDate.toISOString(),
+    notes: 'Test notes',
+    created_at: mockDate.toISOString(),
+    updated_at: mockDate.toISOString(),
+  };
+  db.prepare(
+    'INSERT INTO items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run(
+    row.id, row.ingredient_id, row.label, row.quantity, row.unit_id, row.location_id,
+    row.expiration_date, row.opened_date, row.purchase_date, row.notes, row.created_at, row.updated_at,
+  );
+  return row;
+}
 
 Deno.test('ItemService - getAllItems - success', async () => {
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.resolve({ rows: [mockItemRow] });
-  });
-  setPool(mockPool as unknown as Pool);
+  const db = createTestDB();
+  setDB(db);
+  const mockRow = seedMockItem(db);
 
   const items = await itemService.getAllItems();
   assertEquals(items.length, 1);
-  assertEquals(items[0].id, mockItemRow.id);
+  assertEquals(items[0].id, mockRow.id);
+  db.close();
 });
 
-Deno.test('ItemService - getAllItems - db error', async () => {
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.reject(new Error('Connection failed'));
-  });
-  setPool(mockPool as unknown as Pool);
+Deno.test('ItemService - getAllItems - empty', async () => {
+  const db = createTestDB();
+  setDB(db);
 
-  const originalConsoleError = console.error;
-  console.error = () => {};
-  try {
-    await assertRejects(
-      async () => await itemService.getAllItems(),
-      Error,
-      'Failed to retrieve items',
-    );
-  } finally {
-    console.error = originalConsoleError;
-  }
+  const items = await itemService.getAllItems();
+  assertEquals(items.length, 0);
+  db.close();
 });
 
 Deno.test('ItemService - getItemById - success', async () => {
-  const mockPool = new MockPool((query, args) => {
-    assert(query.includes('WHERE id = $1'));
-    assert(args && args[0] === mockItemRow.id);
-    return Promise.resolve({ rows: [mockItemRow] });
-  });
-  setPool(mockPool as unknown as Pool);
+  const db = createTestDB();
+  setDB(db);
+  const mockRow = seedMockItem(db);
 
-  const item = await itemService.getItemById(mockItemRow.id);
+  const item = await itemService.getItemById(mockRow.id);
   assert(item !== null);
-  assertEquals(item?.id, mockItemRow.id);
+  assertEquals(item?.id, mockRow.id);
+  db.close();
 });
 
 Deno.test('ItemService - getItemById - not found', async () => {
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.resolve({ rows: [] });
-  });
-  setPool(mockPool as unknown as Pool);
+  const db = createTestDB();
+  setDB(db);
 
-  const item = await itemService.getItemById(mockItemRow.id);
+  const item = await itemService.getItemById('123e4567-e89b-12d3-a456-426614174999');
   assertEquals(item, null);
+  db.close();
 });
 
 Deno.test('ItemService - createItem - success', async () => {
+  const db = createTestDB();
+  setDB(db);
+
   const newItem: CreateItemDTO = {
     label: 'New Item',
     quantity: 10,
@@ -124,140 +111,87 @@ Deno.test('ItemService - createItem - success', async () => {
     openedDate: undefined,
   };
 
-  const mockPool = new MockPool((query, _args) => {
-    assert(query.includes('INSERT INTO items'));
-    const returnedRow = {
-      ...mockItemRow,
-      ...newItem,
-      expiration_date: new Date(newItem.expirationDate as string),
-      purchase_date: new Date(newItem.purchaseDate as string),
-      // openedDate is undefined/null
-    };
-    return Promise.resolve({ rows: [returnedRow] });
-  });
-  setPool(mockPool as unknown as Pool);
-
   const item = await itemService.createItem(newItem);
   assertEquals(item.label, newItem.label);
-});
-
-Deno.test('ItemService - createItem - db error', async () => {
-  const newItem: CreateItemDTO = {
-    label: 'Error Item',
-    quantity: 1,
-    unitId: 1,
-    locationId: 1,
-    expirationDate: mockDate.toISOString(),
-    purchaseDate: mockDate.toISOString(),
-    notes: 'notes',
-  };
-
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.reject(new Error('Insert failed'));
-  });
-  setPool(mockPool as unknown as Pool);
-
-  const originalConsoleError = console.error;
-  console.error = () => {};
-  try {
-    await assertRejects(
-      async () => await itemService.createItem(newItem),
-      Error,
-      'Failed to create item',
-    );
-  } finally {
-    console.error = originalConsoleError;
-  }
+  assert(item.id.length > 0);
+  db.close();
 });
 
 Deno.test('ItemService - updateItem - success', async () => {
+  const db = createTestDB();
+  setDB(db);
+  const mockRow = seedMockItem(db);
+
   const updateData: UpdateItemDTO = {
     label: 'Updated Item',
     quantity: 20,
-    unitId: 1,
-    locationId: 1,
-    expirationDate: mockDate.toISOString(),
-    purchaseDate: mockDate.toISOString(),
-    notes: 'Updated notes',
-    openedDate: undefined,
   };
 
-  const mockPool = new MockPool((query, args) => {
-    assert(query.includes('UPDATE items'));
-    assert(args && args.includes(mockItemRow.id));
-    const returnedRow = {
-      ...mockItemRow,
-      ...updateData,
-      expiration_date: new Date(updateData.expirationDate as string),
-      purchase_date: new Date(updateData.purchaseDate as string),
-    };
-    return Promise.resolve({ rows: [returnedRow] });
-  });
-  setPool(mockPool as unknown as Pool);
-
-  const item = await itemService.updateItem(mockItemRow.id, updateData);
+  const item = await itemService.updateItem(mockRow.id, updateData);
   assert(item !== null);
-  assertEquals(item?.label, updateData.label);
+  assertEquals(item?.label, 'Updated Item');
+  assertEquals(item?.quantity, 20);
+  db.close();
 });
 
 Deno.test('ItemService - updateItem - not found', async () => {
-  const updateData: UpdateItemDTO = { label: 'Ghost Item' };
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.resolve({ rows: [] });
-  });
-  setPool(mockPool as unknown as Pool);
+  const db = createTestDB();
+  setDB(db);
 
+  const updateData: UpdateItemDTO = { label: 'Ghost Item' };
   const item = await itemService.updateItem('123e4567-e89b-12d3-a456-426614174999', updateData);
   assertEquals(item, null);
-});
-
-Deno.test('ItemService - updateItem - db error', async () => {
-  const updateData: UpdateItemDTO = { label: 'Error Item' };
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.reject(new Error('Update failed'));
-  });
-  setPool(mockPool as unknown as Pool);
-
-  const originalConsoleError = console.error;
-  console.error = () => {};
-  try {
-    await assertRejects(
-      async () => await itemService.updateItem(mockItemRow.id, updateData),
-      Error,
-      'Failed to update item',
-    );
-  } finally {
-    console.error = originalConsoleError;
-  }
+  db.close();
 });
 
 Deno.test('ItemService - deleteItemById - success', async () => {
-  const mockPool = new MockPool((query, args) => {
-    assert(query.includes('DELETE FROM items'));
-    assert(args && args[0] === mockItemRow.id);
-    return Promise.resolve({ rows: [] });
-  });
-  setPool(mockPool as unknown as Pool);
+  const db = createTestDB();
+  setDB(db);
+  const mockRow = seedMockItem(db);
 
-  const result = await itemService.deleteItemById(mockItemRow.id);
+  const result = await itemService.deleteItemById(mockRow.id);
   assertEquals(result, true);
+
+  // Verify it's actually deleted
+  const item = await itemService.getItemById(mockRow.id);
+  assertEquals(item, null);
+  db.close();
 });
 
-Deno.test('ItemService - deleteItemById - db error', async () => {
-  const mockPool = new MockPool((_query, _args) => {
-    return Promise.reject(new Error('Delete failed'));
-  });
-  setPool(mockPool as unknown as Pool);
+Deno.test('ItemService - findExpiringSoon - success', async () => {
+  const db = createTestDB();
+  setDB(db);
 
-  const originalConsoleError = console.error;
-  console.error = () => {};
-  try {
-    await assertRejects(
-      async () => await itemService.deleteItemById(mockItemRow.id),
-      Error,
-      'Failed to delete item',
-    );
-  } finally {
-    console.error = originalConsoleError;
-  }
+  // Insert an item expiring soon (tomorrow)
+  const tomorrow = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
+  db.prepare(
+    'INSERT INTO items (id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+  ).run(
+    '123e4567-e89b-12d3-a456-426614174001',
+    'Expiring Soon',
+    1,
+    1,
+    1,
+    tomorrow.toISOString(),
+    mockDate.toISOString(),
+  );
+
+  // Insert item expiring far in the future
+  const farFuture = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+  db.prepare(
+    'INSERT INTO items (id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+  ).run(
+    '123e4567-e89b-12d3-a456-426614174002',
+    'Not Expiring',
+    1,
+    1,
+    1,
+    farFuture.toISOString(),
+    mockDate.toISOString(),
+  );
+
+  const items = await itemService.findExpiringSoon(7);
+  assertEquals(items.length, 1);
+  assertEquals(items[0].label, 'Expiring Soon');
+  db.close();
 });

@@ -11,16 +11,16 @@ console.log(`📝 Environment: ${config.env}`);
 
 // Initialize database connection
 try {
-  await initDB();
+  initDB();
 } catch (error) {
   console.error('Failed to initialize database:', error);
   Deno.exit(1);
 }
 
 // Graceful shutdown
-Deno.addSignalListener('SIGINT', async () => {
+Deno.addSignalListener('SIGINT', () => {
   console.log('\n🛑 Shutting down gracefully...');
-  await closeDB();
+  closeDB();
   Deno.exit(0);
 });
 

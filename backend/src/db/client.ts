@@ -1,70 +1,61 @@
 /**
- * Database client setup
+ * Database client setup (SQLite)
  */
 
-import { Pool } from 'postgres';
+import { Database } from '@db/sqlite';
 import { config } from '../config/env.ts';
 
-let pool: Pool | null = null;
+let db: Database | null = null;
 
 /**
- * Get database pool instance
+ * Get database instance
  */
-export function getPool(): Pool {
-  if (!pool) {
+export function getDB(): Database {
+  if (!db) {
     throw new Error('Database not initialized. Call initDB() first.');
   }
-  return pool;
+  return db;
 }
 
 /**
- * Set database pool instance (for testing)
+ * Set database instance (for testing)
  */
-export function setPool(p: Pool) {
-  pool = p;
+export function setDB(database: Database) {
+  db = database;
 }
 
 /**
- * Initialize database connection pool
+ * Initialize SQLite database connection
  */
-export async function initDB() {
+export function initDB(): Database {
   try {
-    const connectionParams = {
-      hostname: config.database.host,
-      port: config.database.port,
-      database: config.database.database,
-      user: config.database.user,
-      password: config.database.password,
-    };
+    const dbPath = config.database.path;
+    console.log(`🔌 Opening SQLite database at: ${dbPath}`);
 
-    console.log('🔌 Attempting database connection with:', {
-      ...connectionParams,
-      password: '***', // Hide password in logs
-    });
+    db = new Database(dbPath);
 
-    pool = new Pool(connectionParams, 10); // pool size
+    // Enable WAL mode for better concurrent read performance
+    db.exec('PRAGMA journal_mode = WAL');
+    // Enable foreign key enforcement (off by default in SQLite)
+    db.exec('PRAGMA foreign_keys = ON');
 
-    // Test the connection
-    const client = await pool.connect();
     console.log('✅ Database connected successfully');
-    client.release();
-
-    return pool;
+    return db;
   } catch (error) {
-    console.error('❌ Failed to connect to database:', error);
+    console.error('❌ Failed to open database:', error);
     throw error;
   }
 }
 
 /**
- * Close database connection pool
+ * Close database connection
  */
-export async function closeDB() {
+export function closeDB() {
   try {
-    if (pool) {
-      await pool.end();
-      pool = null;
-      console.log('Database connection pool closed');
+    if (db) {
+      db.close();
+      db = null;
+      console.log('Database connection closed');
     }
   } catch (error) {
     console.error('Failed to close database connection:', error);

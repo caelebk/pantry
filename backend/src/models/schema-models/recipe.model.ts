@@ -12,8 +12,8 @@ export interface RecipeRow {
   prep_time: number | null;
   cook_time: number | null;
   image_url: string | null;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface RecipeIngredientRow {
@@ -21,8 +21,8 @@ export interface RecipeIngredientRow {
   ingredient_id: string;
   quantity: number;
   unit_id: number | null;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface RecipeStepRow {
