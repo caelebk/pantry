@@ -5,6 +5,7 @@ import { Ingredient } from '@models/ingredient.model';
 import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
 import { IngredientService } from '../../../../services/inventory/ingredient.service';
+import { ItemService } from '../../../../services/inventory/item.service';
 import { UnitService } from '../../../../services/inventory/unit.service';
 
 @Component({
@@ -20,9 +21,11 @@ export class RecipeCardComponent implements OnInit {
 
   private readonly ingredientService = inject(IngredientService);
   private readonly unitService = inject(UnitService);
+  private readonly itemService = inject(ItemService);
 
   ingredientMap = new Map<string, Ingredient>();
   unitMap = new Map<number, Unit>();
+  availableBaseMap = new Map<string, number>();
 
   ngOnInit(): void {
     this.ingredientService.getIngredients().subscribe({
@@ -34,6 +37,29 @@ export class RecipeCardComponent implements OnInit {
     this.unitService.getUnits().subscribe({
       next: (units) => {
         units.forEach((u) => this.unitMap.set(u.id, u));
+      },
+    });
+
+    this.loadPantryItems();
+  }
+
+  private loadPantryItems(): void {
+    this.itemService.getItems().subscribe({
+      next: (items) => {
+        const map = new Map<string, number>();
+        const now = new Date();
+        for (const item of items) {
+          if (item.ingredientId) {
+            // Filter out expired items
+            if (item.expirationDate && new Date(item.expirationDate) < now) {
+              continue;
+            }
+            const factor = item.unit?.toBaseFactor || 1;
+            const baseQty = item.quantity * factor;
+            map.set(item.ingredientId, (map.get(item.ingredientId) || 0) + baseQty);
+          }
+        }
+        this.availableBaseMap = map;
       },
     });
   }
@@ -67,6 +93,43 @@ export class RecipeCardComponent implements OnInit {
     const ingredientName = this.ingredientMap.get(ing.ingredientId)?.name || ing.ingredientId;
     const unitName = ing.unitId ? (this.unitMap.get(ing.unitId)?.shortName || this.unitMap.get(ing.unitId)?.name || '') : '';
     return `${ing.quantity} ${unitName} ${ingredientName}`.trim();
+  }
+
+  getIngredientAvailability(ing: { ingredientId: string; quantity: number; unitId?: number | null }): {
+    isAvailable: boolean;
+  } {
+    const unit = ing.unitId ? this.unitMap.get(ing.unitId) : null;
+    const factor = unit?.toBaseFactor || 1;
+    const requiredBase = ing.quantity * factor;
+    const availableBase = this.availableBaseMap.get(ing.ingredientId) || 0;
+    return {
+      isAvailable: availableBase >= requiredBase - 1e-6,
+    };
+  }
+
+  get ingredientStats(): {
+    availableCount: number;
+    totalCount: number;
+    percentage: number;
+    isFullyMakeable: boolean;
+  } {
+    if (!this.recipe.ingredients || this.recipe.ingredients.length === 0) {
+      return { availableCount: 0, totalCount: 0, percentage: 100, isFullyMakeable: true };
+    }
+    let availableCount = 0;
+    for (const ing of this.recipe.ingredients) {
+      if (this.getIngredientAvailability(ing).isAvailable) {
+        availableCount++;
+      }
+    }
+    const totalCount = this.recipe.ingredients.length;
+    const percentage = Math.round((availableCount / totalCount) * 100);
+    return {
+      availableCount,
+      totalCount,
+      percentage,
+      isFullyMakeable: availableCount === totalCount,
+    };
   }
 
   onDelete(): void {

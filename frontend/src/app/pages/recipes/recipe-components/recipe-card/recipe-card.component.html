@@ -4,18 +4,38 @@
     <!-- Card Top Header -->
     <div class="flex justify-between items-start gap-4 mb-3">
       <div class="space-y-1">
-        <div class="flex items-center gap-2.5 flex-wrap">
+        <div class="flex items-center gap-2 flex-wrap">
           <h4 class="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             {{ recipe.name }}
           </h4>
-          <!-- Difficulty Pill -->
+
+          <!-- Difficulty Badge -->
           <span
             [class]="
               'px-2.5 py-0.5 rounded-full text-xs font-semibold border ' + difficultyClass
             ">
             {{ difficultyText }}
           </span>
+
+          <!-- Availability Badge -->
+          @if (ingredientStats.totalCount > 0) {
+            <span
+              [class]="
+                ingredientStats.isFullyMakeable
+                  ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 flex items-center gap-1'
+                  : (ingredientStats.availableCount > 0
+                      ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 flex items-center gap-1'
+                      : 'px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 flex items-center gap-1')
+              ">
+              @if (ingredientStats.isFullyMakeable) {
+                <span>✓ Ready to Cook</span>
+              } @else {
+                <span>{{ ingredientStats.availableCount }}/{{ ingredientStats.totalCount }} Available</span>
+              }
+            </span>
+          }
         </div>
+
         @if (recipe.description) {
           <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed line-clamp-2">
             {{ recipe.description }}
@@ -45,7 +65,7 @@
     </div>
 
     <!-- Quick Stats Bar -->
-    <div class="grid grid-cols-4 gap-2 py-3 px-4 mb-5 bg-gray-50/80 dark:bg-[#262626]/50 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
+    <div class="grid grid-cols-4 gap-2 py-3 px-4 mb-4 bg-gray-50/80 dark:bg-[#262626]/50 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
       <div>
         <span class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider">Servings</span>
         <span class="block font-bold text-gray-900 dark:text-white text-sm mt-0.5">
@@ -74,7 +94,7 @@
 
     <!-- Tags Row -->
     @if (recipe.tags && recipe.tags.length > 0) {
-      <div class="flex flex-wrap gap-1.5 mb-5">
+      <div class="flex flex-wrap gap-1.5 mb-4">
         @for (tag of recipe.tags; track tag) {
           <span
             class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-primary-600/10 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-600/20 dark:border-primary-500/20">
@@ -84,19 +104,76 @@
       </div>
     }
 
+    <!-- Ingredients Availability Progress Track -->
+    @if (ingredientStats.totalCount > 0) {
+      <div class="mb-5 space-y-1">
+        <div class="flex justify-between items-center text-[11px] font-semibold">
+          <span class="text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pantry Stock Match</span>
+          <span
+            [class]="
+              ingredientStats.isFullyMakeable
+                ? 'text-emerald-600 dark:text-emerald-400 font-bold'
+                : 'text-amber-600 dark:text-amber-400 font-bold'
+            ">
+            {{ ingredientStats.availableCount }} / {{ ingredientStats.totalCount }} Ingredients In Stock ({{ ingredientStats.percentage }}%)
+          </span>
+        </div>
+        <div class="w-full bg-gray-100 dark:bg-[#262626] h-2 rounded-full overflow-hidden">
+          <div
+            [class]="
+              ingredientStats.isFullyMakeable
+                ? 'bg-emerald-500 h-full rounded-full transition-all duration-500'
+                : (ingredientStats.availableCount > 0
+                    ? 'bg-amber-500 h-full rounded-full transition-all duration-500'
+                    : 'bg-rose-500 h-full rounded-full transition-all duration-500')
+            "
+            [style.width.%]="ingredientStats.percentage"></div>
+        </div>
+      </div>
+    }
+
     <!-- Ingredients & Steps Section -->
     <div class="grid md:grid-cols-2 gap-6 pt-4 border-t border-gray-100 dark:border-gray-800">
-      <!-- Ingredients -->
+      <!-- Ingredients List -->
       <div>
-        <h5 class="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-          Ingredients ({{ recipe.ingredients?.length || 0 }})
+        <h5 class="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-2.5 flex items-center justify-between">
+          <span class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            Required Ingredients
+          </span>
         </h5>
-        <ul class="space-y-1.5 text-xs text-gray-600 dark:text-gray-300">
+        <ul class="space-y-2 text-xs">
           @for (ing of recipe.ingredients; track $index) {
-            <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-gray-400 dark:bg-gray-600"></span>
-              <span>{{ getIngredientDisplay(ing) }}</span>
+            @let avail = getIngredientAvailability(ing);
+            <li class="flex items-center justify-between gap-2 p-1.5 rounded-lg transition-colors"
+                [class.bg-emerald-500/5]="avail.isAvailable"
+                [class.bg-rose-500/5]="!avail.isAvailable">
+              <div class="flex items-center gap-2 min-w-0">
+                <!-- Status Icon -->
+                @if (avail.isAvailable) {
+                  <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold flex items-center justify-center shrink-0">
+                    ✓
+                  </span>
+                } @else {
+                  <span class="w-4 h-4 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 text-[10px] font-extrabold flex items-center justify-center shrink-0">
+                    ✕
+                  </span>
+                }
+                <span class="truncate text-gray-700 dark:text-gray-200 font-medium">
+                  {{ getIngredientDisplay(ing) }}
+                </span>
+              </div>
+
+              <!-- Stock Tag -->
+              @if (avail.isAvailable) {
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                  In Stock
+                </span>
+              } @else {
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
+                  Missing
+                </span>
+              }
             </li>
           }
         </ul>
