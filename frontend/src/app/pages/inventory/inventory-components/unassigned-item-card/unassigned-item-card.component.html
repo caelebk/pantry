@@ -1,0 +1,32 @@
+<div class="flex flex-col gap-3 p-4 bg-white dark:bg-[#121212] rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm">
+  <div class="flex items-start gap-3">
+    <div class="mt-1 cursor-grab opacity-50 hover:opacity-100 transition-opacity">
+      <!-- 6-dot grip icon -->
+      <svg width="10" height="16" viewBox="0 0 10 16" fill="navajowhite" xmlns="http://www.w3.org/2000/svg" class="fill-gray-400">
+          <circle cx="2" cy="2" r="1.5"/>
+          <circle cx="2" cy="8" r="1.5"/>
+          <circle cx="2" cy="14" r="1.5"/>
+          <circle cx="8" cy="2" r="1.5"/>
+          <circle cx="8" cy="8" r="1.5"/>
+          <circle cx="8" cy="14" r="1.5"/>
+      </svg>
+    </div>
+    <div class="flex-1">
+      <p class="font-bold text-gray-900 dark:text-gray-100 text-[15px] leading-tight">{{ item.name }}</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        {{ item.quantity }} {{ item.unit.shortName }}
+      </p>
+    </div>
+  </div>
+  
+  <p-select 
+    [options]="categoryGroups" 
+    [group]="true"
+    optionGroupLabel="category.name"
+    optionGroupChildren="ingredients"
+    optionLabel="name"
+    placeholder="Assign to group..."
+    (onChange)="onAssign($event.value)"
+    styleClass="w-full !h-9 !text-sm !flex !items-center !bg-gray-50 dark:!bg-[#1e1e1e] !border-gray-200 dark:!border-gray-700 !rounded-md">
+  </p-select>
+</div>

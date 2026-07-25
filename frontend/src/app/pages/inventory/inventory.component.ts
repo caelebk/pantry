@@ -1,36 +1,48 @@
-import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { StatCardComponent } from '@components/stat-card/stat-card.component';
-import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Item } from '@models/items.model';
-import { Location } from '@models/location.model';
-import { Unit } from '@models/unit.model';
-import { ItemService } from '@services/inventory/item.service';
-import { LocationService } from '@services/inventory/location.service';
-import { UnitService } from '@services/inventory/unit.service';
+import { CommonModule } from "@angular/common";
+import { Component, HostListener, inject, OnInit, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { StatCardComponent } from "@components/stat-card/stat-card.component";
+import { TranslocoModule, TranslocoService } from "@jsverse/transloco";
+import { Category } from "@models/category.model";
+import { Ingredient } from "@models/ingredient.model";
+import { EnrichedIngredient, IngredientGroup } from "@models/inventory.models";
+import { Item } from "@models/items.model";
+import { Location } from "@models/location.model";
+import { Unit } from "@models/unit.model";
+import { CategoryService } from "@services/inventory/category.service";
+import { IngredientService } from "@services/inventory/ingredient.service";
+import { ItemService } from "@services/inventory/item.service";
+import { LocationService } from "@services/inventory/location.service";
+import { UnitService } from "@services/inventory/unit.service";
 import {
-  STAGGER_DELAY_PER_ITEM_MS,
   fadeInOut,
+  STAGGER_DELAY_PER_ITEM_MS,
   staggeredFadeIn,
-} from '@utility/animationUtility/animations';
+} from "@utility/animationUtility/animations";
 import {
   isExpired,
   isExpiringSoon,
   sortItemsByExpirationDate,
-} from '@utility/itemUtility/ItemUtility';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
-import { InputText } from 'primeng/inputtext';
-import { ToastModule } from 'primeng/toast';
-import { AddItemFormComponent } from './inventory-components/add-item-form/add-item-form.component';
-import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
+} from "@utility/itemUtility/ItemUtility";
+import { ConfirmationService, MessageService } from "primeng/api";
+import { Button } from "primeng/button";
+import { ConfirmDialogModule } from "primeng/confirmdialog";
+import { IconField } from "primeng/iconfield";
+import { InputIcon } from "primeng/inputicon";
+import { InputText } from "primeng/inputtext";
+import { SelectModule } from "primeng/select";
+import { ToastModule } from "primeng/toast";
+import { AddItemFormComponent } from "./inventory-components/add-item-form/add-item-form.component";
+import { IngredientGroupContainerComponent } from "./inventory-components/ingredient-group-container/ingredient-group-container.component";
+import { ItemCardComponent } from "./inventory-components/item-card/item-card.component";
+import {
+  InventoryTab,
+  TabNavigationComponent,
+} from "./inventory-components/tab-navigation/tab-navigation.component";
+import { UnassignedItemsContainerComponent } from "./inventory-components/unassigned-items-container/unassigned-items-container.component";
 
 @Component({
-  selector: 'pantry-inventory',
+  selector: "pantry-inventory",
   standalone: true,
   imports: [
     CommonModule,
@@ -45,13 +57,19 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
     IconField,
     InputIcon,
     InputText,
+    TabNavigationComponent,
+    SelectModule,
+    IngredientGroupContainerComponent,
+    UnassignedItemsContainerComponent,
   ],
   providers: [ConfirmationService, MessageService],
-  templateUrl: './inventory.component.html',
+  templateUrl: "./inventory.component.html",
   animations: [fadeInOut, staggeredFadeIn],
 })
 export class InventoryComponent implements OnInit {
   private readonly inventoryService = inject(ItemService);
+  private readonly ingredientService = inject(IngredientService);
+  private readonly categoryService = inject(CategoryService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly translocoService = inject(TranslocoService);
@@ -61,9 +79,9 @@ export class InventoryComponent implements OnInit {
   // Make stagger delay accessible to template
   readonly staggerDelayPerItemMs = STAGGER_DELAY_PER_ITEM_MS;
 
-  private readonly removeConfirmationServiceIcon = 'pi pi-exclamation-triangle';
-  private readonly successNotificationClass = 'success';
-  private readonly errorNotificationClass = 'error';
+  private readonly removeConfirmationServiceIcon = "pi pi-exclamation-triangle";
+  private readonly successNotificationClass = "success";
+  private readonly errorNotificationClass = "error";
   private readonly scrollThreshold = 300;
   private readonly scrollLocation = 0;
   private readonly loadingDelayMs = 50;
@@ -77,25 +95,185 @@ export class InventoryComponent implements OnInit {
   public items: Item[] = [];
   public units: Unit[] = [];
   public locations: Location[] = [];
+  public ingredients: Ingredient[] = [];
+  public categories: Category[] = [];
 
   public showScrollTopButton = false;
-  public searchQuery = '';
+  public searchQuery = "";
+  public selectedCategory: Category | null = null;
   public isLoading = signal(true);
+  public activeTab: InventoryTab = "items";
 
   public get filteredItems(): Item[] {
     return this.items.filter((item) => {
-      const matchesSearch = item.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+      const matchesSearch = item.name.toLowerCase().includes(
+        this.searchQuery.toLowerCase(),
+      );
       return matchesSearch;
     });
   }
 
-  @HostListener('window:scroll', [])
+  // Ingredient Groups stats
+  public get inStockIngredientsCount(): number {
+    return this.ingredients.filter((ing) =>
+      this.items.some((item) => item.ingredientId === ing.id)
+    ).length;
+  }
+
+  public get outOfStockIngredientsCount(): number {
+    return this.ingredients.filter(
+      (ing) => !this.items.some((item) => item.ingredientId === ing.id),
+    ).length;
+  }
+
+  public get unassignedItemsCount(): number {
+    return this.items.filter((item) => !item.ingredientId).length;
+  }
+
+  public get unassignedItems(): Item[] {
+    return this.items.filter((item) => !item.ingredientId);
+  }
+
+  public get categoryGroups() {
+    // Create a map of ingredients with their items
+    const ingredientMap = new Map();
+
+    this.ingredients.forEach((ingredient) => {
+      const ingredientItems = this.items.filter(
+        (item) => item.ingredientId === ingredient.id,
+      );
+      ingredientMap.set(ingredient.id, {
+        ...ingredient,
+        items: ingredientItems,
+        itemCount: ingredientItems.length,
+      });
+    });
+
+    // Group by category
+    const categoryMap = new Map();
+
+    ingredientMap.forEach((ingredient) => {
+      const categoryId = ingredient.category?.id ?? -1;
+      if (!categoryMap.has(categoryId)) {
+        categoryMap.set(categoryId, []);
+      }
+      categoryMap.get(categoryId).push(ingredient);
+    });
+
+    // Convert to array of category groups
+    const groups: IngredientGroup[] = [];
+
+    const normalizedQuery = this.searchQuery.toLowerCase().trim();
+
+    categoryMap.forEach((ingredients, categoryId) => {
+      const category = categoryId === -1
+        ? { id: -1, name: "Uncategorized" }
+        : this.categories.find((c) => c.id === categoryId) ??
+          { id: -1, name: "Unknown" };
+
+      // Filter groups by category selection
+      if (this.selectedCategory && this.selectedCategory.id !== category.id) {
+        return;
+      }
+
+      // Filter ingredients by search query
+      const filteredIngredients = ingredients.filter((ing: any) =>
+        ing.name.toLowerCase().includes(normalizedQuery)
+      );
+
+      // Only add group if it has matching ingredients
+      if (filteredIngredients.length > 0) {
+        groups.push({ category, ingredients: filteredIngredients });
+      }
+    });
+
+    return groups.sort((a, b) =>
+      a.category.name.localeCompare(b.category.name)
+    );
+  }
+
+  // Remove local toggle methods as they are now handled by sub-components
+  // public toggleIngredient(ingredientId: string): void ...
+  // public toggleCategory(categoryId: number): void ...
+  // public isCategoryExpanded(categoryId: number): boolean ...
+  // public isExpanded(ingredientId: string): boolean ...
+
+  public expandedIngredients = new Set<string>();
+  public expandedCategories = new Set<number>();
+
+  // Loading state
+  public loading = false;
+
+  public getTotalIngredientCount(): number {
+    let count = 0;
+    this.categoryGroups.forEach((group) => {
+      count += group.ingredients.length;
+    });
+    return count;
+  }
+
+  public getTotalItemCount(): number {
+    let count = this.unassignedItems.length;
+    this.categoryGroups.forEach((group) => {
+      group.ingredients.forEach((ing) => {
+        count += ing.items.length;
+      });
+    });
+    return count;
+  }
+
+  public getExpiringSoonParams(): { count: number } {
+    // This is a placeholder logic, simpler implementation for now
+    // In a real app, you'd filter by expiration date
+    return { count: 0 };
+  }
+
+  public onAssignItem(
+    event: { item: Item; ingredient: EnrichedIngredient },
+  ): void {
+    console.log(
+      "Assigning item:",
+      event.item.name,
+      "to ingredient:",
+      event.ingredient.name,
+    );
+    // TODO: Implement actual assignment logic via service
+    // For now, optimistically update UI or just log
+
+    // Example: remove from unassigned and add to ingredient
+    // This requires strict state management which is part of Phase 3
+  }
+  public toggleIngredient(ingredientId: string): void {
+    if (this.expandedIngredients.has(ingredientId)) {
+      this.expandedIngredients.delete(ingredientId);
+    } else {
+      this.expandedIngredients.add(ingredientId);
+    }
+  }
+
+  public toggleCategory(categoryId: number): void {
+    if (this.expandedCategories.has(categoryId)) {
+      this.expandedCategories.delete(categoryId);
+    } else {
+      this.expandedCategories.add(categoryId);
+    }
+  }
+
+  public isCategoryExpanded(categoryId: number): boolean {
+    return this.expandedCategories.has(categoryId);
+  }
+
+  public isExpanded(ingredientId: string): boolean {
+    return this.expandedIngredients.has(ingredientId);
+  }
+
+  @HostListener("window:scroll", [])
   onWindowScroll(): void {
     this.showScrollTopButton = window.scrollY > this.scrollThreshold;
   }
 
   public scrollToTop(): void {
-    window.scrollTo({ top: this.scrollLocation, behavior: 'smooth' });
+    window.scrollTo({ top: this.scrollLocation, behavior: "smooth" });
   }
 
   ngOnInit(): void {
@@ -107,8 +285,11 @@ export class InventoryComponent implements OnInit {
     this.inventoryService.getItems().subscribe((items) => {
       this.items = sortItemsByExpirationDate(items);
       this.totalItemsCount = this.items.length;
-      this.expiringSoonItemsCount = this.items.filter((item) => isExpiringSoon(item)).length;
-      this.expiredItemsCount = this.items.filter((item: Item) => isExpired(item)).length;
+      this.expiringSoonItemsCount = this.items.filter((item) =>
+        isExpiringSoon(item)
+      ).length;
+      this.expiredItemsCount =
+        this.items.filter((item: Item) => isExpired(item)).length;
       // Small delay to ensure animation system is ready
       setTimeout(() => {
         this.isLoading.set(false);
@@ -120,6 +301,12 @@ export class InventoryComponent implements OnInit {
     this.locationService.getLocations().subscribe((locations) => {
       this.locations = locations;
     });
+    this.ingredientService.getIngredients().subscribe((ingredients) => {
+      this.ingredients = ingredients;
+    });
+    this.categoryService.getCategories().subscribe((categories) => {
+      this.categories = categories;
+    });
   }
 
   public onAddItem(item: Item): void {
@@ -128,17 +315,24 @@ export class InventoryComponent implements OnInit {
     });
     this.messageService.add({
       severity: this.successNotificationClass,
-      summary:
-        this.translocoService.translate('inventory.notificationService.itemAddedHeader') +
+      summary: this.translocoService.translate(
+        "inventory.notificationService.itemAddedHeader",
+      ) +
         item.name,
-      detail: this.translocoService.translate('inventory.notificationService.itemAddedDescription'),
+      detail: this.translocoService.translate(
+        "inventory.notificationService.itemAddedDescription",
+      ),
     });
   }
 
   public onDeleteItem(item: Item): void {
     this.confirmationService.confirm({
-      header: this.translocoService.translate('inventory.removeConfirmationService.header'),
-      message: this.translocoService.translate('inventory.removeConfirmationService.message'),
+      header: this.translocoService.translate(
+        "inventory.removeConfirmationService.header",
+      ),
+      message: this.translocoService.translate(
+        "inventory.removeConfirmationService.message",
+      ),
       icon: this.removeConfirmationServiceIcon,
       accept: () => {
         this.inventoryService.removeItem(item).subscribe(() => {
@@ -146,23 +340,23 @@ export class InventoryComponent implements OnInit {
         });
         this.messageService.add({
           severity: this.successNotificationClass,
-          summary:
-            this.translocoService.translate('inventory.notificationService.itemRemovalHeader') +
+          summary: this.translocoService.translate(
+            "inventory.notificationService.itemRemovalHeader",
+          ) +
             item.name,
           detail: this.translocoService.translate(
-            'inventory.notificationService.itemRemovalDescription',
+            "inventory.notificationService.itemRemovalDescription",
           ),
         });
       },
       reject: () => {
         this.messageService.add({
           severity: this.errorNotificationClass,
-          summary:
-            this.translocoService.translate(
-              'inventory.notificationService.itemRemovalFailedHeader',
-            ) + item.name,
+          summary: this.translocoService.translate(
+            "inventory.notificationService.itemRemovalFailedHeader",
+          ) + item.name,
           detail: this.translocoService.translate(
-            'inventory.notificationService.itemRemovalFailedCancelledDescription',
+            "inventory.notificationService.itemRemovalFailedCancelledDescription",
           ),
         });
       },
@@ -174,13 +368,18 @@ export class InventoryComponent implements OnInit {
       this.initParameters();
       this.messageService.add({
         severity: this.successNotificationClass,
-        summary:
-          this.translocoService.translate('inventory.notificationService.itemUpdatedHeader') +
+        summary: this.translocoService.translate(
+          "inventory.notificationService.itemUpdatedHeader",
+        ) +
           updatedItem.name,
         detail: this.translocoService.translate(
-          'inventory.notificationService.itemUpdatedDescription',
+          "inventory.notificationService.itemUpdatedDescription",
         ),
       });
     });
+  }
+
+  public onTabChange(tab: InventoryTab): void {
+    this.activeTab = tab;
   }
 }

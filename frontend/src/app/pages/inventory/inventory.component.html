@@ -1,110 +1,195 @@
 <!-- Page Title -->
-<div class="mb-8">
-  <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+<div class="mb-10">
+  <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
     {{ 'inventory.title' | transloco }}
   </h2>
-  <p class="text-gray-500 dark:text-gray-400 mt-1">
+  <p class="text-surface-500 dark:text-surface-400 mt-2 text-sm">
     {{ 'inventory.subtitle' | transloco }}
   </p>
 </div>
 
-<!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-  <pantry-stat-card [title]="'inventory.stats.totalItems' | transloco" [value]="totalItemsCount">
-  </pantry-stat-card>
+<!-- Tab Navigation -->
+<pantry-tab-navigation
+  [activeTab]="activeTab"
+  (tabChange)="onTabChange($event)">
+</pantry-tab-navigation>
 
-  <pantry-stat-card
-    [title]="'inventory.stats.expiringSoon' | transloco"
-    [value]="expiringSoonItemsCount"
-    [valueColor]="'text-[#d97736] dark:text-orange-500'">
-  </pantry-stat-card>
+<!-- Stats Cards - Inventory Items Tab -->
+@if (activeTab === 'items') {
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+    <pantry-stat-card [title]="'inventory.stats.totalItems' | transloco" [value]="totalItemsCount">
+    </pantry-stat-card>
 
-  <pantry-stat-card
-    [title]="'inventory.stats.expired' | transloco"
-    [value]="expiredItemsCount"
-    [valueColor]="'text-red-600 dark:text-red-500'">
-  </pantry-stat-card>
-</div>
+    <pantry-stat-card
+      [title]="'inventory.stats.expiringSoon' | transloco"
+      [value]="expiringSoonItemsCount"
+      [valueColor]="'text-amber-600 dark:text-amber-500'">
+    </pantry-stat-card>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-  <!-- Add New Item Form -->
-  <div class="lg:col-span-1">
-    <pantry-add-item-form
-      (addItem$)="onAddItem($event)"
-      [units]="units"
-      [locations]="locations"></pantry-add-item-form>
+    <pantry-stat-card
+      [title]="'inventory.stats.expired' | transloco"
+      [value]="expiredItemsCount"
+      [valueColor]="'text-red-600 dark:text-red-500'">
+    </pantry-stat-card>
   </div>
+}
 
-  <!-- Inventory List -->
-  <div class="lg:col-span-2">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-        {{ 'inventory.yourInventory' | transloco }}
-      </h3>
+<!-- Stats Cards - Ingredient Groups Tab -->
+@if (activeTab === 'groups') {
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+    <pantry-stat-card
+      [title]="'In Stock'"
+      [value]="inStockIngredientsCount">
+    </pantry-stat-card>
 
-      <div class="flex flex-col sm:flex-row gap-3">
-        <p-iconfield iconPosition="left">
-          <p-inputicon class="pi pi-search text-gray-500 dark:text-gray-400" />
-          <input
-            type="text"
-            pInputText
-            placeholder="{{ 'inventory.filters.searchPlaceholder' | transloco }}"
-            [(ngModel)]="searchQuery"
-            class="w-full sm:w-64 !bg-white dark:!bg-[#1a1a1a] !border-gray-300 dark:!border-gray-800 !text-gray-900 dark:!text-white !rounded-lg focus:!border-primary-500 hover:!border-gray-400 dark:hover:!border-gray-600 transition-colors" />
-        </p-iconfield>
-      </div>
+    <pantry-stat-card
+      [title]="'Out of Stock'"
+      [value]="outOfStockIngredientsCount"
+      [valueColor]="'text-surface-500 dark:text-surface-400'">
+    </pantry-stat-card>
+
+    <pantry-stat-card
+      [title]="'Unassigned Items'"
+      [value]="unassignedItemsCount"
+      [valueColor]="'text-amber-600 dark:text-amber-500'">
+    </pantry-stat-card>
+  </div>
+}
+
+
+<!-- Inventory Items View -->
+@if (activeTab === 'items') {
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Add New Item Form -->
+    <div class="lg:col-span-1">
+      <pantry-add-item-form
+        (addItem$)="onAddItem($event)"
+        [units]="units"
+        [locations]="locations"></pantry-add-item-form>
     </div>
 
-    @if (!isLoading()) {
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
-        @for (item of filteredItems; track item.name; let i = $index) {
-          <pantry-item-card
-            [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
-            [item]="item"
-            [units]="units"
-            [locations]="locations"
-            (delete)="onDeleteItem(item)"
-            (update)="onUpdateItem($event)"></pantry-item-card>
-        }
+    <!-- Inventory List -->
+    <div class="lg:col-span-2">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <h3 class="text-lg font-bold text-surface-900 dark:text-white tracking-tight">
+          {{ 'inventory.yourInventory' | transloco }}
+        </h3>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <p-iconfield iconPosition="left">
+            <p-inputicon class="pi pi-search text-surface-400 dark:text-surface-500" />
+            <input
+              type="text"
+              pInputText
+              placeholder="{{ 'inventory.filters.searchPlaceholder' | transloco }}"
+              [(ngModel)]="searchQuery"
+              class="w-full sm:w-64 !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl focus:!border-primary-500 hover:!border-surface-300 dark:hover:!border-surface-600 transition-colors !backdrop-blur-sm" />
+          </p-iconfield>
+        </div>
       </div>
-    } @else {
-      <div class="flex justify-center items-center h-64">
-        <div
-          class="w-12 h-12 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin dark:border-gray-700 dark:border-t-primary-400"></div>
-      </div>
-    }
+
+      @if (!isLoading()) {
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4">
+          @for (item of filteredItems; track item.name; let i = $index) {
+            <pantry-item-card
+              [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
+              [item]="item"
+              [units]="units"
+              [locations]="locations"
+              (delete)="onDeleteItem(item)"
+              (update)="onUpdateItem($event)"></pantry-item-card>
+          }
+        </div>
+      } @else {
+        <div class="flex justify-center items-center h-64">
+          <div
+            class="w-10 h-10 border-3 border-surface-200 border-t-primary-500 rounded-full animate-spin dark:border-surface-700 dark:border-t-primary-400"></div>
+        </div>
+      }
+    </div>
   </div>
-</div>
+}
+
+<!-- Ingredient Groups View -->
+@if (activeTab === 'groups') {
+  <!-- Header & Add Button -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-xl font-bold text-surface-900 dark:text-white tracking-tight">Ingredient Groups</h2>
+      <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
+        Organize items by clicking assign buttons or drag and drop
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <p-button
+        icon="pi pi-plus"
+        label="Add Group"
+        styleClass="!bg-gradient-to-r !from-primary-600 !to-primary-500 hover:!from-primary-700 hover:!to-primary-600 !border-0 !text-white !rounded-xl !shadow-md !shadow-primary-500/20">
+      </p-button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-3 gap-8 items-start">
+    <div class="col-span-1">
+      <pantry-unassigned-items-container [unassignedItems]="unassignedItems" [categoryGroups]="categoryGroups"
+        [loading]="loading" (assignItem)="onAssignItem($event)">
+      </pantry-unassigned-items-container>
+    </div>
+    <div class="col-span-2">
+      <pantry-ingredient-group-container
+        [categoryGroups]="categoryGroups"
+        [categories]="categories"
+        [searchQuery]="searchQuery"
+        [selectedCategory]="selectedCategory"
+        (searchChange)="searchQuery = $event"
+      (categorySelect)="selectedCategory = $event">
+    </pantry-ingredient-group-container>
+    </div>
+  </div>
+}
 
 <p-toast></p-toast>
 <p-confirmDialog [dismissableMask]="dismissableMask">
   <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
     @if (message) {
-      <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
-        <i [class]="message.icon" class="!text-5xl"></i>
-        <span class="font-bold text-2xl block mb-2 mt-6">{{ message.header }}</span>
-        <p class="mb-0">{{ message.message }}</p>
-        <div class="flex items-center gap-2 mt-6">
-          <p-button
-            label="{{ 'inventory.removeConfirmationService.cancelButton' | transloco }}"
-            [outlined]="outlinedCancelButton"
-            (onClick)="onReject()"
-            styleClass="w-32"></p-button>
-          <p-button
-            label="{{ 'inventory.removeConfirmationService.removeButton' | transloco }}"
-            (onClick)="onAccept()"
-            styleClass="w-32"></p-button>
+      <div class="glass-card rounded-2xl p-6 max-w-md">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/20 flex items-center justify-center shrink-0">
+            <i [class]="message.icon" class="text-xl text-primary-600 dark:text-primary-400"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-surface-900 dark:text-white mb-2">
+              {{ message.header }}
+            </h3>
+            <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">
+              {{ message.message }}
+            </p>
+            <div class="flex gap-3 justify-end">
+              <button
+                (click)="onReject()"
+                class="px-4 py-2 text-sm font-medium text-surface-700 dark:text-surface-300 bg-white/60 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-700 rounded-xl hover:bg-white dark:hover:bg-surface-800 transition-all">
+                {{ 'inventory.removeConfirmationService.cancelButton' | transloco }}
+              </button>
+              <button
+                (click)="onAccept()"
+                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700 transition-all shadow-sm shadow-red-500/20">
+                {{ 'inventory.removeConfirmationService.removeButton' | transloco }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     }
   </ng-template>
 </p-confirmDialog>
 
+<!-- Scroll to Top Button -->
 @if (showScrollTopButton) {
   <button
     (click)="scrollToTop()"
     @fadeInOut
-    class="fixed bottom-8 right-8 p-3 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-all duration-300 z-50 cursor-pointer">
-    <i class="pi pi-arrow-up text-xl"></i>
+    class="fixed bottom-8 right-8 p-3.5 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-2xl shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/35 transition-all duration-300 z-50 cursor-pointer hover:scale-110 active:scale-95"
+    aria-label="Scroll to top">
+    <i class="pi pi-arrow-up text-lg"></i>
   </button>
 }

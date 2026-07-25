@@ -1,12 +1,17 @@
 <div
-  class="bg-white dark:bg-[#1a1a1a] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors duration-200">
-  <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">
-    {{ title() }}
-  </h3>
-  <div class="text-3xl font-bold mt-2" [ngClass]="valueColor()">
+  class="glass-card card-shine rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/5 dark:hover:shadow-primary-500/5 group">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-medium text-surface-500 dark:text-surface-400 tracking-wide uppercase">
+      {{ title() }}
+    </h3>
+    <div class="w-8 h-8 rounded-xl bg-primary-500/10 dark:bg-primary-500/10 flex items-center justify-center transition-all duration-300 group-hover:bg-primary-500/15 group-hover:scale-110">
+      <div class="w-2 h-2 rounded-full bg-primary-500"></div>
+    </div>
+  </div>
+  <div class="text-4xl font-extrabold tracking-tight" [ngClass]="valueColor()">
     {{ displayValue() }}
   </div>
   @if (subtitle()) {
-    <p class="text-xs text-gray-400 mt-4">{{ subtitle() }}</p>
+    <p class="text-xs text-surface-400 dark:text-surface-500 mt-3 font-medium">{{ subtitle() }}</p>
   }
 </div>

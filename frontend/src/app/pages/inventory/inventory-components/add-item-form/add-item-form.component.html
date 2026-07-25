@@ -1,35 +1,35 @@
 <div
-  class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 transition-colors duration-200">
-  <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
+  class="glass-card rounded-2xl p-6 transition-all duration-300">
+  <h3 class="text-lg font-bold text-surface-900 dark:text-white mb-6 tracking-tight">
     {{ 'addItemForm.title' | transloco }}
   </h3>
   <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()" class="space-y-4">
     <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" for="add-name"
-        >{{ 'addItemForm.itemName' | transloco }}<span class="text-red-500">*</span></label
+      <label class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider" for="add-name"
+        >{{ 'addItemForm.itemName' | transloco }}<span class="text-red-500 ml-0.5">*</span></label
       >
       <input
         pInputText
         id="add-name"
         formControlName="name"
         [placeholder]="'addItemForm.itemNamePlaceholder' | transloco"
-        class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white" />
+        class="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl !backdrop-blur-sm focus:!border-primary-500" />
     </div>
 
     <div class="grid gap-4">
       <div>
         <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
           for="add-location">
           {{ 'addItemForm.location' | transloco }}
-          <span class="text-red-500">*</span>
+          <span class="text-red-500 ml-0.5">*</span>
         </label>
         <p-select
           inputId="add-location"
           [options]="locations"
           formControlName="location"
           optionLabel="name"
-          class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"
+          class="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700"
           appendTo="body"></p-select>
       </div>
     </div>
@@ -37,62 +37,62 @@
     <div class="grid grid-cols-2 gap-4">
       <div>
         <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
           for="add-quantity">
           {{ 'addItemForm.quantity' | transloco }}
-          <span class="text-red-500">*</span>
+          <span class="text-red-500 ml-0.5">*</span>
         </label>
         <p-inputnumber
           inputId="add-quantity"
           formControlName="quantity"
           class="w-full"
-          inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
+          inputStyleClass="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl"
           [min]="1"
           [showButtons]="true"></p-inputnumber>
       </div>
       <div>
         <label
-          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
           for="add-unit"
-          >{{ 'addItemForm.unit' | transloco }}<span class="text-red-500">*</span></label
+          >{{ 'addItemForm.unit' | transloco }}<span class="text-red-500 ml-0.5">*</span></label
         >
         <p-select
           inputId="add-unit"
           [options]="units"
           formControlName="unit"
           optionLabel="name"
-          class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700"
+          class="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700"
           appendTo="body"></p-select>
       </div>
     </div>
 
     <div>
       <label
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
         for="add-purchaseDate">
         {{ 'addItemForm.purchaseDate' | transloco }}
-        <span class="text-red-500">*</span>
+        <span class="text-red-500 ml-0.5">*</span>
       </label>
       <p-datepicker
         inputId="add-purchaseDate"
         formControlName="purchaseDate"
         class="w-full"
-        inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
+        inputStyleClass="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl"
         [showIcon]="true"
         appendTo="body"></p-datepicker>
     </div>
     <div>
       <label
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
         for="add-expirationDate">
         {{ 'addItemForm.expirationDate' | transloco }}
-        <span class="text-red-500">*</span>
+        <span class="text-red-500 ml-0.5">*</span>
       </label>
       <p-datepicker
         inputId="add-expirationDate"
         formControlName="expirationDate"
         class="w-full"
-        inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
+        inputStyleClass="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl"
         [showIcon]="true"
         [showButtonBar]="true"
         appendTo="body"></p-datepicker>
@@ -106,7 +106,7 @@
       <div class="flex flex-col gap-4">
         <div>
           <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
             for="add-openedDate">
             {{ 'addItemForm.openedDate' | transloco }}
           </label>
@@ -114,14 +114,14 @@
             inputId="add-openedDate"
             formControlName="openedDate"
             class="w-full"
-            inputStyleClass="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"
+            inputStyleClass="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl"
             [showIcon]="true"
             [showButtonBar]="true"
             appendTo="body"></p-datepicker>
         </div>
         <div>
           <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
             for="add-notes">
             {{ 'addItemForm.notes' | transloco }}
           </label>
@@ -131,7 +131,7 @@
             formControlName="notes"
             rows="3"
             [placeholder]="'addItemForm.notesPlaceholder' | transloco"
-            class="w-full !bg-white dark:!bg-[#262626] !border-gray-300 dark:!border-gray-700 !text-gray-900 dark:!text-white"></textarea>
+            class="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl"></textarea>
         </div>
       </div>
     </p-panel>
@@ -139,7 +139,7 @@
     <button
       type="submit"
       [disabled]="!addItemForm.valid"
-      class="w-full bg-primary-600 dark:bg-primary-600 text-white font-medium py-2.5 rounded-md hover:bg-primary-700 dark:hover:bg-primary-700 transition-colors shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-600 disabled:dark:hover:bg-primary-600">
+      class="w-full bg-gradient-to-r from-primary-600 to-primary-500 text-white font-semibold py-3 rounded-xl hover:from-primary-700 hover:to-primary-600 transition-all duration-300 shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:from-primary-600 disabled:hover:to-primary-500 disabled:shadow-none hover:scale-[1.01] active:scale-[0.99]">
       {{ 'addItemForm.addButton' | transloco }}
     </button>
   </form>

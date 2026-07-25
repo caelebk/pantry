@@ -1,0 +1,15 @@
+<div class="flex items-center gap-3 w-full cursor-pointer transition-colors rounded-md" (click)="toggleExpand.emit(ingredient.id)">
+  <i
+    [class.pi-chevron-right]="!isExpanded"
+    [class.pi-chevron-down]="isExpanded"
+    class="pi text-gray-500 dark:text-gray-400 text-sm transition-transform shrink-0">
+  </i>
+  <div class="flex items-center justify-between flex-1 min-w-0">
+    <div class="flex items-center overflow-hidden">
+      <p class="text-sm text-gray-900 dark:text-white truncate">{{ ingredient.name }}</p>
+    </div>
+    <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 shrink-0 whitespace-nowrap">
+      {{ ingredient.itemCount }} {{ ingredient.itemCount === 1 ? 'item' : 'items' }}
+    </span>
+  </div>
+</div>
