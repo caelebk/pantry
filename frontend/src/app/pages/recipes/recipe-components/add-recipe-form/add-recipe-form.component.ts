@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { CreateRecipeDTO } from '@models/recipe.model';
@@ -36,9 +36,14 @@ export class AddRecipeFormComponent implements OnInit {
   private readonly ingredientService = inject(IngredientService);
   private readonly unitService = inject(UnitService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   availableIngredients: Ingredient[] = [];
   availableUnits: Unit[] = [];
+  ingredientMap = new Map<string, Ingredient>();
+
+  isEditMode = false;
+  editingRecipeId: string | null = null;
 
   name = '';
   description = '';
@@ -56,17 +61,70 @@ export class AddRecipeFormComponent implements OnInit {
   isSubmitting = false;
 
   ngOnInit(): void {
-    this.ingredientService.getIngredients().subscribe({
-      next: (ing) => (this.availableIngredients = ing),
-      error: (err) => console.error('Failed to load ingredients', err),
-    });
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEditMode = true;
+      this.editingRecipeId = id;
+    }
 
     this.unitService.getUnits().subscribe({
       next: (u) => (this.availableUnits = u),
       error: (err) => console.error('Failed to load units', err),
     });
 
-    this.addIngredientRow();
+    this.ingredientService.getIngredients().subscribe({
+      next: (ing) => {
+        this.availableIngredients = ing;
+        ing.forEach((i) => this.ingredientMap.set(i.id, i));
+
+        if (this.isEditMode && this.editingRecipeId) {
+          this.loadRecipeForEditing(this.editingRecipeId);
+        } else if (this.recipeIngredients.length === 0) {
+          this.addIngredientRow();
+        }
+      },
+      error: (err) => console.error('Failed to load ingredients', err),
+    });
+  }
+
+  private loadRecipeForEditing(id: string): void {
+    this.recipeService.getRecipeById(id).subscribe({
+      next: (recipe) => {
+        this.name = recipe.name;
+        this.description = recipe.description || '';
+        this.servings = recipe.servings || 4;
+        this.prepTime = recipe.prepTime || 0;
+        this.cookTime = recipe.cookTime || 0;
+        this.difficultyId = recipe.difficultyId || 1;
+        this.tags = recipe.tags ? [...recipe.tags] : [];
+
+        if (recipe.ingredients && recipe.ingredients.length > 0) {
+          this.recipeIngredients = recipe.ingredients.map((ing) => ({
+            ingredientId: ing.ingredientId,
+            quantity: ing.quantity,
+            unitId: ing.unitId || null,
+            searchFilter: this.ingredientMap.get(ing.ingredientId)?.name || '',
+            dropdownOpen: false,
+          }));
+        } else {
+          this.addIngredientRow();
+        }
+
+        if (recipe.steps && recipe.steps.length > 0) {
+          this.recipeSteps = recipe.steps.map((st) => ({
+            instructionText: st.instructionText,
+            timerSeconds: st.timerSeconds || null,
+          }));
+        } else {
+          this.recipeSteps = [{ instructionText: '', timerSeconds: null }];
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load recipe for edit', err);
+        alert('Could not load recipe details.');
+        this.router.navigate(['/recipes']);
+      },
+    });
   }
 
   get totalTime(): number {
@@ -74,7 +132,11 @@ export class AddRecipeFormComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/recipes']);
+    if (this.isEditMode && this.editingRecipeId) {
+      this.router.navigate(['/recipes', this.editingRecipeId]);
+    } else {
+      this.router.navigate(['/recipes']);
+    }
   }
 
   // --- Tag Handlers ---
@@ -169,16 +231,25 @@ export class AddRecipeFormComponent implements OnInit {
     };
 
     this.isSubmitting = true;
-    this.recipeService.createRecipe(dto).subscribe({
-      next: () => {
+
+    const request$ = this.isEditMode && this.editingRecipeId
+      ? this.recipeService.updateRecipe(this.editingRecipeId, dto)
+      : this.recipeService.createRecipe(dto);
+
+    request$.subscribe({
+      next: (res) => {
         this.isSubmitting = false;
         this.recipeCreated.emit();
-        this.router.navigate(['/recipes']);
+        if (this.isEditMode) {
+          this.router.navigate(['/recipes', res.id]);
+        } else {
+          this.router.navigate(['/recipes']);
+        }
       },
       error: (err) => {
         this.isSubmitting = false;
-        console.error('Failed to create recipe', err);
-        alert('Failed to create recipe. Please check inputs.');
+        console.error('Failed to save recipe', err);
+        alert('Failed to save recipe. Please check inputs.');
       },
     });
   }

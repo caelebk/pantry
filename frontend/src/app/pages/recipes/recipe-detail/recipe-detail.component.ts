@@ -1,35 +1,43 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
-import { IngredientService } from '../../../../services/inventory/ingredient.service';
-import { ItemService } from '../../../../services/inventory/item.service';
-import { UnitService } from '../../../../services/inventory/unit.service';
+import { IngredientService } from '../../../services/inventory/ingredient.service';
+import { ItemService } from '../../../services/inventory/item.service';
+import { UnitService } from '../../../services/inventory/unit.service';
+import { RecipeService } from '../../../services/recipe.service';
 
 @Component({
-  selector: 'pantry-recipe-card',
+  selector: 'pantry-recipe-detail',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
-  templateUrl: './recipe-card.component.html',
-  styles: [':host { display: block; }'],
+  templateUrl: './recipe-detail.component.html',
 })
-export class RecipeCardComponent implements OnInit {
-  @Input() recipe: Recipe = {} as Recipe;
-  @Output() delete = new EventEmitter<string>();
-
+export class RecipeDetailComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly recipeService = inject(RecipeService);
   private readonly ingredientService = inject(IngredientService);
   private readonly unitService = inject(UnitService);
   private readonly itemService = inject(ItemService);
-  private readonly router = inject(Router);
+
+  recipe: Recipe | null = null;
+  isLoading = true;
 
   ingredientMap = new Map<string, Ingredient>();
   unitMap = new Map<number, Unit>();
   availableBaseMap = new Map<string, number>();
 
   ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) {
+      this.router.navigate(['/recipes']);
+      return;
+    }
+
     this.ingredientService.getIngredients().subscribe({
       next: (ingredients) => {
         ingredients.forEach((ing) => this.ingredientMap.set(ing.id, ing));
@@ -42,10 +50,6 @@ export class RecipeCardComponent implements OnInit {
       },
     });
 
-    this.loadPantryItems();
-  }
-
-  private loadPantryItems(): void {
     this.itemService.getItems().subscribe({
       next: (items) => {
         const map = new Map<string, number>();
@@ -63,9 +67,26 @@ export class RecipeCardComponent implements OnInit {
         this.availableBaseMap = map;
       },
     });
+
+    this.loadRecipe(id);
+  }
+
+  loadRecipe(id: string): void {
+    this.isLoading = true;
+    this.recipeService.getRecipeById(id).subscribe({
+      next: (r) => {
+        this.recipe = r;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load recipe details', err);
+        this.isLoading = false;
+      },
+    });
   }
 
   get difficultyText(): string {
+    if (!this.recipe) return '';
     if (this.recipe.difficulty) return this.recipe.difficulty;
     switch (this.recipe.difficultyId) {
       case 1:
@@ -108,49 +129,36 @@ export class RecipeCardComponent implements OnInit {
     };
   }
 
-  // Missing ingredients come FIRST in the list
   get sortedIngredients(): { ingredientId: string; quantity: number; unitId?: number | null }[] {
-    if (!this.recipe.ingredients) return [];
+    if (!this.recipe || !this.recipe.ingredients) return [];
     return [...this.recipe.ingredients].sort((a, b) => {
       const availA = this.getIngredientAvailability(a).isAvailable ? 1 : 0;
       const availB = this.getIngredientAvailability(b).isAvailable ? 1 : 0;
-      return availA - availB; // 0 (Missing) comes BEFORE 1 (In Stock)
+      return availA - availB; // Missing comes FIRST
     });
   }
 
-  get ingredientStats(): {
-    availableCount: number;
-    totalCount: number;
-    percentage: number;
-    isFullyMakeable: boolean;
-  } {
-    if (!this.recipe.ingredients || this.recipe.ingredients.length === 0) {
-      return { availableCount: 0, totalCount: 0, percentage: 100, isFullyMakeable: true };
-    }
-    let availableCount = 0;
-    for (const ing of this.recipe.ingredients) {
-      if (this.getIngredientAvailability(ing).isAvailable) {
-        availableCount++;
-      }
-    }
-    const totalCount = this.recipe.ingredients.length;
-    const percentage = Math.round((availableCount / totalCount) * 100);
-    return {
-      availableCount,
-      totalCount,
-      percentage,
-      isFullyMakeable: availableCount === totalCount,
-    };
+  get totalTime(): number {
+    if (!this.recipe) return 0;
+    return (this.recipe.prepTime || 0) + (this.recipe.cookTime || 0);
   }
 
-  viewDetails(): void {
-    this.router.navigate(['/recipes', this.recipe.id]);
+  goBack(): void {
+    this.router.navigate(['/recipes']);
   }
 
-  onDelete(event: Event): void {
-    event.stopPropagation();
-    if (confirm(`Are you sure you want to delete "${this.recipe.name}"?`)) {
-      this.delete.emit(this.recipe.id);
+  goToEdit(): void {
+    if (this.recipe) {
+      this.router.navigate(['/recipes', this.recipe.id, 'edit']);
+    }
+  }
+
+  deleteRecipe(): void {
+    if (this.recipe && confirm(`Are you sure you want to delete "${this.recipe.name}"?`)) {
+      this.recipeService.deleteRecipe(this.recipe.id).subscribe({
+        next: () => this.router.navigate(['/recipes']),
+        error: (err) => console.error('Failed to delete recipe', err),
+      });
     }
   }
 }

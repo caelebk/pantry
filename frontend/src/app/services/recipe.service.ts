@@ -36,6 +36,12 @@ export class RecipeService {
       .pipe(mapResponseData<Recipe>());
   }
 
+  updateRecipe(id: string, dto: CreateRecipeDTO): Observable<Recipe> {
+    return this.http
+      .put<ApiResponse<Recipe>>(`${this.apiUrl}/${id}`, dto)
+      .pipe(mapResponseData<Recipe>());
+  }
+
   deleteRecipe(id: string): Observable<boolean> {
     return this.http
       .delete<ApiResponse<boolean>>(`${this.apiUrl}/${id}`)
