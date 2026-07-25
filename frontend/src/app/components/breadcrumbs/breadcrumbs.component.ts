@@ -49,6 +49,8 @@ export class BreadcrumbsComponent implements OnInit {
 
       if (segments[1] === 'new') {
         items.push({ label: 'Add New Item', icon: 'pi pi-plus-circle' });
+      } else if (segments[2] === 'edit') {
+        items.push({ label: 'Edit Item', icon: 'pi pi-pencil' });
       }
     } else if (firstSegment === 'recipes') {
       items.push({ label: 'Recipes', url: '/recipes', icon: 'pi pi-book' });

@@ -156,17 +156,3 @@
       styleClass="p-button-text"></p-button>
   </ng-template>
 </p-dialog>
-
-<p-dialog
-  [visible]="displayEditDialog()"
-  (visibleChange)="displayEditDialog.set($event)"
-  [modal]="true"
-  [dismissableMask]="true"
-  [style]="{ width: '90vw', maxWidth: '600px' }"
-  [header]="'Edit ' + item().name">
-  <pantry-edit-item-form
-    [itemToEdit]="item()"
-    [units]="units()"
-    [locations]="locations()"
-    (updateItem$)="onEditItem($event)"></pantry-edit-item-form>
-</p-dialog>

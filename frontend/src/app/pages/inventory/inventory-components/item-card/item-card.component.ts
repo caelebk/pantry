@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Output, computed, input, signal } from '@angular/core';
+import { Component, inject, Output, computed, input, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
@@ -11,14 +11,18 @@ import { Subject } from 'rxjs';
 
 import { EditItemFormComponent } from '../edit-item-form/edit-item-form.component';
 
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'pantry-item-card',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, DialogModule, ButtonModule, EditItemFormComponent],
+  imports: [CommonModule, TranslocoModule, DialogModule, ButtonModule],
   templateUrl: './item-card.component.html',
   styles: [':host { display: block; height: 100%; }'],
 })
 export class ItemCardComponent {
+  private readonly router = inject(Router);
+
   item = input.required<Item>();
   units = input.required<Unit[]>();
   locations = input.required<Location[]>();
@@ -34,19 +38,16 @@ export class ItemCardComponent {
   );
 
   public displayNoteDialog = signal(false);
-  public displayEditDialog = signal(false);
 
   showNote() {
     this.displayNoteDialog.set(true);
   }
 
-  showEdit() {
-    this.displayEditDialog.set(true);
-  }
-
-  onEditItem(updatedItem: Item) {
-    this.update.next(updatedItem);
-    this.displayEditDialog.set(false);
+  showEdit(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.router.navigate(['/inventory', this.item().id, 'edit']);
   }
 
   incrementQuantity(event: Event) {

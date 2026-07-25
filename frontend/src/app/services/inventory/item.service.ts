@@ -51,6 +51,20 @@ export class ItemService {
       .pipe(mapResponseData<void>());
   }
 
+  getItemById(id: string): Observable<Item> {
+    return forkJoin({
+      item: this.http.get<ApiResponse<ItemDTO>>(`${this.apiUrl}/${id}`).pipe(mapResponseData<ItemDTO>()),
+      units: this.unitService.getUnits(),
+      locations: this.locationService.getLocations(),
+    }).pipe(
+      map(({ item, units, locations }) => {
+        const unitMap = new Map(units.map((u) => [u.id, u]));
+        const locationMap = new Map(locations.map((l) => [l.id, l]));
+        return mapItemDTOToItem(item, unitMap, locationMap);
+      }),
+    );
+  }
+
   updateItem(item: Item): Observable<ItemDTO> {
     const id: string = item.id;
     const itemDTO: UpdateItemDTO = mapItemToUpdateItemDTO(item);
