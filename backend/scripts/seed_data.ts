@@ -403,6 +403,42 @@ export const seedData = {
   ],
   recipes: [
     {
+      name: 'Fresh Fruit Salad',
+      description: 'A refreshing salad made with fresh apples, bananas, and a drizzle of honey.',
+      difficulty: 'Easy',
+      servings: 2,
+      prep_time: 5,
+      cook_time: 0,
+      ingredients: [
+        { ingredient: 'Apples', quantity: 2, unit: 'piece' },
+        { ingredient: 'Bananas', quantity: 2, unit: 'piece' },
+        { ingredient: 'Honey', quantity: 1, unit: 'tablespoon' },
+      ],
+      steps: [
+        { step_number: 1, instruction_text: 'Dice apples and slice bananas into a bowl.' },
+        { step_number: 2, instruction_text: 'Drizzle with honey and toss gently to serve.' },
+      ],
+    },
+    {
+      name: 'Simple Egg Fried Rice',
+      description: 'A quick 10-minute fried rice made with basic pantry staples.',
+      difficulty: 'Easy',
+      servings: 2,
+      prep_time: 5,
+      cook_time: 10,
+      ingredients: [
+        { ingredient: 'Basmati Rice', quantity: 200, unit: 'gram' },
+        { ingredient: 'Large Eggs', quantity: 2, unit: 'piece' },
+        { ingredient: 'Olive Oil', quantity: 1, unit: 'tablespoon' },
+        { ingredient: 'Salt', quantity: 1, unit: 'gram' },
+      ],
+      steps: [
+        { step_number: 1, instruction_text: 'Heat olive oil in a skillet over medium-high heat.' },
+        { step_number: 2, instruction_text: 'Scramble the eggs until just cooked, then add cooked rice and salt.' },
+        { step_number: 3, instruction_text: 'Stir fry for 3-5 minutes until steaming hot.' },
+      ],
+    },
+    {
       name: 'Classic Pancakes',
       description: 'Fluffy and golden pancakes, perfect for a weekend breakfast.',
       difficulty: 'Easy',

@@ -265,12 +265,13 @@ export class RecipeService {
       const db = getDB();
 
       // 1. Calculate available base quantities per ingredient in pantry
-      // items joined with units to get to_base_factor
+      // items joined with units to get to_base_factor (excluding expired items)
       const pantryRows = db.prepare(`
         SELECT i.ingredient_id, i.quantity, COALESCE(u.to_base_factor, 1.0) as to_base_factor
         FROM items i
         LEFT JOIN units u ON i.unit_id = u.id
         WHERE i.ingredient_id IS NOT NULL
+          AND (i.expiration_date IS NULL OR datetime(i.expiration_date) >= datetime('now'))
       `).all() as { ingredient_id: string; quantity: number; to_base_factor: number }[];
 
       const availableMap = new Map<string, number>();
@@ -300,7 +301,8 @@ export class RecipeService {
           const requiredBaseQty = reqIng.quantity * factor;
           const availableBaseQty = availableMap.get(reqIng.ingredientId) || 0;
 
-          if (availableBaseQty < requiredBaseQty) {
+          // Epsilon margin for floating-point comparison
+          if (availableBaseQty < requiredBaseQty - 1e-6) {
             return false;
           }
         }

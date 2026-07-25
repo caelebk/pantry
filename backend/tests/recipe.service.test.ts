@@ -36,7 +36,7 @@ function createTestDB(): Database {
       quantity REAL NOT NULL,
       unit_id INTEGER NOT NULL,
       location_id INTEGER NOT NULL,
-      expiration_date TEXT NOT NULL,
+      expiration_date TEXT,
       opened_date TEXT,
       purchase_date TEXT NOT NULL,
       notes TEXT,
@@ -79,7 +79,6 @@ function createTestDB(): Database {
   return db;
 }
 
-const mockRecipeId = '123e4567-e89b-12d3-a456-426614174000';
 const mockIngId = '00000000-0000-0000-0000-000000000001';
 
 Deno.test('RecipeService - create & findById - success', async () => {
@@ -147,7 +146,7 @@ Deno.test('RecipeService - delete - success', async () => {
   db.close();
 });
 
-Deno.test('RecipeService - getAvailableRecipes - calculates makeable recipes', async () => {
+Deno.test('RecipeService - getAvailableRecipes - calculates unit factor conversion correctly', async () => {
   const db = createTestDB();
   setDB(db);
 
@@ -162,7 +161,7 @@ Deno.test('RecipeService - getAvailableRecipes - calculates makeable recipes', a
   );
 
   // Recipe 1 needs 500g Flour (Available: 1000g >= 500g -> TRUE)
-  const r1 = await recipeService.create({
+  await recipeService.create({
     name: 'Bread',
     ingredients: [{ ingredientId: flourId, quantity: 500, unitId: 1 }],
   });
@@ -176,6 +175,62 @@ Deno.test('RecipeService - getAvailableRecipes - calculates makeable recipes', a
   const available = await recipeService.getAvailableRecipes();
   assertEquals(available.length, 1);
   assertEquals(available[0].name, 'Bread');
+
+  db.close();
+});
+
+Deno.test('RecipeService - getAvailableRecipes - excludes expired pantry items', async () => {
+  const db = createTestDB();
+  setDB(db);
+
+  db.prepare('INSERT INTO units (id, name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?, ?)').run(1, 'liter', 'L', 'volume', 1000);
+
+  const milkId = 'milk-uuid-1';
+
+  // Expired Milk: 2L expired 5 days ago
+  db.prepare('INSERT INTO items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
+    'item-expired', milkId, 'Expired Milk', 2, 1, 1, '2020-01-01T00:00:00.000Z', '2019-12-25T00:00:00.000Z',
+  );
+
+  // Recipe requires 1L Milk
+  await recipeService.create({
+    name: 'Cereal Bowl',
+    ingredients: [{ ingredientId: milkId, quantity: 1, unitId: 1 }],
+  });
+
+  const available = await recipeService.getAvailableRecipes();
+  assertEquals(available.length, 0, 'Expired milk should not count toward available recipes');
+
+  db.close();
+});
+
+Deno.test('RecipeService - getAvailableRecipes - sums multiple pantry items for same ingredient', async () => {
+  const db = createTestDB();
+  setDB(db);
+
+  db.prepare('INSERT INTO units (id, name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?, ?)').run(1, 'piece', 'pc', 'count', 1);
+
+  const eggId = 'egg-uuid-1';
+
+  // Batch 1: 3 eggs
+  db.prepare('INSERT INTO items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
+    'eggs-1', eggId, 'Half Carton', 3, 1, 1, '2030-01-01', '2026-01-01',
+  );
+
+  // Batch 2: 3 eggs
+  db.prepare('INSERT INTO items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
+    'eggs-2', eggId, 'Another Carton', 3, 1, 1, '2030-01-01', '2026-01-01',
+  );
+
+  // Recipe requires 5 eggs (Total available = 3 + 3 = 6 >= 5 -> TRUE)
+  await recipeService.create({
+    name: 'Omelette',
+    ingredients: [{ ingredientId: eggId, quantity: 5, unitId: 1 }],
+  });
+
+  const available = await recipeService.getAvailableRecipes();
+  assertEquals(available.length, 1);
+  assertEquals(available[0].name, 'Omelette');
 
   db.close();
 });
