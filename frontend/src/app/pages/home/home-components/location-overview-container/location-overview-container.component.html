@@ -1,0 +1,48 @@
+<div
+  class="glass-card rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/5">
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h3 class="text-base font-bold text-surface-900 dark:text-white tracking-tight flex items-center gap-2">
+        <i class="pi pi-building text-primary-500"></i>
+        {{ 'home.locations.title' | transloco }}
+      </h3>
+      <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
+        {{ 'home.locations.subtitle' | transloco }}
+      </p>
+    </div>
+    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-500/10 text-primary-600 dark:text-primary-400">
+      {{ items().length }} Items
+    </span>
+  </div>
+
+  <div class="space-y-4">
+    @for (stat of locationStats(); track stat.location.id) {
+      <div>
+        <div class="flex items-center justify-between text-xs mb-1.5 font-medium">
+          <div class="flex items-center gap-2 text-surface-800 dark:text-surface-200">
+            <i [class]="stat.icon" class="text-surface-500 dark:text-surface-400"></i>
+            <span>{{ stat.location.name }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-surface-900 dark:text-white font-bold">{{ stat.count }} items</span>
+            <span class="text-surface-400 dark:text-surface-500 text-[11px]">({{ stat.percentage }}%)</span>
+          </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="h-2 w-full bg-surface-200/60 dark:bg-surface-800/80 rounded-full overflow-hidden">
+          <div
+            class="h-full rounded-full bg-gradient-to-r transition-all duration-500"
+            [ngClass]="stat.colorClass"
+            [style.width.%]="stat.percentage">
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (locationStats().length === 0) {
+      <div class="text-center py-4 text-xs text-surface-400 dark:text-surface-500">
+        No location distribution available
+      </div>
+    }
+  </div>
+</div>
