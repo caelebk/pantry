@@ -4,11 +4,12 @@ import { Event, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { HeaderComponent } from './components/header/header.component';
 import { Tab } from './components/tabs/tabs.model';
+import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 
 @Component({
   selector: 'pantry-root',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, RouterOutlet],
+  imports: [CommonModule, HeaderComponent, RouterOutlet, ToastContainerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

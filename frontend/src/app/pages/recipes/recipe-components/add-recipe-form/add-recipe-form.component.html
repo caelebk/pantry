@@ -44,6 +44,50 @@
     </div>
   </div>
 
+  <!-- Validation Error Callout Banner -->
+  @if (validationErrors.length > 0) {
+    <div class="mb-6 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 p-4 shadow-sm">
+      <div class="flex items-start gap-3">
+        <div class="p-1 bg-rose-100 dark:bg-rose-900/50 rounded-lg text-rose-600 dark:text-rose-400 shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          </svg>
+        </div>
+        <div class="space-y-1">
+          <h4 class="text-sm font-bold text-rose-900 dark:text-rose-200">
+            Please resolve the following issues before submitting:
+          </h4>
+          <ul class="list-disc list-inside text-xs text-rose-700 dark:text-rose-300 space-y-0.5">
+            @for (err of validationErrors; track err) {
+              <li>{{ err }}</li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Server / Network Error Callout Banner -->
+  @if (serverErrorBanner) {
+    <div class="mb-6 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 p-4 shadow-sm">
+      <div class="flex items-start gap-3">
+        <div class="p-1 bg-amber-100 dark:bg-amber-900/50 rounded-lg text-amber-600 dark:text-amber-400 shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.008v.008H12v-.008z" />
+          </svg>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-amber-900 dark:text-amber-200">
+            Server / Network Error
+          </h4>
+          <p class="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+            {{ serverErrorBanner }}
+          </p>
+        </div>
+      </div>
+    </div>
+  }
+
   <form (submit)="$event.preventDefault(); submitForm()">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <!-- Left Column: Basic Details -->

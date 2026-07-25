@@ -9,6 +9,7 @@ import { Unit } from '@models/unit.model';
 import { IngredientService } from '../../../../services/inventory/ingredient.service';
 import { UnitService } from '../../../../services/inventory/unit.service';
 import { RecipeService } from '../../../../services/recipe.service';
+import { ToastService } from '../../../../services/toast.service';
 
 interface FormIngredientRow {
   ingredientId: string;
@@ -35,6 +36,7 @@ export class AddRecipeFormComponent implements OnInit {
   private readonly recipeService = inject(RecipeService);
   private readonly ingredientService = inject(IngredientService);
   private readonly unitService = inject(UnitService);
+  private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -59,6 +61,8 @@ export class AddRecipeFormComponent implements OnInit {
   recipeSteps: FormStepRow[] = [{ instructionText: '', timerSeconds: null }];
 
   isSubmitting = false;
+  validationErrors: string[] = [];
+  serverErrorBanner: string | null = null;
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -69,7 +73,10 @@ export class AddRecipeFormComponent implements OnInit {
 
     this.unitService.getUnits().subscribe({
       next: (u) => (this.availableUnits = u),
-      error: (err) => console.error('Failed to load units', err),
+      error: (err) => {
+        console.error('Failed to load units', err);
+        this.toastService.showError('Unable to load units from server.', 'Network Error');
+      },
     });
 
     this.ingredientService.getIngredients().subscribe({
@@ -83,7 +90,10 @@ export class AddRecipeFormComponent implements OnInit {
           this.addIngredientRow();
         }
       },
-      error: (err) => console.error('Failed to load ingredients', err),
+      error: (err) => {
+        console.error('Failed to load ingredients', err);
+        this.toastService.showError('Unable to load ingredients from server.', 'Network Error');
+      },
     });
   }
 
@@ -121,7 +131,7 @@ export class AddRecipeFormComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load recipe for edit', err);
-        alert('Could not load recipe details.');
+        this.toastService.showError('Could not load recipe details.', 'Not Found');
         this.router.navigate(['/recipes']);
       },
     });
@@ -196,10 +206,49 @@ export class AddRecipeFormComponent implements OnInit {
     this.recipeSteps.splice(index, 1);
   }
 
+  validateForm(): boolean {
+    this.validationErrors = [];
+    this.serverErrorBanner = null;
+
+    if (!this.name.trim()) {
+      this.validationErrors.push('Recipe name is required.');
+    }
+
+    if (Number(this.servings) <= 0) {
+      this.validationErrors.push('Servings must be at least 1.');
+    }
+
+    if (Number(this.prepTime) < 0 || Number(this.cookTime) < 0) {
+      this.validationErrors.push('Prep time and cook time cannot be negative.');
+    }
+
+    const validIngredients = this.recipeIngredients.filter((row) => row.ingredientId !== '');
+    if (validIngredients.length === 0) {
+      this.validationErrors.push('Please select at least one valid ingredient for the recipe.');
+    }
+
+    for (const row of this.recipeIngredients) {
+      if (row.ingredientId && (Number(row.quantity) <= 0 || isNaN(Number(row.quantity)))) {
+        this.validationErrors.push(`Ingredient "${row.searchFilter || 'item'}" must have a quantity greater than 0.`);
+      }
+    }
+
+    const validSteps = this.recipeSteps.filter((st) => st.instructionText.trim() !== '');
+    if (validSteps.length === 0) {
+      this.validationErrors.push('Please add at least one instruction step.');
+    }
+
+    if (this.validationErrors.length > 0) {
+      this.toastService.showError('Please fix the highlighted form errors.', 'Validation Failed');
+      return false;
+    }
+
+    return true;
+  }
+
   // --- Form Submission ---
   submitForm(): void {
-    if (!this.name.trim()) {
-      alert('Recipe name is required');
+    if (!this.validateForm()) {
       return;
     }
 
@@ -239,6 +288,10 @@ export class AddRecipeFormComponent implements OnInit {
     request$.subscribe({
       next: (res) => {
         this.isSubmitting = false;
+        this.toastService.showSuccess(
+          this.isEditMode ? `"${this.name}" updated successfully!` : `"${this.name}" created successfully!`,
+          this.isEditMode ? 'Recipe Updated' : 'Recipe Created'
+        );
         this.recipeCreated.emit();
         if (this.isEditMode) {
           this.router.navigate(['/recipes', res.id]);
@@ -249,7 +302,9 @@ export class AddRecipeFormComponent implements OnInit {
       error: (err) => {
         this.isSubmitting = false;
         console.error('Failed to save recipe', err);
-        alert('Failed to save recipe. Please check inputs.');
+        const errMsg = err.error?.message || err.message || 'Server error occurred while saving the recipe.';
+        this.serverErrorBanner = errMsg;
+        this.toastService.showError(errMsg, 'Submission Failed');
       },
     });
   }

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Recipe } from '@models/recipe.model';
 import { RecipeService } from '../../services/recipe.service';
+import { ToastService } from '../../services/toast.service';
 import { RecipeCardComponent } from './recipe-components/recipe-card/recipe-card.component';
 
 @Component({
@@ -15,6 +16,7 @@ import { RecipeCardComponent } from './recipe-components/recipe-card/recipe-card
 })
 export class RecipesComponent implements OnInit {
   private readonly recipeService = inject(RecipeService);
+  private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
 
   recipes: Recipe[] = [];
@@ -41,6 +43,7 @@ export class RecipesComponent implements OnInit {
       error: (err) => {
         console.error('Failed to load recipes', err);
         this.isLoading = false;
+        this.toastService.showError('Unable to connect to backend server to load recipes.', 'Network Error');
       },
     });
   }
@@ -69,9 +72,13 @@ export class RecipesComponent implements OnInit {
   onDeleteRecipe(id: string): void {
     this.recipeService.deleteRecipe(id).subscribe({
       next: () => {
+        this.toastService.showSuccess('Recipe deleted successfully.', 'Recipe Deleted');
         this.loadRecipes();
       },
-      error: (err) => console.error('Failed to delete recipe', err),
+      error: (err) => {
+        console.error('Failed to delete recipe', err);
+        this.toastService.showError('Failed to delete recipe. Please try again.', 'Error');
+      },
     });
   }
 }
