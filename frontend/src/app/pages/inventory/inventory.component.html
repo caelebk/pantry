@@ -332,7 +332,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-surface-200/60 dark:divide-surface-800/60 text-xs font-medium">
-                @for (item of filteredItems; track item.id; let i = $index) {
+                @for (item of displayedItems; track item.id; let i = $index) {
                   <tr
                     [@staggeredFadeIn]="{ value: '', params: { delay: i * (staggerDelayPerItemMs / 2) } }"
                     class="hover:bg-primary-50/40 dark:hover:bg-surface-800/40 transition-colors group">
@@ -441,7 +441,7 @@
       } @else {
         <!-- Grid View -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          @for (item of filteredItems; track item.name; let i = $index) {
+          @for (item of displayedItems; track item.name; let i = $index) {
             <pantry-item-card
               [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
               [item]="item"
@@ -452,6 +452,26 @@
           }
         </div>
       }
+
+      <!-- Lazy Loading Progress Bar & Controls -->
+      <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-50 dark:bg-surface-800/40 rounded-2xl border border-surface-200/80 dark:border-surface-700/60 text-xs font-semibold text-surface-600 dark:text-surface-300">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Showing {{ displayedItems.length }} of {{ filteredItems.length }} items</span>
+        </div>
+
+        @if (displayLimit < filteredItems.length) {
+          <button
+            (click)="loadMoreItems()"
+            type="button"
+            class="px-4 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer flex items-center gap-2">
+            <span>Load More Items (+15)</span>
+            <i class="pi pi-angle-down text-xs"></i>
+          </button>
+        } @else {
+          <span class="text-surface-400 font-normal">All items loaded</span>
+        }
+      </div>
     } @else {
       <!-- Empty Filter State -->
       <div class="glass-card rounded-2xl p-12 text-center max-w-md mx-auto border border-surface-200/60 dark:border-surface-800/80">

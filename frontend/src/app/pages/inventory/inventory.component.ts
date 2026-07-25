@@ -104,7 +104,11 @@ export class InventoryComponent implements OnInit {
   public viewMode: 'table' | 'grid' = 'table';
   public sortDirection: 'asc' | 'desc' = 'asc';
 
+  public displayLimit = 15;
+  public readonly batchSize = 15;
+
   public toggleSort(field: SortOption): void {
+    this.displayLimit = this.batchSize; // Reset pagination on sort change
     if (this.sortBy === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -153,7 +157,22 @@ export class InventoryComponent implements OnInit {
       });
   }
 
+  public get displayedItems(): Item[] {
+    return this.filteredItems.slice(0, this.displayLimit);
+  }
+
+  public loadMoreItems(): void {
+    if (this.displayLimit < this.filteredItems.length) {
+      this.displayLimit += this.batchSize;
+    }
+  }
+
+  public resetPagination(): void {
+    this.displayLimit = this.batchSize;
+  }
+
   setStatusFilter(status: StatusFilter): void {
+    this.resetPagination();
     if (this.selectedStatusFilter === status && status !== 'all') {
       this.selectedStatusFilter = 'all'; // Toggle back off
     } else {
@@ -246,6 +265,14 @@ export class InventoryComponent implements OnInit {
   @HostListener("window:scroll", [])
   onWindowScroll(): void {
     this.showScrollTopButton = window.scrollY > 300;
+
+    if (this.activeTab === 'items' && this.displayLimit < this.filteredItems.length) {
+      const scrollPosition = window.innerHeight + window.scrollY;
+      const threshold = document.documentElement.scrollHeight - 400;
+      if (scrollPosition >= threshold) {
+        this.loadMoreItems();
+      }
+    }
   }
 
   public scrollToTop(): void {
