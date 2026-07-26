@@ -98,12 +98,25 @@ export class IngredientsPageComponent implements OnInit {
       groupsMap.get(groupName)!.ingredients.push(ing);
     }
 
+    // Sort ingredients inside each group by stock count (in stock first, then out of stock, then alphabetically)
     // Sort groups alphabetically, with Unassigned at the end
-    return Array.from(groupsMap.values()).sort((a, b) => {
-      if (a.groupId === null) return 1;
-      if (b.groupId === null) return -1;
-      return a.groupName.localeCompare(b.groupName);
-    });
+    return Array.from(groupsMap.values())
+      .map((group) => {
+        const sortedIngredients = [...group.ingredients].sort((a, b) => {
+          const countA = this.getConnectedItems(a.id).length;
+          const countB = this.getConnectedItems(b.id).length;
+          if (countA !== countB) {
+            return countB - countA; // Higher stock count (In Stock) first
+          }
+          return a.name.localeCompare(b.name);
+        });
+        return { ...group, ingredients: sortedIngredients };
+      })
+      .sort((a, b) => {
+        if (a.groupId === null) return 1;
+        if (b.groupId === null) return -1;
+        return a.groupName.localeCompare(b.groupName);
+      });
   });
 
   // Lazy loading batch limit for performance optimization
