@@ -4,7 +4,7 @@ export const seedData = {
     { name: 'Fridge' },
     { name: 'Freezer' },
   ],
-  nutrient_types: [
+  ingredient_categories: [
     {
       name: 'Protein',
       icon: '🥩',
@@ -56,51 +56,54 @@ export const seedData = {
       description: 'Convenience items, snacks, sweets, frozen foods, and instant meal packs.',
     },
   ],
+  get nutrient_types() {
+    return this.ingredient_categories;
+  },
   categories: [
     // Fiber & Produce
-    { name: 'Fruits', nutrient_type: 'Fiber & Produce' },
-    { name: 'Vegetables', nutrient_type: 'Fiber & Produce' },
-    { name: 'Fresh Herbs & Greens', nutrient_type: 'Fiber & Produce' },
-    { name: 'Aromatics', nutrient_type: 'Fiber & Produce' },
+    { name: 'Fruits', ingredient_category: 'Fiber & Produce', nutrient_type: 'Fiber & Produce' },
+    { name: 'Vegetables', ingredient_category: 'Fiber & Produce', nutrient_type: 'Fiber & Produce' },
+    { name: 'Fresh Herbs & Greens', ingredient_category: 'Fiber & Produce', nutrient_type: 'Fiber & Produce' },
+    { name: 'Aromatics', ingredient_category: 'Fiber & Produce', nutrient_type: 'Fiber & Produce' },
 
     // Protein
-    { name: 'Meat', nutrient_type: 'Protein' },
-    { name: 'Seafood', nutrient_type: 'Protein' },
-    { name: 'Dairy & Eggs', nutrient_type: 'Protein' },
-    { name: 'Beans', nutrient_type: 'Protein' },
+    { name: 'Meat', ingredient_category: 'Protein', nutrient_type: 'Protein' },
+    { name: 'Seafood', ingredient_category: 'Protein', nutrient_type: 'Protein' },
+    { name: 'Dairy & Eggs', ingredient_category: 'Protein', nutrient_type: 'Protein' },
+    { name: 'Beans', ingredient_category: 'Protein', nutrient_type: 'Protein' },
 
     // Carbohydrate
-    { name: 'Grains', nutrient_type: 'Carbohydrate' },
-    { name: 'Pasta', nutrient_type: 'Carbohydrate' },
-    { name: 'Bakery', nutrient_type: 'Carbohydrate' },
-    { name: 'Baking', nutrient_type: 'Carbohydrate' },
+    { name: 'Grains', ingredient_category: 'Carbohydrate', nutrient_type: 'Carbohydrate' },
+    { name: 'Pasta', ingredient_category: 'Carbohydrate', nutrient_type: 'Carbohydrate' },
+    { name: 'Bakery', ingredient_category: 'Carbohydrate', nutrient_type: 'Carbohydrate' },
+    { name: 'Baking', ingredient_category: 'Carbohydrate', nutrient_type: 'Carbohydrate' },
 
     // Fat & Oil
-    { name: 'Oils', nutrient_type: 'Fat & Oil' },
-    { name: 'Protein fats', nutrient_type: 'Fat & Oil' },
-    { name: 'Butter', nutrient_type: 'Fat & Oil' },
-    { name: 'Nuts', nutrient_type: 'Fat & Oil' },
+    { name: 'Oils', ingredient_category: 'Fat & Oil', nutrient_type: 'Fat & Oil' },
+    { name: 'Protein fats', ingredient_category: 'Fat & Oil', nutrient_type: 'Fat & Oil' },
+    { name: 'Butter', ingredient_category: 'Fat & Oil', nutrient_type: 'Fat & Oil' },
+    { name: 'Nuts', ingredient_category: 'Fat & Oil', nutrient_type: 'Fat & Oil' },
 
     // Seasoning
-    { name: 'Seasoning', nutrient_type: 'Seasoning' },
-    { name: 'Spices', nutrient_type: 'Seasoning' },
+    { name: 'Seasoning', ingredient_category: 'Seasoning', nutrient_type: 'Seasoning' },
+    { name: 'Spices', ingredient_category: 'Seasoning', nutrient_type: 'Seasoning' },
 
     // Condiment
-    { name: 'Condiment', nutrient_type: 'Condiment' },
-    { name: 'Sauce', nutrient_type: 'Condiment' },
+    { name: 'Condiment', ingredient_category: 'Condiment', nutrient_type: 'Condiment' },
+    { name: 'Sauce', ingredient_category: 'Condiment', nutrient_type: 'Condiment' },
 
     // Beverage
-    { name: 'Hot Beverages', nutrient_type: 'Beverage' },
-    { name: 'Cold Juice', nutrient_type: 'Beverage' },
-    { name: 'Cold Drinks', nutrient_type: 'Beverage' },
+    { name: 'Hot Beverages', ingredient_category: 'Beverage', nutrient_type: 'Beverage' },
+    { name: 'Cold Juice', ingredient_category: 'Beverage', nutrient_type: 'Beverage' },
+    { name: 'Cold Drinks', ingredient_category: 'Beverage', nutrient_type: 'Beverage' },
 
     // Quick Foods
-    { name: 'Snacks', nutrient_type: 'Quick Foods' },
-    { name: 'Sweets', nutrient_type: 'Quick Foods' },
-    { name: 'Frozen Foods', nutrient_type: 'Quick Foods' },
-    { name: 'Desserts', nutrient_type: 'Quick Foods' },
-    { name: 'Instant Foods', nutrient_type: 'Quick Foods' },
-    { name: 'Instant Sauces', nutrient_type: 'Quick Foods' },
+    { name: 'Snacks', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
+    { name: 'Sweets', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
+    { name: 'Frozen Foods', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
+    { name: 'Desserts', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
+    { name: 'Instant Foods', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
+    { name: 'Instant Sauces', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
   ],
   units: [
     { name: 'piece', short_name: 'pc', type: 'count', to_base_factor: 1 },

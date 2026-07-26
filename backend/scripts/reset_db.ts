@@ -43,7 +43,7 @@ function resetDB() {
   console.log('\n🔄 Running migrations...');
   runMigrations();
 
-  // 3. Seed essential reference taxonomy (Locations, Nutrient Groups, Ingredient Groups, Units, Difficulties)
+  // 3. Seed essential reference taxonomy (Locations, Ingredient Categories, Ingredient Groups, Units, Difficulties)
   console.log('\n🧱 Seeding essential reference taxonomy...');
   initDB();
   const db = getDB();
