@@ -4,10 +4,10 @@
     <h1
       class="text-2xl font-bold tracking-tight text-surface-900 dark:text-white flex items-center gap-2">
       <span class="p-2 rounded-xl bg-purple-500/10 text-purple-500">🧬</span>
-      <span>Nutrient Groups</span>
+      <span>Ingredient Categories</span>
     </h1>
     <p class="text-sm text-surface-500 dark:text-surface-400">
-      High-level nutritional pillars (e.g. Protein, Fiber & Produce, Carbs, Quick Foods)
+      High-level ingredient categories (e.g. Protein, Fiber & Produce, Carbs, Quick Foods)
       encapsulating ingredient groups.
     </p>
   </div>
@@ -33,7 +33,7 @@
             fill="currentColor"
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <span class="text-sm font-medium">Loading nutrient pillars...</span>
+        <span class="text-sm font-medium">Loading ingredient categories...</span>
       </div>
     </div>
   } @else if (nutrientGroups().length === 0) {
@@ -44,10 +44,10 @@
         <i class="pi pi-shield"></i>
       </div>
       <h4 class="text-base font-bold text-surface-900 dark:text-white mb-1">
-        No Nutrient Groups Found
+        No Ingredient Categories Found
       </h4>
       <p class="text-xs text-surface-500 dark:text-surface-400">
-        No nutrient groups exist in the database yet.
+        No ingredient categories exist in the database yet.
       </p>
     </div>
   } @else {
@@ -67,7 +67,7 @@
                 <div>
                   <h3 class="text-lg font-bold text-surface-900 dark:text-white">{{ ng.name }}</h3>
                   <p class="text-xs text-surface-500 dark:text-surface-400 font-medium">
-                    Nutritional Pillar
+                    Ingredient Category
                   </p>
                 </div>
               </div>
@@ -85,7 +85,7 @@
               </p>
             }
 
-            <!-- Associated Ingredient Groups (Categories) Chips -->
+            <!-- Associated Ingredient Groups Chips -->
             <div class="pt-2 border-t border-surface-200/60 dark:border-surface-800/60 space-y-2">
               <span
                 class="text-[11px] font-bold uppercase tracking-wider text-surface-400 dark:text-surface-500">

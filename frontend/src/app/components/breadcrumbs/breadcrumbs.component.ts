@@ -81,24 +81,24 @@ export class BreadcrumbsComponent implements OnInit {
       } else if (secondSegment === 'groups') {
         if (thirdSegment === 'new') {
           items.push({
-            label: 'Nutrient & Ingredient Groups',
+            label: 'Ingredient Categories & Groups',
             url: '/inventory/groups',
             icon: 'pi pi-tags',
           });
           items.push({ label: 'Add Ingredient Group', icon: 'pi pi-plus-circle' });
         } else if (segments[3] === 'edit') {
           items.push({
-            label: 'Nutrient & Ingredient Groups',
+            label: 'Ingredient Categories & Groups',
             url: '/inventory/groups',
             icon: 'pi pi-tags',
           });
           items.push({ label: 'Edit Ingredient Group', icon: 'pi pi-pencil' });
         } else {
-          items.push({ label: 'Nutrient & Ingredient Groups', icon: 'pi pi-tags' });
+          items.push({ label: 'Ingredient Categories & Groups', icon: 'pi pi-tags' });
         }
       } else if (secondSegment === 'nutrients') {
         items.push({
-          label: 'Nutrient & Ingredient Groups',
+          label: 'Ingredient Categories & Groups',
           url: '/inventory/groups',
           icon: 'pi pi-tags',
         });
