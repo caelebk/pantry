@@ -54,7 +54,7 @@
           type="text"
           formControlName="name"
           placeholder="e.g. Pasta, Grains, Dairy, Bakery, Sweets"
-          class="w-full p-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-white/80 dark:bg-surface-800/80 text-surface-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-all outline-none" />
+          class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white" />
         @if (groupForm.get('name')?.invalid && groupForm.get('name')?.touched) {
           <p class="mt-1 text-xs text-red-500 font-medium">
             Group name is required (min 2 characters).
@@ -74,7 +74,8 @@
           optionLabel="name"
           placeholder="Select Nutrient Group (e.g. Fiber & Produce, Protein, Carbs)"
           [showClear]="true"
-          styleClass="w-full">
+          class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700"
+          appendTo="body">
         </p-select>
         <p class="mt-1 text-xs text-surface-400">
           Classifies this ingredient group under top-level nutritional pillars.
