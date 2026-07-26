@@ -38,6 +38,14 @@ export class IngredientGroupsPageComponent implements OnInit {
   public searchQuery = signal<string>('');
   public selectedGroup = signal<IngredientGroup | null>(null);
 
+  public get categories() {
+    return this.ingredientGroups;
+  }
+
+  public get selectedCategory() {
+    return this.selectedGroup;
+  }
+
   ngOnInit(): void {
     this.loadData();
   }

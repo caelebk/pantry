@@ -9,26 +9,26 @@
       <!-- Icon & Color badge -->
       <div
         class="w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center text-xl shadow-xs shrink-0"
-        [style.backgroundColor]="(nutrientGroup.nutrientType.color || '#64748b') + '20'"
-        [style.borderColor]="(nutrientGroup.nutrientType.color || '#64748b') + '40'">
-        <span>{{ nutrientGroup.nutrientType.icon || '📦' }}</span>
+        [style.backgroundColor]="(nutrientType.color || '#64748b') + '20'"
+        [style.borderColor]="(nutrientType.color || '#64748b') + '40'">
+        <span>{{ nutrientType.icon || '📦' }}</span>
       </div>
 
       <!-- Title & Description -->
       <div class="min-w-0">
         <div class="flex items-center gap-2">
           <h3 class="text-base md:text-lg font-bold text-surface-900 dark:text-white truncate">
-            {{ nutrientGroup.nutrientType.name }}
+            {{ nutrientType.name }}
           </h3>
           <span
             class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-surface-200/70 dark:bg-surface-700/70 text-surface-700 dark:text-surface-300">
-            {{ nutrientGroup.categoryGroups.length }}
-            {{ nutrientGroup.categoryGroups.length === 1 ? 'Category' : 'Categories' }}
+            {{ categoryGroups.length }}
+            {{ categoryGroups.length === 1 ? 'Category' : 'Categories' }}
           </span>
         </div>
-        @if (nutrientGroup.nutrientType.description) {
+        @if (nutrientType.description) {
           <p class="text-xs text-surface-500 dark:text-surface-400 truncate mt-0.5">
-            {{ nutrientGroup.nutrientType.description }}
+            {{ nutrientType.description }}
           </p>
         }
       </div>
@@ -68,10 +68,10 @@
   @if (isExpanded) {
     <div
       class="p-4 md:p-5 space-y-4 border-t border-surface-200/60 dark:border-surface-800/60 bg-surface-50/20 dark:bg-surface-950/20">
-      @for (group of nutrientGroup.categoryGroups; track group.category.id) {
+      @for (group of categoryGroups; track getGroupCategoryId(group)) {
         <pantry-ingredient-group
           [group]="group"
-          [isExpanded]="isCategoryExpanded(group.category.id)"
+          [isExpanded]="isCategoryExpanded(getGroupCategoryId(group))"
           [expandedIngredients]="expandedIngredients"
           (toggle)="onToggleCategory($event)"
           (toggleIngredient)="onToggleIngredient($event)"

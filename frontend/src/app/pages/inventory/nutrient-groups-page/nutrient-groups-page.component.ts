@@ -40,7 +40,15 @@ export class NutrientGroupsPageComponent implements OnInit {
     });
   }
 
+  public get nutrientGroups() {
+    return this.ingredientCategories;
+  }
+
   public getGroupsForIngredientCategory(categoryId: number): IngredientGroup[] {
     return this.ingredientGroups().filter((ig) => (ig.ingredientCategoryId ?? ig.nutrientGroupId) === categoryId);
+  }
+
+  public getCategoriesForNutrientGroup(categoryId: number): IngredientGroup[] {
+    return this.getGroupsForIngredientCategory(categoryId);
   }
 }

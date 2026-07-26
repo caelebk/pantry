@@ -5,6 +5,7 @@ export interface Ingredient {
   id: string;
   name: string;
   ingredientGroup?: IngredientGroup;
+  category?: IngredientGroup;
   defaultUnit?: Unit;
   createdAt?: Date;
   updatedAt?: Date;

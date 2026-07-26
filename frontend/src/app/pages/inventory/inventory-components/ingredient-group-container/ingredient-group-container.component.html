@@ -159,10 +159,10 @@
       </p>
     </div>
   } @else {
-    @for (ng of filteredNutrientGroups; track ng.nutrientType.id) {
+    @for (ng of filteredNutrientGroups; track getCategoryId(ng)) {
       <pantry-nutrient-group
         [nutrientGroup]="ng"
-        [isExpanded]="isNutrientGroupExpanded(ng.nutrientType.id)"
+        [isExpanded]="isNutrientGroupExpanded(getCategoryId(ng))"
         [expandedCategories]="expandedCategories()"
         [expandedIngredients]="expandedIngredients()"
         (toggleNutrientGroup)="onToggleNutrientGroup($event)"

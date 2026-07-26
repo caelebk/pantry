@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { IngredientGroup } from '@models/inventory.models';
+import { IngredientGroupCluster } from '@models/inventory.models';
 
 import { Item } from '@models/items.model';
 
@@ -15,7 +15,7 @@ export class IngredientGroupComponent {
   private readonly router = inject(Router);
 
   @Input({ required: true })
-  group!: IngredientGroup;
+  group!: IngredientGroupCluster;
   @Input({ required: true })
   isExpanded!: boolean;
   @Input()
@@ -27,6 +27,14 @@ export class IngredientGroupComponent {
   toggleIngredient = new EventEmitter<string>();
   @Output()
   unassignItem = new EventEmitter<Item>();
+
+  get category() {
+    return this.group?.group || this.group?.category || { id: -1, name: 'Uncategorized' };
+  }
+
+  onToggle() {
+    this.toggle.emit(this.category.id);
+  }
 
   onUnassign(item: Item, event: Event) {
     event.stopPropagation();

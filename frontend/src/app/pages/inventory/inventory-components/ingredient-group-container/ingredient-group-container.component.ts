@@ -180,6 +180,11 @@ export class IngredientGroupContainerComponent {
   }
 
   // Helpers
+  getCategoryId(ng: IngredientCategoryCluster): number {
+    const cat = ng.category || ng.nutrientType;
+    return cat ? cat.id : -1;
+  }
+
   isNutrientGroupExpanded(nutrientTypeId: number): boolean {
     return this.expandedNutrientGroups().has(nutrientTypeId);
   }

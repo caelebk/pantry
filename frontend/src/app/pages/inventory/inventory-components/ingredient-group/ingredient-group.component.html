@@ -6,38 +6,38 @@
     [class.border-b]="isExpanded"
     [class.border-surface-200/80]="isExpanded"
     [class.dark:border-surface-800/80]="isExpanded"
-    (click)="toggle.emit(group.category.id)">
+    (click)="onToggle()">
     <div class="flex items-center gap-3">
       <!-- Category Icon Badge -->
       <div
         class="w-9 h-9 rounded-xl bg-primary-500/10 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400 flex items-center justify-center font-bold text-base shrink-0">
-        @if (group.category.name === 'Dairy') {
+        @if (category.name === 'Dairy') {
           🥛
         } @else if (
-          group.category.name === 'Produce' ||
-          group.category.name === 'Vegetables' ||
-          group.category.name === 'Fruits'
+          category.name === 'Produce' ||
+          category.name === 'Vegetables' ||
+          category.name === 'Fruits'
         ) {
           🥬
         } @else if (
-          group.category.name === 'Meat' ||
-          group.category.name === 'Poultry' ||
-          group.category.name === 'Seafood'
+          category.name === 'Meat' ||
+          category.name === 'Poultry' ||
+          category.name === 'Seafood'
         ) {
           🥩
-        } @else if (group.category.name === 'Bakery') {
+        } @else if (category.name === 'Bakery') {
           🍞
-        } @else if (group.category.name === 'Pantry' || group.category.name === 'Spices') {
+        } @else if (category.name === 'Pantry' || category.name === 'Spices') {
           🥫
         } @else {
-          📦
+          🏷️
         }
       </div>
 
       <div>
         <h4
           class="font-extrabold text-base text-surface-900 dark:text-white tracking-tight flex items-center gap-2">
-          <span>{{ group.category.name }}</span>
+          <span>{{ category.name }}</span>
         </h4>
         <p class="text-xs text-surface-500 dark:text-surface-400 font-medium mt-0.5">
           @if (group.ingredients.length === 0) {

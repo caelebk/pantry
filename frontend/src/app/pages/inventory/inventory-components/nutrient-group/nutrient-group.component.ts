@@ -35,8 +35,29 @@ export class NutrientGroupComponent {
   @Output()
   unassignItem = new EventEmitter<Item>();
 
+  get nutrientType() {
+    return (
+      this.nutrientGroup?.category ||
+      this.nutrientGroup?.nutrientType || {
+        id: -1,
+        name: 'Unclassified',
+        icon: '📦',
+        color: '#94a3b8',
+        description: 'Categories without an assigned ingredient category',
+      }
+    );
+  }
+
   get categoryClusters() {
     return this.nutrientGroup?.ingredientGroups || this.nutrientGroup?.categoryGroups || [];
+  }
+
+  get categoryGroups() {
+    return this.categoryClusters;
+  }
+
+  getGroupCategoryId(group: any): number {
+    return group?.group?.id ?? group?.category?.id ?? -1;
   }
 
   get totalItemsCount(): number {
@@ -67,7 +88,7 @@ export class NutrientGroupComponent {
   }
 
   onToggleNutrientGroup() {
-    const cat = this.nutrientGroup.category || this.nutrientGroup.nutrientType;
+    const cat = this.nutrientType;
     if (cat) {
       this.toggleNutrientGroup.emit(cat.id);
     }
