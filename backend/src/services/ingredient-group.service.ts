@@ -9,21 +9,21 @@ import {
 interface IngredientGroupJoinRow {
   id: number;
   name: string;
-  nutrient_group_id: number | null;
-  nutrient_group_name: string | null;
+  ingredient_category_id: number | null;
+  ingredient_category_name: string | null;
 }
 
 export class IngredientGroupService {
   /**
-   * Retrieves all ingredient groups from the database, including nutrient group info.
+   * Retrieves all ingredient groups from the database, including ingredient category info.
    */
   async getAllIngredientGroups(): Promise<IngredientGroupDTO[]> {
     try {
       const db = getDB();
       const rows = db.prepare(`
-        SELECT ig.*, ng.name as nutrient_group_name
+        SELECT ig.*, ic.name as ingredient_category_name
         FROM ingredient_groups ig
-        LEFT JOIN nutrient_groups ng ON ig.nutrient_group_id = ng.id
+        LEFT JOIN ingredient_categories ic ON ig.ingredient_category_id = ic.id
         ORDER BY ig.name
       `).all() as IngredientGroupJoinRow[];
       return rows.map(this.mapRowToDTO);
@@ -40,9 +40,9 @@ export class IngredientGroupService {
     try {
       const db = getDB();
       const row = db.prepare(`
-        SELECT ig.*, ng.name as nutrient_group_name
+        SELECT ig.*, ic.name as ingredient_category_name
         FROM ingredient_groups ig
-        LEFT JOIN nutrient_groups ng ON ig.nutrient_group_id = ng.id
+        LEFT JOIN ingredient_categories ic ON ig.ingredient_category_id = ic.id
         WHERE ig.id = ?
       `).get(id) as IngredientGroupJoinRow | undefined;
       return row ? this.mapRowToDTO(row) : null;
@@ -58,11 +58,11 @@ export class IngredientGroupService {
   async createIngredientGroup(dto: CreateIngredientGroupDTO): Promise<IngredientGroupDTO> {
     try {
       const db = getDB();
-      const nutrientGroupId = dto.nutrientGroupId ?? dto.nutrientTypeId ?? null;
+      const categoryId = dto.ingredientCategoryId ?? dto.nutrientGroupId ?? dto.nutrientTypeId ?? null;
       const lastInsertId = db.prepare(`
-        INSERT INTO ingredient_groups (name, nutrient_group_id)
+        INSERT INTO ingredient_groups (name, ingredient_category_id)
         VALUES (?, ?)
-      `).run(dto.name, nutrientGroupId);
+      `).run(dto.name, categoryId);
 
       const created = await this.getIngredientGroupById(Number(lastInsertId));
       if (!created) {
@@ -88,17 +88,19 @@ export class IngredientGroupService {
       if (!existing) return null;
 
       const name = dto.name !== undefined ? dto.name : existing.name;
-      const nutrientGroupId = dto.nutrientGroupId !== undefined
+      const categoryId = dto.ingredientCategoryId !== undefined
+        ? dto.ingredientCategoryId
+        : dto.nutrientGroupId !== undefined
         ? dto.nutrientGroupId
         : dto.nutrientTypeId !== undefined
         ? dto.nutrientTypeId
-        : existing.nutrientGroupId ?? null;
+        : existing.ingredientCategoryId ?? null;
 
       db.prepare(`
         UPDATE ingredient_groups
-        SET name = ?, nutrient_group_id = ?
+        SET name = ?, ingredient_category_id = ?
         WHERE id = ?
-      `).run(name, nutrientGroupId, id);
+      `).run(name, categoryId, id);
 
       return await this.getIngredientGroupById(id);
     } catch (error: unknown) {
@@ -128,12 +130,14 @@ export class IngredientGroupService {
     return {
       id: row.id,
       name: row.name,
-      nutrientGroupId: row.nutrient_group_id ?? undefined,
-      nutrientGroupName: row.nutrient_group_name ?? undefined,
+      ingredientCategoryId: row.ingredient_category_id ?? undefined,
+      ingredientCategoryName: row.ingredient_category_name ?? undefined,
 
       // Legacy Aliases
-      nutrientTypeId: row.nutrient_group_id ?? undefined,
-      nutrientTypeName: row.nutrient_group_name ?? undefined,
+      nutrientGroupId: row.ingredient_category_id ?? undefined,
+      nutrientGroupName: row.ingredient_category_name ?? undefined,
+      nutrientTypeId: row.ingredient_category_id ?? undefined,
+      nutrientTypeName: row.ingredient_category_name ?? undefined,
     };
   }
 }

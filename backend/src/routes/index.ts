@@ -4,14 +4,13 @@
 
 import { Hono } from 'hono';
 import categories from './categories.routes.ts';
+import ingredientCategories from './ingredient-categories.routes.ts';
 import ingredientGroups from './ingredient-groups.routes.ts';
 import ingredientItems from './ingredient-items.routes.ts';
 import ingredients from './ingredients.routes.ts';
 import items from './items.routes.ts';
 import locations from './locations.routes.ts';
 import mealPlans from './meal-plans.routes.ts';
-import nutrientGroups from './nutrient-groups.routes.ts';
-import nutrientTypes from './nutrient-types.routes.ts';
 import recipes from './recipes.routes.ts';
 import shoppingList from './shopping-list.routes.ts';
 import units from './units.routes.ts';
@@ -19,15 +18,16 @@ import units from './units.routes.ts';
 const api = new Hono();
 
 // Mount primary domain route modules
-api.route('/nutrient-groups', nutrientGroups);
+api.route('/ingredient-categories', ingredientCategories);
 api.route('/ingredient-groups', ingredientGroups);
 api.route('/ingredients', ingredients);
 api.route('/ingredient-items', ingredientItems);
 
 // Mount legacy alias endpoints for backwards compatibility
+api.route('/nutrient-groups', ingredientCategories);
+api.route('/nutrient-types', ingredientCategories);
 api.route('/items', items);
 api.route('/categories', categories);
-api.route('/nutrient-types', nutrientTypes);
 
 // Other system route modules
 api.route('/recipes', recipes);

@@ -6,14 +6,14 @@ import { substitutionService } from '../src/services/substitution.service.ts';
 function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec(`
-    CREATE TABLE nutrient_groups (
+    CREATE TABLE ingredient_categories (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE
     );
     CREATE TABLE ingredient_groups (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      nutrient_group_id INTEGER REFERENCES nutrient_groups(id)
+      ingredient_category_id INTEGER REFERENCES ingredient_categories(id)
     );
     CREATE TABLE units (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,15 +37,15 @@ function createTestDB(): Database {
   return db;
 }
 
-Deno.test('SubstitutionService - getSubstitutions - ranks same category higher than same nutrient type', async () => {
+Deno.test('SubstitutionService - getSubstitutions - ranks same group higher than same ingredient category', async () => {
   const db = createTestDB();
   setDB(db);
 
-  // Nutrient groups
-  db.exec("INSERT INTO nutrient_groups (id, name) VALUES (1, 'Protein');");
+  // Ingredient categories
+  db.exec("INSERT INTO ingredient_categories (id, name) VALUES (1, 'Protein');");
   // Ingredient groups
   db.exec(
-    "INSERT INTO ingredient_groups (id, name, nutrient_group_id) VALUES (1, 'Dairy & Eggs', 1), (2, 'Meat & Seafood', 1);",
+    "INSERT INTO ingredient_groups (id, name, ingredient_category_id) VALUES (1, 'Dairy & Eggs', 1), (2, 'Meat & Seafood', 1);",
   );
   // Units
   db.exec("INSERT INTO units (id, name, to_base_factor) VALUES (1, 'gram', 1.0);");
@@ -63,9 +63,9 @@ Deno.test('SubstitutionService - getSubstitutions - ranks same category higher t
   // Parmesan Cheese should be first (same_group)
   assertEquals(substitutions[0].ingredient.name, 'Parmesan Cheese');
   assertEquals(substitutions[0].matchLevel, 'same_group');
-  // Chicken Breast should be second (same_nutrient_type)
+  // Chicken Breast should be second (same_ingredient_category)
   assertEquals(substitutions[1].ingredient.name, 'Chicken Breast');
-  assertEquals(substitutions[1].matchLevel, 'same_nutrient_type');
+  assertEquals(substitutions[1].matchLevel, 'same_ingredient_category');
 
   db.close();
 });

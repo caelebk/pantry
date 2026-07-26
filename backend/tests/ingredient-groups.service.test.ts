@@ -7,7 +7,7 @@ import { ingredientGroupService } from '../src/services/ingredient-group.service
 function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec(`
-    CREATE TABLE nutrient_groups (
+    CREATE TABLE ingredient_categories (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
       icon TEXT,
@@ -17,7 +17,7 @@ function createTestDB(): Database {
     CREATE TABLE ingredient_groups (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      nutrient_group_id INTEGER REFERENCES nutrient_groups(id)
+      ingredient_category_id INTEGER REFERENCES ingredient_categories(id)
     );
   `);
   return db;

@@ -4,8 +4,6 @@
 export interface IngredientGroupRow {
   id: number;
   name: string;
-  nutrient_group_id: number | null;
+  ingredient_category_id: number | null;
+  nutrient_group_id?: number | null;
 }
-
-// Legacy Alias
-export type CategoryRow = IngredientGroupRow;
