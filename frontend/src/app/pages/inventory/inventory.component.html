@@ -144,7 +144,7 @@
 
         <!-- View Mode Toggle (Table / Grid) -->
         <div
-          class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs">
+          class="flex items-center bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-xs border border-surface-200 dark:border-surface-700 shadow-xs shrink-0">
           <button
             (click)="viewMode = 'table'"
             [class.bg-white]="viewMode === 'table'"
@@ -152,9 +152,10 @@
             [class.shadow-xs]="viewMode === 'table'"
             [class.text-primary-600]="viewMode === 'table'"
             [class.dark:text-primary-400]="viewMode === 'table'"
-            [class.font-bold]="viewMode === 'table'"
+            [class.font-extrabold]="viewMode === 'table'"
             [class.text-surface-600]="viewMode !== 'table'"
-            [class.dark:text-surface-400]="viewMode !== 'table'"
+            [class.dark:text-surface-300]="viewMode !== 'table'"
+            [class.font-bold]="viewMode !== 'table'"
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
             title="Table View">
             <i class="pi pi-list text-xs"></i>
@@ -167,9 +168,10 @@
             [class.shadow-xs]="viewMode === 'grid'"
             [class.text-primary-600]="viewMode === 'grid'"
             [class.dark:text-primary-400]="viewMode === 'grid'"
-            [class.font-bold]="viewMode === 'grid'"
+            [class.font-extrabold]="viewMode === 'grid'"
             [class.text-surface-600]="viewMode !== 'grid'"
-            [class.dark:text-surface-400]="viewMode !== 'grid'"
+            [class.dark:text-surface-300]="viewMode !== 'grid'"
+            [class.font-bold]="viewMode !== 'grid'"
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
             title="Grid Cards View">
             <i class="pi pi-th-large text-xs"></i>
