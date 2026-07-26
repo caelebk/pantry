@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ShoppingItem } from '@models/shopping-list.model';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
-
+import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 
 export interface RestockDraftItem {
@@ -15,7 +15,7 @@ export interface RestockDraftItem {
   quantity: number;
   unit: string;
   location: string;
-  expirationDate: string; // YYYY-MM-DD
+  expirationDate: Date;
   notes: string;
   included: boolean;
 }
@@ -23,7 +23,7 @@ export interface RestockDraftItem {
 @Component({
   selector: 'pantry-restock-review-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, SelectModule],
+  imports: [CommonModule, FormsModule, SelectModule, DatePickerModule],
   templateUrl: './restock-review-page.component.html',
   styleUrl: './restock-review-page.component.scss',
 })
@@ -45,8 +45,7 @@ export class RestockReviewPageComponent implements OnInit {
       ? boughtItems
       : this.shoppingListService.items();
 
-    const today = new Date();
-    const defaultExp = new Date(today.setDate(today.getDate() + 14)).toISOString().split('T')[0];
+    const defaultExp = new Date(Date.now() + 14 * 86400000);
 
     const drafts: RestockDraftItem[] = sourceItems.map((item) => ({
       shoppingId: item.id,
@@ -77,7 +76,7 @@ export class RestockReviewPageComponent implements OnInit {
   setExpirationPreset(draft: RestockDraftItem, daysToAdd: number): void {
     const d = new Date();
     d.setDate(d.getDate() + daysToAdd);
-    draft.expirationDate = d.toISOString().split('T')[0];
+    draft.expirationDate = d;
   }
 
   toggleAll(checked: boolean): void {
