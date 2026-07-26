@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Category } from '@models/category.model';
 import { Ingredient } from '@models/ingredient.model';
-import { EnrichedIngredient, IngredientGroup, NutrientGroup } from '@models/inventory.models';
+import { IngredientGroup, NutrientGroup } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { NutrientType } from '@models/nutrient-type.model';
@@ -33,14 +33,8 @@ import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
 import { AddItemFormComponent } from './inventory-components/add-item-form/add-item-form.component';
 
-import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
-import {
-  InventoryTab,
-  TabNavigationComponent,
-} from './inventory-components/tab-navigation/tab-navigation.component';
-import { UnassignedItemsContainerComponent } from './inventory-components/unassigned-items-container/unassigned-items-container.component';
-
 import { ActivatedRoute, Router } from '@angular/router';
+import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
 
 export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh';
 export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'status';
@@ -56,10 +50,8 @@ export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'stat
     ConfirmDialogModule,
     ToastModule,
     FormsModule,
-    TabNavigationComponent,
     SelectModule,
     DialogModule,
-    UnassignedItemsContainerComponent,
   ],
   providers: [ConfirmationService],
   templateUrl: './inventory.component.html',
@@ -100,7 +92,6 @@ export class InventoryComponent implements OnInit {
 
   public selectedCategory: Category | null = null;
   public isLoading = signal(true);
-  public activeTab: InventoryTab = 'items';
 
   public viewMode: 'table' | 'grid' = 'table';
   public sortDirection: 'asc' | 'desc' = 'asc';
@@ -221,14 +212,6 @@ export class InventoryComponent implements OnInit {
     ).length;
   }
 
-  public get unassignedItemsCount(): number {
-    return this.items.filter((item) => !item.ingredientId).length;
-  }
-
-  public get unassignedItems(): Item[] {
-    return this.items.filter((item) => !item.ingredientId);
-  }
-
   public get categoryGroups() {
     const ingredientMap = new Map();
 
@@ -322,46 +305,11 @@ export class InventoryComponent implements OnInit {
   public expandedCategories = new Set<number>();
   public loading = false;
 
-  public onAssignItem(event: { item: Item; ingredient: EnrichedIngredient }): void {
-    const updatedItem: Item = {
-      ...event.item,
-      ingredientId: event.ingredient.id,
-    };
-    this.inventoryService.updateItem(updatedItem).subscribe({
-      next: () => {
-        this.toastService.showSuccess(
-          `Assigned "${event.item.name}" to ${event.ingredient.name}`,
-          'Item Assigned',
-        );
-        this.initParameters();
-      },
-      error: (err) => {
-        this.toastService.showError('Failed to assign item.', 'Error');
-      },
-    });
-  }
-
-  public onUnassignItem(item: Item): void {
-    const updatedItem: Item = {
-      ...item,
-      ingredientId: undefined,
-    };
-    this.inventoryService.updateItem(updatedItem).subscribe({
-      next: () => {
-        this.toastService.showSuccess(`Unassigned "${item.name}"`, 'Item Unassigned');
-        this.initParameters();
-      },
-      error: (err) => {
-        this.toastService.showError('Failed to unassign item.', 'Error');
-      },
-    });
-  }
-
   @HostListener('window:scroll', [])
   onWindowScroll(): void {
     this.showScrollTopButton = window.scrollY > 300;
 
-    if (this.activeTab === 'items' && this.displayLimit < this.filteredItems.length) {
+    if (this.displayLimit < this.filteredItems.length) {
       const scrollPosition = window.innerHeight + window.scrollY;
       const threshold = document.documentElement.scrollHeight - 400;
       if (scrollPosition >= threshold) {
@@ -380,9 +328,6 @@ export class InventoryComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       if (params['search']) {
         this.searchQuery = params['search'];
-      }
-      if (params['tab']) {
-        this.activeTab = params['tab'] as InventoryTab;
       }
       if (params['status']) {
         this.selectedStatusFilter = params['status'] as StatusFilter;
@@ -495,15 +440,6 @@ export class InventoryComponent implements OnInit {
       error: () => {
         this.toastService.showError(`Failed to update "${updatedItem.name}".`, 'Error');
       },
-    });
-  }
-
-  public onTabChange(tab: InventoryTab): void {
-    this.activeTab = tab;
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { tab },
-      queryParamsHandling: 'merge',
     });
   }
 }
