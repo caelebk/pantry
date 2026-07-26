@@ -1,173 +1,104 @@
 <div class="space-y-6">
-  <!-- Header & Restock Actions -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <!-- Minimalist Header & Primary Actions -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200/80 dark:border-gray-800 pb-4">
     <div>
-      <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Smart Shopping Cart</h2>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage grocery prices, track what to buy, and auto-populate ingredients from your Meal Planner</p>
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Shopping List</h2>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Manage groceries, track estimated costs, and sync with meal plans</p>
     </div>
 
-    <!-- Restock & Clear Actions -->
-    <div class="flex items-center gap-2.5 shrink-0 self-start md:self-auto">
+    <div class="flex items-center gap-2.5 shrink-0">
+      <button
+        (click)="autoFillFromMealPlanner()"
+        title="Sync missing ingredients from planned recipes"
+        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#262626] transition-all cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+        Sync Meal Plan
+      </button>
+
       @if (checkedCount() > 0) {
         <button
           (click)="restockChecked()"
-          class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-          Restock {{ checkedCount() }} Item{{ checkedCount() > 1 ? 's' : '' }} to Pantry
-        </button>
-
-        <button
-          (click)="clearChecked()"
-          class="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-[#262626] hover:bg-gray-200 dark:hover:bg-[#333333] text-gray-700 dark:text-gray-300 text-xs font-semibold px-3 py-2.5 rounded-xl transition-all cursor-pointer">
-          Clear Checked
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer">
+          Restock {{ checkedCount() }} to Pantry
         </button>
       }
     </div>
   </div>
 
-  <!-- Financial Budget & Price Summary Dashboard Widgets -->
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    <!-- Widget 1: Total Estimated Cost -->
-    <div class="p-4 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs flex items-center justify-between">
-      <div>
-        <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Est. Cost</div>
-        <div class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">
-          ${{ totalEstimatedCost() | number:'1.2-2' }}
-        </div>
-        <div class="text-[11px] font-medium text-gray-500 mt-0.5">{{ totalCount() }} total item{{ totalCount() === 1 ? '' : 's' }}</div>
-      </div>
-      <div class="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 flex items-center justify-center font-extrabold text-xl">
-        💵
+  <!-- Sleek Financial Summary Row (Minimalist Metrics) -->
+  <div class="grid grid-cols-3 gap-4 bg-gray-50/50 dark:bg-[#1a1a1a]/50 border border-gray-200/60 dark:border-gray-800/60 rounded-2xl p-4">
+    <div class="space-y-0.5">
+      <div class="text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Cost</div>
+      <div class="text-lg font-bold text-gray-900 dark:text-white">
+        ${{ totalEstimatedCost() | number:'1.2-2' }}
       </div>
     </div>
 
-    <!-- Widget 2: Remaining To Buy -->
-    <div class="p-4 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs flex items-center justify-between">
-      <div>
-        <div class="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Remaining To Buy</div>
-        <div class="text-2xl font-extrabold text-amber-700 dark:text-amber-300 mt-1">
-          ${{ remainingCost() | number:'1.2-2' }}
-        </div>
-        <div class="text-[11px] font-medium text-amber-600 dark:text-amber-400 mt-0.5">{{ uncheckedCount() }} item{{ uncheckedCount() === 1 ? '' : 's' }} to purchase</div>
-      </div>
-      <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex items-center justify-center font-extrabold text-xl">
-        🛒
+    <div class="space-y-0.5 border-x border-gray-200/60 dark:border-gray-800/60 px-4">
+      <div class="text-[11px] font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider">Remaining</div>
+      <div class="text-lg font-bold text-amber-700 dark:text-amber-300">
+        ${{ remainingCost() | number:'1.2-2' }}
       </div>
     </div>
 
-    <!-- Widget 3: In Cart (Collected) -->
-    <div class="p-4 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs flex items-center justify-between">
-      <div>
-        <div class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">In Cart (Spent)</div>
-        <div class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-1">
-          ${{ inCartCost() | number:'1.2-2' }}
-        </div>
-        <div class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-0.5">{{ checkedCount() }} item{{ checkedCount() === 1 ? '' : 's' }} collected</div>
-      </div>
-      <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-extrabold text-xl">
-        ✅
+    <div class="space-y-0.5 pl-4">
+      <div class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">In Cart</div>
+      <div class="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+        ${{ inCartCost() | number:'1.2-2' }}
       </div>
     </div>
   </div>
 
-  <!-- MEAL PLANNER INTEGRATION BANNER: Auto-Fill from Recipes -->
-  <div class="p-5 rounded-2xl bg-gradient-to-r from-primary-900/10 via-primary-600/10 to-indigo-500/10 border border-primary-500/20 dark:border-primary-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
-    <div class="space-y-1">
-      <div class="flex items-center gap-2">
-        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-primary-600 text-white uppercase tracking-wider">
-          Meal Planner Sync
-        </span>
-        <span class="text-xs text-primary-700 dark:text-primary-300 font-semibold">
-          📅 {{ plannedRecipesCount() }} Meal Plan Recipes Scheduled
-        </span>
-      </div>
-      <h3 class="text-base font-extrabold text-gray-900 dark:text-white">
-        Fill Cart Based on Planned Recipes
-      </h3>
-      <p class="text-xs text-gray-600 dark:text-gray-300">
-        Automatically import missing ingredients required by your scheduled meals for the week into this shopping list.
-      </p>
+  <!-- Minimalist Single-Line Quick Add Bar -->
+  <form (ngSubmit)="addItem()" class="flex flex-col sm:flex-row items-center gap-2 bg-white dark:bg-[#1a1a1a] p-2 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-xs">
+    <input
+      type="text"
+      [(ngModel)]="newName"
+      name="newName"
+      placeholder="Add item (e.g., Avocado)..."
+      class="flex-1 w-full px-3 py-1.5 bg-transparent text-xs font-medium text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none"
+      required />
+
+    <select
+      [(ngModel)]="newCategory"
+      name="newCategory"
+      class="w-full sm:w-auto px-3 py-1.5 bg-gray-50 dark:bg-[#262626] border border-gray-200/80 dark:border-gray-800 rounded-xl text-xs font-medium text-gray-700 dark:text-gray-300 focus:outline-none">
+      @for (cat of categories; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+
+    <div class="flex items-center gap-1 bg-gray-50 dark:bg-[#262626] border border-gray-200/80 dark:border-gray-800 px-2.5 py-1.5 rounded-xl w-full sm:w-28">
+      <span class="text-xs text-gray-400 font-bold">$</span>
+      <input
+        type="number"
+        step="0.01"
+        min="0"
+        [(ngModel)]="newEstimatedPrice"
+        name="newEstimatedPrice"
+        placeholder="0.00"
+        class="w-full bg-transparent text-xs font-semibold text-gray-900 dark:text-white focus:outline-none" />
     </div>
 
     <button
-      (click)="autoFillFromMealPlanner()"
-      class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer shrink-0">
-      <span>⚡</span> Auto-Fill Recipe Ingredients
+      type="submit"
+      [disabled]="!newName.trim()"
+      class="w-full sm:w-auto px-4 py-1.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-40 text-white font-semibold rounded-xl text-xs transition-all cursor-pointer shrink-0">
+      + Add
     </button>
-  </div>
+  </form>
 
-  <!-- Quick Add Item Form with Price & Store -->
-  <div class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-4 shadow-xs space-y-3">
-    <div class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Quick Add Grocery Item</div>
-    <form (ngSubmit)="addItem()" class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-      <!-- Item Name -->
-      <div class="sm:col-span-4">
-        <input
-          type="text"
-          [(ngModel)]="newName"
-          name="newName"
-          placeholder="Item name (e.g. Avocado)..."
-          class="w-full px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-primary-600/20"
-          required />
-      </div>
-
-      <!-- Category -->
-      <div class="sm:col-span-2">
-        <select
-          [(ngModel)]="newCategory"
-          name="newCategory"
-          class="w-full px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white text-xs font-medium focus:outline-none">
-          @for (cat of categories; track cat) {
-            <option [value]="cat">{{ cat }}</option>
-          }
-        </select>
-      </div>
-
-      <!-- Est. Price ($) -->
-      <div class="sm:col-span-2">
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          [(ngModel)]="newEstimatedPrice"
-          name="newEstimatedPrice"
-          placeholder="Price ($)"
-          class="w-full px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
-      </div>
-
-      <!-- Store Tag -->
-      <div class="sm:col-span-2">
-        <input
-          type="text"
-          [(ngModel)]="newStoreName"
-          name="newStoreName"
-          placeholder="Store (e.g. Costco)"
-          class="w-full px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
-      </div>
-
-      <!-- Submit Button -->
-      <div class="sm:col-span-2">
-        <button
-          type="submit"
-          [disabled]="!newName.trim()"
-          class="w-full py-2 px-3 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white font-semibold rounded-xl text-xs transition-all cursor-pointer">
-          + Add Item
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Item Filter Segmented Bar -->
-  <div class="flex items-center justify-between border-b border-gray-200/80 dark:border-gray-800 pb-3">
-    <div class="flex items-center gap-1 bg-gray-100 dark:bg-[#262626] p-1 rounded-xl border border-gray-200/80 dark:border-gray-800">
+  <!-- Filter Pills -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-1">
       <button
         (click)="setFilter('all')"
         [class]="
           activeFilter() === 'all'
-            ? 'px-3.5 py-1.5 font-bold rounded-lg bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white shadow-xs transition-all text-xs cursor-pointer'
-            : 'px-3.5 py-1.5 font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-xs cursor-pointer'
+            ? 'px-3 py-1 font-bold rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs transition-all cursor-pointer'
+            : 'px-3 py-1 font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white text-xs transition-all cursor-pointer'
         ">
         All ({{ totalCount() }})
       </button>
@@ -176,8 +107,8 @@
         (click)="setFilter('unchecked')"
         [class]="
           activeFilter() === 'unchecked'
-            ? 'px-3.5 py-1.5 font-bold rounded-lg bg-white dark:bg-[#1a1a1a] text-amber-600 dark:text-amber-400 shadow-xs transition-all text-xs cursor-pointer'
-            : 'px-3.5 py-1.5 font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-xs cursor-pointer'
+            ? 'px-3 py-1 font-bold rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs transition-all cursor-pointer'
+            : 'px-3 py-1 font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white text-xs transition-all cursor-pointer'
         ">
         To Buy ({{ uncheckedCount() }})
       </button>
@@ -186,77 +117,70 @@
         (click)="setFilter('checked')"
         [class]="
           activeFilter() === 'checked'
-            ? 'px-3.5 py-1.5 font-bold rounded-lg bg-white dark:bg-[#1a1a1a] text-emerald-600 dark:text-emerald-400 shadow-xs transition-all text-xs cursor-pointer'
-            : 'px-3.5 py-1.5 font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-xs cursor-pointer'
+            ? 'px-3 py-1 font-bold rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs transition-all cursor-pointer'
+            : 'px-3 py-1 font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white text-xs transition-all cursor-pointer'
         ">
         In Cart ({{ checkedCount() }})
       </button>
     </div>
+
+    @if (checkedCount() > 0) {
+      <button
+        (click)="clearChecked()"
+        class="text-xs text-gray-400 hover:text-rose-600 transition-colors cursor-pointer font-medium">
+        Clear checked
+      </button>
+    }
   </div>
 
-  <!-- Shopping List Table/Cards View with Inline Price Inputs -->
+  <!-- Minimalist Items Table View -->
   <div class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl overflow-hidden shadow-xs">
     @if (filteredItems().length === 0) {
-      <div class="p-12 text-center space-y-2">
-        <div class="text-3xl">🛒</div>
-        <p class="font-bold text-gray-900 dark:text-white text-sm">Shopping List is empty</p>
-        <p class="text-xs text-gray-500">Add manual items above or auto-fill missing ingredients from your Meal Planner.</p>
+      <div class="p-8 text-center text-xs text-gray-400 font-medium">
+        No items in list.
       </div>
     } @else {
       <div class="divide-y divide-gray-100 dark:divide-gray-800/80">
         @for (item of filteredItems(); track item.id) {
           <div
-            [class.bg-emerald-50/30]="item.checked"
-            [class.dark:bg-emerald-950/10]="item.checked"
-            class="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-gray-50/80 dark:hover:bg-[#262626]/50 transition-colors group">
+            [class.opacity-60]="item.checked"
+            class="px-4 py-3 flex items-center justify-between gap-3 hover:bg-gray-50/60 dark:hover:bg-[#262626]/40 transition-colors group">
             
-            <!-- Checkbox & Name Block -->
+            <!-- Checkbox & Info -->
             <div class="flex items-center gap-3 min-w-0 flex-1">
               <input
                 type="checkbox"
                 [checked]="item.checked"
                 (change)="toggleItem(item.id)"
-                class="w-5 h-5 rounded-md text-emerald-600 focus:ring-emerald-500 cursor-pointer accent-emerald-600" />
+                class="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 cursor-pointer accent-primary-600" />
 
-              <div class="space-y-1 min-w-0">
-                <div class="flex items-center gap-2">
-                  <span
-                    [class.line-through]="item.checked"
-                    [class.text-gray-400]="item.checked"
-                    class="font-extrabold text-sm text-gray-900 dark:text-white">
-                    {{ item.name }}
-                  </span>
-                  <span class="text-xs text-gray-500 font-semibold">
-                    ({{ item.quantity }} {{ item.unit }})
-                  </span>
-                </div>
+              <div class="flex items-center gap-2 min-w-0">
+                <span
+                  [class.line-through]="item.checked"
+                  class="font-semibold text-xs text-gray-900 dark:text-white truncate">
+                  {{ item.name }}
+                </span>
 
-                <div class="flex items-center gap-2 flex-wrap">
-                  <!-- Category Badge -->
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-gray-100 dark:bg-[#262626] text-gray-700 dark:text-gray-300">
-                    {{ item.category }}
-                  </span>
+                <span class="text-[11px] text-gray-400 font-normal shrink-0">
+                  {{ item.quantity }} {{ item.unit }}
+                </span>
 
-                  <!-- Store Tag -->
-                  @if (item.storeName) {
-                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 border border-purple-200/50">
-                      🏪 {{ item.storeName }}
-                    </span>
-                  }
+                <span class="text-[10px] px-2 py-0.5 rounded bg-gray-100 dark:bg-[#262626] text-gray-500 font-medium shrink-0">
+                  {{ item.category }}
+                </span>
 
-                  <!-- Source Tag -->
-                  <span [class]="'text-[10px] font-semibold px-2 py-0.5 rounded-md border ' + getSourceBadgeClass(item.source)">
-                    {{ getSourceLabel(item) }}
+                @if (item.recipeName) {
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 font-medium shrink-0 truncate max-w-[140px]">
+                    {{ item.recipeName }}
                   </span>
-                </div>
+                }
               </div>
             </div>
 
-            <!-- Price Management & Delete Controls -->
-            <div class="flex items-center gap-3 shrink-0 self-end sm:self-center">
-              <!-- Editable Est Price Input -->
-              <div class="flex items-center gap-1.5 bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 px-2.5 py-1 rounded-xl">
-                <span class="text-xs text-gray-400 font-bold">$</span>
+            <!-- Price & Delete Action -->
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="flex items-center gap-1 bg-gray-50 dark:bg-[#262626] px-2 py-1 rounded-lg border border-gray-200/60 dark:border-gray-800/60">
+                <span class="text-[11px] text-gray-400 font-semibold">$</span>
                 <input
                   type="number"
                   step="0.01"
@@ -264,13 +188,14 @@
                   [value]="item.estimatedPrice || ''"
                   (change)="updateItemPrice(item, $any($event.target).value)"
                   placeholder="0.00"
-                  class="w-16 bg-transparent text-xs font-extrabold text-gray-900 dark:text-white focus:outline-none" />
+                  class="w-12 bg-transparent text-xs font-bold text-gray-800 dark:text-gray-200 focus:outline-none" />
               </div>
 
               <button
                 (click)="removeItem(item.id)"
-                class="p-1.5 text-gray-400 hover:text-rose-600 transition-colors cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                title="Remove item"
+                class="text-gray-300 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
