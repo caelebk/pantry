@@ -25,7 +25,9 @@ function createTestDB(): Database {
 
 function seedMockCategory(db: Database): CategoryRow {
   db.prepare('INSERT INTO ingredient_groups (name) VALUES (?)').run('Test Category');
-  const row = db.prepare('SELECT * FROM ingredient_groups WHERE name = ?').get('Test Category') as CategoryRow;
+  const row = db.prepare('SELECT * FROM ingredient_groups WHERE name = ?').get(
+    'Test Category',
+  ) as CategoryRow;
   return row;
 }
 

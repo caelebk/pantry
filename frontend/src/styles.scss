@@ -51,28 +51,63 @@ html {
 
 /* ── Glass card utility ─────────────────────────────────────── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(231, 229, 228, 0.8);
 }
 
 :where(.dark, .dark *) .glass-card {
-  background: rgba(28, 25, 23, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(41, 37, 36, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ── Sub-card / Inner row design token utility ─────────────── */
+.sub-card {
+  background-color: #fafaf9;
+  border: 1px solid #e7e5e4;
+}
+
+:where(.dark, .dark *) .sub-card {
+  background-color: rgba(41, 37, 36, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sub-card-hover {
+  transition: all 0.2s ease;
+}
+
+.sub-card-hover:hover {
+  background-color: #ffffff;
+  border-color: #d6d3d1;
+}
+
+:where(.dark, .dark *) .sub-card-hover:hover {
+  background-color: rgba(68, 64, 60, 0.95);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* ── Card label utility ─────────────────────────────────────── */
+.card-label {
+  color: var(--color-surface-600);
+  font-weight: 700;
+}
+
+:where(.dark, .dark *) .card-label {
+  color: var(--color-surface-300);
 }
 
 /* ── Glass header ───────────────────────────────────────────── */
 .glass-header {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(250, 250, 249, 0.92);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid rgba(231, 229, 228, 0.8);
 }
 
 :where(.dark, .dark *) .glass-header {
-  background: rgba(12, 10, 9, 0.78);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(28, 25, 23, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 /* ── Gradient text utility ──────────────────────────────────── */
@@ -83,26 +118,24 @@ html {
   background-clip: text;
 }
 
-/* ── Animated gradient background ───────────────────────────── */
+/* ── Warm Stone background ───────────────────────────────────── */
 .animated-gradient-bg {
-  background: linear-gradient(-45deg, #fff7ed, #f5f5f4, #ffedd5, #fef3c7);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  background-color: #fafaf9;
 }
 
 :where(.dark, .dark *) .animated-gradient-bg {
-  background: linear-gradient(-45deg, #0c0a09, #1c1917, #1a0f08, #0f0804);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  background-color: #1c1917;
 }
 
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -177,4 +210,181 @@ html {
 /* ── PrimeNG Override Styles ────────────────────────────────── */
 .p-dialog .p-dialog-header {
   font-family: 'Inter', sans-serif !important;
+}
+
+/* PrimeNG Select & MultiSelect Triggers */
+.p-select,
+.p-multiselect {
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  background-color: var(--color-surface-100) !important;
+  border: 1px solid var(--color-surface-200) !important;
+  border-radius: 0.75rem !important;
+  color: var(--color-surface-900) !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  transition: all 0.2s ease !important;
+}
+
+:where(.dark, .dark *) .p-select,
+:where(.dark, .dark *) .p-multiselect {
+  background-color: var(--color-surface-800) !important;
+  border: 1px solid var(--color-surface-700) !important;
+  color: #ffffff !important;
+}
+
+.p-select:hover,
+.p-multiselect:hover {
+  border-color: var(--color-surface-300) !important;
+}
+
+:where(.dark, .dark *) .p-select:hover,
+:where(.dark, .dark *) .p-multiselect:hover {
+  border-color: var(--color-surface-600) !important;
+}
+
+.p-select-label,
+.p-multiselect-label,
+.p-multiselect-label-container {
+  padding: 0 0.75rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.p-select-dropdown,
+.p-multiselect-dropdown {
+  color: var(--color-surface-500) !important;
+  padding-right: 0.5rem !important;
+}
+
+:where(.dark, .dark *) .p-select-dropdown,
+:where(.dark, .dark *) .p-multiselect-dropdown {
+  color: var(--color-surface-400) !important;
+}
+
+/* PrimeNG Select & MultiSelect Dropdown Overlays */
+.p-select-overlay,
+.p-multiselect-overlay,
+.p-datepicker-panel,
+.p-popover {
+  background-color: var(--color-surface-100) !important;
+  border: 1px solid var(--color-surface-200) !important;
+  border-radius: 0.75rem !important;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.15),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  color: var(--color-surface-900) !important;
+}
+
+:where(.dark, .dark *) .p-select-overlay,
+:where(.dark, .dark *) .p-multiselect-overlay,
+:where(.dark, .dark *) .p-datepicker-panel,
+:where(.dark, .dark *) .p-popover {
+  background-color: var(--color-surface-800) !important;
+  border: 1px solid var(--color-surface-700) !important;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.5),
+    0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+  color: #ffffff !important;
+}
+
+/* Dropdown Option Items */
+.p-select-option,
+.p-multiselect-option {
+  color: var(--color-surface-800) !important;
+  border-radius: 0.5rem !important;
+  margin: 0.125rem 0.25rem !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  transition: all 0.15s ease !important;
+}
+
+:where(.dark, .dark *) .p-select-option,
+:where(.dark, .dark *) .p-multiselect-option {
+  color: var(--color-surface-200) !important;
+}
+
+/* Option Hover */
+.p-select-option:hover,
+.p-multiselect-option:hover,
+.p-select-option.p-focus,
+.p-multiselect-option.p-focus {
+  background-color: var(--color-surface-200) !important;
+  color: var(--color-primary-700) !important;
+}
+
+:where(.dark, .dark *) .p-select-option:hover,
+:where(.dark, .dark *) .p-multiselect-option:hover,
+:where(.dark, .dark *) .p-select-option.p-focus,
+:where(.dark, .dark *) .p-multiselect-option.p-focus {
+  background-color: var(--color-surface-700) !important;
+  color: var(--color-primary-400) !important;
+}
+
+/* Option Selected State */
+.p-select-option.p-select-option-selected,
+.p-multiselect-option.p-multiselect-option-selected {
+  background-color: rgba(249, 115, 22, 0.15) !important;
+  color: var(--color-primary-700) !important;
+  font-weight: 700 !important;
+}
+
+:where(.dark, .dark *) .p-select-option.p-select-option-selected,
+:where(.dark, .dark *) .p-multiselect-option.p-select-option-selected,
+:where(.dark, .dark *) .p-multiselect-option.p-multiselect-option-selected {
+  background-color: rgba(249, 115, 22, 0.25) !important;
+  color: var(--color-primary-400) !important;
+}
+
+/* Filter Input Container */
+.p-select-header,
+.p-multiselect-header {
+  padding: 0.5rem !important;
+  border-bottom: 1px solid var(--color-surface-200) !important;
+  background: transparent !important;
+}
+
+:where(.dark, .dark *) .p-select-header,
+:where(.dark, .dark *) .p-multiselect-header {
+  border-bottom: 1px solid var(--color-surface-800) !important;
+}
+
+/* Filter Input Text Field */
+.p-select-filter,
+.p-multiselect-filter {
+  background-color: #ffffff !important;
+  border: 1px solid var(--color-surface-200) !important;
+  color: var(--color-surface-900) !important;
+  border-radius: 0.5rem !important;
+  padding: 0.4rem 0.75rem !important;
+  font-size: 0.875rem !important;
+}
+
+:where(.dark, .dark *) .p-select-filter,
+:where(.dark, .dark *) .p-multiselect-filter {
+  background-color: var(--color-surface-800) !important;
+  border: 1px solid var(--color-surface-700) !important;
+  color: #ffffff !important;
+}
+
+.p-select-filter:focus,
+.p-multiselect-filter:focus {
+  border-color: var(--color-primary-500) !important;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2) !important;
+}
+
+/* Checkbox (MultiSelect & General) */
+.p-checkbox-checked .p-checkbox-box {
+  background-color: var(--color-primary-600) !important;
+  border-color: var(--color-primary-600) !important;
+  color: #ffffff !important;
 }

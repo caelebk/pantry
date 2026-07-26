@@ -3,7 +3,7 @@
   <div class="space-y-2">
     <button
       (click)="goBack()"
-      class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer">
+      class="inline-flex items-center gap-1.5 text-xs font-semibold text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors cursor-pointer">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -19,19 +19,19 @@
       Back to Meal Planner
     </button>
 
-    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+    <h2 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
       Plan a Meal
     </h2>
-    <p class="text-sm text-gray-500 dark:text-gray-400">
+    <p class="text-sm text-surface-500 dark:text-surface-400">
       Schedule a recipe to your weekly calendar with custom servings & preferences
     </p>
   </div>
 
   <!-- STEP 1: Select Schedule Slot (Day & Meal Type) -->
   <div
-    class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs space-y-4">
+    class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-5 shadow-xs space-y-4">
     <h3
-      class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+      class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
       <span
         class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold"
         >1</span
@@ -42,7 +42,9 @@
     <div class="space-y-4">
       <!-- Day Picker -->
       <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Day of Week</label>
+        <label class="text-xs font-semibold text-surface-700 dark:text-surface-300"
+          >Day of Week</label
+        >
         <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           @for (d of days; track d) {
             <button
@@ -51,7 +53,7 @@
               [class]="
                 selectedDay() === d
                   ? 'px-4 py-2 font-bold rounded-xl bg-primary-600 text-white shadow-xs transition-all text-xs shrink-0 cursor-pointer'
-                  : 'px-4 py-2 font-semibold rounded-xl bg-gray-50 dark:bg-[#262626] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800 hover:border-gray-400 transition-all text-xs shrink-0 cursor-pointer'
+                  : 'px-4 py-2 font-semibold rounded-xl bg-surface-50 dark:bg-surface-800/60 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-800 hover:border-surface-400 transition-all text-xs shrink-0 cursor-pointer'
               ">
               {{ d }}
             </button>
@@ -61,7 +63,9 @@
 
       <!-- Meal Time Picker -->
       <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Meal Time</label>
+        <label class="text-xs font-semibold text-surface-700 dark:text-surface-300"
+          >Meal Time</label
+        >
         <div class="flex items-center gap-2">
           @for (t of mealTypes; track t) {
             <button
@@ -69,8 +73,8 @@
               (click)="selectMealType(t)"
               [class]="
                 selectedMealType() === t
-                  ? 'px-4 py-2 font-bold rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-xs transition-all text-xs cursor-pointer'
-                  : 'px-4 py-2 font-semibold rounded-xl bg-gray-50 dark:bg-[#262626] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-800 hover:border-gray-400 transition-all text-xs cursor-pointer'
+                  ? 'px-4 py-2 font-bold rounded-xl bg-primary-600 text-white shadow-xs transition-all text-xs cursor-pointer'
+                  : 'px-4 py-2 font-semibold rounded-xl bg-surface-50 dark:bg-surface-800/60 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-800 hover:border-surface-400 transition-all text-xs cursor-pointer'
               ">
               {{ t }}
             </button>
@@ -82,10 +86,10 @@
 
   <!-- STEP 2: Choose Recipe Grid -->
   <div
-    class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs space-y-4">
+    class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-5 shadow-xs space-y-4">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <h3
-        class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
         <span
           class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold"
           >2</span
@@ -100,14 +104,14 @@
           [ngModel]="searchQuery()"
           (ngModelChange)="searchQuery.set($event)"
           placeholder="Search recipes..."
-          class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
+          class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white placeholder-surface-400 text-xs focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="2"
           stroke="currentColor"
-          class="w-4 h-4 absolute left-2.5 top-2 text-gray-400">
+          class="w-4 h-4 absolute left-2.5 top-2 text-surface-400">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -117,7 +121,9 @@
     </div>
 
     @if (isLoading()) {
-      <div class="p-8 text-center text-xs text-gray-500 font-medium">Loading recipe catalog...</div>
+      <div class="p-8 text-center text-xs text-surface-500 font-medium">
+        Loading recipe catalog...
+      </div>
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         @for (recipe of filteredRecipes(); track recipe.id) {
@@ -126,17 +132,17 @@
             [class]="
               selectedRecipe()?.id === recipe.id
                 ? 'p-4 rounded-xl bg-primary-50/40 dark:bg-primary-950/20 border-2 border-primary-600 shadow-xs transition-all cursor-pointer flex justify-between gap-3'
-                : 'p-4 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 transition-all cursor-pointer flex justify-between gap-3'
+                : 'p-4 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 hover:border-surface-300 dark:hover:border-surface-700 transition-all cursor-pointer flex justify-between gap-3'
             ">
             <div class="space-y-1 min-w-0">
-              <h4 class="font-bold text-sm text-gray-900 dark:text-white truncate">
+              <h4 class="font-bold text-sm text-surface-900 dark:text-white truncate">
                 {{ recipe.name }}
               </h4>
-              <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+              <p class="text-xs text-surface-500 dark:text-surface-400 line-clamp-1">
                 {{ recipe.description || 'Delicious recipe ready to cook.' }}
               </p>
               <div
-                class="flex items-center gap-3 text-[11px] text-gray-500 dark:text-gray-400 font-medium pt-1">
+                class="flex items-center gap-3 text-[11px] text-surface-500 dark:text-surface-400 font-medium pt-1">
                 <span>⏱️ {{ recipe.prepTime || 15 }}m prep</span>
                 <span>•</span>
                 <span>🍽️ {{ recipe.servings || 2 }} servings</span>
@@ -149,7 +155,7 @@
                 [class]="
                   selectedRecipe()?.id === recipe.id
                     ? 'w-5 h-5 rounded-full bg-primary-600 text-white flex items-center justify-center'
-                    : 'w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600'
+                    : 'w-5 h-5 rounded-full border-2 border-surface-300 dark:border-surface-600'
                 ">
                 @if (selectedRecipe()?.id === recipe.id) {
                   <svg
@@ -169,7 +175,7 @@
             </div>
           </div>
         } @empty {
-          <div class="col-span-full p-8 text-center text-xs text-gray-500 font-medium">
+          <div class="col-span-full p-8 text-center text-xs text-surface-500 font-medium">
             No recipes found matching "{{ searchQuery() }}"
           </div>
         }
@@ -180,9 +186,9 @@
   <!-- STEP 3: Servings & Customization -->
   @if (selectedRecipe()) {
     <div
-      class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs space-y-4">
+      class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-5 shadow-xs space-y-4">
       <h3
-        class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
         <span
           class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold"
           >3</span
@@ -191,25 +197,25 @@
       </h3>
 
       <div class="flex items-center gap-4">
-        <span class="text-xs font-semibold text-gray-700 dark:text-gray-300"
+        <span class="text-xs font-semibold text-surface-700 dark:text-surface-300"
           >Servings to Prepare:</span
         >
         <div
-          class="flex items-center border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-[#262626] overflow-hidden">
+          class="flex items-center border border-surface-200 dark:border-surface-800 rounded-xl bg-surface-50 dark:bg-surface-800/60 overflow-hidden">
           <button
             type="button"
             (click)="decrementServings()"
-            class="px-3 py-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-bold transition-colors cursor-pointer">
+            class="px-3 py-1.5 text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white font-bold transition-colors cursor-pointer">
             -
           </button>
           <span
-            class="px-4 py-1.5 font-extrabold text-sm text-gray-900 dark:text-white border-x border-gray-200 dark:border-gray-800">
+            class="px-4 py-1.5 font-extrabold text-sm text-surface-900 dark:text-white border-x border-surface-200 dark:border-surface-800">
             {{ servings() }}
           </span>
           <button
             type="button"
             (click)="incrementServings()"
-            class="px-3 py-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-bold transition-colors cursor-pointer">
+            class="px-3 py-1.5 text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white font-bold transition-colors cursor-pointer">
             +
           </button>
         </div>
@@ -219,11 +225,11 @@
 
   <!-- Action Bar -->
   <div
-    class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200/80 dark:border-gray-800">
+    class="flex items-center justify-end gap-3 pt-4 border-t border-surface-200/80 dark:border-surface-800/80">
     <button
       type="button"
       (click)="goBack()"
-      class="px-5 py-2.5 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 text-xs font-semibold rounded-xl hover:bg-gray-100 dark:hover:bg-[#262626] transition-colors cursor-pointer">
+      class="px-5 py-2.5 border border-surface-200 dark:border-surface-800 text-surface-700 dark:text-surface-300 text-xs font-semibold rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors cursor-pointer">
       Cancel
     </button>
     <button

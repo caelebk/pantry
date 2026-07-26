@@ -1,5 +1,9 @@
 import { getDB } from '../db/client.ts';
-import { CreateShoppingListItemDTO, ShoppingListItemDTO, UpdateShoppingListItemDTO } from '../models/data-models/shopping-list.model.ts';
+import {
+  CreateShoppingListItemDTO,
+  ShoppingListItemDTO,
+  UpdateShoppingListItemDTO,
+} from '../models/data-models/shopping-list.model.ts';
 
 export interface ShoppingListItemRow {
   id: string;
@@ -18,13 +22,16 @@ export interface ShoppingListItemRow {
 export class ShoppingListBackendService {
   async getAllItems(): Promise<ShoppingListItemDTO[]> {
     const db = getDB();
-    const rows = db.prepare('SELECT * FROM shopping_list_items ORDER BY created_at DESC').all() as ShoppingListItemRow[];
+    const rows = db.prepare('SELECT * FROM shopping_list_items ORDER BY created_at DESC')
+      .all() as ShoppingListItemRow[];
     return rows.map(this.mapRowToDTO);
   }
 
   async getItemById(id: string): Promise<ShoppingListItemDTO | null> {
     const db = getDB();
-    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(id) as ShoppingListItemRow | undefined;
+    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(id) as
+      | ShoppingListItemRow
+      | undefined;
     return row ? this.mapRowToDTO(row) : null;
   }
 
@@ -45,10 +52,12 @@ export class ShoppingListBackendService {
       data.estimatedPrice || 0,
       data.storeName || '',
       data.source || 'manual',
-      data.recipeName || null
+      data.recipeName || null,
     );
 
-    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(id) as ShoppingListItemRow;
+    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(
+      id,
+    ) as ShoppingListItemRow;
     return this.mapRowToDTO(row);
   }
 
@@ -61,7 +70,10 @@ export class ShoppingListBackendService {
     return created;
   }
 
-  async updateItem(id: string, data: UpdateShoppingListItemDTO): Promise<ShoppingListItemDTO | null> {
+  async updateItem(
+    id: string,
+    data: UpdateShoppingListItemDTO,
+  ): Promise<ShoppingListItemDTO | null> {
     const db = getDB();
     const existing = await this.getItemById(id);
     if (!existing) return null;
@@ -70,8 +82,12 @@ export class ShoppingListBackendService {
     const category = data.category !== undefined ? data.category : existing.category;
     const quantity = data.quantity !== undefined ? data.quantity : existing.quantity;
     const unit = data.unit !== undefined ? data.unit : existing.unit;
-    const checked = data.checked !== undefined ? (data.checked ? 1 : 0) : (existing.checked ? 1 : 0);
-    const estimatedPrice = data.estimatedPrice !== undefined ? data.estimatedPrice : existing.estimatedPrice;
+    const checked = data.checked !== undefined
+      ? (data.checked ? 1 : 0)
+      : (existing.checked ? 1 : 0);
+    const estimatedPrice = data.estimatedPrice !== undefined
+      ? data.estimatedPrice
+      : existing.estimatedPrice;
     const storeName = data.storeName !== undefined ? data.storeName : existing.storeName;
     const source = data.source !== undefined ? data.source : existing.source;
     const recipeName = data.recipeName !== undefined ? data.recipeName : existing.recipeName;
@@ -80,9 +96,22 @@ export class ShoppingListBackendService {
       UPDATE shopping_list_items
       SET name = ?, category = ?, quantity = ?, unit = ?, checked = ?, estimated_price = ?, store_name = ?, source = ?, recipe_name = ?
       WHERE id = ?
-    `).run(name, category, quantity, unit, checked, estimatedPrice, storeName, source, recipeName || null, id);
+    `).run(
+      name,
+      category,
+      quantity,
+      unit,
+      checked,
+      estimatedPrice,
+      storeName,
+      source,
+      recipeName || null,
+      id,
+    );
 
-    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(id) as ShoppingListItemRow;
+    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(
+      id,
+    ) as ShoppingListItemRow;
     return this.mapRowToDTO(row);
   }
 

@@ -48,10 +48,10 @@
       @for (item of visibleItems(); track item.name; let i = $index) {
         <div
           [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
-          class="bg-white/50 dark:bg-surface-800/50 p-3.5 rounded-xl flex justify-between items-center transition-all duration-200 hover:bg-white/80 dark:hover:bg-surface-800/80 group/item">
+          class="sub-card sub-card-hover p-3.5 rounded-xl flex justify-between items-center group/item">
           <div class="min-w-0 flex-1">
             <h4
-              class="font-semibold text-sm text-surface-900 dark:text-white truncate"
+              class="font-extrabold text-sm text-surface-900 dark:text-white truncate"
               [ngClass]="{
                 'line-through decoration-surface-400 dark:decoration-surface-500 opacity-60':
                   theme() === Theme.Red,
@@ -60,12 +60,12 @@
             </h4>
             <div class="flex items-center gap-2 mt-0.5">
               <span
-                class="text-xs text-surface-400 dark:text-surface-500 truncate flex items-center gap-1">
+                class="text-xs text-surface-600 dark:text-surface-300 font-medium truncate flex items-center gap-1">
                 <i class="pi pi-building text-[10px]"></i>
                 {{ item.location.name }}
               </span>
-              <span class="text-surface-300 dark:text-surface-600 text-[10px]">•</span>
-              <span class="text-xs text-surface-500 dark:text-surface-400 font-medium">
+              <span class="text-surface-400 dark:text-surface-600 text-[10px]">•</span>
+              <span class="text-xs text-surface-600 dark:text-surface-300 font-semibold">
                 {{ item.quantity }} {{ item.unit.name }}
               </span>
             </div>

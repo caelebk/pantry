@@ -20,9 +20,8 @@
     </div>
   </div>
 
-  <!-- Filter & Control Bar -->
-  <div
-    class="glass-card rounded-2xl p-4 mb-8 border border-surface-200/60 dark:border-surface-800/80 relative z-20">
+  <!-- Filter & Control Bar (Clean & Borderless) -->
+  <div class="mb-8 relative z-20">
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <!-- Search Input -->
       <div class="relative flex-1 min-w-[240px]">
@@ -32,7 +31,7 @@
           type="text"
           placeholder="Search items by name..."
           [(ngModel)]="searchQuery"
-          class="w-full pl-10 pr-4 py-2.5 bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-700/80 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
+          class="w-full pl-10 pr-4 h-[42px] bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
         @if (searchQuery) {
           <button
             (click)="searchQuery = ''"
@@ -46,7 +45,7 @@
       <div class="flex flex-wrap items-center gap-3">
         <!-- Status Filter Pills -->
         <div
-          class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs">
+          class="flex items-center h-[42px] bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-xs border border-surface-200 dark:border-surface-700">
           <button
             (click)="setStatusFilter('all')"
             [class.bg-white]="selectedStatusFilter === 'all'"
@@ -57,7 +56,7 @@
             [class.font-bold]="selectedStatusFilter === 'all'"
             [class.text-surface-600]="selectedStatusFilter !== 'all'"
             [class.dark:text-surface-400]="selectedStatusFilter !== 'all'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
+            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center justify-center">
             All
           </button>
           <button
@@ -70,7 +69,7 @@
             [class.font-bold]="selectedStatusFilter === 'fresh'"
             [class.text-surface-600]="selectedStatusFilter !== 'fresh'"
             [class.dark:text-surface-400]="selectedStatusFilter !== 'fresh'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
+            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1">
             <span>Fresh</span>
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
           </button>
@@ -84,7 +83,7 @@
             [class.font-bold]="selectedStatusFilter === 'expiring'"
             [class.text-surface-600]="selectedStatusFilter !== 'expiring'"
             [class.dark:text-surface-400]="selectedStatusFilter !== 'expiring'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
+            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1">
             <span>Near Expiry</span>
             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
           </button>
@@ -98,7 +97,7 @@
             [class.font-bold]="selectedStatusFilter === 'expired'"
             [class.text-surface-600]="selectedStatusFilter !== 'expired'"
             [class.dark:text-surface-400]="selectedStatusFilter !== 'expired'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
+            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1">
             <span>Expired</span>
             <span class="w-2 h-2 rounded-full bg-rose-500"></span>
           </button>
@@ -114,7 +113,7 @@
             optionValue="id"
             appendTo="body"
             placeholder="Select Location"
-            styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
+            styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
             <ng-template pTemplate="selectedItem" let-selected>
               @if (selected) {
                 <div
@@ -136,7 +135,7 @@
             <button
               type="button"
               (click)="selectedLocationId = null; resetPagination()"
-              class="p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+              class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
               title="Reset location filter">
               <i class="pi pi-times text-xs font-bold"></i>
             </button>
@@ -145,7 +144,7 @@
 
         <!-- View Mode Toggle (Table / Grid) -->
         <div
-          class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs">
+          class="flex items-center h-[42px] bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-xs border border-surface-200 dark:border-surface-700 shadow-xs shrink-0">
           <button
             (click)="viewMode = 'table'"
             [class.bg-white]="viewMode === 'table'"
@@ -153,9 +152,10 @@
             [class.shadow-xs]="viewMode === 'table'"
             [class.text-primary-600]="viewMode === 'table'"
             [class.dark:text-primary-400]="viewMode === 'table'"
-            [class.font-bold]="viewMode === 'table'"
+            [class.font-extrabold]="viewMode === 'table'"
             [class.text-surface-600]="viewMode !== 'table'"
-            [class.dark:text-surface-400]="viewMode !== 'table'"
+            [class.dark:text-surface-300]="viewMode !== 'table'"
+            [class.font-bold]="viewMode !== 'table'"
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
             title="Table View">
             <i class="pi pi-list text-xs"></i>
@@ -168,9 +168,10 @@
             [class.shadow-xs]="viewMode === 'grid'"
             [class.text-primary-600]="viewMode === 'grid'"
             [class.dark:text-primary-400]="viewMode === 'grid'"
-            [class.font-bold]="viewMode === 'grid'"
+            [class.font-extrabold]="viewMode === 'grid'"
             [class.text-surface-600]="viewMode !== 'grid'"
-            [class.dark:text-surface-400]="viewMode !== 'grid'"
+            [class.dark:text-surface-300]="viewMode !== 'grid'"
+            [class.font-bold]="viewMode !== 'grid'"
             class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
             title="Grid Cards View">
             <i class="pi pi-th-large text-xs"></i>
@@ -192,7 +193,7 @@
             <table class="w-full text-left border-collapse">
               <thead>
                 <tr
-                  class="bg-surface-100/70 dark:bg-surface-800/50 border-b border-surface-200/80 dark:border-surface-800 text-[11px] font-extrabold uppercase tracking-wider text-surface-500 dark:text-surface-400 select-none">
+                  class="bg-surface-200/60 dark:bg-surface-800/80 border-b border-surface-300/60 dark:border-surface-700/60 text-[11px] font-extrabold uppercase tracking-wider text-surface-600 dark:text-surface-400 select-none">
                   <!-- Item Name Column Header -->
                   <th
                     (click)="toggleSort('name')"
@@ -286,7 +287,7 @@
                       value: '',
                       params: { delay: i * (staggerDelayPerItemMs / 2) },
                     }"
-                    class="hover:bg-primary-50/50 dark:hover:bg-surface-800/60 transition-colors group cursor-pointer">
+                    class="odd:bg-surface-50/50 dark:odd:bg-surface-800/20 hover:bg-primary-50/50 dark:hover:bg-surface-800/60 transition-colors group cursor-pointer">
                     <!-- Item Name & Freshness Badge -->
                     <td class="py-3.5 px-4 font-bold text-surface-900 dark:text-white">
                       <div class="flex items-center gap-2">
@@ -431,17 +432,19 @@
     } @else {
       <!-- Empty Filter State -->
       <div
-        class="glass-card rounded-2xl p-12 text-center max-w-md mx-auto border border-surface-200/60 dark:border-surface-800/80">
-        <div
-          class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mx-auto mb-4 text-surface-400 dark:text-surface-500 text-2xl">
-          <i class="pi pi-box"></i>
+        class="glass-card rounded-2xl p-12 text-center border border-surface-200/60 dark:border-surface-800/80 shadow-xs">
+        <div class="max-w-md mx-auto space-y-3">
+          <div
+            class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mx-auto mb-4 text-surface-400 dark:text-surface-500 text-2xl">
+            <i class="pi pi-box"></i>
+          </div>
+          <h4 class="text-lg font-bold text-surface-900 dark:text-white mb-2">No Items Found</h4>
+          <button
+            (click)="searchQuery = ''; selectedLocationId = null; selectedStatusFilter = 'all'"
+            class="px-4 py-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 font-semibold text-xs rounded-xl transition-all cursor-pointer">
+            Reset Filters
+          </button>
         </div>
-        <h4 class="text-lg font-bold text-surface-900 dark:text-white mb-2">No Items Found</h4>
-        <button
-          (click)="searchQuery = ''; selectedLocationId = null; selectedStatusFilter = 'all'"
-          class="px-4 py-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 font-semibold text-xs rounded-xl transition-all">
-          Reset Filters
-        </button>
       </div>
     }
   }

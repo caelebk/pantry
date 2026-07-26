@@ -151,13 +151,26 @@ Deno.test('RecipeService - getAvailableRecipes - calculates unit factor conversi
   setDB(db);
 
   // Units: 1 = gram (factor 1), 2 = kilogram (factor 1000)
-  db.prepare('INSERT INTO units (id, name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?, ?)').run(1, 'gram', 'g', 'weight', 1);
-  db.prepare('INSERT INTO units (id, name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?, ?)').run(2, 'kilogram', 'kg', 'weight', 1000);
+  db.prepare(
+    'INSERT INTO units (id, name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?, ?)',
+  ).run(1, 'gram', 'g', 'weight', 1);
+  db.prepare(
+    'INSERT INTO units (id, name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?, ?)',
+  ).run(2, 'kilogram', 'kg', 'weight', 1000);
 
   // Pantry has 1 kg of Flour (1000g)
   const flourId = 'flour-uuid-1';
-  db.prepare('INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
-    'item-1', flourId, 'Flour Bag', 1, 2, 1, '2030-01-01', '2026-01-01',
+  db.prepare(
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run(
+    'item-1',
+    flourId,
+    'Flour Bag',
+    1,
+    2,
+    1,
+    '2030-01-01',
+    '2026-01-01',
   );
 
   // Recipe 1 needs 500g Flour (Available: 1000g >= 500g -> TRUE)
@@ -183,13 +196,24 @@ Deno.test('RecipeService - getAvailableRecipes - excludes expired pantry items',
   const db = createTestDB();
   setDB(db);
 
-  db.prepare('INSERT INTO units (id, name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?, ?)').run(1, 'liter', 'L', 'volume', 1000);
+  db.prepare(
+    'INSERT INTO units (id, name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?, ?)',
+  ).run(1, 'liter', 'L', 'volume', 1000);
 
   const milkId = 'milk-uuid-1';
 
   // Expired Milk: 2L expired 5 days ago
-  db.prepare('INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
-    'item-expired', milkId, 'Expired Milk', 2, 1, 1, '2020-01-01T00:00:00.000Z', '2019-12-25T00:00:00.000Z',
+  db.prepare(
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run(
+    'item-expired',
+    milkId,
+    'Expired Milk',
+    2,
+    1,
+    1,
+    '2020-01-01T00:00:00.000Z',
+    '2019-12-25T00:00:00.000Z',
   );
 
   // Recipe requires 1L Milk
@@ -208,18 +232,38 @@ Deno.test('RecipeService - getAvailableRecipes - sums multiple pantry items for 
   const db = createTestDB();
   setDB(db);
 
-  db.prepare('INSERT INTO units (id, name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?, ?)').run(1, 'piece', 'pc', 'count', 1);
+  db.prepare(
+    'INSERT INTO units (id, name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?, ?)',
+  ).run(1, 'piece', 'pc', 'count', 1);
 
   const eggId = 'egg-uuid-1';
 
   // Batch 1: 3 eggs
-  db.prepare('INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
-    'eggs-1', eggId, 'Half Carton', 3, 1, 1, '2030-01-01', '2026-01-01',
+  db.prepare(
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run(
+    'eggs-1',
+    eggId,
+    'Half Carton',
+    3,
+    1,
+    1,
+    '2030-01-01',
+    '2026-01-01',
   );
 
   // Batch 2: 3 eggs
-  db.prepare('INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
-    'eggs-2', eggId, 'Another Carton', 3, 1, 1, '2030-01-01', '2026-01-01',
+  db.prepare(
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run(
+    'eggs-2',
+    eggId,
+    'Another Carton',
+    3,
+    1,
+    1,
+    '2030-01-01',
+    '2026-01-01',
   );
 
   // Recipe requires 5 eggs (Total available = 3 + 3 = 6 >= 5 -> TRUE)

@@ -93,11 +93,12 @@ import { Toast, ToastService } from '../../services/toast.service';
           <!-- Message Body -->
           <div class="flex-1 min-w-0">
             @if (toast.title) {
-              <h5 class="text-sm font-extrabold text-gray-900 dark:text-white leading-tight mb-0.5">
+              <h5
+                class="text-sm font-extrabold text-surface-900 dark:text-white leading-tight mb-0.5">
                 {{ toast.title }}
               </h5>
             }
-            <p class="text-xs text-gray-600 dark:text-gray-300 leading-normal">
+            <p class="text-xs text-surface-600 dark:text-surface-300 leading-normal">
               {{ toast.message }}
             </p>
           </div>
@@ -106,7 +107,7 @@ import { Toast, ToastService } from '../../services/toast.service';
           <button
             type="button"
             (click)="dismiss(toast.id)"
-            class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded-lg transition-colors cursor-pointer shrink-0">
+            class="text-surface-400 hover:text-surface-600 dark:hover:text-white p-1 rounded-lg transition-colors cursor-pointer shrink-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -133,13 +134,13 @@ export class ToastContainerComponent implements OnInit {
   getToastClass(type: string): string {
     switch (type) {
       case 'success':
-        return 'bg-white dark:bg-[#1a1a1a] border-emerald-500/30 text-emerald-950 dark:text-emerald-100';
+        return 'glass-card border-emerald-500/30 text-emerald-950 dark:text-emerald-100';
       case 'error':
-        return 'bg-white dark:bg-[#1a1a1a] border-rose-500/30 text-rose-950 dark:text-rose-100';
+        return 'glass-card border-rose-500/30 text-rose-950 dark:text-rose-100';
       case 'warning':
-        return 'bg-white dark:bg-[#1a1a1a] border-amber-500/30 text-amber-950 dark:text-amber-100';
+        return 'glass-card border-amber-500/30 text-amber-950 dark:text-amber-100';
       default:
-        return 'bg-white dark:bg-[#1a1a1a] border-primary-500/30 text-primary-950 dark:text-primary-100';
+        return 'glass-card border-primary-500/30 text-primary-950 dark:text-primary-100';
     }
   }
 

@@ -20,7 +20,11 @@ function createTestDB(): Database {
 Deno.test('NutrientTypeService - getAllNutrientTypes - success', async () => {
   const db = createTestDB();
   setDB(db);
-  db.prepare('INSERT INTO nutrient_groups (name, icon, color) VALUES (?, ?, ?)').run('Protein', '🥩', '#ef4444');
+  db.prepare('INSERT INTO nutrient_groups (name, icon, color) VALUES (?, ?, ?)').run(
+    'Protein',
+    '🥩',
+    '#ef4444',
+  );
 
   const types = await nutrientTypeService.getAllNutrientTypes();
   assertEquals(types.length, 1);
@@ -32,10 +36,18 @@ Deno.test('NutrientTypeService - getAllNutrientTypes - success', async () => {
 Deno.test('NutrientTypeService - getNutrientTypeById - success', async () => {
   const db = createTestDB();
   setDB(db);
-  db.prepare('INSERT INTO nutrient_groups (name, icon, color) VALUES (?, ?, ?)').run('Carbohydrate', '🌾', '#f59e0b');
+  db.prepare(
+    'INSERT INTO nutrient_groups (name, icon, color, description) VALUES (?, ?, ?, ?)',
+  ).run(
+    'Carbohydrate',
+    '🌾',
+    '#f59e0b',
+    'Primary energy sources including whole grains and starches.',
+  );
 
   const type = await nutrientTypeService.getNutrientTypeById(1);
   assert(type !== null);
   assertEquals(type?.name, 'Carbohydrate');
+  assertEquals(type?.description, 'Primary energy sources including whole grains and starches.');
   db.close();
 });

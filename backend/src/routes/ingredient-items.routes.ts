@@ -3,7 +3,11 @@
  */
 import { Context, Hono } from 'hono';
 import { ItemMessages } from '../messages/item.messages.ts';
-import { CreateIngredientItemDTO, IngredientItemDTO, UpdateIngredientItemDTO } from '../models/data-models/ingredient-item.model.ts';
+import {
+  CreateIngredientItemDTO,
+  IngredientItemDTO,
+  UpdateIngredientItemDTO,
+} from '../models/data-models/ingredient-item.model.ts';
 import { ingredientItemService } from '../services/ingredient-item.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isPositiveNumber, isValidUUID } from '../utils/validators.ts';
@@ -99,7 +103,10 @@ ingredientItems.put('/:id', async (c: Context) => {
       return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
     }
 
-    const item: IngredientItemDTO | null = await ingredientItemService.updateIngredientItem(id, body);
+    const item: IngredientItemDTO | null = await ingredientItemService.updateIngredientItem(
+      id,
+      body,
+    );
     if (!item) {
       return c.json(errorResponse(ItemMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }

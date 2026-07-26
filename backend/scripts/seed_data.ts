@@ -5,14 +5,56 @@ export const seedData = {
     { name: 'Freezer' },
   ],
   nutrient_types: [
-    { name: 'Protein', icon: '🥩', color: '#ef4444' },
-    { name: 'Carbohydrate', icon: '🌾', color: '#f59e0b' },
-    { name: 'Fat & Oil', icon: '🫒', color: '#22c55e' },
-    { name: 'Fiber & Produce', icon: '🥬', color: '#10b981' },
-    { name: 'Seasoning', icon: '🧂', color: '#8b5cf6' },
-    { name: 'Condiment', icon: '🍶', color: '#06b6d4' },
-    { name: 'Beverage', icon: '☕', color: '#64748b' },
-    { name: 'Quick Foods', icon: '📦', color: '#94a3b8' },
+    {
+      name: 'Protein',
+      icon: '🥩',
+      color: '#ef4444',
+      description:
+        'Essential amino acids & building blocks from meats, seafood, dairy, eggs, and legumes.',
+    },
+    {
+      name: 'Carbohydrate',
+      icon: '🌾',
+      color: '#f59e0b',
+      description:
+        'Primary energy sources including whole grains, pasta, bakery items, and starches.',
+    },
+    {
+      name: 'Fat & Oil',
+      icon: '🫒',
+      color: '#22c55e',
+      description: 'Healthy fats, cooking oils, butter, nuts, and concentrated energy sources.',
+    },
+    {
+      name: 'Fiber & Produce',
+      icon: '🥬',
+      color: '#10b981',
+      description: 'Fresh fruits, vegetables, leafy greens, aromatics, and dietary fiber.',
+    },
+    {
+      name: 'Seasoning',
+      icon: '🧂',
+      color: '#8b5cf6',
+      description: 'Spices, herbs, seasonings, and flavor enhancers for culinary prep.',
+    },
+    {
+      name: 'Condiment',
+      icon: '🍶',
+      color: '#06b6d4',
+      description: 'Sauces, dressings, vinegars, dips, and table condiments.',
+    },
+    {
+      name: 'Beverage',
+      icon: '☕',
+      color: '#64748b',
+      description: 'Hot and cold beverages, juices, coffees, teas, and liquid refreshments.',
+    },
+    {
+      name: 'Quick Foods',
+      icon: '📦',
+      color: '#94a3b8',
+      description: 'Convenience items, snacks, sweets, frozen foods, and instant meal packs.',
+    },
   ],
   categories: [
     // Fiber & Produce
@@ -480,7 +522,10 @@ export const seedData = {
       ],
       steps: [
         { step_number: 1, instruction_text: 'Heat olive oil in a skillet over medium-high heat.' },
-        { step_number: 2, instruction_text: 'Scramble the eggs until just cooked, then add cooked rice and salt.' },
+        {
+          step_number: 2,
+          instruction_text: 'Scramble the eggs until just cooked, then add cooked rice and salt.',
+        },
         { step_number: 3, instruction_text: 'Stir fry for 3-5 minutes until steaming hot.' },
       ],
     },

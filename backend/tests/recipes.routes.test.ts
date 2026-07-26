@@ -67,8 +67,7 @@ Deno.test('Recipes API - GET /api/recipes/:id - not found', async () => {
 
 Deno.test('Recipes API - POST /api/recipes - success', async () => {
   const originalCreate = recipeService.createRecipe;
-  recipeService.createRecipe = (dto) =>
-    Promise.resolve({ ...mockRecipe, name: dto.name });
+  recipeService.createRecipe = (dto) => Promise.resolve({ ...mockRecipe, name: dto.name });
 
   const res = await app.request('/api/recipes', {
     method: 'POST',

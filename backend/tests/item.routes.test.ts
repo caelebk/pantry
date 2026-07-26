@@ -64,7 +64,8 @@ Deno.test('Items API - GET /api/items - service error', async () => {
 
 Deno.test('Items API - GET /api/items/:id - success', async () => {
   const originalGetItemById = ingredientItemService.getIngredientItemById;
-  ingredientItemService.getIngredientItemById = (id) => Promise.resolve(id === mockItem.id ? mockItem : null);
+  ingredientItemService.getIngredientItemById = (id) =>
+    Promise.resolve(id === mockItem.id ? mockItem : null);
 
   try {
     const app = new Hono();
@@ -165,7 +166,8 @@ Deno.test('Items API - PUT /api/items/:id - success', async () => {
   const originalUpdateItem = ingredientItemService.updateIngredientItem;
 
   ingredientItemService.getIngredientItemById = () => Promise.resolve(mockItem);
-  ingredientItemService.updateIngredientItem = (_id, _data) => Promise.resolve({ ...mockItem, label: 'Updated Only' });
+  ingredientItemService.updateIngredientItem = (_id, _data) =>
+    Promise.resolve({ ...mockItem, label: 'Updated Only' });
 
   try {
     const app = new Hono();

@@ -31,7 +31,9 @@ export class IngredientsService {
   async getIngredientById(id: string): Promise<IngredientDTO | null> {
     try {
       const db = getDB();
-      const row = db.prepare('SELECT * FROM ingredients WHERE id = ?').get(id) as IngredientRow | undefined;
+      const row = db.prepare('SELECT * FROM ingredients WHERE id = ?').get(id) as
+        | IngredientRow
+        | undefined;
       return row ? this.mapIngredientRowToIngredient(row) : null;
     } catch (error: unknown) {
       console.error('Error finding ingredient by ID:', error);
@@ -86,7 +88,9 @@ export class IngredientsService {
         id,
       );
 
-      const row = db.prepare('SELECT * FROM ingredients WHERE id = ?').get(id) as IngredientRow | undefined;
+      const row = db.prepare('SELECT * FROM ingredients WHERE id = ?').get(id) as
+        | IngredientRow
+        | undefined;
       return row ? this.mapIngredientRowToIngredient(row) : null;
     } catch (error: unknown) {
       console.error('Error updating ingredient:', error);
@@ -118,7 +122,9 @@ export class IngredientsService {
   async getIngredientsByCategory(groupId: number): Promise<IngredientDTO[]> {
     try {
       const db = getDB();
-      const rows = db.prepare('SELECT * FROM ingredients WHERE ingredient_group_id = ?').all(groupId) as IngredientRow[];
+      const rows = db.prepare('SELECT * FROM ingredients WHERE ingredient_group_id = ?').all(
+        groupId,
+      ) as IngredientRow[];
       return rows.map(this.mapIngredientRowToIngredient);
     } catch (error: unknown) {
       console.error('Error finding ingredients by group:', error);

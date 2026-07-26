@@ -1,6 +1,5 @@
-<!-- Filter & Control Bar -->
-<div
-  class="glass-card rounded-2xl p-4 mb-8 border border-surface-200/60 dark:border-surface-800/80 relative z-20">
+<!-- Filter & Control Bar (Clean & Borderless) -->
+<div class="mb-8 relative z-20">
   <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
     <!-- Search Box -->
     <div class="relative flex-1 min-w-[240px]">
@@ -11,7 +10,7 @@
         [ngModel]="searchQuery()"
         (ngModelChange)="onSearch($event)"
         placeholder="Search ingredients by name..."
-        class="w-full pl-10 pr-9 py-2.5 bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-700/80 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
+        class="w-full pl-10 pr-9 h-[42px] bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
       @if (searchQuery()) {
         <button
           (click)="onSearch('')"
@@ -37,7 +36,7 @@
           filterPlaceholder="Search nutrients..."
           appendTo="body"
           placeholder="✨ All Nutrients"
-          styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
+          styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
               <div
@@ -64,7 +63,7 @@
           <button
             type="button"
             (click)="onNutrientTypesSelect([])"
-            class="p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+            class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
             title="Reset nutrient filter">
             <i class="pi pi-times text-xs font-bold"></i>
           </button>
@@ -85,7 +84,7 @@
           filterPlaceholder="Search groups..."
           appendTo="body"
           placeholder="🏷️ All Groups"
-          styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
+          styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
               <div
@@ -112,7 +111,7 @@
           <button
             type="button"
             (click)="onCategoryIdsSelect([])"
-            class="p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+            class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
             title="Reset group filter">
             <i class="pi pi-times text-xs font-bold"></i>
           </button>
@@ -121,11 +120,11 @@
 
       <!-- Expand / Collapse Controls -->
       <div
-        class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs shrink-0">
+        class="flex items-center h-[42px] bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-xs border border-surface-200 dark:border-surface-700 shadow-xs shrink-0">
         <button
           type="button"
           (click)="expandAll()"
-          class="px-3 py-1.5 rounded-lg text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+          class="px-3 py-1.5 rounded-lg text-xs font-bold text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
           title="Expand All Groups">
           <i class="pi pi-arrows-alt text-xs"></i>
           <span>Expand All</span>
@@ -133,7 +132,7 @@
         <button
           type="button"
           (click)="collapseAll()"
-          class="px-3 py-1.5 rounded-lg text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+          class="px-3 py-1.5 rounded-lg text-xs font-bold text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
           title="Collapse All Groups">
           <i class="pi pi-minus text-xs"></i>
           <span>Collapse</span>

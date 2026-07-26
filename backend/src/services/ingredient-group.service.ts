@@ -88,12 +88,11 @@ export class IngredientGroupService {
       if (!existing) return null;
 
       const name = dto.name !== undefined ? dto.name : existing.name;
-      const nutrientGroupId =
-        dto.nutrientGroupId !== undefined
-          ? dto.nutrientGroupId
-          : dto.nutrientTypeId !== undefined
-          ? dto.nutrientTypeId
-          : existing.nutrientGroupId ?? null;
+      const nutrientGroupId = dto.nutrientGroupId !== undefined
+        ? dto.nutrientGroupId
+        : dto.nutrientTypeId !== undefined
+        ? dto.nutrientTypeId
+        : existing.nutrientGroupId ?? null;
 
       db.prepare(`
         UPDATE ingredient_groups

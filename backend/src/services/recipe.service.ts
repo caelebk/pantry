@@ -118,7 +118,14 @@ export class RecipeService {
           VALUES (?, ?, ?, ?, ?, ?)
         `);
         for (const ing of data.ingredients) {
-          insertIngredient.run(recipeId, ing.ingredientId, ing.quantity, ing.unitId ?? null, now, now);
+          insertIngredient.run(
+            recipeId,
+            ing.ingredientId,
+            ing.quantity,
+            ing.unitId ?? null,
+            now,
+            now,
+          );
         }
       }
 
@@ -293,7 +300,9 @@ export class RecipeService {
           // Get unit base factor for required ingredient
           let factor = 1.0;
           if (reqIng.unitId) {
-            const unitRow = db.prepare('SELECT to_base_factor FROM units WHERE id = ?').get(reqIng.unitId) as { to_base_factor: number } | undefined;
+            const unitRow = db.prepare('SELECT to_base_factor FROM units WHERE id = ?').get(
+              reqIng.unitId,
+            ) as { to_base_factor: number } | undefined;
             if (unitRow) {
               factor = unitRow.to_base_factor;
             }

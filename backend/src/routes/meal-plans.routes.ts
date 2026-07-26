@@ -12,7 +12,10 @@ mealPlans.get('/', async (c: Context) => {
     return c.json(successResponse(data), HttpStatusCode.OK);
   } catch (error: unknown) {
     console.error('Error fetching meal plans:', error);
-    return c.json(errorResponse('Failed to fetch meal plans'), HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(
+      errorResponse('Failed to fetch meal plans'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 
@@ -36,13 +39,19 @@ mealPlans.post('/', async (c: Context) => {
   try {
     const body: CreateMealPlanDTO = await c.req.json();
     if (!body || !body.day || !body.mealType || !body.recipeName) {
-      return c.json(errorResponse('day, mealType, and recipeName are required'), HttpStatusCode.BAD_REQUEST);
+      return c.json(
+        errorResponse('day, mealType, and recipeName are required'),
+        HttpStatusCode.BAD_REQUEST,
+      );
     }
     const created = await mealPlanService.createMealPlan(body);
     return c.json(successResponse(created), HttpStatusCode.CREATED);
   } catch (error: unknown) {
     console.error('Error creating meal plan:', error);
-    return c.json(errorResponse('Failed to create meal plan'), HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(
+      errorResponse('Failed to create meal plan'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 
@@ -58,7 +67,10 @@ mealPlans.put('/:id', async (c: Context) => {
     return c.json(errorResponse('Meal plan not found'), HttpStatusCode.NOT_FOUND);
   } catch (error: unknown) {
     console.error('Error updating meal plan:', error);
-    return c.json(errorResponse('Failed to update meal plan'), HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(
+      errorResponse('Failed to update meal plan'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 
@@ -67,10 +79,16 @@ mealPlans.delete('/:id', async (c: Context) => {
   try {
     const id = c.req.param('id')!;
     await mealPlanService.deleteMealPlan(id);
-    return c.json(successResponse({ message: 'Meal plan deleted successfully' }), HttpStatusCode.OK);
+    return c.json(
+      successResponse({ message: 'Meal plan deleted successfully' }),
+      HttpStatusCode.OK,
+    );
   } catch (error: unknown) {
     console.error('Error deleting meal plan:', error);
-    return c.json(errorResponse('Failed to delete meal plan'), HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(
+      errorResponse('Failed to delete meal plan'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 

@@ -1,5 +1,9 @@
 import { getDB } from '../db/client.ts';
-import { CreateMealPlanDTO, MealPlanDTO, UpdateMealPlanDTO } from '../models/data-models/meal-plan.model.ts';
+import {
+  CreateMealPlanDTO,
+  MealPlanDTO,
+  UpdateMealPlanDTO,
+} from '../models/data-models/meal-plan.model.ts';
 
 export interface MealPlanRow {
   id: string;
@@ -19,13 +23,16 @@ export interface MealPlanRow {
 export class MealPlanService {
   async getAllMealPlans(): Promise<MealPlanDTO[]> {
     const db = getDB();
-    const rows = db.prepare('SELECT * FROM meal_plans ORDER BY created_at ASC').all() as MealPlanRow[];
+    const rows = db.prepare('SELECT * FROM meal_plans ORDER BY created_at ASC')
+      .all() as MealPlanRow[];
     return rows.map(this.mapRowToDTO);
   }
 
   async getMealPlanById(id: string): Promise<MealPlanDTO | null> {
     const db = getDB();
-    const row = db.prepare('SELECT * FROM meal_plans WHERE id = ?').get(id) as MealPlanRow | undefined;
+    const row = db.prepare('SELECT * FROM meal_plans WHERE id = ?').get(id) as
+      | MealPlanRow
+      | undefined;
     return row ? this.mapRowToDTO(row) : null;
   }
 
@@ -49,7 +56,7 @@ export class MealPlanService {
       data.servings || 2,
       data.cooked ? 1 : 0,
       missingJson,
-      tagsJson
+      tagsJson,
     );
 
     const row = db.prepare('SELECT * FROM meal_plans WHERE id = ?').get(id) as MealPlanRow;
@@ -65,18 +72,36 @@ export class MealPlanService {
     const mealType = data.mealType !== undefined ? data.mealType : existing.mealType;
     const recipeId = data.recipeId !== undefined ? data.recipeId : existing.recipeId;
     const recipeName = data.recipeName !== undefined ? data.recipeName : existing.recipeName;
-    const prepTime = data.prepTimeMinutes !== undefined ? data.prepTimeMinutes : existing.prepTimeMinutes;
+    const prepTime = data.prepTimeMinutes !== undefined
+      ? data.prepTimeMinutes
+      : existing.prepTimeMinutes;
     const calories = data.calories !== undefined ? data.calories : existing.calories;
     const servings = data.servings !== undefined ? data.servings : existing.servings;
     const cooked = data.cooked !== undefined ? (data.cooked ? 1 : 0) : (existing.cooked ? 1 : 0);
-    const missingJson = data.missingIngredients !== undefined ? JSON.stringify(data.missingIngredients) : JSON.stringify(existing.missingIngredients);
-    const tagsJson = data.tags !== undefined ? JSON.stringify(data.tags) : JSON.stringify(existing.tags);
+    const missingJson = data.missingIngredients !== undefined
+      ? JSON.stringify(data.missingIngredients)
+      : JSON.stringify(existing.missingIngredients);
+    const tagsJson = data.tags !== undefined
+      ? JSON.stringify(data.tags)
+      : JSON.stringify(existing.tags);
 
     db.prepare(`
       UPDATE meal_plans
       SET day = ?, meal_type = ?, recipe_id = ?, recipe_name = ?, prep_time_minutes = ?, calories = ?, servings = ?, cooked = ?, missing_ingredients = ?, tags = ?
       WHERE id = ?
-    `).run(day, mealType, recipeId || null, recipeName, prepTime, calories, servings, cooked, missingJson, tagsJson, id);
+    `).run(
+      day,
+      mealType,
+      recipeId || null,
+      recipeName,
+      prepTime,
+      calories,
+      servings,
+      cooked,
+      missingJson,
+      tagsJson,
+      id,
+    );
 
     const row = db.prepare('SELECT * FROM meal_plans WHERE id = ?').get(id) as MealPlanRow;
     return this.mapRowToDTO(row);

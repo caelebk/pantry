@@ -3,7 +3,7 @@
   <div class="space-y-2">
     <button
       (click)="goBack()"
-      class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer">
+      class="inline-flex items-center gap-1.5 text-xs font-semibold text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors cursor-pointer">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -21,10 +21,10 @@
 
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+        <h2 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
           Restock Review
         </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
           Review bought items, set storage locations and expiration dates before adding to inventory
         </p>
       </div>
@@ -32,13 +32,13 @@
       <div class="flex items-center gap-2">
         <button
           (click)="toggleAll(true)"
-          class="text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer">
+          class="text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors cursor-pointer">
           Select All
         </button>
-        <span class="text-gray-300 dark:text-gray-700">•</span>
+        <span class="text-surface-300 dark:text-surface-700">•</span>
         <button
           (click)="toggleAll(false)"
-          class="text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer">
+          class="text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors cursor-pointer">
           Deselect All
         </button>
       </div>
@@ -49,9 +49,9 @@
   <div class="space-y-4">
     @if (draftItems().length === 0) {
       <div
-        class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-12 text-center space-y-3">
-        <p class="font-bold text-gray-900 dark:text-white text-sm">No items ready to restock</p>
-        <p class="text-xs text-gray-500">
+        class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-12 text-center space-y-3">
+        <p class="font-bold text-surface-900 dark:text-white text-sm">No items ready to restock</p>
+        <p class="text-xs text-surface-500">
           Check off items in your shopping list as "Bought" to restock them into your pantry.
         </p>
         <button
@@ -66,7 +66,7 @@
           [class.border-primary-500/40]="item.included"
           [class.dark:border-primary-500/40]="item.included"
           [class.opacity-50]="!item.included"
-          class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs transition-all space-y-4">
+          class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-5 shadow-xs transition-all space-y-4">
           <!-- Top Row: Checkbox, Name, Category -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3 min-w-0 flex-1">
@@ -80,9 +80,9 @@
                   type="text"
                   [(ngModel)]="item.name"
                   placeholder="Ingredient Name..."
-                  class="font-extrabold text-base text-gray-900 dark:text-white bg-transparent border-b border-transparent hover:border-gray-300 focus:border-primary-600 focus:outline-none py-0.5 min-w-[160px]" />
+                  class="font-extrabold text-base text-surface-900 dark:text-white bg-transparent border-b border-transparent hover:border-surface-300 focus:border-primary-600 focus:outline-none py-0.5 min-w-[160px]" />
                 <span
-                  class="px-2.5 py-0.5 rounded-md bg-gray-100 dark:bg-[#262626] border border-gray-200/60 dark:border-gray-800 text-[11px] font-semibold text-gray-500 dark:text-gray-400 shrink-0">
+                  class="px-2.5 py-0.5 rounded-md bg-surface-100 dark:bg-surface-800/60 border border-surface-200/80 dark:border-surface-800 text-[11px] font-semibold text-surface-500 dark:text-surface-400 shrink-0">
                   Category: {{ item.category }}
                 </span>
               </div>
@@ -91,36 +91,36 @@
             <!-- Quantity & Unit -->
             <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
               <div
-                class="flex items-center h-[38px] border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-[#262626] overflow-hidden">
+                class="flex items-center h-[38px] border border-surface-200 dark:border-surface-800 rounded-xl bg-surface-50 dark:bg-surface-800/60 overflow-hidden">
                 <input
                   type="number"
                   min="0.1"
                   step="1"
                   [(ngModel)]="item.quantity"
-                  class="w-14 h-full text-center text-xs font-bold text-gray-900 dark:text-white bg-transparent focus:outline-none" />
+                  class="w-14 h-full text-center text-xs font-bold text-surface-900 dark:text-white bg-transparent focus:outline-none" />
               </div>
 
               <p-select
                 [options]="unitsOptions()"
                 [(ngModel)]="item.unit"
-                styleClass="!rounded-xl !bg-gray-50 dark:!bg-[#262626] !border-gray-200 dark:!border-gray-800 !text-xs !font-semibold text-gray-700 dark:text-gray-300"
+                styleClass="!rounded-xl !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-800 !text-xs !font-semibold text-surface-700 dark:text-surface-300"
                 appendTo="body" />
             </div>
           </div>
 
           <!-- Bottom Row: Storage Location & Expiration Date Presets -->
           <div
-            class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-gray-100 dark:border-gray-800/60">
+            class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-surface-100 dark:border-surface-800/60">
             <!-- Storage Location -->
             <div class="space-y-1">
               <label
-                class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                class="text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider"
                 >Storage Location</label
               >
               <p-select
                 [options]="locationsOptions()"
                 [(ngModel)]="item.location"
-                styleClass="w-full !rounded-xl !bg-gray-50 dark:!bg-[#262626] !border-gray-200 dark:!border-gray-800 !text-xs !font-semibold"
+                styleClass="w-full !rounded-xl !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-800 !text-xs !font-semibold"
                 appendTo="body" />
             </div>
 
@@ -128,26 +128,26 @@
             <div class="space-y-1">
               <div class="flex items-center justify-between">
                 <label
-                  class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                  class="text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider"
                   >Expiration Date</label
                 >
                 <div class="flex items-center gap-1">
                   <button
                     type="button"
                     (click)="setExpirationPreset(item, 7)"
-                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-[#262626] hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors cursor-pointer">
+                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-surface-100 dark:bg-surface-800/60 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer">
                     +7d
                   </button>
                   <button
                     type="button"
                     (click)="setExpirationPreset(item, 14)"
-                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-[#262626] hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors cursor-pointer">
+                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-surface-100 dark:bg-surface-800/60 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer">
                     +14d
                   </button>
                   <button
                     type="button"
                     (click)="setExpirationPreset(item, 30)"
-                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-[#262626] hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors cursor-pointer">
+                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-surface-100 dark:bg-surface-800/60 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer">
                     +30d
                   </button>
                 </div>
@@ -159,7 +159,7 @@
                 [showIcon]="true"
                 iconDisplay="input"
                 styleClass="w-full"
-                inputStyleClass="w-full !rounded-xl !bg-gray-50 dark:!bg-[#262626] !border-gray-200 dark:!border-gray-800 !text-xs !font-semibold text-gray-900 dark:text-white"
+                inputStyleClass="w-full !rounded-xl !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-800 !text-xs !font-semibold text-surface-900 dark:text-white"
                 appendTo="body" />
             </div>
           </div>
@@ -170,11 +170,11 @@
 
   <!-- Bottom Action Bar -->
   <div
-    class="flex items-center justify-between gap-4 pt-4 border-t border-gray-200/80 dark:border-gray-800">
+    class="flex items-center justify-between gap-4 pt-4 border-t border-surface-200/80 dark:border-surface-800/80">
     <button
       type="button"
       (click)="goBack()"
-      class="px-5 py-2.5 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 text-xs font-semibold rounded-xl hover:bg-gray-100 dark:hover:bg-[#262626] transition-colors cursor-pointer">
+      class="px-5 py-2.5 border border-surface-200 dark:border-surface-800 text-surface-700 dark:text-surface-300 text-xs font-semibold rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors cursor-pointer">
       Cancel
     </button>
 
@@ -182,7 +182,7 @@
       type="button"
       (click)="confirmRestock()"
       [disabled]="selectedCount === 0 || isSubmitting()"
-      class="px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90 disabled:opacity-50 text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-xs">
+      class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white disabled:opacity-50 text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-xs">
       {{
         isSubmitting()
           ? 'Restocking...'

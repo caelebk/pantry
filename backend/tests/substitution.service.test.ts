@@ -44,13 +44,19 @@ Deno.test('SubstitutionService - getSubstitutions - ranks same category higher t
   // Nutrient groups
   db.exec("INSERT INTO nutrient_groups (id, name) VALUES (1, 'Protein');");
   // Ingredient groups
-  db.exec("INSERT INTO ingredient_groups (id, name, nutrient_group_id) VALUES (1, 'Dairy & Eggs', 1), (2, 'Meat & Seafood', 1);");
+  db.exec(
+    "INSERT INTO ingredient_groups (id, name, nutrient_group_id) VALUES (1, 'Dairy & Eggs', 1), (2, 'Meat & Seafood', 1);",
+  );
   // Units
   db.exec("INSERT INTO units (id, name, to_base_factor) VALUES (1, 'gram', 1.0);");
   // Ingredients
-  db.exec("INSERT INTO ingredients (id, name, ingredient_group_id, default_unit_id) VALUES ('ing1', 'Cheddar Cheese', 1, 1), ('ing2', 'Parmesan Cheese', 1, 1), ('ing3', 'Chicken Breast', 2, 1);");
+  db.exec(
+    "INSERT INTO ingredients (id, name, ingredient_group_id, default_unit_id) VALUES ('ing1', 'Cheddar Cheese', 1, 1), ('ing2', 'Parmesan Cheese', 1, 1), ('ing3', 'Chicken Breast', 2, 1);",
+  );
   // Stock items
-  db.exec("INSERT INTO ingredient_items (id, ingredient_id, quantity, unit_id, expiration_date) VALUES ('item1', 'ing2', 200, 1, '2099-01-01'), ('item2', 'ing3', 500, 1, '2099-01-01');");
+  db.exec(
+    "INSERT INTO ingredient_items (id, ingredient_id, quantity, unit_id, expiration_date) VALUES ('item1', 'ing2', 200, 1, '2099-01-01'), ('item2', 'ing3', 500, 1, '2099-01-01');",
+  );
 
   const substitutions = await substitutionService.getSubstitutions('ing1');
   assertEquals(substitutions.length, 2);

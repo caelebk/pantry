@@ -126,39 +126,62 @@ export class IngredientGroupsPageComponent implements OnInit {
     const catGroups = this.categoryGroups();
     const categoriesList = this.categories();
     const nutrientTypesList = this.nutrientTypes();
+    const query = this.searchQuery().toLowerCase().trim();
+    const selCategory = this.selectedCategory();
+    const hasSearchOrCategoryFilter = query.length > 0 || selCategory !== null;
 
-    const nutrientMap = new Map<number, InventoryIngredientGroup[]>();
-
-    catGroups.forEach((group) => {
-      const cat = categoriesList.find((c) => c.id === group.category.id);
-      const ntId = cat?.nutrientTypeId ?? -1;
-      if (!nutrientMap.has(ntId)) {
-        nutrientMap.set(ntId, []);
-      }
-      nutrientMap.get(ntId)!.push(group);
+    const catGroupsMap = new Map<number, InventoryIngredientGroup>();
+    catGroups.forEach((cg) => {
+      catGroupsMap.set(cg.category.id, cg);
     });
 
     const result: NutrientGroup[] = [];
 
-    nutrientMap.forEach((categoryGroups, ntId) => {
-      const nutrientType: NutrientType =
-        ntId === -1
-          ? {
-              id: -1,
-              name: 'Unclassified',
-              icon: '📦',
-              color: '#94a3b8',
-              description: 'Categories without an assigned nutrient group',
-            }
-          : (nutrientTypesList.find((nt) => nt.id === ntId) ?? {
-              id: ntId,
-              name: 'Other',
-              icon: '📦',
-              color: '#94a3b8',
-            });
+    nutrientTypesList.forEach((nt) => {
+      const categoriesForNt = categoriesList.filter((c) => c.nutrientTypeId === nt.id);
+      const categoryGroupsInNt: InventoryIngredientGroup[] = [];
 
-      result.push({ nutrientType, categoryGroups });
+      categoriesForNt.forEach((cat) => {
+        if (selCategory && selCategory.id !== cat.id) {
+          return;
+        }
+        const existingGroup = catGroupsMap.get(cat.id);
+        if (existingGroup) {
+          categoryGroupsInNt.push(existingGroup);
+        } else if (!hasSearchOrCategoryFilter) {
+          categoryGroupsInNt.push({ category: cat, ingredients: [] });
+        }
+      });
+
+      if (!hasSearchOrCategoryFilter || categoryGroupsInNt.length > 0) {
+        result.push({
+          nutrientType: nt,
+          categoryGroups: categoryGroupsInNt.sort((a, b) =>
+            a.category.name.localeCompare(b.category.name),
+          ),
+        });
+      }
     });
+
+    const knownCatIds = new Set(categoriesList.map((c) => c.id));
+    const uncategorizedCatGroups = catGroups.filter(
+      (cg) =>
+        !knownCatIds.has(cg.category.id) ||
+        !categoriesList.find((c) => c.id === cg.category.id)?.nutrientTypeId,
+    );
+
+    if (uncategorizedCatGroups.length > 0) {
+      result.push({
+        nutrientType: {
+          id: -1,
+          name: 'Unclassified',
+          icon: '📦',
+          color: '#94a3b8',
+          description: 'Categories without an assigned nutrient group',
+        },
+        categoryGroups: uncategorizedCatGroups,
+      });
+    }
 
     return result.sort((a, b) => {
       if (a.nutrientType.id === -1) return 1;
