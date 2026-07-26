@@ -21,7 +21,7 @@ export class AddIngredientPageComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly ingredientService = inject(IngredientService);
-  private readonly categoryService = inject(CategoryService);
+  private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly unitService = inject(UnitService);
   private readonly toastService = inject(ToastService);
 
@@ -38,7 +38,7 @@ export class AddIngredientPageComponent implements OnInit {
       defaultUnit: [null],
     });
 
-    this.categoryService.getIngredientGroups().subscribe({
+    this.ingredientGroupService.getIngredientGroups().subscribe({
       next: (groups) => this.ingredientGroups.set(groups),
     });
 

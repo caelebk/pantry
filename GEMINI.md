@@ -102,3 +102,4 @@ Always adhere to the updated 4-tier domain hierarchy and terminology:
 - **Formatting:** Run `deno fmt` for backend code and `npm run format` for frontend code before committing.
 - **Testing** After creating any new feature or fixing any bug, create a test to ensure that we do not regress to a previous state.
 - **Commits** organize commits whenever you make changes.
+- **Compiler** ensure before you're done that everything is compiling properly.

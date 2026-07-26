@@ -44,7 +44,7 @@ export class EditItemPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly itemService = inject(ItemService);
   private readonly ingredientService = inject(IngredientService);
-  private readonly categoryService = inject(CategoryService);
+  private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly locationService = inject(LocationService);
   private readonly unitService = inject(UnitService);
   private readonly toastService = inject(ToastService);
@@ -112,7 +112,7 @@ export class EditItemPageComponent implements OnInit {
 
     this.itemId.set(id);
 
-    this.categoryService.getIngredientGroups().subscribe({
+    this.ingredientGroupService.getIngredientGroups().subscribe({
       next: (groups) => this.ingredientGroups.set(groups),
     });
 

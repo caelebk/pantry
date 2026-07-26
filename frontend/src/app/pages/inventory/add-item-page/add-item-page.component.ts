@@ -48,7 +48,7 @@ export class AddItemPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly itemService = inject(ItemService);
   private readonly ingredientService = inject(IngredientService);
-  private readonly categoryService = inject(CategoryService);
+  private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly toastService = inject(ToastService);
@@ -71,7 +71,7 @@ export class AddItemPageComponent implements OnInit {
   ngOnInit(): void {
     this.loadIngredients();
 
-    this.categoryService.getIngredientGroups().subscribe({
+    this.ingredientGroupService.getIngredientGroups().subscribe({
       next: (groups) => this.ingredientGroups.set(groups),
     });
 

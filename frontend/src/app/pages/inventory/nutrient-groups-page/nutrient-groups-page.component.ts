@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { IngredientCategory } from '@models/ingredient-category.model';
 import { IngredientGroup } from '@models/ingredient-group.model';
-import { NutrientGroup } from '@models/nutrient-type.model';
+import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
-import { NutrientTypeService } from '@services/inventory/nutrient-type.service';
 import { ToastService } from '@services/toast.service';
 import { forkJoin } from 'rxjs';
 
@@ -14,33 +14,33 @@ import { forkJoin } from 'rxjs';
   templateUrl: './nutrient-groups-page.component.html',
 })
 export class NutrientGroupsPageComponent implements OnInit {
-  private readonly nutrientTypeService = inject(NutrientTypeService);
-  private readonly categoryService = inject(CategoryService);
+  private readonly ingredientCategoryService = inject(IngredientCategoryService);
+  private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly toastService = inject(ToastService);
 
-  public nutrientGroups = signal<NutrientGroup[]>([]);
+  public ingredientCategories = signal<IngredientCategory[]>([]);
   public ingredientGroups = signal<IngredientGroup[]>([]);
   public isLoading = signal<boolean>(true);
 
   ngOnInit(): void {
     forkJoin({
-      nutrientGroups: this.nutrientTypeService.getNutrientGroups(),
-      ingredientGroups: this.categoryService.getIngredientGroups(),
+      ingredientCategories: this.ingredientCategoryService.getIngredientCategories(),
+      ingredientGroups: this.ingredientGroupService.getIngredientGroups(),
     }).subscribe({
-      next: ({ nutrientGroups, ingredientGroups }) => {
-        this.nutrientGroups.set(nutrientGroups);
+      next: ({ ingredientCategories, ingredientGroups }) => {
+        this.ingredientCategories.set(ingredientCategories);
         this.ingredientGroups.set(ingredientGroups);
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('Error fetching nutrient groups page data:', err);
-        this.toastService.showError('Failed to load nutrient groups.');
+        console.error('Error fetching ingredient categories page data:', err);
+        this.toastService.showError('Failed to load ingredient categories.');
         this.isLoading.set(false);
       },
     });
   }
 
-  public getCategoriesForNutrientGroup(nutrientGroupId: number): IngredientGroup[] {
-    return this.ingredientGroups().filter((ig) => ig.nutrientGroupId === nutrientGroupId);
+  public getGroupsForIngredientCategory(categoryId: number): IngredientGroup[] {
+    return this.ingredientGroups().filter((ig) => (ig.ingredientCategoryId ?? ig.nutrientGroupId) === categoryId);
   }
 }

@@ -2,18 +2,18 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
-import { IngredientGroup } from '@models/ingredient-group.model';
+import { IngredientCategory } from '@models/ingredient-category.model';
+import { IngredientGroup as IngredientGroupModel } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
-import { IngredientGroup, NutrientGroup } from '@models/inventory.models';
+import { IngredientCategoryCluster, IngredientGroupCluster } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
-import { NutrientType } from '@models/nutrient-type.model';
 import { Unit } from '@models/unit.model';
+import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
-import { NutrientTypeService } from '@services/inventory/nutrient-type.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
 import {
@@ -60,8 +60,8 @@ export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'stat
 export class InventoryComponent implements OnInit {
   private readonly inventoryService = inject(ItemService);
   private readonly ingredientService = inject(IngredientService);
-  private readonly categoryService = inject(CategoryService);
-  private readonly nutrientTypeService = inject(NutrientTypeService);
+  private readonly ingredientGroupService = inject(IngredientGroupService);
+  private readonly ingredientCategoryService = inject(IngredientCategoryService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly toastService = inject(ToastService);
   private readonly unitService = inject(UnitService);
@@ -80,8 +80,8 @@ export class InventoryComponent implements OnInit {
   public units: Unit[] = [];
   public locations: Location[] = [];
   public ingredients: Ingredient[] = [];
-  public categories: Category[] = [];
-  public nutrientTypes: NutrientType[] = [];
+  public categories: IngredientGroupModel[] = [];
+  public nutrientTypes: IngredientCategory[] = [];
 
   public showScrollTopButton = false;
   public searchQuery = '';
@@ -90,7 +90,7 @@ export class InventoryComponent implements OnInit {
   public sortBy: SortOption = 'expiration';
   public displayAddModal = false;
 
-  public selectedCategory: Category | null = null;
+  public selectedCategory: IngredientGroupModel | null = null;
   public isLoading = signal(true);
 
   public viewMode: 'table' | 'grid' = 'table';
@@ -234,7 +234,7 @@ export class InventoryComponent implements OnInit {
       categoryMap.get(categoryId).push(ingredient);
     });
 
-    const groups: IngredientGroup[] = [];
+    const groups: IngredientGroupCluster[] = [];
     const normalizedQuery = this.searchQuery.toLowerCase().trim();
 
     categoryMap.forEach((ingredients, categoryId) => {
@@ -252,27 +252,29 @@ export class InventoryComponent implements OnInit {
       );
 
       if (filteredIngredients.length > 0) {
-        groups.push({ category, ingredients: filteredIngredients });
+        groups.push({ group: category, category, ingredients: filteredIngredients });
       }
     });
 
-    return groups.sort((a, b) => a.category.name.localeCompare(b.category.name));
+    return groups.sort((a, b) => (a.group || a.category!).name.localeCompare((b.group || b.category!).name));
   }
 
-  public get nutrientGroups(): NutrientGroup[] {
-    const catGroupsMap = new Map<number, IngredientGroup>();
+  public get nutrientGroups(): IngredientCategoryCluster[] {
+    const catGroupsMap = new Map<number, IngredientGroupCluster>();
     this.categoryGroups.forEach((cg) => {
-      catGroupsMap.set(cg.category.id, cg);
+      catGroupsMap.set((cg.group || cg.category!).id, cg);
     });
 
-    const result: NutrientGroup[] = [];
+    const result: IngredientCategoryCluster[] = [];
     const normalizedQuery = this.searchQuery.toLowerCase().trim();
     const hasSearchOrCategoryFilter = normalizedQuery.length > 0 || this.selectedCategory !== null;
 
-    // 1. Group categories by nutrientTypeId using all fetched nutrientTypes
+    // 1. Group categories by ingredientCategoryId using all fetched nutrientTypes
     this.nutrientTypes.forEach((nt) => {
-      const categoriesForNt = this.categories.filter((c) => c.nutrientTypeId === nt.id);
-      const categoryGroupsInNt: IngredientGroup[] = [];
+      const categoriesForNt = this.categories.filter(
+        (c) => (c.ingredientCategoryId ?? c.nutrientGroupId) === nt.id,
+      );
+      const categoryGroupsInNt: IngredientGroupCluster[] = [];
 
       categoriesForNt.forEach((cat) => {
         if (this.selectedCategory && this.selectedCategory.id !== cat.id) {
@@ -283,46 +285,51 @@ export class InventoryComponent implements OnInit {
           categoryGroupsInNt.push(existingGroup);
         } else if (!hasSearchOrCategoryFilter) {
           // Include category even if 0 ingredients/items when no filter active
-          categoryGroupsInNt.push({ category: cat, ingredients: [] });
+          categoryGroupsInNt.push({ group: cat, category: cat, ingredients: [] });
         }
       });
 
-      // Show nutrient group if no filter active OR if it has matching category groups
+      // Show category if no filter active OR if it has matching category groups
       if (!hasSearchOrCategoryFilter || categoryGroupsInNt.length > 0) {
         result.push({
+          category: nt,
           nutrientType: nt,
+          ingredientGroups: categoryGroupsInNt,
           categoryGroups: categoryGroupsInNt.sort((a, b) =>
-            a.category.name.localeCompare(b.category.name),
+            (a.group || a.category!).name.localeCompare((b.group || b.category!).name),
           ),
         });
       }
     });
 
-    // Also handle any uncategorized categories (nutrientTypeId null or invalid)
+    // Also handle any uncategorized categories
     const knownCatIds = new Set(this.categories.map((c) => c.id));
     const uncategorizedCatGroups = this.categoryGroups.filter(
       (cg) =>
-        !knownCatIds.has(cg.category.id) ||
-        !this.categories.find((c) => c.id === cg.category.id)?.nutrientTypeId,
+        !knownCatIds.has((cg.group || cg.category!).id) ||
+        !this.categories.find((c) => c.id === (cg.group || cg.category!).id)?.ingredientCategoryId,
     );
 
     if (uncategorizedCatGroups.length > 0) {
       result.push({
-        nutrientType: {
+        category: {
           id: -1,
           name: 'Unclassified',
           icon: '📦',
           color: '#94a3b8',
-          description: 'Categories without an assigned nutrient group',
+          description: 'Categories without an assigned ingredient category',
         },
+        ingredientGroups: uncategorizedCatGroups,
         categoryGroups: uncategorizedCatGroups,
       });
     }
 
     return result.sort((a, b) => {
-      if (a.nutrientType.id === -1) return 1;
-      if (b.nutrientType.id === -1) return -1;
-      return a.nutrientType.name.localeCompare(b.nutrientType.name);
+      const catA = a.category || a.nutrientType!;
+      const catB = b.category || b.nutrientType!;
+      if (catA.id === -1) return 1;
+      if (catB.id === -1) return -1;
+      return catA.name.localeCompare(catB.name);
     });
   }
 
@@ -394,11 +401,11 @@ export class InventoryComponent implements OnInit {
       next: (ingredients) => (this.ingredients = ingredients),
     });
 
-    this.categoryService.getCategories().subscribe({
+    this.ingredientGroupService.getIngredientGroups().subscribe({
       next: (categories) => (this.categories = categories),
     });
 
-    this.nutrientTypeService.getNutrientTypes().subscribe({
+    this.ingredientCategoryService.getIngredientCategories().subscribe({
       next: (nutrientTypes) => (this.nutrientTypes = nutrientTypes),
     });
   }

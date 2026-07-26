@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NutrientGroup } from '@models/inventory.models';
+import { IngredientCategoryCluster } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { IngredientGroupComponent } from '../ingredient-group/ingredient-group.component';
 
@@ -12,7 +12,7 @@ import { IngredientGroupComponent } from '../ingredient-group/ingredient-group.c
 })
 export class NutrientGroupComponent {
   @Input({ required: true })
-  nutrientGroup!: NutrientGroup;
+  nutrientGroup!: IngredientCategoryCluster;
 
   @Input({ required: true })
   isExpanded!: boolean;
@@ -35,26 +35,30 @@ export class NutrientGroupComponent {
   @Output()
   unassignItem = new EventEmitter<Item>();
 
+  get categoryClusters() {
+    return this.nutrientGroup?.ingredientGroups || this.nutrientGroup?.categoryGroups || [];
+  }
+
   get totalItemsCount(): number {
-    if (!this.nutrientGroup?.categoryGroups) return 0;
-    return this.nutrientGroup.categoryGroups.reduce((acc, catGroup) => {
+    if (!this.categoryClusters) return 0;
+    return this.categoryClusters.reduce((acc: number, catGroup: any) => {
       return (
-        acc + (catGroup.ingredients?.reduce((ingAcc, ing) => ingAcc + (ing.itemCount || 0), 0) || 0)
+        acc + (catGroup.ingredients?.reduce((ingAcc: number, ing: any) => ingAcc + (ing.itemCount || 0), 0) || 0)
       );
     }, 0);
   }
 
   get totalIngredientsCount(): number {
-    if (!this.nutrientGroup?.categoryGroups) return 0;
-    return this.nutrientGroup.categoryGroups.reduce((acc, catGroup) => {
+    if (!this.categoryClusters) return 0;
+    return this.categoryClusters.reduce((acc: number, catGroup: any) => {
       return acc + (catGroup.ingredients?.length || 0);
     }, 0);
   }
 
   get inStockIngredientsCount(): number {
-    if (!this.nutrientGroup?.categoryGroups) return 0;
-    return this.nutrientGroup.categoryGroups.reduce((acc, catGroup) => {
-      return acc + (catGroup.ingredients?.filter((ing) => ing.itemCount > 0).length || 0);
+    if (!this.categoryClusters) return 0;
+    return this.categoryClusters.reduce((acc: number, catGroup: any) => {
+      return acc + (catGroup.ingredients?.filter((ing: any) => ing.itemCount > 0).length || 0);
     }, 0);
   }
 
@@ -63,7 +67,10 @@ export class NutrientGroupComponent {
   }
 
   onToggleNutrientGroup() {
-    this.toggleNutrientGroup.emit(this.nutrientGroup.nutrientType.id);
+    const cat = this.nutrientGroup.category || this.nutrientGroup.nutrientType;
+    if (cat) {
+      this.toggleNutrientGroup.emit(cat.id);
+    }
   }
 
   onToggleCategory(categoryId: number) {

@@ -54,7 +54,7 @@ export interface GroupedIngredients {
 export class IngredientsPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly ingredientService = inject(IngredientService);
-  private readonly categoryService = inject(CategoryService);
+  private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly itemService = inject(ItemService);
   private readonly toastService = inject(ToastService);
 
@@ -154,7 +154,7 @@ export class IngredientsPageComponent implements OnInit {
   loadData(): void {
     this.isLoading.set(true);
 
-    this.categoryService.getIngredientGroups().subscribe({
+    this.ingredientGroupService.getIngredientGroups().subscribe({
       next: (groups) => this.ingredientGroups.set(groups),
     });
 

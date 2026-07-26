@@ -7,11 +7,13 @@ import { Observable } from 'rxjs';
 
 export interface CreateIngredientGroupDTO {
   name: string;
+  ingredientCategoryId?: number;
   nutrientGroupId?: number;
 }
 
 export interface UpdateIngredientGroupDTO {
   name?: string;
+  ingredientCategoryId?: number;
   nutrientGroupId?: number;
 }
 

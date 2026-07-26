@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IngredientGroup } from '@models/ingredient-group.model';
-import { NutrientGroup } from '@models/inventory.models';
+import { IngredientCategoryCluster, IngredientGroupCluster } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -28,14 +28,14 @@ import { NutrientGroupComponent } from '../nutrient-group/nutrient-group.compone
 })
 export class IngredientGroupContainerComponent {
   // Inputs
-  nutrientGroups = input.required<NutrientGroup[]>();
-  categories = input.required<Category[]>();
+  nutrientGroups = input.required<IngredientCategoryCluster[]>();
+  categories = input.required<IngredientGroup[]>();
   searchQuery = input<string>('');
-  selectedCategory = input<Category | null>(null);
+  selectedCategory = input<IngredientGroup | null>(null);
 
   // Outputs
   searchChange = output<string>();
-  categorySelect = output<Category | null>();
+  categorySelect = output<IngredientGroup | null>();
   unassignItem = output<Item>();
 
   // Local State
@@ -47,11 +47,14 @@ export class IngredientGroupContainerComponent {
 
   // Computed options for the dropdowns
   nutrientSelectOptions = computed<{ id: number; name: string; icon: string }[]>(() => {
-    return this.nutrientGroups().map((ng) => ({
-      id: ng.nutrientType.id,
-      name: ng.nutrientType.name,
-      icon: ng.nutrientType.icon || '📦',
-    }));
+    return this.nutrientGroups().map((ng) => {
+      const cat = ng.category || ng.nutrientType;
+      return {
+        id: cat ? cat.id : -1,
+        name: cat ? cat.name : 'Unknown',
+        icon: cat && cat.icon ? cat.icon : '📦',
+      };
+    });
   });
 
   categoryGroupOptions = computed<{ id: number; name: string; icon: string }[]>(() => {
@@ -99,22 +102,33 @@ export class IngredientGroupContainerComponent {
     return option ? option.name : '';
   }
 
-  get filteredNutrientGroups(): NutrientGroup[] {
+  get filteredNutrientGroups(): IngredientCategoryCluster[] {
     const selectedNtIds = this.selectedNutrientTypeIds();
     const selectedCatIds = this.selectedCategoryIds();
     let groups = this.nutrientGroups();
 
     if (selectedNtIds && selectedNtIds.length > 0) {
-      groups = groups.filter((ng) => selectedNtIds.includes(ng.nutrientType.id));
+      groups = groups.filter((ng) => {
+        const cat = ng.category || ng.nutrientType;
+        return cat && selectedNtIds.includes(cat.id);
+      });
     }
 
     if (selectedCatIds && selectedCatIds.length > 0) {
       groups = groups
-        .map((ng) => ({
-          ...ng,
-          categoryGroups: ng.categoryGroups.filter((cg) => selectedCatIds.includes(cg.category.id)),
-        }))
-        .filter((ng) => ng.categoryGroups.length > 0);
+        .map((ng) => {
+          const catGroups = ng.ingredientGroups || ng.categoryGroups || [];
+          const filtered = catGroups.filter((cg) => {
+            const grp = cg.group || cg.category;
+            return grp && selectedCatIds.includes(grp.id);
+          });
+          return {
+            ...ng,
+            ingredientGroups: filtered,
+            categoryGroups: filtered,
+          };
+        })
+        .filter((ng) => (ng.ingredientGroups || ng.categoryGroups || []).length > 0);
     }
 
     return groups;
@@ -125,7 +139,7 @@ export class IngredientGroupContainerComponent {
     this.searchChange.emit(query);
   }
 
-  onCategorySelect(category: Category | null) {
+  onCategorySelect(category: IngredientGroup | null) {
     this.categorySelect.emit(category);
   }
 
@@ -171,9 +185,20 @@ export class IngredientGroupContainerComponent {
   }
 
   expandAll() {
-    const allNtIds = new Set(this.nutrientGroups().map((ng) => ng.nutrientType.id));
+    const allNtIds = new Set(
+      this.nutrientGroups().map((ng) => {
+        const cat = ng.category || ng.nutrientType;
+        return cat ? cat.id : -1;
+      }),
+    );
     const allCatIds = new Set(
-      this.nutrientGroups().flatMap((ng) => ng.categoryGroups.map((cg) => cg.category.id)),
+      this.nutrientGroups().flatMap((ng) => {
+        const catGroups = ng.ingredientGroups || ng.categoryGroups || [];
+        return catGroups.map((cg) => {
+          const grp = cg.group || cg.category;
+          return grp ? grp.id : -1;
+        });
+      }),
     );
     this.expandedNutrientGroups.set(allNtIds);
     this.expandedCategories.set(allCatIds);
