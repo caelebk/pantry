@@ -63,7 +63,7 @@
         [class.text-surface-600]="availabilityFilter !== 'all'"
         [class.dark:text-surface-400]="availabilityFilter !== 'all'"
         class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center justify-center">
-        All
+        <span>All</span>
       </button>
       <button
         type="button"
@@ -76,8 +76,9 @@
         [class.font-bold]="availabilityFilter === 'makeable'"
         [class.text-surface-600]="availabilityFilter !== 'makeable'"
         [class.dark:text-surface-400]="availabilityFilter !== 'makeable'"
-        class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center justify-center">
-        Ready
+        class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1.5 justify-center">
+        <span>Ready</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
       </button>
       <button
         type="button"
@@ -85,13 +86,14 @@
         [class.bg-white]="availabilityFilter === 'partial'"
         [class.dark:bg-surface-700]="availabilityFilter === 'partial'"
         [class.shadow-xs]="availabilityFilter === 'partial'"
-        [class.text-amber-600]="availabilityFilter === 'partial'"
-        [class.dark:text-amber-400]="availabilityFilter === 'partial'"
+        [class.text-rose-600]="availabilityFilter === 'partial'"
+        [class.dark:text-rose-400]="availabilityFilter === 'partial'"
         [class.font-bold]="availabilityFilter === 'partial'"
         [class.text-surface-600]="availabilityFilter !== 'partial'"
         [class.dark:text-surface-400]="availabilityFilter !== 'partial'"
-        class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center justify-center">
-        Missing
+        class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1.5 justify-center">
+        <span>Missing</span>
+        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
       </button>
     </div>
 
