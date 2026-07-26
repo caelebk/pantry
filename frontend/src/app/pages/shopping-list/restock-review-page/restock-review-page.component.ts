@@ -6,6 +6,8 @@ import { ShoppingItem } from '@models/shopping-list.model';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
 
+import { SelectModule } from 'primeng/select';
+
 export interface RestockDraftItem {
   shoppingId: string;
   name: string;
@@ -21,7 +23,7 @@ export interface RestockDraftItem {
 @Component({
   selector: 'pantry-restock-review-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SelectModule],
   templateUrl: './restock-review-page.component.html',
   styleUrl: './restock-review-page.component.scss',
 })
