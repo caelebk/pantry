@@ -4,7 +4,11 @@
 
 import { getDB } from '../db/client.ts';
 import { ItemMessages } from '../messages/item.messages.ts';
-import { CreateIngredientItemDTO, IngredientItemDTO, UpdateIngredientItemDTO } from '../models/data-models/ingredient-item.model.ts';
+import {
+  CreateIngredientItemDTO,
+  IngredientItemDTO,
+  UpdateIngredientItemDTO,
+} from '../models/data-models/ingredient-item.model.ts';
 import { IngredientItemRow } from '../models/schema-models/ingredient-item.model.ts';
 import { toDate } from '../utils/dates.ts';
 import { isValidUUID } from '../utils/validators.ts';
@@ -19,7 +23,8 @@ export class IngredientItemService {
   async getAllIngredientItems(): Promise<IngredientItemDTO[]> {
     try {
       const db = getDB();
-      const rows = db.prepare('SELECT * FROM ingredient_items ORDER BY created_at DESC').all() as IngredientItemRow[];
+      const rows = db.prepare('SELECT * FROM ingredient_items ORDER BY created_at DESC')
+        .all() as IngredientItemRow[];
       return rows.map(this.mapItemRowToItem);
     } catch (error: unknown) {
       console.error('Error fetching all ingredient items:', error);
@@ -36,7 +41,9 @@ export class IngredientItemService {
     }
     try {
       const db = getDB();
-      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(id) as IngredientItemRow | undefined;
+      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(id) as
+        | IngredientItemRow
+        | undefined;
       return row ? this.mapItemRowToItem(row) : null;
     } catch (error: unknown) {
       console.error('Error fetching ingredient item by ID:', error);
@@ -70,7 +77,9 @@ export class IngredientItemService {
         now,
       );
 
-      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(id) as IngredientItemRow;
+      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(
+        id,
+      ) as IngredientItemRow;
       return this.mapItemRowToItem(row);
     } catch (error: unknown) {
       console.error('Error creating ingredient item:', error);
@@ -81,7 +90,10 @@ export class IngredientItemService {
   /**
    * Updates an existing ingredient item in the database.
    */
-  async updateIngredientItem(id: string, data: UpdateIngredientItemDTO): Promise<IngredientItemDTO | null> {
+  async updateIngredientItem(
+    id: string,
+    data: UpdateIngredientItemDTO,
+  ): Promise<IngredientItemDTO | null> {
     if (!isValidUUID(id)) {
       throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
     }
@@ -116,7 +128,9 @@ export class IngredientItemService {
         id,
       );
 
-      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(id) as IngredientItemRow | undefined;
+      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(id) as
+        | IngredientItemRow
+        | undefined;
       return row ? this.mapItemRowToItem(row) : null;
     } catch (error: unknown) {
       console.error('Error updating ingredient item:', error);

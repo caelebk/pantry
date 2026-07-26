@@ -19,9 +19,24 @@ function createTestDB(): Database {
 }
 
 function seedUnits(db: Database): { gram: UnitRow; kg: UnitRow; liter: UnitRow } {
-  db.prepare('INSERT INTO units (name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?)').run('Gram', 'g', 'weight', 1);
-  db.prepare('INSERT INTO units (name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?)').run('Kilogram', 'kg', 'weight', 1000);
-  db.prepare('INSERT INTO units (name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?)').run('Liter', 'l', 'volume', 1000);
+  db.prepare('INSERT INTO units (name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?)').run(
+    'Gram',
+    'g',
+    'weight',
+    1,
+  );
+  db.prepare('INSERT INTO units (name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?)').run(
+    'Kilogram',
+    'kg',
+    'weight',
+    1000,
+  );
+  db.prepare('INSERT INTO units (name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?)').run(
+    'Liter',
+    'l',
+    'volume',
+    1000,
+  );
 
   const gram = db.prepare('SELECT * FROM units WHERE name = ?').get('Gram') as UnitRow;
   const kg = db.prepare('SELECT * FROM units WHERE name = ?').get('Kilogram') as UnitRow;

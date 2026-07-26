@@ -27,7 +27,9 @@ export class LocationService {
   async getLocationById(id: number): Promise<LocationDTO | null> {
     try {
       const db = getDB();
-      const row = db.prepare('SELECT * FROM locations WHERE id = ?').get(id) as LocationRow | undefined;
+      const row = db.prepare('SELECT * FROM locations WHERE id = ?').get(id) as
+        | LocationRow
+        | undefined;
       return row ? this.mapRowToDTO(row) : null;
     } catch (error: unknown) {
       console.error('Error finding location by ID:', error);

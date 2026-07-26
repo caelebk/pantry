@@ -480,7 +480,10 @@ export const seedData = {
       ],
       steps: [
         { step_number: 1, instruction_text: 'Heat olive oil in a skillet over medium-high heat.' },
-        { step_number: 2, instruction_text: 'Scramble the eggs until just cooked, then add cooked rice and salt.' },
+        {
+          step_number: 2,
+          instruction_text: 'Scramble the eggs until just cooked, then add cooked rice and salt.',
+        },
         { step_number: 3, instruction_text: 'Stir fry for 3-5 minutes until steaming hot.' },
       ],
     },

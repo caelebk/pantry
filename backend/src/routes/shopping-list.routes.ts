@@ -1,5 +1,8 @@
 import { Context, Hono } from 'hono';
-import { CreateShoppingListItemDTO, UpdateShoppingListItemDTO } from '../models/data-models/shopping-list.model.ts';
+import {
+  CreateShoppingListItemDTO,
+  UpdateShoppingListItemDTO,
+} from '../models/data-models/shopping-list.model.ts';
 import { shoppingListBackendService } from '../services/shopping-list.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 
@@ -12,7 +15,10 @@ shoppingList.get('/', async (c: Context) => {
     return c.json(successResponse(data), HttpStatusCode.OK);
   } catch (error: unknown) {
     console.error('Error fetching shopping list items:', error);
-    return c.json(errorResponse('Failed to fetch shopping list items'), HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(
+      errorResponse('Failed to fetch shopping list items'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 
@@ -27,7 +33,10 @@ shoppingList.post('/', async (c: Context) => {
     return c.json(successResponse(created), HttpStatusCode.CREATED);
   } catch (error: unknown) {
     console.error('Error creating shopping list item:', error);
-    return c.json(errorResponse('Failed to create shopping list item'), HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(
+      errorResponse('Failed to create shopping list item'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 
@@ -42,7 +51,10 @@ shoppingList.post('/bulk', async (c: Context) => {
     return c.json(successResponse(created), HttpStatusCode.CREATED);
   } catch (error: unknown) {
     console.error('Error creating multiple shopping list items:', error);
-    return c.json(errorResponse('Failed to create shopping list items'), HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(
+      errorResponse('Failed to create shopping list items'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 
@@ -58,7 +70,10 @@ shoppingList.put('/:id', async (c: Context) => {
     return c.json(errorResponse('Shopping list item not found'), HttpStatusCode.NOT_FOUND);
   } catch (error: unknown) {
     console.error('Error updating shopping list item:', error);
-    return c.json(errorResponse('Failed to update shopping list item'), HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(
+      errorResponse('Failed to update shopping list item'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 
@@ -66,10 +81,16 @@ shoppingList.put('/:id', async (c: Context) => {
 shoppingList.delete('/checked', async (c: Context) => {
   try {
     const count = await shoppingListBackendService.deleteCheckedItems();
-    return c.json(successResponse({ count, message: `Deleted ${count} checked items` }), HttpStatusCode.OK);
+    return c.json(
+      successResponse({ count, message: `Deleted ${count} checked items` }),
+      HttpStatusCode.OK,
+    );
   } catch (error: unknown) {
     console.error('Error clearing checked shopping list items:', error);
-    return c.json(errorResponse('Failed to clear checked items'), HttpStatusCode.INTERNAL_SERVER_ERROR);
+    return c.json(
+      errorResponse('Failed to clear checked items'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 

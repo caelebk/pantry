@@ -10,7 +10,8 @@ export class NutrientGroupService {
   async getAllNutrientGroups(): Promise<NutrientGroupDTO[]> {
     try {
       const db = getDB();
-      const rows = db.prepare('SELECT * FROM nutrient_groups ORDER BY id').all() as NutrientGroupRow[];
+      const rows = db.prepare('SELECT * FROM nutrient_groups ORDER BY id')
+        .all() as NutrientGroupRow[];
       return rows.map(this.mapRowToDTO);
     } catch (error: unknown) {
       console.error('Error fetching nutrient groups:', error);
@@ -24,7 +25,9 @@ export class NutrientGroupService {
   async getNutrientGroupById(id: number): Promise<NutrientGroupDTO | null> {
     try {
       const db = getDB();
-      const row = db.prepare('SELECT * FROM nutrient_groups WHERE id = ?').get(id) as NutrientGroupRow | undefined;
+      const row = db.prepare('SELECT * FROM nutrient_groups WHERE id = ?').get(id) as
+        | NutrientGroupRow
+        | undefined;
       return row ? this.mapRowToDTO(row) : null;
     } catch (error: unknown) {
       console.error('Error fetching nutrient group by ID:', error);

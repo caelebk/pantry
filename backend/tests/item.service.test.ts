@@ -50,8 +50,18 @@ function seedMockItem(db: Database): ItemRow {
   db.prepare(
     'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
   ).run(
-    row.id, row.ingredient_id, row.label, row.quantity, row.unit_id, row.location_id,
-    row.expiration_date, row.opened_date, row.purchase_date, row.notes, row.created_at, row.updated_at,
+    row.id,
+    row.ingredient_id,
+    row.label,
+    row.quantity,
+    row.unit_id,
+    row.location_id,
+    row.expiration_date,
+    row.opened_date,
+    row.purchase_date,
+    row.notes,
+    row.created_at,
+    row.updated_at,
   );
   return row;
 }

@@ -1,5 +1,8 @@
 import { ingredientItemService } from './ingredient-item.service.ts';
-import { CreateIngredientItemDTO, UpdateIngredientItemDTO } from '../models/data-models/ingredient-item.model.ts';
+import {
+  CreateIngredientItemDTO,
+  UpdateIngredientItemDTO,
+} from '../models/data-models/ingredient-item.model.ts';
 
 export class ItemService {
   async getAllItems() {

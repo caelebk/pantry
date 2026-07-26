@@ -33,57 +33,8 @@ function seedDB() {
         "DELETE FROM sqlite_sequence WHERE name IN ('locations', 'nutrient_groups', 'ingredient_groups', 'units', 'difficulties');",
       );
 
-      // 1. Insert Locations
-      console.log('📍 Seeding locations...');
-      const insertLocation = db.prepare('INSERT INTO locations (name) VALUES (?)');
-      for (const loc of seedData.locations) {
-        insertLocation.run(loc.name);
-        const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
-        locationIds.set(loc.name, row.id);
-      }
-
-      // 1.5. Insert Nutrient Groups
-      console.log('🧬 Seeding nutrient groups...');
-      const nutrientGroupIds = new Map<string, number>();
-      const insertNutrientGroup = db.prepare(
-        'INSERT INTO nutrient_groups (name, icon, color, description) VALUES (?, ?, ?, ?)',
-      );
-      for (const nt of seedData.nutrient_types) {
-        insertNutrientGroup.run(nt.name, nt.icon, nt.color, (nt as any).description || null);
-        const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
-        nutrientGroupIds.set(nt.name, row.id);
-      }
-
-      // 2. Insert Ingredient Groups
-      console.log('🏷️  Seeding ingredient groups...');
-      const insertGroup = db.prepare('INSERT INTO ingredient_groups (name, nutrient_group_id) VALUES (?, ?)');
-      for (const cat of seedData.categories) {
-        const ngId = nutrientGroupIds.get(cat.nutrient_type);
-        insertGroup.run(cat.name, ngId ?? null);
-        const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
-        categoryIds.set(cat.name, row.id);
-      }
-
-      // 3. Insert Units
-      console.log('📏 Seeding units...');
-      const insertUnit = db.prepare(
-        'INSERT INTO units (name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?)',
-      );
-      for (const unit of seedData.units) {
-        insertUnit.run(unit.name, unit.short_name, unit.type, unit.to_base_factor);
-        const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
-        unitIds.set(unit.name, row.id);
-      }
-
-      // 4. Insert Difficulties
-      console.log('📊 Seeding difficulties...');
-      const difficultyIds = new Map<string, number>();
-      const insertDifficulty = db.prepare('INSERT INTO difficulties (name) VALUES (?)');
-      for (const diff of seedData.difficulties) {
-        insertDifficulty.run(diff.name);
-        const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
-        difficultyIds.set(diff.name, row.id);
-      }
+      // Seed bare necessities (Locations, Nutrient Groups, Ingredient Groups, Units, Difficulties)
+      const { locationIds, categoryIds, unitIds, difficultyIds } = seedBareNecessities(db);
 
       // 5. Insert Ingredients
       console.log('🥦 Seeding ingredients...');
@@ -193,7 +144,7 @@ function seedDB() {
       db.exec('DELETE FROM meal_plans;');
       const insertMealPlan = db.prepare(
         `INSERT INTO meal_plans (id, day, meal_type, recipe_name, prep_time_minutes, calories, servings, cooked, missing_ingredients, tags)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       );
       if (seedData.meal_plans) {
         for (const mp of seedData.meal_plans) {
@@ -208,7 +159,7 @@ function seedDB() {
             mp.servings,
             mp.cooked,
             JSON.stringify(mp.missing_ingredients || []),
-            JSON.stringify(mp.tags || [])
+            JSON.stringify(mp.tags || []),
           );
         }
       }
@@ -218,7 +169,7 @@ function seedDB() {
       db.exec('DELETE FROM shopping_list_items;');
       const insertShoppingItem = db.prepare(
         `INSERT INTO shopping_list_items (id, name, category, quantity, unit, checked, estimated_price, store_name, source, recipe_name)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       );
       if (seedData.shopping_list_items) {
         for (const item of seedData.shopping_list_items) {
@@ -233,7 +184,7 @@ function seedDB() {
             item.estimated_price,
             item.store_name,
             item.source,
-            item.recipe_name || null
+            item.recipe_name || null,
           );
         }
       }
@@ -254,4 +205,69 @@ function seedDB() {
 
 if (import.meta.main) {
   seedDB();
+}
+
+/**
+ * Seeds the essential system reference data required for normal app operation
+ * without inserting sample user data (ingredients, stock items, recipes, shopping items).
+ */
+export function seedBareNecessities(db: ReturnType<typeof getDB>) {
+  // 1. Insert Locations
+  console.log('📍 Seeding locations...');
+  const locationIds = new Map<string, number>();
+  const insertLocation = db.prepare('INSERT INTO locations (name) VALUES (?)');
+  for (const loc of seedData.locations) {
+    insertLocation.run(loc.name);
+    const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
+    locationIds.set(loc.name, row.id);
+  }
+
+  // 2. Insert Nutrient Groups
+  console.log('🧬 Seeding nutrient groups...');
+  const nutrientGroupIds = new Map<string, number>();
+  const insertNutrientGroup = db.prepare(
+    'INSERT INTO nutrient_groups (name, icon, color, description) VALUES (?, ?, ?, ?)',
+  );
+  for (const nt of seedData.nutrient_types) {
+    insertNutrientGroup.run(nt.name, nt.icon, nt.color, (nt as any).description || null);
+    const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
+    nutrientGroupIds.set(nt.name, row.id);
+  }
+
+  // 3. Insert Ingredient Groups
+  console.log('🏷️  Seeding ingredient groups...');
+  const categoryIds = new Map<string, number>();
+  const insertGroup = db.prepare(
+    'INSERT INTO ingredient_groups (name, nutrient_group_id) VALUES (?, ?)',
+  );
+  for (const cat of seedData.categories) {
+    const ngId = nutrientGroupIds.get(cat.nutrient_type);
+    insertGroup.run(cat.name, ngId ?? null);
+    const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
+    categoryIds.set(cat.name, row.id);
+  }
+
+  // 4. Insert Units
+  console.log('📏 Seeding units...');
+  const unitIds = new Map<string, number>();
+  const insertUnit = db.prepare(
+    'INSERT INTO units (name, short_name, type, to_base_factor) VALUES (?, ?, ?, ?)',
+  );
+  for (const unit of seedData.units) {
+    insertUnit.run(unit.name, unit.short_name, unit.type, unit.to_base_factor);
+    const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
+    unitIds.set(unit.name, row.id);
+  }
+
+  // 5. Insert Difficulties
+  console.log('📊 Seeding difficulties...');
+  const difficultyIds = new Map<string, number>();
+  const insertDifficulty = db.prepare('INSERT INTO difficulties (name) VALUES (?)');
+  for (const diff of seedData.difficulties) {
+    insertDifficulty.run(diff.name);
+    const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
+    difficultyIds.set(diff.name, row.id);
+  }
+
+  return { locationIds, nutrientGroupIds, categoryIds, unitIds, difficultyIds };
 }

@@ -35,7 +35,14 @@ function seedMockIngredient(db: Database): IngredientRow {
   };
   db.prepare(
     'INSERT INTO ingredients (id, name, ingredient_group_id, default_unit_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-  ).run(row.id, row.name, row.ingredient_group_id, row.default_unit_id, row.created_at, row.updated_at);
+  ).run(
+    row.id,
+    row.name,
+    row.ingredient_group_id,
+    row.default_unit_id,
+    row.created_at,
+    row.updated_at,
+  );
   return row;
 }
 
@@ -74,7 +81,9 @@ Deno.test('IngredientsService - getIngredientById - not found', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const ingredient = await ingredientService.getIngredientById('123e4567-e89b-12d3-a456-426614174999');
+  const ingredient = await ingredientService.getIngredientById(
+    '123e4567-e89b-12d3-a456-426614174999',
+  );
   assertEquals(ingredient, null);
   db.close();
 });
