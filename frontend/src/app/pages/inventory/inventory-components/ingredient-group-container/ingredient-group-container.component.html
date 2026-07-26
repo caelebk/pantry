@@ -10,7 +10,7 @@
         [ngModel]="searchQuery()"
         (ngModelChange)="onSearch($event)"
         placeholder="Search ingredients by name..."
-        class="w-full pl-10 pr-9 py-2.5 bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-700/80 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
+        class="w-full pl-10 pr-9 py-2.5 bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
       @if (searchQuery()) {
         <button
           (click)="onSearch('')"
@@ -36,7 +36,7 @@
           filterPlaceholder="Search nutrients..."
           appendTo="body"
           placeholder="✨ All Nutrients"
-          styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
+          styleClass="!bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
               <div
@@ -84,7 +84,7 @@
           filterPlaceholder="Search groups..."
           appendTo="body"
           placeholder="🏷️ All Groups"
-          styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
+          styleClass="!bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
               <div

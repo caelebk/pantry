@@ -212,16 +212,63 @@ html {
   font-family: 'Inter', sans-serif !important;
 }
 
+/* PrimeNG Select & MultiSelect Triggers */
+.p-select,
+.p-multiselect {
+  background-color: var(--color-surface-100) !important;
+  border: 1px solid var(--color-surface-200) !important;
+  border-radius: 0.75rem !important;
+  color: var(--color-surface-900) !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  transition: all 0.2s ease !important;
+}
+
+:where(.dark, .dark *) .p-select,
+:where(.dark, .dark *) .p-multiselect {
+  background-color: var(--color-surface-800) !important;
+  border: 1px solid var(--color-surface-700) !important;
+  color: #ffffff !important;
+}
+
+.p-select:hover,
+.p-multiselect:hover {
+  border-color: var(--color-surface-300) !important;
+}
+
+:where(.dark, .dark *) .p-select:hover,
+:where(.dark, .dark *) .p-multiselect:hover {
+  border-color: var(--color-surface-600) !important;
+}
+
+.p-select-label,
+.p-multiselect-label {
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+}
+
+.p-select-dropdown,
+.p-multiselect-dropdown {
+  color: var(--color-surface-500) !important;
+  padding-right: 0.5rem !important;
+}
+
+:where(.dark, .dark *) .p-select-dropdown,
+:where(.dark, .dark *) .p-multiselect-dropdown {
+  color: var(--color-surface-400) !important;
+}
+
 /* PrimeNG Select & MultiSelect Dropdown Overlays */
 .p-select-overlay,
 .p-multiselect-overlay,
 .p-datepicker-panel,
 .p-popover {
-  background-color: var(--color-surface-50) !important;
+  background-color: var(--color-surface-100) !important;
   border: 1px solid var(--color-surface-200) !important;
   border-radius: 0.75rem !important;
   box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 25px -5px rgba(0, 0, 0, 0.15),
     0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
   color: var(--color-surface-900) !important;
 }
@@ -230,8 +277,11 @@ html {
 :where(.dark, .dark *) .p-multiselect-overlay,
 :where(.dark, .dark *) .p-datepicker-panel,
 :where(.dark, .dark *) .p-popover {
-  background-color: var(--color-surface-900) !important;
+  background-color: var(--color-surface-800) !important;
   border: 1px solid var(--color-surface-700) !important;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.5),
+    0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
   color: #ffffff !important;
 }
 
@@ -242,6 +292,8 @@ html {
   border-radius: 0.5rem !important;
   margin: 0.125rem 0.25rem !important;
   padding: 0.5rem 0.75rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
   transition: all 0.15s ease !important;
 }
 
@@ -255,7 +307,7 @@ html {
 .p-multiselect-option:hover,
 .p-select-option.p-focus,
 .p-multiselect-option.p-focus {
-  background-color: var(--color-surface-100) !important;
+  background-color: var(--color-surface-200) !important;
   color: var(--color-primary-700) !important;
 }
 
@@ -263,21 +315,22 @@ html {
 :where(.dark, .dark *) .p-multiselect-option:hover,
 :where(.dark, .dark *) .p-select-option.p-focus,
 :where(.dark, .dark *) .p-multiselect-option.p-focus {
-  background-color: var(--color-surface-800) !important;
+  background-color: var(--color-surface-700) !important;
   color: var(--color-primary-400) !important;
 }
 
 /* Option Selected State */
 .p-select-option.p-select-option-selected,
 .p-multiselect-option.p-multiselect-option-selected {
-  background-color: var(--color-primary-50) !important;
+  background-color: rgba(249, 115, 22, 0.15) !important;
   color: var(--color-primary-700) !important;
   font-weight: 700 !important;
 }
 
 :where(.dark, .dark *) .p-select-option.p-select-option-selected,
+:where(.dark, .dark *) .p-multiselect-option.p-select-option-selected,
 :where(.dark, .dark *) .p-multiselect-option.p-multiselect-option-selected {
-  background-color: rgba(249, 115, 22, 0.15) !important;
+  background-color: rgba(249, 115, 22, 0.25) !important;
   color: var(--color-primary-400) !important;
 }
 
