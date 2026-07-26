@@ -1,0 +1,91 @@
+<div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-2">
+    <div class="flex items-center gap-3">
+      <button
+        (click)="onCancel()"
+        type="button"
+        class="p-2.5 rounded-xl text-surface-500 hover:text-surface-900 dark:hover:text-white bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 transition-all cursor-pointer"
+        title="Back">
+        <i class="pi pi-arrow-left text-base"></i>
+      </button>
+      <div>
+        <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
+          Add Ingredient Group
+        </h2>
+        <p class="text-surface-500 dark:text-surface-400 mt-1.5 text-sm">
+          Create a new taxonomy group (e.g. Pasta, Grains, Bakery, Meat, Seafood).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  @if (submitError()) {
+    <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+      </svg>
+      <span>{{ submitError() }}</span>
+    </div>
+  }
+
+  <!-- Form Card -->
+  <div class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 bg-white/70 dark:bg-surface-900/70 p-6 shadow-xl backdrop-blur-xl">
+    <form [formGroup]="groupForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      
+      <!-- Name Field -->
+      <div>
+        <label class="block text-sm font-semibold text-surface-700 dark:text-surface-300 mb-2">
+          Group Name <span class="text-red-500">*</span>
+        </label>
+        <input
+          pInputText
+          type="text"
+          formControlName="name"
+          placeholder="e.g. Pasta, Grains, Dairy, Bakery, Sweets"
+          class="w-full p-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-white/80 dark:bg-surface-800/80 text-surface-900 dark:text-white focus:ring-2 focus:ring-primary-500 transition-all outline-none" />
+        @if (groupForm.get('name')?.invalid && groupForm.get('name')?.touched) {
+          <p class="mt-1 text-xs text-red-500 font-medium">Group name is required (min 2 characters).</p>
+        }
+      </div>
+
+      <!-- Parent Nutrient Group Select -->
+      <div>
+        <label class="block text-sm font-semibold text-surface-700 dark:text-surface-300 mb-2">
+          Parent Nutrient Group
+        </label>
+        <p-select
+          [options]="nutrientGroups()"
+          formControlName="nutrientGroup"
+          optionLabel="name"
+          placeholder="Select Nutrient Group (e.g. Fiber & Produce, Protein, Carbs)"
+          [showClear]="true"
+          styleClass="w-full">
+        </p-select>
+        <p class="mt-1 text-xs text-surface-400">Classifies this ingredient group under top-level nutritional pillars.</p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-surface-200/40 dark:border-surface-800/40">
+        <button
+          type="button"
+          (click)="onCancel()"
+          class="px-5 py-2.5 rounded-xl border border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-700 dark:text-surface-300 font-medium transition-colors cursor-pointer text-sm">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="isSubmitting()"
+          class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold shadow-lg shadow-primary-500/25 transition-all cursor-pointer text-sm disabled:opacity-50 flex items-center gap-2">
+          @if (isSubmitting()) {
+            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          }
+          <span>Save Group</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

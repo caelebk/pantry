@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import { CategoryDTO } from '../src/models/data-models/category.model.ts';
 import { IngredientDTO } from '../src/models/data-models/ingredient.model.ts';
 import categories from '../src/routes/categories.routes.ts';
-import { categoryService } from '../src/services/category.service.ts';
+import { ingredientGroupService } from '../src/services/ingredient-group.service.ts';
 import { ingredientService } from '../src/services/ingredients.service.ts';
 import { HttpStatusCode } from '../src/utils/response.ts';
 
@@ -28,8 +28,8 @@ const mockIngredient: IngredientDTO = {
 };
 
 Deno.test('Categories API - GET /api/categories - success', async () => {
-  const originalGetAll = categoryService.getAllCategories;
-  categoryService.getAllCategories = () => Promise.resolve([mockCategory]);
+  const originalGetAll = ingredientGroupService.getAllIngredientGroups;
+  ingredientGroupService.getAllIngredientGroups = () => Promise.resolve([mockCategory]);
 
   try {
     const app = new Hono();
@@ -41,13 +41,13 @@ Deno.test('Categories API - GET /api/categories - success', async () => {
     assertEquals(body.data.length, 1);
     assertEquals(body.data[0].id, mockCategory.id);
   } finally {
-    categoryService.getAllCategories = originalGetAll;
+    ingredientGroupService.getAllIngredientGroups = originalGetAll;
   }
 });
 
 Deno.test('Categories API - GET /api/categories - service error', async () => {
-  const originalGetAll = categoryService.getAllCategories;
-  categoryService.getAllCategories = () => Promise.reject(new Error('Fail'));
+  const originalGetAll = ingredientGroupService.getAllIngredientGroups;
+  ingredientGroupService.getAllIngredientGroups = () => Promise.reject(new Error('Fail'));
 
   try {
     const app = new Hono();
@@ -55,13 +55,13 @@ Deno.test('Categories API - GET /api/categories - service error', async () => {
     const res = await app.request(createRequest('/api/categories', 'GET'));
     assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
   } finally {
-    categoryService.getAllCategories = originalGetAll;
+    ingredientGroupService.getAllIngredientGroups = originalGetAll;
   }
 });
 
 Deno.test('Categories API - GET /api/categories/:id - success', async () => {
-  const originalGetById = categoryService.getCategoryById;
-  categoryService.getCategoryById = (id) =>
+  const originalGetById = ingredientGroupService.getIngredientGroupById;
+  ingredientGroupService.getIngredientGroupById = (id) =>
     Promise.resolve(id === mockCategory.id ? mockCategory : null);
 
   try {
@@ -75,13 +75,13 @@ Deno.test('Categories API - GET /api/categories/:id - success', async () => {
     const body = await res.json();
     assertEquals(body.data.id, mockCategory.id);
   } finally {
-    categoryService.getCategoryById = originalGetById;
+    ingredientGroupService.getIngredientGroupById = originalGetById;
   }
 });
 
 Deno.test('Categories API - GET /api/categories/:id - not found', async () => {
-  const originalGetById = categoryService.getCategoryById;
-  categoryService.getCategoryById = () => Promise.resolve(null);
+  const originalGetById = ingredientGroupService.getIngredientGroupById;
+  ingredientGroupService.getIngredientGroupById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
@@ -90,7 +90,7 @@ Deno.test('Categories API - GET /api/categories/:id - not found', async () => {
     const res = await app.request(createRequest('/api/categories/999', 'GET'));
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
-    categoryService.getCategoryById = originalGetById;
+    ingredientGroupService.getIngredientGroupById = originalGetById;
   }
 });
 
@@ -102,10 +102,10 @@ Deno.test('Categories API - GET /api/categories/:id - invalid id', async () => {
 });
 
 Deno.test('Categories API - GET /api/categories/:id/ingredients - success', async () => {
-  const originalGetCategoryById = categoryService.getCategoryById;
+  const originalGetCategoryById = ingredientGroupService.getIngredientGroupById;
   const originalGetIngredients = ingredientService.getIngredientsByCategory;
 
-  categoryService.getCategoryById = (id) =>
+  ingredientGroupService.getIngredientGroupById = (id) =>
     Promise.resolve(id === mockCategory.id ? mockCategory : null);
   ingredientService.getIngredientsByCategory = (id) =>
     Promise.resolve(id === mockCategory.id ? [mockIngredient] : []);
@@ -122,14 +122,14 @@ Deno.test('Categories API - GET /api/categories/:id/ingredients - success', asyn
     assertEquals(body.data.length, 1);
     assertEquals(body.data[0].id, mockIngredient.id);
   } finally {
-    categoryService.getCategoryById = originalGetCategoryById;
+    ingredientGroupService.getIngredientGroupById = originalGetCategoryById;
     ingredientService.getIngredientsByCategory = originalGetIngredients;
   }
 });
 
 Deno.test('Categories API - GET /api/categories/:id/ingredients - category not found', async () => {
-  const originalGetCategoryById = categoryService.getCategoryById;
-  categoryService.getCategoryById = () => Promise.resolve(null);
+  const originalGetCategoryById = ingredientGroupService.getIngredientGroupById;
+  ingredientGroupService.getIngredientGroupById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
@@ -138,7 +138,7 @@ Deno.test('Categories API - GET /api/categories/:id/ingredients - category not f
     const res = await app.request(createRequest('/api/categories/999/ingredients', 'GET'));
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
-    categoryService.getCategoryById = originalGetCategoryById;
+    ingredientGroupService.getIngredientGroupById = originalGetCategoryById;
   }
 });
 
@@ -150,8 +150,8 @@ Deno.test('Categories API - GET /api/categories/:id/ingredients - invalid id', a
 });
 
 Deno.test('Categories API - GET /api/categories/:id/ingredients - service error', async () => {
-  const originalGetCategoryById = categoryService.getCategoryById;
-  categoryService.getCategoryById = () => Promise.resolve(mockCategory);
+  const originalGetCategoryById = ingredientGroupService.getIngredientGroupById;
+  ingredientGroupService.getIngredientGroupById = () => Promise.resolve(mockCategory);
 
   // Mock ingredient service fail
   const originalGetIngredients = ingredientService.getIngredientsByCategory;
@@ -165,7 +165,7 @@ Deno.test('Categories API - GET /api/categories/:id/ingredients - service error'
     );
     assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
   } finally {
-    categoryService.getCategoryById = originalGetCategoryById;
+    ingredientGroupService.getIngredientGroupById = originalGetCategoryById;
     ingredientService.getIngredientsByCategory = originalGetIngredients;
   }
 });

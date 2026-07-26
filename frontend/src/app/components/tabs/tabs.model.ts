@@ -3,4 +3,7 @@ export enum Tab {
   Dashboard = 'home',
   Inventory = 'inventory',
   Recipes = 'recipes',
+  ShoppingList = 'shopping-list',
+  MealPlanner = 'meal-planner',
 }
+

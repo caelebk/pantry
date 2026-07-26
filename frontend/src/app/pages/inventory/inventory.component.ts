@@ -32,7 +32,7 @@ import { DialogModule } from "primeng/dialog";
 import { SelectModule } from "primeng/select";
 import { ToastModule } from "primeng/toast";
 import { AddItemFormComponent } from "./inventory-components/add-item-form/add-item-form.component";
-import { IngredientGroupContainerComponent } from "./inventory-components/ingredient-group-container/ingredient-group-container.component";
+
 import { ItemCardComponent } from "./inventory-components/item-card/item-card.component";
 import {
   InventoryTab,
@@ -59,7 +59,6 @@ export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'stat
     TabNavigationComponent,
     SelectModule,
     DialogModule,
-    IngredientGroupContainerComponent,
     UnassignedItemsContainerComponent,
   ],
   providers: [ConfirmationService],
@@ -108,6 +107,12 @@ export class InventoryComponent implements OnInit {
 
   public displayLimit = 15;
   public readonly batchSize = 15;
+
+  public getIngredientName(ingredientId?: string): string | null {
+    if (!ingredientId) return null;
+    const ing = this.ingredients.find((i) => i.id === ingredientId);
+    return ing ? ing.name : null;
+  }
 
   public toggleSort(field: SortOption): void {
     this.displayLimit = this.batchSize; // Reset pagination on sort change

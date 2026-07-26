@@ -1,0 +1,75 @@
+:host ::ng-deep {
+  .p-select {
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+
+    .p-select-label {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      font-size: 0.75rem !important;
+      font-weight: 600 !important;
+      display: flex !important;
+      align-items: center !important;
+      line-height: 1 !important;
+    }
+
+    .p-select-dropdown {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 2rem !important;
+    }
+  }
+
+  /* PrimeNG DatePicker container & input styling */
+  p-datepicker, .p-datepicker, .p-date-picker {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+
+    .p-inputtext {
+      width: 100% !important;
+      height: 38px !important;
+      min-height: 38px !important;
+      max-height: 38px !important;
+      font-size: 0.75rem !important;
+      font-weight: 600 !important;
+      border-radius: 0.75rem !important; /* rounded-xl */
+      padding-left: 0.75rem !important;
+      padding-right: 2.25rem !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      line-height: 1 !important;
+    }
+
+    .p-datepicker-dropdown,
+    .p-datepicker-icon-button,
+    .p-datepicker-input-icon,
+    .p-datepicker-icon {
+      position: absolute !important;
+      right: 0.75rem !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      pointer-events: auto !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      height: 1rem !important;
+      width: 1rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+
+      svg, p-icon {
+        width: 1rem !important;
+        height: 1rem !important;
+        display: block !important;
+      }
+    }
+  }
+}

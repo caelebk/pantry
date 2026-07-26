@@ -11,7 +11,7 @@ function createTestDB(): Database {
     CREATE TABLE ingredients (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      category_id INTEGER,
+      ingredient_group_id INTEGER,
       default_unit_id INTEGER,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
@@ -27,14 +27,15 @@ function seedMockIngredient(db: Database): IngredientRow {
   const row: IngredientRow = {
     id: mockId,
     name: 'Test Ingredient',
+    ingredient_group_id: 1,
     category_id: 1,
     default_unit_id: 1,
     created_at: mockDate.toISOString(),
     updated_at: mockDate.toISOString(),
   };
   db.prepare(
-    'INSERT INTO ingredients (id, name, category_id, default_unit_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-  ).run(row.id, row.name, row.category_id, row.default_unit_id, row.created_at, row.updated_at);
+    'INSERT INTO ingredients (id, name, ingredient_group_id, default_unit_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+  ).run(row.id, row.name, row.ingredient_group_id, row.default_unit_id, row.created_at, row.updated_at);
   return row;
 }
 
@@ -84,7 +85,7 @@ Deno.test('IngredientsService - createIngredient - success', async () => {
 
   const ingredient = await ingredientService.createIngredient({
     name: 'New Ingredient',
-    categoryId: 1,
+    ingredientGroupId: 1,
     defaultUnitId: 1,
   });
   assertEquals(ingredient.name, 'New Ingredient');
@@ -99,7 +100,7 @@ Deno.test('IngredientsService - updateIngredient - success', async () => {
 
   const ingredient = await ingredientService.updateIngredient(mockId, {
     name: 'Updated Ingredient',
-    categoryId: 2,
+    ingredientGroupId: 2,
   });
   assert(ingredient !== null);
   assertEquals(ingredient?.name, 'Updated Ingredient');

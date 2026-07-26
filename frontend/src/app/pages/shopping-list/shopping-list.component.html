@@ -1,0 +1,189 @@
+<div class="space-y-6">
+  <!-- Minimalist Header & Primary Actions -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200/80 dark:border-gray-800 pb-4">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Shopping List</h2>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Manage groceries, track estimated costs, and sync with meal plans</p>
+    </div>
+
+    <div class="flex items-center gap-2.5 shrink-0">
+      <button
+        (click)="autoFillFromMealPlanner()"
+        title="Sync missing ingredients from planned recipes"
+        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#262626] transition-all cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-primary-600 dark:text-primary-400">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+        Sync Meal Plan
+      </button>
+
+      @if (checkedCount() > 0) {
+        <button
+          (click)="restockChecked()"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-xs hover:opacity-90 transition-all cursor-pointer">
+          Restock {{ checkedCount() }} to Pantry
+        </button>
+      }
+
+      <button
+        (click)="goToAddItemPage()"
+        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-primary-600 hover:bg-primary-700 text-white shadow-xs transition-all cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        Add Item
+      </button>
+    </div>
+  </div>
+
+  <!-- Minimalist Financial Summary Metrics -->
+  <div class="grid grid-cols-3 gap-4 bg-gray-50/50 dark:bg-[#1a1a1a]/50 border border-gray-200/60 dark:border-gray-800/60 rounded-2xl p-4">
+    <div class="space-y-0.5">
+      <div class="text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Cost</div>
+      <div class="text-lg font-bold text-gray-900 dark:text-white">
+        ${{ totalEstimatedCost() | number:'1.2-2' }}
+      </div>
+    </div>
+
+    <div class="space-y-0.5 border-x border-gray-200/60 dark:border-gray-800/60 px-4">
+      <div class="text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Remaining</div>
+      <div class="text-lg font-bold text-gray-900 dark:text-white">
+        ${{ remainingCost() | number:'1.2-2' }}
+      </div>
+    </div>
+
+    <div class="space-y-0.5 pl-4">
+      <div class="text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Bought</div>
+      <div class="text-lg font-bold text-gray-900 dark:text-white">
+        ${{ inCartCost() | number:'1.2-2' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Pills -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-1">
+      <button
+        (click)="setFilter('all')"
+        [class]="
+          activeFilter() === 'all'
+            ? 'px-3 py-1 font-bold rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs transition-all cursor-pointer'
+            : 'px-3 py-1 font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white text-xs transition-all cursor-pointer'
+        ">
+        All ({{ totalCount() }})
+      </button>
+
+      <button
+        (click)="setFilter('unchecked')"
+        [class]="
+          activeFilter() === 'unchecked'
+            ? 'px-3 py-1 font-bold rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs transition-all cursor-pointer'
+            : 'px-3 py-1 font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white text-xs transition-all cursor-pointer'
+        ">
+        To Buy ({{ uncheckedCount() }})
+      </button>
+
+      <button
+        (click)="setFilter('checked')"
+        [class]="
+          activeFilter() === 'checked'
+            ? 'px-3 py-1 font-bold rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs transition-all cursor-pointer'
+            : 'px-3 py-1 font-medium rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white text-xs transition-all cursor-pointer'
+        ">
+        Bought ({{ checkedCount() }})
+      </button>
+    </div>
+
+    @if (checkedCount() > 0) {
+      <button
+        (click)="clearChecked()"
+        class="text-xs text-gray-400 hover:text-rose-600 transition-colors cursor-pointer font-medium">
+        Clear checked
+      </button>
+    }
+  </div>
+
+  <!-- Minimalist Items Table View -->
+  <div class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl overflow-hidden shadow-xs">
+    @if (filteredItems().length === 0) {
+      <div class="p-8 text-center text-xs text-gray-400 font-medium space-y-3">
+        <p>No items in shopping list.</p>
+        <button
+          (click)="goToAddItemPage()"
+          class="px-4 py-1.5 bg-primary-600 text-white rounded-xl text-xs font-semibold hover:bg-primary-700 transition-all cursor-pointer">
+          + Add First Item
+        </button>
+      </div>
+    } @else {
+      <div class="divide-y divide-gray-100 dark:divide-gray-800/80">
+        @for (item of filteredItems(); track item.id) {
+          <div
+            [class.opacity-60]="item.checked"
+            class="px-4 py-3 flex items-center justify-between gap-3 hover:bg-gray-50/60 dark:hover:bg-[#262626]/40 transition-colors group">
+            
+            <!-- Checkbox & Info -->
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <input
+                type="checkbox"
+                [checked]="item.checked"
+                (change)="toggleItem(item.id)"
+                class="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 cursor-pointer accent-primary-600" />
+
+              <div class="flex items-center gap-2 min-w-0 flex-wrap">
+                <span
+                  [class.line-through]="item.checked"
+                  class="font-semibold text-xs text-gray-900 dark:text-white truncate">
+                  {{ item.name }}
+                </span>
+
+                <span class="text-[11px] text-gray-400 font-normal shrink-0">
+                  ({{ item.quantity }} {{ item.unit }})
+                </span>
+
+                <span class="text-[10px] px-2 py-0.5 rounded bg-gray-100 dark:bg-[#262626] text-gray-500 font-medium shrink-0">
+                  {{ item.category }}
+                </span>
+
+                @if (item.storeName) {
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-gray-100 dark:bg-[#262626] text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-800 font-medium shrink-0">
+                    {{ item.storeName }}
+                  </span>
+                }
+
+                @if (item.recipeName) {
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 font-medium shrink-0 truncate max-w-[140px]">
+                    {{ item.recipeName }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- Price & Delete Action -->
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="flex items-center gap-1 bg-gray-50 dark:bg-[#262626] px-2 py-1 rounded-lg border border-gray-200/60 dark:border-gray-800/60">
+                <span class="text-[11px] text-gray-400 font-semibold">$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  [value]="item.estimatedPrice || ''"
+                  (change)="updateItemPrice(item, $any($event.target).value)"
+                  placeholder="0.00"
+                  class="w-12 bg-transparent text-xs font-bold text-gray-800 dark:text-gray-200 focus:outline-none" />
+              </div>
+
+              <button
+                (click)="removeItem(item.id)"
+                title="Remove item"
+                class="text-gray-300 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

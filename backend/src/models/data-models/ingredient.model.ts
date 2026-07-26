@@ -6,7 +6,9 @@
 export interface IngredientDTO {
   id: string; // UUID
   name: string;
-  categoryId?: number;
+  ingredientGroupId?: number;
+  ingredientGroupName?: string;
+  categoryId?: number; // Legacy alias fallback
   defaultUnitId?: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -15,7 +17,8 @@ export interface IngredientDTO {
 // Creation DTO - omit system fields
 export interface CreateIngredientDTO {
   name: string;
-  categoryId?: number;
+  ingredientGroupId?: number;
+  categoryId?: number; // Legacy alias fallback
   defaultUnitId?: number;
 }
 
