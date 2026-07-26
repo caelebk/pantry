@@ -145,7 +145,10 @@
               <!-- Group Header Bar -->
               <div
                 (click)="toggleGroup(groupSection.groupName)"
-                class="bg-surface-100/80 dark:bg-surface-800/60 px-5 py-3 border-b border-surface-200/80 dark:border-surface-800 flex items-center justify-between cursor-pointer select-none hover:bg-surface-200/60 dark:hover:bg-surface-700/60 transition-colors">
+                class="bg-surface-100/80 dark:bg-surface-800/60 px-5 py-3 flex items-center justify-between cursor-pointer select-none hover:bg-surface-200/60 dark:hover:bg-surface-700/60 transition-colors"
+                [class.border-b]="isGroupExpanded(groupSection.groupName)"
+                [class.border-surface-200/80]="isGroupExpanded(groupSection.groupName)"
+                [class.dark:border-surface-800]="isGroupExpanded(groupSection.groupName)">
                 <div class="flex items-center gap-3">
                   <i
                     class="pi text-xs text-surface-500 transition-transform duration-200"
