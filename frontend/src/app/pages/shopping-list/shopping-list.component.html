@@ -20,7 +20,7 @@
       @if (checkedCount() > 0) {
         <button
           (click)="restockChecked()"
-          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer">
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-xs hover:opacity-90 transition-all cursor-pointer">
           Restock {{ checkedCount() }} to Pantry
         </button>
       }
@@ -36,7 +36,7 @@
     </div>
   </div>
 
-  <!-- Sleek Financial Summary Row (Minimalist Metrics) -->
+  <!-- Minimalist Financial Summary Metrics -->
   <div class="grid grid-cols-3 gap-4 bg-gray-50/50 dark:bg-[#1a1a1a]/50 border border-gray-200/60 dark:border-gray-800/60 rounded-2xl p-4">
     <div class="space-y-0.5">
       <div class="text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Cost</div>
@@ -46,15 +46,15 @@
     </div>
 
     <div class="space-y-0.5 border-x border-gray-200/60 dark:border-gray-800/60 px-4">
-      <div class="text-[11px] font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider">Remaining</div>
-      <div class="text-lg font-bold text-amber-700 dark:text-amber-300">
+      <div class="text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Remaining</div>
+      <div class="text-lg font-bold text-gray-900 dark:text-white">
         ${{ remainingCost() | number:'1.2-2' }}
       </div>
     </div>
 
     <div class="space-y-0.5 pl-4">
-      <div class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">In Cart</div>
-      <div class="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+      <div class="text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">In Cart</div>
+      <div class="text-lg font-bold text-gray-900 dark:text-white">
         ${{ inCartCost() | number:'1.2-2' }}
       </div>
     </div>
@@ -145,8 +145,8 @@
                 </span>
 
                 @if (item.storeName) {
-                  <span class="text-[10px] px-2 py-0.5 rounded bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 border border-purple-200/50 font-medium shrink-0">
-                    🏪 {{ item.storeName }}
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-gray-100 dark:bg-[#262626] text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-800 font-medium shrink-0">
+                    {{ item.storeName }}
                   </span>
                 }
 
