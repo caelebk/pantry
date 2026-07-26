@@ -2,7 +2,7 @@ import { assertEquals } from '@std/assert';
 import { Hono } from 'hono';
 import { CreateItemDTO, ItemDTO } from '../src/models/data-models/item.model.ts';
 import items from '../src/routes/items.routes.ts';
-import { itemService } from '../src/services/item.service.ts';
+import { ingredientItemService } from '../src/services/ingredient-item.service.ts';
 import { HttpStatusCode } from '../src/utils/response.ts';
 
 // Helper to create a request
@@ -31,8 +31,8 @@ const mockItem: ItemDTO = {
 
 Deno.test('Items API - GET /api/items - success', async () => {
   // Mock service
-  const originalGetAllItems = itemService.getAllItems;
-  itemService.getAllItems = () => Promise.resolve([mockItem]);
+  const originalGetAllItems = ingredientItemService.getAllIngredientItems;
+  ingredientItemService.getAllIngredientItems = () => Promise.resolve([mockItem]);
 
   try {
     const app = new Hono();
@@ -44,13 +44,13 @@ Deno.test('Items API - GET /api/items - success', async () => {
     assertEquals(body.data.length, 1);
     assertEquals(body.data[0].id, mockItem.id);
   } finally {
-    itemService.getAllItems = originalGetAllItems;
+    ingredientItemService.getAllIngredientItems = originalGetAllItems;
   }
 });
 
 Deno.test('Items API - GET /api/items - service error', async () => {
-  const originalGetAllItems = itemService.getAllItems;
-  itemService.getAllItems = () => Promise.reject(new Error('DB Fail'));
+  const originalGetAllItems = ingredientItemService.getAllIngredientItems;
+  ingredientItemService.getAllIngredientItems = () => Promise.reject(new Error('DB Fail'));
 
   try {
     const app = new Hono();
@@ -58,13 +58,13 @@ Deno.test('Items API - GET /api/items - service error', async () => {
     const res = await app.request(createRequest('/api/items', 'GET'));
     assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
   } finally {
-    itemService.getAllItems = originalGetAllItems;
+    ingredientItemService.getAllIngredientItems = originalGetAllItems;
   }
 });
 
 Deno.test('Items API - GET /api/items/:id - success', async () => {
-  const originalGetItemById = itemService.getItemById;
-  itemService.getItemById = (id) => Promise.resolve(id === mockItem.id ? mockItem : null);
+  const originalGetItemById = ingredientItemService.getIngredientItemById;
+  ingredientItemService.getIngredientItemById = (id) => Promise.resolve(id === mockItem.id ? mockItem : null);
 
   try {
     const app = new Hono();
@@ -75,13 +75,13 @@ Deno.test('Items API - GET /api/items/:id - success', async () => {
     const body = await res.json();
     assertEquals(body.data.id, mockItem.id);
   } finally {
-    itemService.getItemById = originalGetItemById;
+    ingredientItemService.getIngredientItemById = originalGetItemById;
   }
 });
 
 Deno.test('Items API - GET /api/items/:id - not found', async () => {
-  const originalGetItemById = itemService.getItemById;
-  itemService.getItemById = () => Promise.resolve(null);
+  const originalGetItemById = ingredientItemService.getIngredientItemById;
+  ingredientItemService.getIngredientItemById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
@@ -91,7 +91,7 @@ Deno.test('Items API - GET /api/items/:id - not found', async () => {
     const res = await app.request(createRequest(`/api/items/${validUuid}`, 'GET'));
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
-    itemService.getItemById = originalGetItemById;
+    ingredientItemService.getIngredientItemById = originalGetItemById;
   }
 });
 
@@ -103,8 +103,8 @@ Deno.test('Items API - GET /api/items/:id - invalid id', async () => {
 });
 
 Deno.test('Items API - POST /api/items - success', async () => {
-  const originalCreateItem = itemService.createItem;
-  itemService.createItem = (_data) => Promise.resolve(mockItem);
+  const originalCreateItem = ingredientItemService.createIngredientItem;
+  ingredientItemService.createIngredientItem = (_data) => Promise.resolve(mockItem);
 
   try {
     const app = new Hono();
@@ -126,7 +126,7 @@ Deno.test('Items API - POST /api/items - success', async () => {
     const body = await res.json();
     assertEquals(body.data.id, mockItem.id);
   } finally {
-    itemService.createItem = originalCreateItem;
+    ingredientItemService.createIngredientItem = originalCreateItem;
   }
 });
 
@@ -139,8 +139,8 @@ Deno.test('Items API - POST /api/items - invalid body', async () => {
 });
 
 Deno.test('Items API - POST /api/items - service error', async () => {
-  const originalCreateItem = itemService.createItem;
-  itemService.createItem = () => Promise.reject(new Error('DB Fail'));
+  const originalCreateItem = ingredientItemService.createIngredientItem;
+  ingredientItemService.createIngredientItem = () => Promise.reject(new Error('DB Fail'));
 
   try {
     const app = new Hono();
@@ -156,16 +156,16 @@ Deno.test('Items API - POST /api/items - service error', async () => {
     const res = await app.request(createRequest('/api/items', 'POST', newItem));
     assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
   } finally {
-    itemService.createItem = originalCreateItem;
+    ingredientItemService.createIngredientItem = originalCreateItem;
   }
 });
 
 Deno.test('Items API - PUT /api/items/:id - success', async () => {
-  const originalGetItemById = itemService.getItemById;
-  const originalUpdateItem = itemService.updateItem;
+  const originalGetItemById = ingredientItemService.getIngredientItemById;
+  const originalUpdateItem = ingredientItemService.updateIngredientItem;
 
-  itemService.getItemById = () => Promise.resolve(mockItem);
-  itemService.updateItem = (_id, _data) => Promise.resolve({ ...mockItem, label: 'Updated Only' });
+  ingredientItemService.getIngredientItemById = () => Promise.resolve(mockItem);
+  ingredientItemService.updateIngredientItem = (_id, _data) => Promise.resolve({ ...mockItem, label: 'Updated Only' });
 
   try {
     const app = new Hono();
@@ -176,14 +176,14 @@ Deno.test('Items API - PUT /api/items/:id - success', async () => {
     const body = await res.json();
     assertEquals(body.data.label, 'Updated Only');
   } finally {
-    itemService.getItemById = originalGetItemById;
-    itemService.updateItem = originalUpdateItem;
+    ingredientItemService.getIngredientItemById = originalGetItemById;
+    ingredientItemService.updateIngredientItem = originalUpdateItem;
   }
 });
 
 Deno.test('Items API - PUT /api/items/:id - not found', async () => {
-  const originalUpdateItem = itemService.updateItem;
-  itemService.updateItem = () => Promise.resolve(null);
+  const originalUpdateItem = ingredientItemService.updateIngredientItem;
+  ingredientItemService.updateIngredientItem = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
@@ -193,7 +193,7 @@ Deno.test('Items API - PUT /api/items/:id - not found', async () => {
     );
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
-    itemService.updateItem = originalUpdateItem;
+    ingredientItemService.updateIngredientItem = originalUpdateItem;
   }
 });
 
@@ -207,11 +207,11 @@ Deno.test('Items API - PUT /api/items/:id - invalid id', async () => {
 });
 
 Deno.test('Items API - DELETE /api/items/:id - success', async () => {
-  const originalGetItemById = itemService.getItemById;
-  const originalDeleteItemById = itemService.deleteItemById;
+  const originalGetItemById = ingredientItemService.getIngredientItemById;
+  const originalDeleteItemById = ingredientItemService.deleteIngredientItemById;
 
-  itemService.getItemById = () => Promise.resolve(mockItem);
-  itemService.deleteItemById = () => Promise.resolve(true);
+  ingredientItemService.getIngredientItemById = () => Promise.resolve(mockItem);
+  ingredientItemService.deleteIngredientItemById = () => Promise.resolve(true);
 
   try {
     const app = new Hono();
@@ -220,8 +220,8 @@ Deno.test('Items API - DELETE /api/items/:id - success', async () => {
     const res = await app.request(createRequest(`/api/items/${mockItem.id}`, 'DELETE'));
     assertEquals(res.status, HttpStatusCode.OK);
   } finally {
-    itemService.getItemById = originalGetItemById;
-    itemService.deleteItemById = originalDeleteItemById;
+    ingredientItemService.getIngredientItemById = originalGetItemById;
+    ingredientItemService.deleteIngredientItemById = originalDeleteItemById;
   }
 });
 
@@ -233,8 +233,8 @@ Deno.test('Items API - DELETE /api/items/:id - invalid id', async () => {
 });
 
 Deno.test('Items API - DELETE /api/items/:id - not found', async () => {
-  const originalGetItemById = itemService.getItemById;
-  itemService.getItemById = () => Promise.resolve(null);
+  const originalGetItemById = ingredientItemService.getIngredientItemById;
+  ingredientItemService.getIngredientItemById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
@@ -243,6 +243,6 @@ Deno.test('Items API - DELETE /api/items/:id - not found', async () => {
     const res = await app.request(createRequest(`/api/items/${validUuid}`, 'DELETE'));
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
-    itemService.getItemById = originalGetItemById;
+    ingredientItemService.getIngredientItemById = originalGetItemById;
   }
 });

@@ -21,16 +21,16 @@ function seedDB() {
       db.exec('DELETE FROM recipe_steps;');
       db.exec('DELETE FROM recipe_ingredients;');
       db.exec('DELETE FROM recipes;');
-      db.exec('DELETE FROM items;');
+      db.exec('DELETE FROM ingredient_items;');
       db.exec('DELETE FROM ingredients;');
       db.exec('DELETE FROM difficulties;');
       db.exec('DELETE FROM units;');
-      db.exec('DELETE FROM categories;');
-      db.exec('DELETE FROM nutrient_types;');
+      db.exec('DELETE FROM ingredient_groups;');
+      db.exec('DELETE FROM nutrient_groups;');
       db.exec('DELETE FROM locations;');
       // Reset autoincrement sequences
       db.exec(
-        "DELETE FROM sqlite_sequence WHERE name IN ('locations', 'nutrient_types', 'categories', 'units', 'difficulties');",
+        "DELETE FROM sqlite_sequence WHERE name IN ('locations', 'nutrient_groups', 'ingredient_groups', 'units', 'difficulties');",
       );
 
       // 1. Insert Locations
@@ -42,25 +42,24 @@ function seedDB() {
         locationIds.set(loc.name, row.id);
       }
 
-      // 1.5. Insert Nutrient Types
-      console.log('🧬 Seeding nutrient types...');
-      const nutrientTypeIds = new Map<string, number>();
-      const insertNutrientType = db.prepare(
-        'INSERT INTO nutrient_types (name, icon, color, description) VALUES (?, ?, ?, ?)',
+      // 1.5. Insert Nutrient Groups
+      console.log('🧬 Seeding nutrient groups...');
+      const nutrientGroupIds = new Map<string, number>();
+      const insertNutrientGroup = db.prepare(
+        'INSERT INTO nutrient_groups (name, icon, color, description) VALUES (?, ?, ?, ?)',
       );
       for (const nt of seedData.nutrient_types) {
-        // @ts-ignore description is optional/removed
-        insertNutrientType.run(nt.name, nt.icon, nt.color, nt.description || null);
+        insertNutrientGroup.run(nt.name, nt.icon, nt.color, (nt as any).description || null);
         const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
-        nutrientTypeIds.set(nt.name, row.id);
+        nutrientGroupIds.set(nt.name, row.id);
       }
 
-      // 2. Insert Categories
-      console.log('🏷️  Seeding categories...');
-      const insertCategory = db.prepare('INSERT INTO categories (name, nutrient_type_id) VALUES (?, ?)');
+      // 2. Insert Ingredient Groups
+      console.log('🏷️  Seeding ingredient groups...');
+      const insertGroup = db.prepare('INSERT INTO ingredient_groups (name, nutrient_group_id) VALUES (?, ?)');
       for (const cat of seedData.categories) {
-        const ntId = nutrientTypeIds.get(cat.nutrient_type);
-        insertCategory.run(cat.name, ntId ?? null);
+        const ngId = nutrientGroupIds.get(cat.nutrient_type);
+        insertGroup.run(cat.name, ngId ?? null);
         const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
         categoryIds.set(cat.name, row.id);
       }
@@ -89,13 +88,13 @@ function seedDB() {
       // 5. Insert Ingredients
       console.log('🥦 Seeding ingredients...');
       const insertIngredient = db.prepare(
-        'INSERT INTO ingredients (id, name, category_id, default_unit_id) VALUES (?, ?, ?, ?)',
+        'INSERT INTO ingredients (id, name, ingredient_group_id, default_unit_id) VALUES (?, ?, ?, ?)',
       );
       for (const ing of seedData.ingredients) {
         const catId = categoryIds.get(ing.category);
         const unitId = unitIds.get(ing.default_unit);
 
-        if (!catId) throw new Error(`Category not found: ${ing.category}`);
+        if (!catId) throw new Error(`Ingredient group not found: ${ing.category}`);
         if (!unitId) throw new Error(`Unit not found: ${ing.default_unit}`);
 
         const id = crypto.randomUUID();
@@ -103,10 +102,10 @@ function seedDB() {
         ingredientIds.set(ing.name, id);
       }
 
-      // 6. Insert Items (Pantry Inventory)
-      console.log('📦 Seeding pantry items...');
+      // 6. Insert Ingredient Items (Pantry Inventory)
+      console.log('📦 Seeding pantry ingredient items...');
       const insertItem = db.prepare(
-        `INSERT INTO items
+        `INSERT INTO ingredient_items
          (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date, opened_date, notes)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       );

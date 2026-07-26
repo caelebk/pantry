@@ -23,13 +23,13 @@ function createTestDB(): Database {
     CREATE TABLE ingredients (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      category_id INTEGER,
+      ingredient_group_id INTEGER,
       default_unit_id INTEGER,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
 
-    CREATE TABLE items (
+    CREATE TABLE ingredient_items (
       id TEXT PRIMARY KEY,
       ingredient_id TEXT,
       label TEXT NOT NULL,
@@ -156,7 +156,7 @@ Deno.test('RecipeService - getAvailableRecipes - calculates unit factor conversi
 
   // Pantry has 1 kg of Flour (1000g)
   const flourId = 'flour-uuid-1';
-  db.prepare('INSERT INTO items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
+  db.prepare('INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
     'item-1', flourId, 'Flour Bag', 1, 2, 1, '2030-01-01', '2026-01-01',
   );
 
@@ -188,7 +188,7 @@ Deno.test('RecipeService - getAvailableRecipes - excludes expired pantry items',
   const milkId = 'milk-uuid-1';
 
   // Expired Milk: 2L expired 5 days ago
-  db.prepare('INSERT INTO items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
+  db.prepare('INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
     'item-expired', milkId, 'Expired Milk', 2, 1, 1, '2020-01-01T00:00:00.000Z', '2019-12-25T00:00:00.000Z',
   );
 
@@ -213,12 +213,12 @@ Deno.test('RecipeService - getAvailableRecipes - sums multiple pantry items for 
   const eggId = 'egg-uuid-1';
 
   // Batch 1: 3 eggs
-  db.prepare('INSERT INTO items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
+  db.prepare('INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
     'eggs-1', eggId, 'Half Carton', 3, 1, 1, '2030-01-01', '2026-01-01',
   );
 
   // Batch 2: 3 eggs
-  db.prepare('INSERT INTO items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
+  db.prepare('INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(
     'eggs-2', eggId, 'Another Carton', 3, 1, 1, '2030-01-01', '2026-01-01',
   );
 

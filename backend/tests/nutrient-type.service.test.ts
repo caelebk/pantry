@@ -6,7 +6,7 @@ import { nutrientTypeService } from '../src/services/nutrient-type.service.ts';
 function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec(`
-    CREATE TABLE nutrient_types (
+    CREATE TABLE nutrient_groups (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
       icon TEXT,
@@ -20,7 +20,7 @@ function createTestDB(): Database {
 Deno.test('NutrientTypeService - getAllNutrientTypes - success', async () => {
   const db = createTestDB();
   setDB(db);
-  db.prepare('INSERT INTO nutrient_types (name, icon, color) VALUES (?, ?, ?)').run('Protein', '🥩', '#ef4444');
+  db.prepare('INSERT INTO nutrient_groups (name, icon, color) VALUES (?, ?, ?)').run('Protein', '🥩', '#ef4444');
 
   const types = await nutrientTypeService.getAllNutrientTypes();
   assertEquals(types.length, 1);
@@ -32,7 +32,7 @@ Deno.test('NutrientTypeService - getAllNutrientTypes - success', async () => {
 Deno.test('NutrientTypeService - getNutrientTypeById - success', async () => {
   const db = createTestDB();
   setDB(db);
-  db.prepare('INSERT INTO nutrient_types (name, icon, color) VALUES (?, ?, ?)').run('Carbohydrate', '🌾', '#f59e0b');
+  db.prepare('INSERT INTO nutrient_groups (name, icon, color) VALUES (?, ?, ?)').run('Carbohydrate', '🌾', '#f59e0b');
 
   const type = await nutrientTypeService.getNutrientTypeById(1);
   assert(type !== null);
