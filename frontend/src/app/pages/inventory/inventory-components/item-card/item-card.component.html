@@ -2,9 +2,7 @@
   class="glass-card card-shine rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl group h-full flex flex-col border border-surface-200/70 dark:border-surface-800/80"
   [ngClass]="expired() ? 'hover:shadow-rose-500/10 border-rose-500/30' : (expiringSoon() ? 'hover:shadow-amber-500/10 border-amber-500/30' : 'hover:shadow-emerald-500/10')">
   <!-- Top accent bar -->
-  <div
-    class="h-1.5"
-    [ngClass]="expired() ? 'bg-rose-500' : (expiringSoon() ? 'bg-amber-500' : 'bg-emerald-500')">
+  <div class="h-1.5" [ngClass]="expired() ? 'bg-rose-500' : (expiringSoon() ? 'bg-amber-500' : 'bg-emerald-500')">
   </div>
 
   <div class="p-5 flex flex-col flex-1">
@@ -16,55 +14,55 @@
             {{ item().name }}
           </h4>
           @if (expired()) {
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
-              🚨 Expired
-            </span>
+          <span
+            class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
+            🚨 Expired
+          </span>
           } @else if (expiringSoon()) {
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
-              ⚠️ Expiring Soon
-            </span>
+          <span
+            class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+            ⚠️ Expiring Soon
+          </span>
           } @else {
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
-              ✨ Fresh
-            </span>
+          <span
+            class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+            ✨ Fresh
+          </span>
           }
         </div>
 
         <div class="flex items-center gap-1.5 flex-wrap mt-1">
-          <span class="inline-flex items-center gap-1 text-[11px] font-medium text-surface-500 dark:text-surface-400 bg-surface-100/80 dark:bg-surface-800/60 px-2.5 py-0.5 rounded-md">
+          <span
+            class="inline-flex items-center gap-1 text-[11px] font-medium text-surface-500 dark:text-surface-400 bg-surface-100/80 dark:bg-surface-800/60 px-2.5 py-0.5 rounded-md">
             📍 {{ item().location.name }}
           </span>
           @if (ingredientName()) {
-            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800/50 px-2.5 py-0.5 rounded-md">
-              🥦 {{ ingredientName() }}
-            </span>
+          <span
+            class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800/50 px-2.5 py-0.5 rounded-md">
+            🥦 {{ ingredientName() }}
+          </span>
           } @else {
-            <span class="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 px-2.5 py-0.5 rounded-md">
-              ⚠️ Unassigned
-            </span>
+          <span
+            class="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 px-2.5 py-0.5 rounded-md">
+            ⚠️ Unassigned
+          </span>
           }
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="flex items-center gap-0.5 shrink-0 bg-surface-100/50 dark:bg-surface-800/40 p-1 rounded-xl">
-        <button
-          type="button"
-          (click)="showNote()"
+        <button type="button" (click)="showNote()"
           class="p-1.5 rounded-lg text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 transition-all duration-150 cursor-pointer"
           title="View Notes">
           <i class="pi pi-info-circle text-xs"></i>
         </button>
-        <button
-          type="button"
-          (click)="showEdit()"
+        <button type="button" (click)="showEdit()"
           class="p-1.5 rounded-lg text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 transition-all duration-150 cursor-pointer"
           title="Edit Item">
           <i class="pi pi-pencil text-xs"></i>
         </button>
-        <button
-          type="button"
-          (click)="delete.next()"
+        <button type="button" (click)="delete.next()"
           class="p-1.5 rounded-lg text-surface-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all duration-150 cursor-pointer"
           title="Delete Item">
           <i class="pi pi-trash text-xs"></i>
@@ -73,9 +71,11 @@
     </div>
 
     <!-- Quantity Display -->
-    <div class="bg-surface-50/80 dark:bg-surface-800/30 rounded-xl p-3 mb-3 border border-surface-100 dark:border-surface-800/80 flex items-center justify-between">
+    <div
+      class="bg-surface-50/80 dark:bg-surface-800/30 rounded-xl p-3 mb-3 border border-surface-100 dark:border-surface-800/80 flex items-center justify-between">
       <div>
-        <span class="text-[10px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider block">Quantity</span>
+        <span
+          class="text-[10px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider block">Quantity</span>
         <span class="text-sm font-extrabold text-surface-900 dark:text-white">
           {{ item().quantity }} <span class="text-xs font-normal text-surface-500">{{ item().unit.name }}</span>
         </span>
@@ -88,11 +88,9 @@
         <span class="text-[10px] text-surface-400 dark:text-surface-500 block uppercase tracking-wider font-medium">
           Expiration
         </span>
-        <span
-          [ngClass]="
+        <span [ngClass]="
             expired() ? 'text-rose-600 dark:text-rose-400 font-bold' : (expiringSoon() ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-surface-700 dark:text-surface-200 font-semibold')
-          "
-          class="truncate block text-xs">
+          " class="truncate block text-xs">
           {{ item().expirationDate.toLocaleDateString() }}
         </span>
       </div>
@@ -116,33 +114,21 @@
         </span>
       </div>
       <!-- Progress Bar -->
-      <div
-        class="w-full rounded-full h-1.5 overflow-hidden bg-surface-100 dark:bg-surface-800">
-        <div
-          class="h-1.5 rounded-full max-w-full transition-all duration-500"
-          [ngClass]="expired()
+      <div class="w-full rounded-full h-1.5 overflow-hidden bg-surface-100 dark:bg-surface-800">
+        <div class="h-1.5 rounded-full max-w-full transition-all duration-500" [ngClass]="expired()
             ? 'bg-rose-500'
-            : (expiringSoon() ? 'bg-amber-500' : 'bg-emerald-500')"
-          [style.width.%]="itemProgress()"></div>
+            : (expiringSoon() ? 'bg-amber-500' : 'bg-emerald-500')" [style.width.%]="itemProgress()"></div>
       </div>
     </div>
   </div>
 </div>
 
-<p-dialog
-  [visible]="displayNoteDialog()"
-  (visibleChange)="displayNoteDialog.set($event)"
-  [modal]="true"
-  [dismissableMask]="true"
-  [style]="{ width: '90vw', maxWidth: '500px' }"
-  [header]="item().name">
+<p-dialog [visible]="displayNoteDialog()" (visibleChange)="displayNoteDialog.set($event)" [modal]="true"
+  [dismissableMask]="true" [style]="{ width: '90vw', maxWidth: '500px' }" [header]="item().name">
   <p class="m-0 text-surface-600 dark:text-surface-300 leading-relaxed text-sm">
     {{ item().notes ? item().notes : 'No notes recorded for this item.' }}
   </p>
   <ng-template pTemplate="footer">
-    <p-button
-      label="Close"
-      (click)="displayNoteDialog.set(false)"
-      styleClass="p-button-text"></p-button>
+    <p-button label="Close" (click)="displayNoteDialog.set(false)" styleClass="p-button-text"></p-button>
   </ng-template>
 </p-dialog>

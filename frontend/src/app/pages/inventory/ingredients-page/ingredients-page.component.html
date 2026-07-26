@@ -1,139 +1,334 @@
 <div class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-  <!-- Top Bar & Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <!-- Page Title & Header Actions -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
     <div>
-      <h1 class="text-2xl font-bold tracking-tight text-surface-900 dark:text-white flex items-center gap-2">
-        <span class="p-2 rounded-xl bg-emerald-500/10 text-emerald-500">🥦</span>
-        <span>Ingredients Catalog</span>
-      </h1>
-      <p class="text-sm text-surface-500 dark:text-surface-400">
-        Master definitions of ingredients used across recipes and physical inventory items.
+      <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
+        Ingredients Catalog
+      </h2>
+      <p class="text-surface-500 dark:text-surface-400 mt-1.5 text-sm">
+        Definitions of ingredients grouped by category, linked to recipes and physical stock items in your pantry.
       </p>
     </div>
-    <div>
+    <div class="flex items-center gap-3">
       <button
         (click)="onAddIngredient()"
-        class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold shadow-lg shadow-primary-500/25 transition-all cursor-pointer text-sm flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
-        <span>Add Master Ingredient</span>
+        class="px-5 py-3 cursor-pointer inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl shadow-md shadow-primary-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+        <i class="pi pi-plus text-base font-bold"></i>
+        <span>Add Ingredient</span>
       </button>
     </div>
   </div>
 
-  <!-- Filters & Search Bar -->
-  <div class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 bg-white/70 dark:bg-surface-900/70 p-4 backdrop-blur-xl flex flex-col md:flex-row gap-4 items-center justify-between">
-    <div class="w-full md:w-80">
-      <input
-        pInputText
-        type="text"
-        [ngModel]="searchQuery()"
-        (ngModelChange)="searchQuery.set($event || '')"
-        placeholder="Search ingredients..."
-        class="w-full p-2.5 rounded-xl border border-surface-200 dark:border-surface-700 bg-white/80 dark:bg-surface-800/80 text-surface-900 dark:text-white text-sm outline-none" />
-    </div>
-    <div class="w-full md:w-64">
-      <p-select
-        [options]="ingredientGroups()"
-        [ngModel]="selectedGroup()"
-        (ngModelChange)="selectedGroup.set($event)"
-        optionLabel="name"
-        placeholder="Filter by Group"
-        [showClear]="true"
-        styleClass="w-full">
-      </p-select>
+  <!-- Filter & Control Bar (Consistent with Inventory & Groups Pages) -->
+  <div class="glass-card rounded-2xl p-4 mb-6 border border-surface-200/60 dark:border-surface-800/80 relative z-20">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      
+      <!-- Search Input -->
+      <div class="relative flex-1 min-w-[240px]">
+        <i class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 text-sm"></i>
+        <input
+          type="text"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Search ingredients..."
+          class="w-full pl-10 pr-9 py-2.5 bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-700/80 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
+        @if (searchQuery()) {
+          <button
+            (click)="onSearchChange('')"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200">
+            <i class="pi pi-times text-xs"></i>
+          </button>
+        }
+      </div>
+
+      <!-- Controls Group -->
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Ingredient Group Dropdown Filter -->
+        <div class="flex items-center gap-1">
+          <p-select
+            [options]="ingredientGroups()"
+            [ngModel]="selectedGroup()"
+            (ngModelChange)="onGroupChange($event)"
+            optionLabel="name"
+            placeholder="🏷️ All Groups"
+            [showClear]="false"
+            appendTo="body"
+            styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
+            <ng-template pTemplate="selectedItem" let-selected>
+              <div class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-surface-200">
+                <span>🏷️</span>
+                <span class="truncate max-w-[120px]">{{ selected ? selected.name : 'All Groups' }}</span>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="item" let-item>
+              <div class="flex items-center gap-2 text-xs font-medium py-0.5">
+                <span>🏷️</span>
+                <span>{{ item.name }}</span>
+              </div>
+            </ng-template>
+          </p-select>
+
+          @if (selectedGroup()) {
+            <button
+              type="button"
+              (click)="onGroupChange(null)"
+              class="p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+              title="Reset group filter">
+              <i class="pi pi-times text-xs font-bold"></i>
+            </button>
+          }
+        </div>
+
+        <!-- Expand / Collapse Pill Buttons -->
+        <div class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs shrink-0">
+          <button
+            type="button"
+            (click)="expandAll()"
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+            title="Expand All Ingredients">
+            <i class="pi pi-arrows-alt text-xs"></i>
+            <span>Expand All</span>
+          </button>
+          <button
+            type="button"
+            (click)="collapseAll()"
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+            title="Collapse All Ingredients">
+            <i class="pi pi-minus text-xs"></i>
+            <span>Collapse</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Content Grid / Table -->
+  <!-- Content Loading / Empty State -->
   @if (isLoading()) {
     <div class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 p-8 flex items-center justify-center">
       <div class="flex items-center gap-3 text-surface-500">
-        <svg class="animate-spin h-5 w-5 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <span class="text-sm font-medium">Loading catalog...</span>
+        <i class="pi pi-spin pi-spinner text-lg text-primary-500"></i>
+        <span class="text-sm font-medium">Loading ingredients catalog...</span>
       </div>
     </div>
   } @else {
     @if (filteredIngredients().length === 0) {
       <div class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 p-12 text-center space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-surface-100 dark:bg-surface-800 text-surface-400 flex items-center justify-center mx-auto text-2xl">
-          🔍
+        <div class="w-12 h-12 rounded-2xl bg-surface-100 dark:bg-surface-800 text-surface-400 flex items-center justify-center mx-auto text-xl">
+          <i class="pi pi-search text-surface-400"></i>
         </div>
         <h3 class="text-lg font-semibold text-surface-800 dark:text-surface-200">No ingredients found</h3>
         <p class="text-sm text-surface-500 max-w-md mx-auto">
-          No master ingredients match your criteria. Create a new master ingredient to get started.
+          No ingredients match your search. Create a new ingredient to populate your catalog.
         </p>
       </div>
     } @else {
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        @for (ing of filteredIngredients(); track ing.id) {
-          <div class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 bg-white/70 dark:bg-surface-900/70 p-5 shadow-sm hover:shadow-md transition-all space-y-4">
-            <div class="flex items-start justify-between">
-              <div>
-                <h3 class="text-base font-bold text-surface-900 dark:text-white">{{ ing.name }}</h3>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mt-1">
-                  {{ ing.ingredientGroup?.name || 'Unassigned Group' }}
-                </span>
-              </div>
-              <div class="flex items-center gap-1">
-                <button
-                  (click)="onEditIngredient(ing)"
-                  title="Edit Master Ingredient"
-                  class="p-2 text-surface-400 hover:text-primary-500 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                  </svg>
-                </button>
-                <button
-                  (click)="onDeleteIngredient(ing)"
-                  title="Delete Master Ingredient"
-                  class="p-2 text-surface-400 hover:text-red-500 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <div class="text-xs text-surface-500 dark:text-surface-400 space-y-2 pt-3 border-t border-surface-200/40 dark:border-surface-800/40">
-              <div class="flex items-center justify-between">
-                <span>Default Unit: <span class="font-medium text-surface-700 dark:text-surface-300">{{ ing.defaultUnit?.name || 'None' }}</span></span>
-                
-                @if (getConnectedItems(ing.id).length > 0) {
-                  <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20">
-                    📦 {{ getConnectedItems(ing.id).length }} in stock
+      <!-- Subtables Grouped by Ingredient Group (With Lazy Viewport Rendering) -->
+      <div class="space-y-6">
+        @for (groupSection of visibleGroupedIngredients(); track groupSection.groupName) {
+          @defer (on viewport) {
+            <div class="glass-card rounded-2xl overflow-hidden border border-surface-200/70 dark:border-surface-800/80 shadow-xs">
+              
+              <!-- Group Header Bar -->
+              <div class="bg-surface-100/80 dark:bg-surface-800/60 px-5 py-3 border-b border-surface-200/80 dark:border-surface-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <h3 class="text-xs font-bold uppercase tracking-wider text-surface-800 dark:text-surface-200 flex items-center gap-2">
+                    <i class="pi pi-folder text-primary-500 text-sm"></i>
+                    <span>{{ groupSection.groupName }}</span>
+                  </h3>
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-surface-200/70 dark:bg-surface-700 text-surface-700 dark:text-surface-300">
+                    {{ groupSection.ingredients.length }} ingredient(s)
                   </span>
-                } @else {
-                  <span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-surface-100 dark:bg-surface-800 text-surface-400">
-                    Out of Stock
-                  </span>
-                }
-              </div>
-
-              <!-- List of linked physical stock items -->
-              @if (getConnectedItems(ing.id).length > 0) {
-                <div class="mt-2 space-y-1 bg-surface-50/80 dark:bg-surface-800/40 p-2.5 rounded-xl border border-surface-100 dark:border-surface-800">
-                  <div class="text-[10px] font-bold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-1">
-                    Connected Stock Items:
-                  </div>
-                  @for (item of getConnectedItems(ing.id); track item.id) {
-                    <div class="flex items-center justify-between text-[11px] py-0.5">
-                      <span class="font-semibold text-surface-800 dark:text-surface-200 truncate max-w-[140px]">{{ item.name }}</span>
-                      <div class="flex items-center gap-1.5 shrink-0">
-                        <span class="text-surface-500">{{ item.quantity }} {{ item.unit.shortName }}</span>
-                        <span class="text-[10px] px-1.5 py-0.2 rounded bg-surface-200/60 dark:bg-surface-700 text-surface-600 dark:text-surface-300 font-medium">
-                          {{ item.location.name }}
-                        </span>
-                      </div>
-                    </div>
-                  }
                 </div>
-              }
+              </div>
+
+              <!-- Subtable for this Group -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-surface-50/50 dark:bg-surface-900/40 border-b border-surface-200/60 dark:border-surface-800/60 text-[10px] font-extrabold uppercase tracking-wider text-surface-400 dark:text-surface-500 select-none">
+                      <th class="py-3 px-4 w-12 text-center"></th>
+                      <th class="py-3 px-4">Ingredient</th>
+                      <th class="py-3 px-4">Default Unit</th>
+                      <th class="py-3 px-4">Physical Stock Status</th>
+                      <th class="py-3 px-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-surface-200/60 dark:divide-surface-800/60 text-sm">
+                    @for (ing of groupSection.ingredients; track ing.id) {
+                      <!-- Ingredient Row -->
+                      <tr
+                        class="hover:bg-surface-50/80 dark:hover:bg-surface-800/40 transition-colors group cursor-pointer"
+                        (click)="toggleRow(ing.id)">
+                        <!-- Expand Chevron -->
+                        <td class="py-4 px-4 text-center">
+                          <button
+                            type="button"
+                            class="w-6 h-6 rounded-lg bg-surface-100 dark:bg-surface-800 group-hover:bg-primary-500/10 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors inline-flex items-center justify-center text-surface-500">
+                            <i class="pi text-xs" [class.pi-chevron-down]="isExpanded(ing.id)" [class.pi-chevron-right]="!isExpanded(ing.id)"></i>
+                          </button>
+                        </td>
+
+                        <!-- Ingredient Name -->
+                        <td class="py-4 px-4 font-bold text-surface-900 dark:text-white">
+                          <span>{{ ing.name }}</span>
+                        </td>
+
+                        <!-- Default Unit -->
+                        <td class="py-4 px-4 text-surface-600 dark:text-surface-300 font-medium">
+                          {{ ing.defaultUnit?.name ? ing.defaultUnit?.name + ' (' + ing.defaultUnit?.shortName + ')' : '—' }}
+                        </td>
+
+                        <!-- Physical Stock Status -->
+                        <td class="py-4 px-4">
+                          @if (getConnectedItems(ing.id).length > 0) {
+                            <div class="flex items-center gap-2">
+                              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20 flex items-center gap-1">
+                                <span>{{ getConnectedItems(ing.id).length }} stock item(s)</span>
+                              </span>
+                              <span class="text-xs text-surface-500 font-medium">
+                                ({{ getTotalQuantityText(ing.id) }})
+                              </span>
+                            </div>
+                          } @else {
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-100 dark:bg-surface-800 text-surface-400">
+                              Out of Stock
+                            </span>
+                          }
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="py-4 px-4 text-right" (click)="$event.stopPropagation()">
+                          <div class="flex items-center justify-end gap-1">
+                            <button
+                              (click)="onEditIngredient(ing)"
+                              title="Edit Ingredient"
+                              class="p-2 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                              <i class="pi pi-pencil text-sm"></i>
+                            </button>
+                            <button
+                              (click)="onDeleteIngredient(ing)"
+                              title="Delete Ingredient"
+                              class="p-2 text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                              <i class="pi pi-trash text-sm"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <!-- Expanded Row Content (Physical Stock Items Sub-Table) -->
+                      @if (isExpanded(ing.id)) {
+                        <tr class="bg-surface-50/70 dark:bg-surface-900/60 border-y border-surface-200/60 dark:border-surface-800/60">
+                          <td colspan="5" class="p-4 sm:p-5">
+                            <div class="bg-white/80 dark:bg-surface-950/70 rounded-xl p-4 border border-surface-200/80 dark:border-surface-800/80 shadow-xs space-y-3">
+                              
+                              <div class="flex items-center justify-between pb-2 border-b border-surface-200/50 dark:border-surface-800/50">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-surface-500 dark:text-surface-400 flex items-center gap-1.5">
+                                  <i class="pi pi-box text-primary-500"></i>
+                                  <span>Physical Stock Items for "{{ ing.name }}"</span>
+                                </h4>
+                                <button
+                                  (click)="onAddStockItemForIngredient(ing)"
+                                  class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1 cursor-pointer">
+                                  <i class="pi pi-plus text-[10px]"></i>
+                                  <span>Add Physical Stock Item</span>
+                                </button>
+                              </div>
+
+                              @if (getConnectedItems(ing.id).length === 0) {
+                                <div class="py-6 text-center space-y-2">
+                                  <p class="text-xs text-surface-400">No physical stock items currently in pantry for this ingredient.</p>
+                                  <button
+                                    (click)="onAddStockItemForIngredient(ing)"
+                                    class="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold transition-colors inline-flex items-center gap-1 cursor-pointer">
+                                    <i class="pi pi-plus text-xs"></i>
+                                    <span>Add Stock Now</span>
+                                  </button>
+                                </div>
+                              } @else {
+                                <div class="overflow-x-auto">
+                                  <table class="w-full text-left border-collapse">
+                                    <thead>
+                                      <tr class="text-[10px] uppercase font-bold text-surface-400 dark:text-surface-500 border-b border-surface-200/60 dark:border-surface-800/60">
+                                        <th class="py-2 px-3">Item Name</th>
+                                        <th class="py-2 px-3">Storage Location</th>
+                                        <th class="py-2 px-3">Quantity</th>
+                                        <th class="py-2 px-3">Status</th>
+                                        <th class="py-2 px-3">Expiration Date</th>
+                                        <th class="py-2 px-3 text-right">Item Actions</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-surface-100 dark:divide-surface-800/50 text-xs">
+                                      @for (item of getConnectedItems(ing.id); track item.id) {
+                                        <tr class="hover:bg-surface-50 dark:hover:bg-surface-900/50 transition-colors">
+                                          <td class="py-2.5 px-3 font-semibold text-surface-900 dark:text-white">
+                                            {{ item.name }}
+                                          </td>
+                                          <td class="py-2.5 px-3">
+                                            <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300">
+                                              {{ item.location.name }}
+                                            </span>
+                                          </td>
+                                          <td class="py-2.5 px-3 font-bold text-surface-800 dark:text-surface-200">
+                                            {{ item.quantity }} {{ item.unit.shortName || item.unit.name }}
+                                          </td>
+                                          <td class="py-2.5 px-3">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border" [ngClass]="getItemStatus(item).colorClass">
+                                              {{ getItemStatus(item).text }}
+                                            </span>
+                                          </td>
+                                          <td class="py-2.5 px-3 text-surface-600 dark:text-surface-300">
+                                            {{ item.expirationDate ? (item.expirationDate | date:'mediumDate') : '—' }}
+                                            <span class="text-[10px] text-surface-400 block">({{ getItemRemainingText(item) }})</span>
+                                          </td>
+                                          <td class="py-2.5 px-3 text-right">
+                                            <div class="flex items-center justify-end gap-1">
+                                              <button
+                                                (click)="onEditItem(item)"
+                                                title="Edit Stock Item"
+                                                class="p-1.5 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-md hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                                                <i class="pi pi-pencil text-xs"></i>
+                                              </button>
+                                              <button
+                                                (click)="onDeleteItem(item)"
+                                                title="Delete Stock Item"
+                                                class="p-1.5 text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-md hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                                                <i class="pi pi-trash text-xs"></i>
+                                              </button>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                      }
+                                    </tbody>
+                                  </table>
+                                </div>
+                              }
+
+                            </div>
+                          </td>
+                        </tr>
+                      }
+                    }
+                  </tbody>
+                </table>
+              </div>
             </div>
+          } @placeholder {
+            <div class="glass-card rounded-2xl p-6 border border-surface-200/60 dark:border-surface-800/60 animate-pulse flex items-center justify-between">
+              <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-1/4"></div>
+              <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-16"></div>
+            </div>
+          }
+        }
+
+        <!-- Load More Groups Lazy Trigger Button -->
+        @if (hasMoreGroups()) {
+          <div class="pt-4 text-center">
+            <button
+              (click)="loadMoreGroups()"
+              class="px-6 py-2.5 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 text-xs font-bold transition-all shadow-xs inline-flex items-center gap-2 cursor-pointer">
+              <i class="pi pi-arrow-down text-xs"></i>
+              <span>Load More Groups ({{ groupedIngredients().length - displayLimit() }} remaining)</span>
+            </button>
           </div>
         }
       </div>

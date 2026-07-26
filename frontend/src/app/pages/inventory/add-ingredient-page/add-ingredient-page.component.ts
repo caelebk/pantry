@@ -70,7 +70,7 @@ export class AddIngredientPageComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.isSubmitting.set(false);
-        this.toastService.showSuccess(`Master Ingredient "${val.name}" added successfully.`);
+        this.toastService.showSuccess(`Ingredient "${val.name}" added successfully.`);
         this.router.navigate(['/inventory/ingredients']);
       },
       error: (err) => {

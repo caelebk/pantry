@@ -65,10 +65,10 @@ export class BreadcrumbsComponent implements OnInit {
       } else if (secondSegment === 'ingredients') {
         if (thirdSegment === 'new') {
           items.push({ label: 'Ingredients', url: '/inventory/ingredients', icon: 'pi pi-sparkles' });
-          items.push({ label: 'Add Master Ingredient', icon: 'pi pi-plus-circle' });
+          items.push({ label: 'Add Ingredient', icon: 'pi pi-plus-circle' });
         } else if (segments[3] === 'edit') {
           items.push({ label: 'Ingredients', url: '/inventory/ingredients', icon: 'pi pi-sparkles' });
-          items.push({ label: 'Edit Master Ingredient', icon: 'pi pi-pencil' });
+          items.push({ label: 'Edit Ingredient', icon: 'pi pi-pencil' });
         } else {
           items.push({ label: 'Ingredients', icon: 'pi pi-sparkles' });
         }

@@ -198,13 +198,13 @@ export class EditItemPageComponent implements OnInit {
       next: (createdDto) => {
         this.isCreatingIngredient.set(false);
         this.displayQuickCreateDialog.set(false);
-        this.toastService.showSuccess(`Master Ingredient "${name}" created!`, 'Ingredient Created');
+        this.toastService.showSuccess(`Ingredient "${name}" created!`, 'Ingredient Created');
         this.loadIngredients(undefined, createdDto.id);
       },
       error: (err) => {
         this.isCreatingIngredient.set(false);
         console.error('Failed to create ingredient:', err);
-        this.toastService.showError('Failed to create master ingredient.');
+        this.toastService.showError('Failed to create ingredient.');
       },
     });
   }

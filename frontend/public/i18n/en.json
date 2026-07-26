@@ -113,7 +113,7 @@
     }
   },
   "inventory": {
-    "title": "Kitchen Inventory",
+    "title": "Ingredient Items",
     "subtitle": "Track your ingredients and manage expiration dates",
     "yourInventory": "Your Inventory",
     "tabs": {
