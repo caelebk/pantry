@@ -27,9 +27,13 @@
   /* PrimeNG DatePicker container & input styling */
   p-datepicker, .p-datepicker, .p-date-picker {
     width: 100% !important;
-    display: inline-block !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    position: relative !important;
 
     .p-inputtext {
+      width: 100% !important;
       height: 38px !important;
       min-height: 38px !important;
       max-height: 38px !important;
@@ -37,7 +41,7 @@
       font-weight: 600 !important;
       border-radius: 0.75rem !important; /* rounded-xl */
       padding-left: 0.75rem !important;
-      padding-right: 0.75rem !important;
+      padding-right: 2.25rem !important;
       padding-top: 0 !important;
       padding-bottom: 0 !important;
       display: flex !important;
@@ -45,8 +49,12 @@
       line-height: 1 !important;
     }
 
-    .p-datepicker-dropdown, .p-datepicker-icon-button {
-      height: 38px !important;
+    .p-datepicker-dropdown, .p-datepicker-icon-button, .p-datepicker-input-icon {
+      position: absolute !important;
+      right: 0.75rem !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      pointer-events: auto !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
