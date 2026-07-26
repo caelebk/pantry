@@ -78,11 +78,11 @@ export class ShoppingListComponent {
   getSourceBadgeClass(source?: string): string {
     switch (source) {
       case 'low_stock':
-        return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
+        return 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900/50';
       case 'recipe_plan':
-        return 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20';
+        return 'bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 border-primary-200 dark:border-primary-900/50';
       default:
-        return 'bg-surface-500/10 text-surface-600 dark:text-surface-400 border-surface-500/20';
+        return 'bg-gray-100 dark:bg-[#262626] text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800';
     }
   }
 

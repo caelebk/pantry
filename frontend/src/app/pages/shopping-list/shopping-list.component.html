@@ -1,26 +1,17 @@
-<div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+<div class="space-y-6">
   <!-- Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-    <div class="space-y-1">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-2xl font-bold text-surface-900 dark:text-white tracking-tight">Smart Shopping List</h1>
-          <p class="text-xs sm:text-sm text-surface-500 dark:text-surface-400">Track items to purchase & restock directly into your pantry inventory</p>
-        </div>
-      </div>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Smart Shopping List</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Track items to purchase & restock directly into your pantry inventory</p>
     </div>
 
-    <!-- Restock Action Button -->
+    <!-- Restock Action Buttons -->
     <div class="flex items-center gap-2">
       @if (checkedCount() > 0) {
         <button
           (click)="restockChecked()"
-          class="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all duration-200 cursor-pointer active:scale-95">
+          class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
           </svg>
@@ -29,48 +20,48 @@
 
         <button
           (click)="clearChecked()"
-          class="px-3 py-2.5 border border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 text-sm font-medium rounded-xl transition-all cursor-pointer">
+          class="px-3 py-2.5 border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-[#262626] text-gray-700 dark:text-gray-300 text-xs font-semibold rounded-xl transition-all cursor-pointer">
           Clear Checked
         </button>
       }
     </div>
   </div>
 
-  <!-- Summary Cards -->
+  <!-- Summary Cards Grid -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    <div class="p-4 rounded-2xl bg-white/70 dark:bg-surface-900/60 backdrop-blur-md border border-surface-200/60 dark:border-surface-800/80 shadow-sm flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl bg-primary-500/10 text-primary-600 dark:text-primary-400 flex items-center justify-center font-bold text-xl">
+    <div class="p-4 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 flex items-center justify-center font-extrabold text-xl">
         {{ totalCount() }}
       </div>
       <div>
-        <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">Total Items</div>
-        <div class="text-sm font-semibold text-surface-800 dark:text-surface-200">On List</div>
+        <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Items</div>
+        <div class="text-sm font-bold text-gray-900 dark:text-white">On List</div>
       </div>
     </div>
 
-    <div class="p-4 rounded-2xl bg-white/70 dark:bg-surface-900/60 backdrop-blur-md border border-surface-200/60 dark:border-surface-800/80 shadow-sm flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xl">
+    <div class="p-4 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex items-center justify-center font-extrabold text-xl">
         {{ uncheckedCount() }}
       </div>
       <div>
-        <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">Remaining</div>
-        <div class="text-sm font-semibold text-surface-800 dark:text-surface-200">To Purchase</div>
+        <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Remaining</div>
+        <div class="text-sm font-bold text-gray-900 dark:text-white">To Purchase</div>
       </div>
     </div>
 
-    <div class="p-4 rounded-2xl bg-white/70 dark:bg-surface-900/60 backdrop-blur-md border border-surface-200/60 dark:border-surface-800/80 shadow-sm flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl">
+    <div class="p-4 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-extrabold text-xl">
         {{ checkedCount() }}
       </div>
       <div>
-        <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">In Cart</div>
-        <div class="text-sm font-semibold text-surface-800 dark:text-surface-200">Ready to Restock</div>
+        <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">In Cart</div>
+        <div class="text-sm font-bold text-gray-900 dark:text-white">Ready to Restock</div>
       </div>
     </div>
   </div>
 
   <!-- Add Item Form Bar -->
-  <div class="p-4 sm:p-5 rounded-2xl bg-white/80 dark:bg-surface-900/80 backdrop-blur-xl border border-surface-200/60 dark:border-surface-800/80 shadow-md">
+  <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs">
     <form (submit)="addItem(); $event.preventDefault()" class="flex flex-col md:flex-row gap-3">
       <!-- Item Name -->
       <div class="flex-1">
@@ -79,7 +70,7 @@
           [(ngModel)]="newName"
           name="newName"
           placeholder="Add an item (e.g. Milk, Bananas, Pasta)..."
-          class="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white placeholder-surface-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50" />
+          class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white placeholder-gray-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition-all shadow-xs" />
       </div>
 
       <!-- Category Select -->
@@ -87,7 +78,7 @@
         <select
           [(ngModel)]="newCategory"
           name="newCategory"
-          class="w-full px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-700 text-surface-800 dark:text-surface-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+          class="w-full px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition-all shadow-xs">
           @for (cat of categories; track cat) {
             <option [value]="cat">{{ cat }}</option>
           }
@@ -101,12 +92,12 @@
           min="1"
           [(ngModel)]="newQuantity"
           name="newQuantity"
-          class="w-20 px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-700 text-surface-800 dark:text-surface-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50" />
+          class="w-20 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition-all shadow-xs" />
 
         <select
           [(ngModel)]="newUnit"
           name="newUnit"
-          class="w-24 px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-700 text-surface-800 dark:text-surface-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+          class="w-24 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 transition-all shadow-xs">
           @for (u of units; track u) {
             <option [value]="u">{{ u }}</option>
           }
@@ -117,8 +108,8 @@
       <button
         type="submit"
         [disabled]="!newName.trim()"
-        class="px-5 py-2.5 bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-white font-medium text-sm rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        class="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
         Add Item
@@ -127,64 +118,61 @@
   </div>
 
   <!-- Filter Toolbar & List Container -->
-  <div class="rounded-2xl bg-white/70 dark:bg-surface-900/70 backdrop-blur-xl border border-surface-200/60 dark:border-surface-800/80 shadow-md overflow-hidden">
+  <div class="rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs overflow-hidden">
     <!-- Filter Tabs Header -->
-    <div class="px-5 py-3.5 border-b border-surface-200/60 dark:border-surface-800/80 flex items-center justify-between">
-      <div class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800/80 p-1 rounded-xl">
+    <div class="px-5 py-3 border-b border-gray-200/80 dark:border-gray-800 flex items-center justify-between">
+      <div class="flex items-center gap-1 bg-gray-100 dark:bg-[#262626] p-1 rounded-xl border border-gray-200/80 dark:border-gray-800">
         <button
           (click)="setFilter('all')"
-          [class.bg-white]="activeFilter() === 'all'"
-          [class.dark:bg-surface-700]="activeFilter() === 'all'"
-          [class.text-surface-900]="activeFilter() === 'all'"
-          [class.dark:text-white]="activeFilter() === 'all'"
-          [class.shadow-xs]="activeFilter() === 'all'"
-          class="px-3 py-1.5 rounded-lg text-xs font-semibold text-surface-600 dark:text-surface-400 transition-all cursor-pointer">
+          [class]="
+            activeFilter() === 'all'
+              ? 'px-3 py-1.5 font-semibold rounded-lg bg-white dark:bg-[#1a1a1a] text-primary-600 dark:text-primary-400 shadow-xs transition-all text-xs'
+              : 'px-3 py-1.5 font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-xs cursor-pointer'
+          ">
           All ({{ totalCount() }})
         </button>
         <button
           (click)="setFilter('unchecked')"
-          [class.bg-white]="activeFilter() === 'unchecked'"
-          [class.dark:bg-surface-700]="activeFilter() === 'unchecked'"
-          [class.text-surface-900]="activeFilter() === 'unchecked'"
-          [class.dark:text-white]="activeFilter() === 'unchecked'"
-          [class.shadow-xs]="activeFilter() === 'unchecked'"
-          class="px-3 py-1.5 rounded-lg text-xs font-semibold text-surface-600 dark:text-surface-400 transition-all cursor-pointer">
+          [class]="
+            activeFilter() === 'unchecked'
+              ? 'px-3 py-1.5 font-semibold rounded-lg bg-white dark:bg-[#1a1a1a] text-amber-600 dark:text-amber-400 shadow-xs transition-all text-xs'
+              : 'px-3 py-1.5 font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-xs cursor-pointer'
+          ">
           To Buy ({{ uncheckedCount() }})
         </button>
         <button
           (click)="setFilter('checked')"
-          [class.bg-white]="activeFilter() === 'checked'"
-          [class.dark:bg-surface-700]="activeFilter() === 'checked'"
-          [class.text-surface-900]="activeFilter() === 'checked'"
-          [class.dark:text-white]="activeFilter() === 'checked'"
-          [class.shadow-xs]="activeFilter() === 'checked'"
-          class="px-3 py-1.5 rounded-lg text-xs font-semibold text-surface-600 dark:text-surface-400 transition-all cursor-pointer">
+          [class]="
+            activeFilter() === 'checked'
+              ? 'px-3 py-1.5 font-semibold rounded-lg bg-white dark:bg-[#1a1a1a] text-emerald-600 dark:text-emerald-400 shadow-xs transition-all text-xs'
+              : 'px-3 py-1.5 font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-xs cursor-pointer'
+          ">
           In Cart ({{ checkedCount() }})
         </button>
       </div>
 
-      <span class="text-xs text-surface-500 dark:text-surface-400 font-medium hidden sm:inline">
+      <span class="text-xs text-gray-500 dark:text-gray-400 font-medium hidden sm:inline">
         Check off items as you shop
       </span>
     </div>
 
     <!-- Items List -->
-    <div class="divide-y divide-surface-200/50 dark:divide-surface-800/50">
+    <div class="divide-y divide-gray-100 dark:divide-gray-800/80">
       @for (item of filteredItems(); track item.id) {
         <div
-          class="p-4 flex items-center justify-between gap-4 hover:bg-surface-50/50 dark:hover:bg-surface-800/30 transition-colors group">
+          class="p-4 flex items-center justify-between gap-4 hover:bg-gray-50/50 dark:hover:bg-[#262626]/40 transition-colors group">
           
           <div class="flex items-center gap-3.5 flex-1 min-w-0">
             <!-- Custom Checkbox -->
             <button
               (click)="toggleItem(item.id)"
-              [class.bg-emerald-500]="item.checked"
-              [class.border-emerald-500]="item.checked"
-              [class.border-surface-300]="!item.checked"
-              [class.dark:border-surface-600]="!item.checked"
-              class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95">
+              [class.bg-emerald-600]="item.checked"
+              [class.border-emerald-600]="item.checked"
+              [class.border-gray-300]="!item.checked"
+              [class.dark:border-gray-600]="!item.checked"
+              class="w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95">
               @if (item.checked) {
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3.5 h-3.5 text-white">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               }
@@ -195,20 +183,20 @@
               <div class="flex items-center gap-2">
                 <span
                   [class.line-through]="item.checked"
-                  [class.text-surface-400]="item.checked"
-                  [class.dark:text-surface-500]="item.checked"
-                  class="font-semibold text-sm text-surface-900 dark:text-white truncate">
+                  [class.text-gray-400]="item.checked"
+                  [class.dark:text-gray-500]="item.checked"
+                  class="font-semibold text-sm text-gray-900 dark:text-white truncate">
                   {{ item.name }}
                 </span>
 
-                <span class="text-xs px-2 py-0.5 rounded-full font-medium bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 border border-surface-200/50 dark:border-surface-700/50">
+                <span class="text-[11px] px-2 py-0.5 rounded-full font-medium bg-gray-100 dark:bg-[#262626] text-gray-600 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700/50">
                   {{ item.quantity }} {{ item.unit }}
                 </span>
               </div>
 
               <div class="flex items-center gap-2 mt-1">
                 <!-- Category Tag -->
-                <span class="text-[11px] font-medium text-surface-500 dark:text-surface-400">
+                <span class="text-[11px] font-medium text-gray-500 dark:text-gray-400">
                   📁 {{ item.category }}
                 </span>
 
@@ -227,8 +215,8 @@
             <button
               (click)="removeItem(item.id)"
               title="Remove item"
-              class="p-2 rounded-xl text-surface-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer opacity-70 group-hover:opacity-100">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="w-5 h-5">
+              class="p-2 rounded-xl text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer opacity-70 group-hover:opacity-100">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
               </svg>
             </button>
@@ -236,10 +224,10 @@
         </div>
       } @empty {
         <div class="p-12 text-center space-y-3">
-          <div class="w-12 h-12 mx-auto rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center text-surface-400">
+          <div class="w-12 h-12 mx-auto rounded-full bg-gray-100 dark:bg-[#262626] flex items-center justify-center text-gray-400">
             🛒
           </div>
-          <p class="text-sm text-surface-500 dark:text-surface-400 font-medium">No shopping items found for this view.</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">No shopping items found for this view.</p>
         </div>
       }
     </div>
