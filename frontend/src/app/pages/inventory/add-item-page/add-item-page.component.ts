@@ -14,7 +14,11 @@ import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
-import { getTimeDifferenceString, isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
+import {
+  getTimeDifferenceString,
+  isExpired,
+  isExpiringSoon,
+} from '@utility/itemUtility/ItemUtility';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
@@ -163,7 +167,13 @@ export class AddItemPageComponent implements OnInit {
       ingredientId: raw.ingredient?.id || '',
       name: raw.name || 'Item Name',
       quantity: raw.quantity || 1,
-      unit: raw.unit || { id: 1, name: 'Piece', shortName: 'pc', type: UnitType.Count, toBaseFactor: 1 },
+      unit: raw.unit || {
+        id: 1,
+        name: 'Piece',
+        shortName: 'pc',
+        type: UnitType.Count,
+        toBaseFactor: 1,
+      },
       purchaseDate: raw.purchaseDate || new Date(),
       expirationDate: raw.expirationDate || new Date(Date.now() + 7 * 86400000),
       location: raw.location || { id: 1, name: 'Pantry' },
@@ -202,7 +212,10 @@ export class AddItemPageComponent implements OnInit {
     this.itemService.addItem(newItem).subscribe({
       next: () => {
         this.isSubmitting.set(false);
-        this.toastService.showSuccess(`"${newItem.name}" has been added to inventory.`, 'Item Added');
+        this.toastService.showSuccess(
+          `"${newItem.name}" has been added to inventory.`,
+          'Item Added',
+        );
         this.router.navigate(['/inventory']);
       },
       error: (err) => {

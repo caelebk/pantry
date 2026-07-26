@@ -76,7 +76,9 @@ export class RecipeCardComponent implements OnInit {
 
     // Search pantry items matching ingredientId or ingredient name
     const matchingItems = this.pantryItems.filter(
-      (item) => item.ingredientId === ing.ingredientId || (ingredientName && item.name.toLowerCase().includes(ingredientName.toLowerCase()))
+      (item) =>
+        item.ingredientId === ing.ingredientId ||
+        (ingredientName && item.name.toLowerCase().includes(ingredientName.toLowerCase())),
     );
 
     if (matchingItems.length === 1) {
@@ -113,13 +115,23 @@ export class RecipeCardComponent implements OnInit {
     }
   }
 
-  getIngredientDisplay(ing: { ingredientId: string; quantity: number; unitId?: number | null }): string {
+  getIngredientDisplay(ing: {
+    ingredientId: string;
+    quantity: number;
+    unitId?: number | null;
+  }): string {
     const ingredientName = this.ingredientMap.get(ing.ingredientId)?.name || ing.ingredientId;
-    const unitName = ing.unitId ? (this.unitMap.get(ing.unitId)?.shortName || this.unitMap.get(ing.unitId)?.name || '') : '';
+    const unitName = ing.unitId
+      ? this.unitMap.get(ing.unitId)?.shortName || this.unitMap.get(ing.unitId)?.name || ''
+      : '';
     return `${ing.quantity} ${unitName} ${ingredientName}`.trim();
   }
 
-  getIngredientAvailability(ing: { ingredientId: string; quantity: number; unitId?: number | null }): {
+  getIngredientAvailability(ing: {
+    ingredientId: string;
+    quantity: number;
+    unitId?: number | null;
+  }): {
     isAvailable: boolean;
   } {
     const unit = ing.unitId ? this.unitMap.get(ing.unitId) : null;
@@ -166,13 +178,16 @@ export class RecipeCardComponent implements OnInit {
     };
   }
 
-  getIngredientExpirationInfo(ing: { ingredientId: string }): { expiringSoon: boolean; minDays: number | null } {
+  getIngredientExpirationInfo(ing: { ingredientId: string }): {
+    expiringSoon: boolean;
+    minDays: number | null;
+  } {
     if (!this.pantryItems || this.pantryItems.length === 0) {
       return { expiringSoon: false, minDays: null };
     }
     const now = new Date();
     const matchingItems = this.pantryItems.filter(
-      (item) => item.ingredientId === ing.ingredientId && item.expirationDate
+      (item) => item.ingredientId === ing.ingredientId && item.expirationDate,
     );
 
     let minDays: number | null = null;
@@ -195,7 +210,11 @@ export class RecipeCardComponent implements OnInit {
   }
 
   get expiringIngredients(): { name: string; daysLeft: number }[] {
-    if (!this.recipe.ingredients || this.recipe.ingredients.length === 0 || this.pantryItems.length === 0) {
+    if (
+      !this.recipe.ingredients ||
+      this.recipe.ingredients.length === 0 ||
+      this.pantryItems.length === 0
+    ) {
       return [];
     }
     const now = new Date();
@@ -206,7 +225,7 @@ export class RecipeCardComponent implements OnInit {
       if (processedIngs.has(ing.ingredientId)) continue;
 
       const matchingItems = this.pantryItems.filter(
-        (item) => item.ingredientId === ing.ingredientId && item.expirationDate
+        (item) => item.ingredientId === ing.ingredientId && item.expirationDate,
       );
 
       let minDays: number | null = null;

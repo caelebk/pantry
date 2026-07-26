@@ -6,7 +6,12 @@ import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
-import { getTimeDifferenceString, isExpired, isExpiringSoon, itemProgress } from '@utility/itemUtility/ItemUtility';
+import {
+  getTimeDifferenceString,
+  isExpired,
+  isExpiringSoon,
+  itemProgress,
+} from '@utility/itemUtility/ItemUtility';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { Subject } from 'rxjs';

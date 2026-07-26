@@ -85,7 +85,10 @@ export class ShoppingListService {
       .subscribe({
         next: (newItems) => {
           this.itemsSignal.update((curr) => [...newItems, ...curr]);
-          this.toastService.showSuccess(`Added ${items.length} missing ingredient(s) to shopping list`, 'Shopping List');
+          this.toastService.showSuccess(
+            `Added ${items.length} missing ingredient(s) to shopping list`,
+            'Shopping List',
+          );
         },
         error: (err) => {
           console.error('Failed to add multiple shopping list items:', err);
@@ -191,7 +194,7 @@ export class ShoppingListService {
           this.itemsSignal.update((curr) => curr.filter((i) => !i.checked));
           this.toastService.showSuccess(
             `Restocked ${checkedItems.length} item(s) directly into your pantry inventory!`,
-            'Restock Complete'
+            'Restock Complete',
           );
         },
         error: (err) => {

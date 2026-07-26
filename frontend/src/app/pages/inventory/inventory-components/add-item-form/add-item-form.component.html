@@ -1,11 +1,12 @@
-<div
-  class="glass-card rounded-2xl p-6 transition-all duration-300">
+<div class="glass-card rounded-2xl p-6 transition-all duration-300">
   <h3 class="text-lg font-bold text-surface-900 dark:text-white mb-6 tracking-tight">
     {{ 'addItemForm.title' | transloco }}
   </h3>
   <form [formGroup]="addItemForm" (ngSubmit)="onSubmit()" class="space-y-4">
     <div>
-      <label class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider" for="add-name"
+      <label
+        class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
+        for="add-name"
         >{{ 'addItemForm.itemName' | transloco }}<span class="text-red-500 ml-0.5">*</span></label
       >
       <input

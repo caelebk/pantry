@@ -1,16 +1,16 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { ApiResponse } from "@models/http.model";
-import { NutrientGroup } from "@models/nutrient-type.model";
-import { mapResponseData } from "@utility/httpUtility/HttpResponse.operator";
-import { Observable } from "rxjs";
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { ApiResponse } from '@models/http.model';
+import { NutrientGroup } from '@models/nutrient-type.model';
+import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
+import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class NutrientTypeService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = "http://localhost:8000/api/nutrient-groups";
+  private readonly apiUrl = 'http://localhost:8000/api/nutrient-groups';
 
   getNutrientGroups(): Observable<NutrientGroup[]> {
     return this.http

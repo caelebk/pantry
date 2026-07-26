@@ -3,7 +3,10 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from '@models/category.model';
 import { Ingredient } from '@models/ingredient.model';
-import { IngredientGroup as InventoryIngredientGroup, NutrientGroup } from '@models/inventory.models';
+import {
+  IngredientGroup as InventoryIngredientGroup,
+  NutrientGroup,
+} from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { NutrientType } from '@models/nutrient-type.model';
 import { CategoryService } from '@services/inventory/category.service';
@@ -16,10 +19,7 @@ import { IngredientGroupContainerComponent } from '../inventory-components/ingre
 @Component({
   selector: 'pantry-ingredient-groups-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    IngredientGroupContainerComponent,
-  ],
+  imports: [CommonModule, IngredientGroupContainerComponent],
   templateUrl: './ingredient-groups-page.component.html',
 })
 export class IngredientGroupsPageComponent implements OnInit {
@@ -80,9 +80,7 @@ export class IngredientGroupsPageComponent implements OnInit {
     const ingredientMap = new Map();
 
     ingredientsList.forEach((ingredient) => {
-      const ingredientItems = itemsList.filter(
-        (item) => item.ingredientId === ingredient.id,
-      );
+      const ingredientItems = itemsList.filter((item) => item.ingredientId === ingredient.id);
       ingredientMap.set(ingredient.id, {
         ...ingredient,
         items: ingredientItems,
@@ -103,17 +101,17 @@ export class IngredientGroupsPageComponent implements OnInit {
     const groups: InventoryIngredientGroup[] = [];
 
     categoryMap.forEach((ingList, categoryId) => {
-      const category = categoryId === -1
-        ? { id: -1, name: "Uncategorized" }
-        : categoriesList.find((c) => c.id === categoryId) ??
-          { id: -1, name: "Unknown" };
+      const category =
+        categoryId === -1
+          ? { id: -1, name: 'Uncategorized' }
+          : (categoriesList.find((c) => c.id === categoryId) ?? { id: -1, name: 'Unknown' });
 
       if (selCategory && selCategory.id !== category.id) {
         return;
       }
 
       const filteredIngredients = ingList.filter((ing: any) =>
-        ing.name.toLowerCase().includes(query)
+        ing.name.toLowerCase().includes(query),
       );
 
       if (filteredIngredients.length > 0) {
@@ -121,9 +119,7 @@ export class IngredientGroupsPageComponent implements OnInit {
       }
     });
 
-    return groups.sort((a, b) =>
-      a.category.name.localeCompare(b.category.name)
-    );
+    return groups.sort((a, b) => a.category.name.localeCompare(b.category.name));
   });
 
   public nutrientGroups = computed(() => {
@@ -145,10 +141,21 @@ export class IngredientGroupsPageComponent implements OnInit {
     const result: NutrientGroup[] = [];
 
     nutrientMap.forEach((categoryGroups, ntId) => {
-      const nutrientType: NutrientType = ntId === -1
-        ? { id: -1, name: "Unclassified", icon: "📦", color: "#94a3b8", description: "Categories without an assigned nutrient group" }
-        : nutrientTypesList.find((nt) => nt.id === ntId) ??
-          { id: ntId, name: "Other", icon: "📦", color: "#94a3b8" };
+      const nutrientType: NutrientType =
+        ntId === -1
+          ? {
+              id: -1,
+              name: 'Unclassified',
+              icon: '📦',
+              color: '#94a3b8',
+              description: 'Categories without an assigned nutrient group',
+            }
+          : (nutrientTypesList.find((nt) => nt.id === ntId) ?? {
+              id: ntId,
+              name: 'Other',
+              icon: '📦',
+              color: '#94a3b8',
+            });
 
       result.push({ nutrientType, categoryGroups });
     });
@@ -171,14 +178,11 @@ export class IngredientGroupsPageComponent implements OnInit {
     };
     this.itemService.updateItem(updatedItem).subscribe({
       next: () => {
-        this.toastService.showSuccess(
-          `Unassigned "${item.name}"`,
-          "Item Unassigned",
-        );
+        this.toastService.showSuccess(`Unassigned "${item.name}"`, 'Item Unassigned');
         this.loadData();
       },
       error: () => {
-        this.toastService.showError("Failed to unassign item.", "Error");
+        this.toastService.showError('Failed to unassign item.', 'Error');
       },
     });
   }

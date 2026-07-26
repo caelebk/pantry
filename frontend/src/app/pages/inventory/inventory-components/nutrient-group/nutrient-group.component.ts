@@ -1,14 +1,14 @@
-import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { NutrientGroup } from "@models/inventory.models";
-import { Item } from "@models/items.model";
-import { IngredientGroupComponent } from "../ingredient-group/ingredient-group.component";
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NutrientGroup } from '@models/inventory.models';
+import { Item } from '@models/items.model';
+import { IngredientGroupComponent } from '../ingredient-group/ingredient-group.component';
 
 @Component({
-  selector: "pantry-nutrient-group",
+  selector: 'pantry-nutrient-group',
   standalone: true,
   imports: [CommonModule, IngredientGroupComponent],
-  templateUrl: "./nutrient-group.component.html",
+  templateUrl: './nutrient-group.component.html',
 })
 export class NutrientGroupComponent {
   @Input({ required: true })
@@ -38,7 +38,9 @@ export class NutrientGroupComponent {
   get totalItemsCount(): number {
     if (!this.nutrientGroup?.categoryGroups) return 0;
     return this.nutrientGroup.categoryGroups.reduce((acc, catGroup) => {
-      return acc + (catGroup.ingredients?.reduce((ingAcc, ing) => ingAcc + (ing.itemCount || 0), 0) || 0);
+      return (
+        acc + (catGroup.ingredients?.reduce((ingAcc, ing) => ingAcc + (ing.itemCount || 0), 0) || 0)
+      );
     }, 0);
   }
 
@@ -52,7 +54,7 @@ export class NutrientGroupComponent {
   get inStockIngredientsCount(): number {
     if (!this.nutrientGroup?.categoryGroups) return 0;
     return this.nutrientGroup.categoryGroups.reduce((acc, catGroup) => {
-      return acc + (catGroup.ingredients?.filter(ing => ing.itemCount > 0).length || 0);
+      return acc + (catGroup.ingredients?.filter((ing) => ing.itemCount > 0).length || 0);
     }, 0);
   }
 

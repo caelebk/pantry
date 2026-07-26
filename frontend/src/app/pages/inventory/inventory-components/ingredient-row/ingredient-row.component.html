@@ -1,7 +1,6 @@
 <div
   class="flex items-center justify-between p-2.5 rounded-xl cursor-pointer hover:bg-surface-100/70 dark:hover:bg-surface-800/50 transition-all select-none group"
   (click)="toggleExpand.emit(ingredient.id)">
-  
   <div class="flex items-center gap-3 min-w-0">
     <div
       class="w-6 h-6 rounded-lg bg-surface-100 dark:bg-surface-800 group-hover:bg-primary-500/10 text-surface-400 dark:text-surface-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 flex items-center justify-center transition-colors shrink-0"
@@ -10,7 +9,8 @@
     </div>
 
     <div class="min-w-0">
-      <p class="text-sm font-bold text-surface-900 dark:text-white truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+      <p
+        class="text-sm font-bold text-surface-900 dark:text-white truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
         {{ ingredient.name }}
       </p>
     </div>
@@ -18,11 +18,13 @@
 
   <div class="flex items-center gap-2 shrink-0">
     @if (ingredient.itemCount > 0) {
-      <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+      <span
+        class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
         ✓ {{ ingredient.itemCount }} {{ ingredient.itemCount === 1 ? 'item' : 'items' }}
       </span>
     } @else {
-      <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+      <span
+        class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
         0 items (Out of Stock)
       </span>
     }

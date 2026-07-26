@@ -32,8 +32,12 @@ export class ShoppingListComponent {
   });
 
   readonly totalCount = computed(() => this.shoppingListService.items().length);
-  readonly checkedCount = computed(() => this.shoppingListService.items().filter((i) => i.checked).length);
-  readonly uncheckedCount = computed(() => this.shoppingListService.items().filter((i) => !i.checked).length);
+  readonly checkedCount = computed(
+    () => this.shoppingListService.items().filter((i) => i.checked).length,
+  );
+  readonly uncheckedCount = computed(
+    () => this.shoppingListService.items().filter((i) => !i.checked).length,
+  );
 
   // Price & Budget Calculations
   readonly totalEstimatedCost = computed(() => {

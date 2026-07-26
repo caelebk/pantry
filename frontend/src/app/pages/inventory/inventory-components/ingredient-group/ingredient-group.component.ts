@@ -1,16 +1,15 @@
-import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, inject, Input, Output } from "@angular/core";
-import { Router } from "@angular/router";
-import { IngredientGroup } from "@models/inventory.models";
-import { IngredientRowComponent } from "../ingredient-row/ingredient-row.component";
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Router } from '@angular/router';
+import { IngredientGroup } from '@models/inventory.models';
 
-import { Item } from "@models/items.model";
+import { Item } from '@models/items.model';
 
 @Component({
-  selector: "pantry-ingredient-group",
+  selector: 'pantry-ingredient-group',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: "./ingredient-group.component.html",
+  templateUrl: './ingredient-group.component.html',
 })
 export class IngredientGroupComponent {
   private readonly router = inject(Router);

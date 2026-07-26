@@ -36,9 +36,7 @@ export class WeeklyViewComponent {
   }
 
   getDayCalories(day: DayOfWeek): number {
-    return this.meals
-      .filter((m) => m.day === day)
-      .reduce((sum, m) => sum + (m.calories || 0), 0);
+    return this.meals.filter((m) => m.day === day).reduce((sum, m) => sum + (m.calories || 0), 0);
   }
 
   onRequestAdd(day: DayOfWeek, type: MealType = 'Dinner'): void {

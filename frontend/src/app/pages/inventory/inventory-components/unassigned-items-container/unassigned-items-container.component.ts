@@ -1,15 +1,14 @@
-import { CommonModule } from "@angular/common";
-import { Component, computed, input, output, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { EnrichedIngredient, IngredientGroup } from "@models/inventory.models";
-import { Item } from "@models/items.model";
-import { UnassignedItemCardComponent } from "../unassigned-item-card/unassigned-item-card.component";
+import { CommonModule } from '@angular/common';
+import { Component, computed, input, output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { EnrichedIngredient, IngredientGroup } from '@models/inventory.models';
+import { Item } from '@models/items.model';
 
 @Component({
-  selector: "pantry-unassigned-items-container",
+  selector: 'pantry-unassigned-items-container',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: "./unassigned-items-container.component.html",
+  templateUrl: './unassigned-items-container.component.html',
 })
 export class UnassignedItemsContainerComponent {
   // Inputs
@@ -23,7 +22,7 @@ export class UnassignedItemsContainerComponent {
 
   // State
   selectedItemId = signal<string | null>(null);
-  targetSearchQuery = signal<string>("");
+  targetSearchQuery = signal<string>('');
 
   // Computed Active Item
   activeSelectedItem = computed<Item | null>(() => {
@@ -44,7 +43,7 @@ export class UnassignedItemsContainerComponent {
       .map((g) => {
         const matchesCategory = g.category.name.toLowerCase().includes(query);
         const matchingIngredients = g.ingredients.filter((ing) =>
-          ing.name.toLowerCase().includes(query)
+          ing.name.toLowerCase().includes(query),
         );
 
         if (matchesCategory) {

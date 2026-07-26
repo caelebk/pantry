@@ -51,7 +51,9 @@ export class SidebarComponent {
   }
 
   isHomeActive(): boolean {
-    return this.router.url === '/home' || this.router.url === '/dashboard' || this.router.url === '/';
+    return (
+      this.router.url === '/home' || this.router.url === '/dashboard' || this.router.url === '/'
+    );
   }
 
   isInventoryActive(): boolean {

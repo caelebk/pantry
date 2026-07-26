@@ -17,7 +17,10 @@ export class DailyFocusComponent {
     if (day) this.selectedDay.set(day);
   }
   @Input() meals: PlannedMeal[] = [];
-  @Output() addMealRequested = new EventEmitter<{ day: DayOfWeek; mealType: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snacks' }>();
+  @Output() addMealRequested = new EventEmitter<{
+    day: DayOfWeek;
+    mealType: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snacks';
+  }>();
 
   readonly days = this.mealPlannerService.days;
   readonly selectedDay = signal<DayOfWeek>('Monday');

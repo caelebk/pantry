@@ -10,7 +10,13 @@ import { ToastContainerComponent } from './components/toast-container/toast-cont
 @Component({
   selector: 'pantry-root',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, RouterOutlet, ToastContainerComponent, BreadcrumbsComponent],
+  imports: [
+    CommonModule,
+    SidebarComponent,
+    RouterOutlet,
+    ToastContainerComponent,
+    BreadcrumbsComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

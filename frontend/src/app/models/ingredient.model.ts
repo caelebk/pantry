@@ -1,5 +1,5 @@
-import { IngredientGroup } from "@models/category.model";
-import { Unit } from "@models/unit.model";
+import { IngredientGroup } from '@models/category.model';
+import { Unit } from '@models/unit.model';
 
 export interface Ingredient {
   id: string;

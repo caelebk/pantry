@@ -97,9 +97,15 @@ html {
 }
 
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* ── Glow effect for primary buttons ────────────────────────── */
@@ -132,12 +138,7 @@ html {
   left: -100%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.03),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
   transition: left 0.6s ease;
   pointer-events: none;
 }
@@ -150,8 +151,7 @@ html {
 .gradient-border {
   border: double 1px transparent;
   background-image:
-    linear-gradient(var(--bg, white), var(--bg, white)),
-    linear-gradient(135deg, #f97316, #fb923c);
+    linear-gradient(var(--bg, white), var(--bg, white)), linear-gradient(135deg, #f97316, #fb923c);
   background-origin: border-box;
   background-clip: padding-box, border-box;
 }

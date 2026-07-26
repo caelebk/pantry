@@ -44,7 +44,21 @@ export class RestockReviewPageComponent implements OnInit {
   private readonly toastService = inject(ToastService);
 
   readonly defaultLocations = ['Fridge', 'Freezer', 'Pantry Shelf', 'Spice Cabinet', 'Countertop'];
-  readonly defaultUnits = ['pcs', 'kg', 'g', 'lbs', 'oz', 'bottle', 'can', 'pack', 'heads', 'bunch', 'ml', 'carton', 'wedge'];
+  readonly defaultUnits = [
+    'pcs',
+    'kg',
+    'g',
+    'lbs',
+    'oz',
+    'bottle',
+    'can',
+    'pack',
+    'heads',
+    'bunch',
+    'ml',
+    'carton',
+    'wedge',
+  ];
 
   availableUnits = signal<Unit[]>([]);
   availableLocations = signal<Location[]>([]);
@@ -57,28 +71,33 @@ export class RestockReviewPageComponent implements OnInit {
 
   ngOnInit(): void {
     // Fetch units and locations from backend
-    this.unitService.getUnits().pipe(catchError(() => of([]))).subscribe((units) => {
-      if (units && units.length > 0) {
-        this.availableUnits.set(units);
-        const names = Array.from(new Set([...units.map((u) => u.name), ...this.defaultUnits]));
-        this.unitsOptions.set(names);
-      }
-    });
+    this.unitService
+      .getUnits()
+      .pipe(catchError(() => of([])))
+      .subscribe((units) => {
+        if (units && units.length > 0) {
+          this.availableUnits.set(units);
+          const names = Array.from(new Set([...units.map((u) => u.name), ...this.defaultUnits]));
+          this.unitsOptions.set(names);
+        }
+      });
 
-    this.locationService.getLocations().pipe(catchError(() => of([]))).subscribe((locs) => {
-      if (locs && locs.length > 0) {
-        this.availableLocations.set(locs);
-        const names = Array.from(new Set([...locs.map((l) => l.name), ...this.defaultLocations]));
-        this.locationsOptions.set(names);
-      }
-    });
+    this.locationService
+      .getLocations()
+      .pipe(catchError(() => of([])))
+      .subscribe((locs) => {
+        if (locs && locs.length > 0) {
+          this.availableLocations.set(locs);
+          const names = Array.from(new Set([...locs.map((l) => l.name), ...this.defaultLocations]));
+          this.locationsOptions.set(names);
+        }
+      });
 
     const boughtItems = this.shoppingListService.items().filter((i) => i.checked);
-    
+
     // If no bought items, default draft with remaining items
-    const sourceItems: ShoppingItem[] = boughtItems.length > 0
-      ? boughtItems
-      : this.shoppingListService.items();
+    const sourceItems: ShoppingItem[] =
+      boughtItems.length > 0 ? boughtItems : this.shoppingListService.items();
 
     const defaultExp = new Date(Date.now() + 14 * 86400000);
 
@@ -99,7 +118,12 @@ export class RestockReviewPageComponent implements OnInit {
 
   getDefaultLocationForCategory(category: string): string {
     const cat = (category || '').toLowerCase();
-    if (cat.includes('dairy') || cat.includes('produce') || cat.includes('meat') || cat.includes('seafood')) {
+    if (
+      cat.includes('dairy') ||
+      cat.includes('produce') ||
+      cat.includes('meat') ||
+      cat.includes('seafood')
+    ) {
       return 'Fridge';
     }
     if (cat.includes('frozen')) {
@@ -115,9 +139,7 @@ export class RestockReviewPageComponent implements OnInit {
   }
 
   toggleAll(checked: boolean): void {
-    this.draftItems.update((items) =>
-      items.map((i) => ({ ...i, included: checked }))
-    );
+    this.draftItems.update((items) => items.map((i) => ({ ...i, included: checked })));
   }
 
   get selectedCount(): number {
@@ -139,7 +161,9 @@ export class RestockReviewPageComponent implements OnInit {
     const addRequests = itemsToRestock.map((draft) => {
       // Find matching Unit object or fallback
       const matchedUnit: Unit = unitsList.find(
-        (u) => u.name.toLowerCase() === draft.unit.toLowerCase() || u.shortName.toLowerCase() === draft.unit.toLowerCase()
+        (u) =>
+          u.name.toLowerCase() === draft.unit.toLowerCase() ||
+          u.shortName.toLowerCase() === draft.unit.toLowerCase(),
       ) || {
         id: 1,
         name: draft.unit,
@@ -150,7 +174,7 @@ export class RestockReviewPageComponent implements OnInit {
 
       // Find matching Location object or fallback
       const matchedLoc: Location = locsList.find(
-        (l) => l.name.toLowerCase() === draft.location.toLowerCase()
+        (l) => l.name.toLowerCase() === draft.location.toLowerCase(),
       ) || {
         id: 1,
         name: draft.location,
@@ -162,7 +186,10 @@ export class RestockReviewPageComponent implements OnInit {
         quantity: draft.quantity,
         unit: matchedUnit,
         purchaseDate: new Date(),
-        expirationDate: draft.expirationDate instanceof Date ? draft.expirationDate : new Date(draft.expirationDate),
+        expirationDate:
+          draft.expirationDate instanceof Date
+            ? draft.expirationDate
+            : new Date(draft.expirationDate),
         location: matchedLoc,
         notes: draft.notes || `Restocked from shopping list (${draft.category})`,
       };
@@ -180,7 +207,7 @@ export class RestockReviewPageComponent implements OnInit {
         this.isSubmitting.set(false);
         this.toastService.showSuccess(
           `Successfully restocked ${itemsToRestock.length} item(s) into your Pantry inventory!`,
-          'Restock Complete'
+          'Restock Complete',
         );
 
         this.router.navigate(['/inventory']);

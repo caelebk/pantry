@@ -9,7 +9,11 @@ import { CategoryService } from '@services/inventory/category.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { ToastService } from '@services/toast.service';
-import { getTimeDifferenceString, isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
+import {
+  getTimeDifferenceString,
+  isExpired,
+  isExpiringSoon,
+} from '@utility/itemUtility/ItemUtility';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 
@@ -22,33 +26,30 @@ export interface GroupedIngredients {
 @Component({
   selector: 'pantry-ingredients-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    InputTextModule,
-    SelectModule,
-  ],
+  imports: [CommonModule, FormsModule, InputTextModule, SelectModule],
   templateUrl: './ingredients-page.component.html',
-  styles: [`
-    :host ::ng-deep .p-select {
-      height: 2.25rem !important;
-    }
-    :host ::ng-deep .p-select .p-select-label {
-      padding: 0.375rem 0.625rem !important;
-      font-size: 0.75rem !important;
-      line-height: 1rem !important;
-      font-weight: 600 !important;
-      display: flex !important;
-      align-items: center !important;
-    }
-    :host ::ng-deep .p-select .p-select-dropdown {
-      width: 1.75rem !important;
-    }
-    :host ::ng-deep .p-select .p-select-dropdown .p-icon {
-      width: 0.75rem !important;
-      height: 0.75rem !important;
-    }
-  `]
+  styles: [
+    `
+      :host ::ng-deep .p-select {
+        height: 2.25rem !important;
+      }
+      :host ::ng-deep .p-select .p-select-label {
+        padding: 0.375rem 0.625rem !important;
+        font-size: 0.75rem !important;
+        line-height: 1rem !important;
+        font-weight: 600 !important;
+        display: flex !important;
+        align-items: center !important;
+      }
+      :host ::ng-deep .p-select .p-select-dropdown {
+        width: 1.75rem !important;
+      }
+      :host ::ng-deep .p-select .p-select-dropdown .p-icon {
+        width: 0.75rem !important;
+        height: 0.75rem !important;
+      }
+    `,
+  ],
 })
 export class IngredientsPageComponent implements OnInit {
   private readonly router = inject(Router);
@@ -165,7 +166,7 @@ export class IngredientsPageComponent implements OnInit {
   getTotalQuantityText(ingredientId: string): string {
     const connected = this.getConnectedItems(ingredientId);
     if (connected.length === 0) return '0 items';
-    
+
     // Sum quantities if same unit or express as breakdown
     const unitMap = new Map<string, number>();
     for (const item of connected) {
@@ -220,7 +221,9 @@ export class IngredientsPageComponent implements OnInit {
         },
         error: (err) => {
           console.error('Delete error:', err);
-          this.toastService.showError('Failed to delete ingredient. It may have items associated with it.');
+          this.toastService.showError(
+            'Failed to delete ingredient. It may have items associated with it.',
+          );
         },
       });
     }
@@ -251,12 +254,21 @@ export class IngredientsPageComponent implements OnInit {
 
   getItemStatus(item: Item): { text: string; colorClass: string } {
     if (isExpired(item)) {
-      return { text: 'Expired', colorClass: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20' };
+      return {
+        text: 'Expired',
+        colorClass: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
+      };
     }
     if (isExpiringSoon(item)) {
-      return { text: 'Expiring Soon', colorClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' };
+      return {
+        text: 'Expiring Soon',
+        colorClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+      };
     }
-    return { text: 'Fresh', colorClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' };
+    return {
+      text: 'Fresh',
+      colorClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+    };
   }
 
   getItemRemainingText(item: Item): string {

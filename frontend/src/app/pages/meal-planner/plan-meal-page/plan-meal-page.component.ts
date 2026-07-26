@@ -20,7 +20,15 @@ export class PlanMealPageComponent implements OnInit {
   private readonly mealPlannerService = inject(MealPlannerService);
   private readonly recipeService = inject(RecipeService);
 
-  readonly days: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  readonly days: DayOfWeek[] = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
   readonly mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
 
   selectedDay = signal<DayOfWeek>('Monday');
@@ -75,9 +83,7 @@ export class PlanMealPageComponent implements OnInit {
             description: 'Fluffy 3-egg omelette with butter and herbs.',
             prepTime: 10,
             servings: 1,
-            ingredients: [
-              { ingredientId: 'ing-3', quantity: 3, unitId: 3 },
-            ],
+            ingredients: [{ ingredientId: 'ing-3', quantity: 3, unitId: 3 }],
           },
           {
             id: 'rec-3',
@@ -85,9 +91,7 @@ export class PlanMealPageComponent implements OnInit {
             description: 'Healthy chicken salad with light dressing.',
             prepTime: 25,
             servings: 3,
-            ingredients: [
-              { ingredientId: 'ing-5', quantity: 400, unitId: 1 },
-            ],
+            ingredients: [{ ingredientId: 'ing-5', quantity: 400, unitId: 1 }],
           },
           {
             id: 'rec-4',
@@ -95,9 +99,7 @@ export class PlanMealPageComponent implements OnInit {
             description: 'Pan-seared salmon glaze with garlic honey sauce.',
             prepTime: 25,
             servings: 2,
-            ingredients: [
-              { ingredientId: 'ing-7', quantity: 300, unitId: 1 },
-            ],
+            ingredients: [{ ingredientId: 'ing-7', quantity: 300, unitId: 1 }],
           },
         ];
         this.availableRecipes.set(mockRecipes);
@@ -111,7 +113,9 @@ export class PlanMealPageComponent implements OnInit {
     const q = this.searchQuery().toLowerCase().trim();
     if (!q) return this.availableRecipes();
     return this.availableRecipes().filter(
-      (r) => r.name.toLowerCase().includes(q) || (r.description && r.description.toLowerCase().includes(q))
+      (r) =>
+        r.name.toLowerCase().includes(q) ||
+        (r.description && r.description.toLowerCase().includes(q)),
     );
   }
 

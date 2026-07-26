@@ -160,7 +160,11 @@ export class RecipesComponent implements OnInit {
     };
   }
 
-  getRecipePriorityScore(recipe: Recipe): { score: number; minDays: number; expiringCount: number } {
+  getRecipePriorityScore(recipe: Recipe): {
+    score: number;
+    minDays: number;
+    expiringCount: number;
+  } {
     if (!recipe.ingredients || recipe.ingredients.length === 0) {
       return { score: 0, minDays: 999, expiringCount: 0 };
     }
@@ -172,7 +176,7 @@ export class RecipesComponent implements OnInit {
 
     for (const ing of recipe.ingredients) {
       const matchingItems = this.pantryItems.filter(
-        (item) => item.ingredientId === ing.ingredientId && item.expirationDate
+        (item) => item.ingredientId === ing.ingredientId && item.expirationDate,
       );
 
       for (const item of matchingItems) {
@@ -348,4 +352,3 @@ export class RecipesComponent implements OnInit {
     });
   }
 }
-

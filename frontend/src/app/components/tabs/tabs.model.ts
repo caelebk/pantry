@@ -6,4 +6,3 @@ export enum Tab {
   ShoppingList = 'shopping-list',
   MealPlanner = 'meal-planner',
 }
-

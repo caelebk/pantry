@@ -183,9 +183,7 @@ export class AddRecipeFormComponent implements OnInit {
   getFilteredIngredients(search: string): Ingredient[] {
     const term = search.toLowerCase().trim();
     if (!term) return this.availableIngredients;
-    return this.availableIngredients.filter((ing) =>
-      ing.name.toLowerCase().includes(term)
-    );
+    return this.availableIngredients.filter((ing) => ing.name.toLowerCase().includes(term));
   }
 
   selectIngredient(row: FormIngredientRow, ing: Ingredient): void {
@@ -229,7 +227,9 @@ export class AddRecipeFormComponent implements OnInit {
 
     for (const row of this.recipeIngredients) {
       if (row.ingredientId && (Number(row.quantity) <= 0 || isNaN(Number(row.quantity)))) {
-        this.validationErrors.push(`Ingredient "${row.searchFilter || 'item'}" must have a quantity greater than 0.`);
+        this.validationErrors.push(
+          `Ingredient "${row.searchFilter || 'item'}" must have a quantity greater than 0.`,
+        );
       }
     }
 
@@ -281,16 +281,19 @@ export class AddRecipeFormComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    const request$ = this.isEditMode && this.editingRecipeId
-      ? this.recipeService.updateRecipe(this.editingRecipeId, dto)
-      : this.recipeService.createRecipe(dto);
+    const request$ =
+      this.isEditMode && this.editingRecipeId
+        ? this.recipeService.updateRecipe(this.editingRecipeId, dto)
+        : this.recipeService.createRecipe(dto);
 
     request$.subscribe({
       next: (res) => {
         this.isSubmitting = false;
         this.toastService.showSuccess(
-          this.isEditMode ? `"${this.name}" updated successfully!` : `"${this.name}" created successfully!`,
-          this.isEditMode ? 'Recipe Updated' : 'Recipe Created'
+          this.isEditMode
+            ? `"${this.name}" updated successfully!`
+            : `"${this.name}" created successfully!`,
+          this.isEditMode ? 'Recipe Updated' : 'Recipe Created',
         );
         this.recipeCreated.emit();
         if (this.isEditMode) {
@@ -302,7 +305,8 @@ export class AddRecipeFormComponent implements OnInit {
       error: (err) => {
         this.isSubmitting = false;
         console.error('Failed to save recipe', err);
-        const errMsg = err.error?.message || err.message || 'Server error occurred while saving the recipe.';
+        const errMsg =
+          err.error?.message || err.message || 'Server error occurred while saving the recipe.';
         this.serverErrorBanner = errMsg;
         this.toastService.showError(errMsg, 'Submission Failed');
       },

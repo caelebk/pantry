@@ -1,13 +1,23 @@
 <div class="max-w-6xl mx-auto pb-16">
   <!-- Top Navigation Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
+  <div
+    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
     <div>
       <button
         type="button"
         (click)="goBack()"
         class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors mb-2 cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="w-4 h-4">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
         {{ isEditMode ? 'Back to Recipe Details' : 'Back to Recipes' }}
       </button>
@@ -15,7 +25,11 @@
         {{ isEditMode ? 'Edit Recipe' : 'Create New Recipe' }}
       </h2>
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-        {{ isEditMode ? 'Update ingredients, instructions, and cooking details.' : 'Add ingredients, steps, and timings to build your recipe.' }}
+        {{
+          isEditMode
+            ? 'Update ingredients, instructions, and cooking details.'
+            : 'Add ingredients, steps, and timings to build your recipe.'
+        }}
       </p>
     </div>
 
@@ -35,7 +49,13 @@
         @if (isSubmitting) {
           <span>Saving...</span>
         } @else {
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
           </svg>
           <span>{{ isEditMode ? 'Update Recipe' : 'Save Recipe' }}</span>
@@ -46,11 +66,22 @@
 
   <!-- Validation Error Callout Banner -->
   @if (validationErrors.length > 0) {
-    <div class="mb-6 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 p-4 shadow-sm">
+    <div
+      class="mb-6 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 p-4 shadow-sm">
       <div class="flex items-start gap-3">
-        <div class="p-1 bg-rose-100 dark:bg-rose-900/50 rounded-lg text-rose-600 dark:text-rose-400 shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        <div
+          class="p-1 bg-rose-100 dark:bg-rose-900/50 rounded-lg text-rose-600 dark:text-rose-400 shrink-0">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            class="w-5 h-5">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
           </svg>
         </div>
         <div class="space-y-1">
@@ -69,11 +100,22 @@
 
   <!-- Server / Network Error Callout Banner -->
   @if (serverErrorBanner) {
-    <div class="mb-6 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 p-4 shadow-sm">
+    <div
+      class="mb-6 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 p-4 shadow-sm">
       <div class="flex items-start gap-3">
-        <div class="p-1 bg-amber-100 dark:bg-amber-900/50 rounded-lg text-amber-600 dark:text-amber-400 shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.008v.008H12v-.008z" />
+        <div
+          class="p-1 bg-amber-100 dark:bg-amber-900/50 rounded-lg text-amber-600 dark:text-amber-400 shrink-0">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            class="w-5 h-5">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.008v.008H12v-.008z" />
           </svg>
         </div>
         <div>
@@ -92,7 +134,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <!-- Left Column: Basic Details -->
       <div class="lg:col-span-5 space-y-6">
-        <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-5">
+        <div
+          class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-5">
           <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-primary-600"></span>
             Basic Information
@@ -100,7 +143,9 @@
 
           <!-- Recipe Name -->
           <div>
-            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5" for="recipe-name">
+            <label
+              class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5"
+              for="recipe-name">
               Recipe Name *
             </label>
             <input
@@ -115,7 +160,9 @@
 
           <!-- Description -->
           <div>
-            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5" for="recipe-description">
+            <label
+              class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5"
+              for="recipe-description">
               Description
             </label>
             <textarea
@@ -129,7 +176,8 @@
 
           <!-- Difficulty Selector -->
           <div>
-            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
+            <label
+              class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1.5">
               Difficulty
             </label>
             <div class="grid grid-cols-3 gap-2">
@@ -169,7 +217,9 @@
           <!-- Servings, Prep Time, Cook Time -->
           <div class="grid grid-cols-3 gap-3">
             <div>
-              <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1" for="recipe-servings">
+              <label
+                class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1"
+                for="recipe-servings">
                 Servings
               </label>
               <input
@@ -182,7 +232,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1" for="recipe-prep-time">
+              <label
+                class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1"
+                for="recipe-prep-time">
                 Prep (min)
               </label>
               <input
@@ -195,7 +247,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1" for="recipe-cook-time">
+              <label
+                class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1"
+                for="recipe-cook-time">
                 Cook (min)
               </label>
               <input
@@ -209,15 +263,20 @@
           </div>
 
           <!-- Total Time Badge -->
-          <div class="bg-gray-50 dark:bg-[#262626]/50 rounded-lg p-3 flex justify-between items-center text-xs">
+          <div
+            class="bg-gray-50 dark:bg-[#262626]/50 rounded-lg p-3 flex justify-between items-center text-xs">
             <span class="text-gray-500 dark:text-gray-400 font-medium">Estimated Total Time:</span>
-            <span class="font-bold text-gray-900 dark:text-white text-sm">{{ totalTime }} mins</span>
+            <span class="font-bold text-gray-900 dark:text-white text-sm"
+              >{{ totalTime }} mins</span
+            >
           </div>
 
           <!-- Tags Input -->
           <div>
             <div class="flex justify-between items-center mb-1.5">
-              <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider" for="recipe-tags">
+              <label
+                class="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider"
+                for="recipe-tags">
                 Tags
               </label>
               <span class="text-[11px] text-gray-400">Press Enter to add tag</span>
@@ -255,14 +314,18 @@
       <!-- Right Column: Ingredients & Instructions -->
       <div class="lg:col-span-7 space-y-6">
         <!-- Ingredients Card -->
-        <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
-          <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
+        <div
+          class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+          <div
+            class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
             <div>
               <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                 Ingredients
               </h3>
-              <p class="text-xs text-gray-500 dark:text-gray-400">Search and pick ingredients required for this recipe.</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Search and pick ingredients required for this recipe.
+              </p>
             </div>
             <button
               type="button"
@@ -274,7 +337,8 @@
 
           <div class="space-y-3">
             @for (row of recipeIngredients; track $index; let i = $index) {
-              <div class="flex gap-2 items-start relative bg-gray-50/50 dark:bg-[#262626]/30 p-2.5 rounded-xl border border-gray-100 dark:border-gray-800/80">
+              <div
+                class="flex gap-2 items-start relative bg-gray-50/50 dark:bg-[#262626]/30 p-2.5 rounded-xl border border-gray-100 dark:border-gray-800/80">
                 <!-- Searchable Ingredient Input -->
                 <div class="flex-1 relative">
                   <input
@@ -296,7 +360,10 @@
                           class="px-3 py-2 hover:bg-primary-50 dark:hover:bg-gray-700 cursor-pointer text-gray-900 dark:text-white flex justify-between items-center">
                           <span class="font-medium">{{ ing.name }}</span>
                           @if (ing.category) {
-                            <span class="text-[11px] px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500">{{ ing.category.name }}</span>
+                            <span
+                              class="text-[11px] px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500"
+                              >{{ ing.category.name }}</span
+                            >
                           }
                         </li>
                       }
@@ -332,8 +399,17 @@
                     (click)="removeIngredientRow(i)"
                     class="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
                     title="Remove ingredient">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      class="w-4 h-4">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 }
@@ -343,14 +419,18 @@
         </div>
 
         <!-- Instructions Card -->
-        <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
-          <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
+        <div
+          class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+          <div
+            class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
             <div>
               <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                 Instructions & Steps
               </h3>
-              <p class="text-xs text-gray-500 dark:text-gray-400">Outline step-by-step preparation and cooking instructions.</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Outline step-by-step preparation and cooking instructions.
+              </p>
             </div>
             <button
               type="button"
@@ -362,8 +442,10 @@
 
           <div class="space-y-3">
             @for (step of recipeSteps; track $index; let i = $index) {
-              <div class="flex gap-3 items-start bg-gray-50/50 dark:bg-[#262626]/30 p-3 rounded-xl border border-gray-100 dark:border-gray-800/80">
-                <span class="w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-1">
+              <div
+                class="flex gap-3 items-start bg-gray-50/50 dark:bg-[#262626]/30 p-3 rounded-xl border border-gray-100 dark:border-gray-800/80">
+                <span
+                  class="w-6 h-6 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-1">
                   {{ i + 1 }}
                 </span>
 
@@ -382,8 +464,17 @@
                     (click)="removeStepRow(i)"
                     class="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer shrink-0 mt-1"
                     title="Remove step">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      class="w-4 h-4">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 }
@@ -395,11 +486,10 @@
     </div>
 
     <!-- Bottom Sticky Action Bar -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 py-3 px-6 z-40">
+    <div
+      class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 py-3 px-6 z-40">
       <div class="max-w-6xl mx-auto flex justify-between items-center">
-        <span class="text-xs text-gray-500 dark:text-gray-400">
-          * Required fields
-        </span>
+        <span class="text-xs text-gray-500 dark:text-gray-400"> * Required fields </span>
         <div class="flex items-center gap-3">
           <button
             type="button"

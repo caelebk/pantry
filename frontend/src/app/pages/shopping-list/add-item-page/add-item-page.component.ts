@@ -15,8 +15,31 @@ export class AddShoppingItemPageComponent {
   private readonly router = inject(Router);
   private readonly shoppingListService = inject(ShoppingListService);
 
-  readonly categories = ['Produce', 'Dairy', 'Meat & Seafood', 'Pantry', 'Bakery', 'Beverage', 'Frozen', 'General'];
-  readonly units = ['pcs', 'kg', 'g', 'lbs', 'oz', 'bottle', 'can', 'pack', 'heads', 'bunch', 'ml', 'carton', 'wedge'];
+  readonly categories = [
+    'Produce',
+    'Dairy',
+    'Meat & Seafood',
+    'Pantry',
+    'Bakery',
+    'Beverage',
+    'Frozen',
+    'General',
+  ];
+  readonly units = [
+    'pcs',
+    'kg',
+    'g',
+    'lbs',
+    'oz',
+    'bottle',
+    'can',
+    'pack',
+    'heads',
+    'bunch',
+    'ml',
+    'carton',
+    'wedge',
+  ];
 
   name = signal<string>('');
   category = signal<string>('Produce');

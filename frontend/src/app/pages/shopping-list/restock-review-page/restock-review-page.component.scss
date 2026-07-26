@@ -25,7 +25,9 @@
   }
 
   /* PrimeNG DatePicker container & input styling */
-  p-datepicker, .p-datepicker, .p-date-picker {
+  p-datepicker,
+  .p-datepicker,
+  .p-date-picker {
     width: 100% !important;
     display: flex !important;
     align-items: center !important;
@@ -65,7 +67,8 @@
       margin: 0 !important;
       padding: 0 !important;
 
-      svg, p-icon {
+      svg,
+      p-icon {
         width: 1rem !important;
         height: 1rem !important;
         display: block !important;

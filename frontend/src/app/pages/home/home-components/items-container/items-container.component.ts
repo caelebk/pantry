@@ -1,5 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, ElementRef, EventEmitter, inject, input, Output, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  EventEmitter,
+  inject,
+  input,
+  Output,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item, ItemsContainerTheme, ItemTimeStatus } from '@models/items.model';

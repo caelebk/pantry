@@ -12,12 +12,7 @@ import { SelectModule } from 'primeng/select';
 @Component({
   selector: 'pantry-add-ingredient-group-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    InputTextModule,
-    SelectModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, InputTextModule, SelectModule],
   templateUrl: './add-ingredient-group-page.component.html',
 })
 export class AddIngredientGroupPageComponent implements OnInit {
@@ -54,22 +49,24 @@ export class AddIngredientGroupPageComponent implements OnInit {
     const val = this.groupForm.value;
     this.isSubmitting.set(true);
 
-    this.categoryService.createIngredientGroup({
-      name: val.name,
-      nutrientGroupId: val.nutrientGroup ? val.nutrientGroup.id : undefined,
-    }).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.toastService.showSuccess(`Ingredient Group "${val.name}" added successfully.`);
-        this.router.navigate(['/inventory/groups']);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        const msg = err?.message || 'Failed to create ingredient group.';
-        this.submitError.set(msg);
-        this.toastService.showError(msg);
-      },
-    });
+    this.categoryService
+      .createIngredientGroup({
+        name: val.name,
+        nutrientGroupId: val.nutrientGroup ? val.nutrientGroup.id : undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.toastService.showSuccess(`Ingredient Group "${val.name}" added successfully.`);
+          this.router.navigate(['/inventory/groups']);
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          const msg = err?.message || 'Failed to create ingredient group.';
+          this.submitError.set(msg);
+          this.toastService.showError(msg);
+        },
+      });
   }
 
   onCancel(): void {

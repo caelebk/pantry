@@ -14,12 +14,12 @@
       'bg-gradient-to-r from-amber-500 to-amber-400': theme() === 'amber',
       'bg-gradient-to-r from-primary-500 to-primary-400': theme() === 'orange',
       'bg-gradient-to-r from-surface-400 to-surface-300': theme() === 'gray',
-    }">
-  </div>
+    }"></div>
 
   <div class="p-6">
     <div class="flex justify-between items-center mb-5">
-      <h3 class="text-base font-bold text-surface-900 dark:text-white tracking-tight flex items-center gap-2">
+      <h3
+        class="text-base font-bold text-surface-900 dark:text-white tracking-tight flex items-center gap-2">
         @if (theme() === 'red') {
           <i class="pi pi-exclamation-triangle text-red-500"></i>
         } @else if (theme() === 'amber') {
@@ -33,9 +33,12 @@
         class="text-xs font-bold px-2.5 py-1 rounded-full"
         [ngClass]="{
           'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400': theme() === Theme.Red,
-          'bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400': theme() === Theme.Orange,
-          'bg-surface-200 dark:bg-surface-700 text-surface-600 dark:text-surface-300': theme() === Theme.Gray,
-          'bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400': theme() === Theme.Amber,
+          'bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400':
+            theme() === Theme.Orange,
+          'bg-surface-200 dark:bg-surface-700 text-surface-600 dark:text-surface-300':
+            theme() === Theme.Gray,
+          'bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400':
+            theme() === Theme.Amber,
         }">
         {{ items().length }}
       </span>
@@ -46,17 +49,18 @@
         <div
           [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
           class="bg-white/50 dark:bg-surface-800/50 p-3.5 rounded-xl flex justify-between items-center transition-all duration-200 hover:bg-white/80 dark:hover:bg-surface-800/80 group/item">
-          
           <div class="min-w-0 flex-1">
             <h4
               class="font-semibold text-sm text-surface-900 dark:text-white truncate"
               [ngClass]="{
-                'line-through decoration-surface-400 dark:decoration-surface-500 opacity-60': theme() === Theme.Red,
+                'line-through decoration-surface-400 dark:decoration-surface-500 opacity-60':
+                  theme() === Theme.Red,
               }">
               {{ item.name }}
             </h4>
             <div class="flex items-center gap-2 mt-0.5">
-              <span class="text-xs text-surface-400 dark:text-surface-500 truncate flex items-center gap-1">
+              <span
+                class="text-xs text-surface-400 dark:text-surface-500 truncate flex items-center gap-1">
                 <i class="pi pi-building text-[10px]"></i>
                 {{ item.location.name }}
               </span>
@@ -72,7 +76,8 @@
             <span
               class="text-xs font-bold px-2 py-0.5 rounded-md inline-block whitespace-nowrap"
               [ngClass]="{
-                'text-red-700 dark:text-red-400 bg-red-100/80 dark:bg-red-900/20': timeDiff.isExpired,
+                'text-red-700 dark:text-red-400 bg-red-100/80 dark:bg-red-900/20':
+                  timeDiff.isExpired,
                 'text-amber-700 dark:text-amber-400 bg-amber-100/80 dark:bg-amber-900/20':
                   !timeDiff.isExpired && timeDiff.isClose,
                 'text-primary-700 dark:text-primary-400 bg-primary-100/80 dark:bg-primary-900/20':
@@ -82,7 +87,8 @@
             </span>
 
             <!-- Quick Action Icon Buttons on Hover -->
-            <div class="opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center gap-1">
+            <div
+              class="opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center gap-1">
               <button
                 (click)="onEditItem(item, $event)"
                 title="Edit Item"

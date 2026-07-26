@@ -10,7 +10,6 @@ import { EditItemPageComponent } from './pages/inventory/edit-item-page/edit-ite
 import { IngredientGroupsPageComponent } from './pages/inventory/ingredient-groups-page/ingredient-groups-page.component';
 import { IngredientsPageComponent } from './pages/inventory/ingredients-page/ingredients-page.component';
 import { InventoryComponent } from './pages/inventory/inventory.component';
-import { NutrientGroupsPageComponent } from './pages/inventory/nutrient-groups-page/nutrient-groups-page.component';
 import { MealPlannerComponent } from './pages/meal-planner/meal-planner.component';
 import { PlanMealPageComponent } from './pages/meal-planner/plan-meal-page/plan-meal-page.component';
 import { AddRecipeFormComponent } from './pages/recipes/recipe-components/add-recipe-form/add-recipe-form.component';

@@ -1,13 +1,13 @@
-<div class="glass-card rounded-2xl border border-surface-200/80 dark:border-surface-800/80 overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
+<div
+  class="glass-card rounded-2xl border border-surface-200/80 dark:border-surface-800/80 overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
   <!-- Nutrient Group Header (Top Level Accordion) -->
   <button
     type="button"
     (click)="onToggleNutrientGroup()"
     class="w-full p-4 md:p-5 flex items-center justify-between gap-4 text-left transition-colors bg-surface-50/50 hover:bg-surface-100/60 dark:bg-surface-900/40 dark:hover:bg-surface-800/60 cursor-pointer select-none">
-    
     <div class="flex items-center gap-3.5 min-w-0">
       <!-- Icon & Color badge -->
-      <div 
+      <div
         class="w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center text-xl shadow-xs shrink-0"
         [style.backgroundColor]="(nutrientGroup.nutrientType.color || '#64748b') + '20'"
         [style.borderColor]="(nutrientGroup.nutrientType.color || '#64748b') + '40'">
@@ -20,8 +20,10 @@
           <h3 class="text-base md:text-lg font-bold text-surface-900 dark:text-white truncate">
             {{ nutrientGroup.nutrientType.name }}
           </h3>
-          <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-surface-200/70 dark:bg-surface-700/70 text-surface-700 dark:text-surface-300">
-            {{ nutrientGroup.categoryGroups.length }} {{ nutrientGroup.categoryGroups.length === 1 ? 'Category' : 'Categories' }}
+          <span
+            class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-surface-200/70 dark:bg-surface-700/70 text-surface-700 dark:text-surface-300">
+            {{ nutrientGroup.categoryGroups.length }}
+            {{ nutrientGroup.categoryGroups.length === 1 ? 'Category' : 'Categories' }}
           </span>
         </div>
         @if (nutrientGroup.nutrientType.description) {
@@ -36,16 +38,19 @@
     <div class="flex items-center gap-3 shrink-0">
       <!-- Stock badges -->
       <div class="hidden sm:flex items-center gap-2 text-xs">
-        <span class="px-2.5 py-1 rounded-lg font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50">
+        <span
+          class="px-2.5 py-1 rounded-lg font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50">
           {{ inStockIngredientsCount }}/{{ totalIngredientsCount }} In Stock
         </span>
-        <span class="px-2.5 py-1 rounded-lg font-semibold bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400">
+        <span
+          class="px-2.5 py-1 rounded-lg font-semibold bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400">
           {{ totalItemsCount }} {{ totalItemsCount === 1 ? 'item' : 'items' }}
         </span>
       </div>
 
       <!-- Chevron -->
-      <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface-200/50 dark:bg-surface-700/50 text-surface-500 dark:text-surface-400 transition-transform duration-300"
+      <div
+        class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface-200/50 dark:bg-surface-700/50 text-surface-500 dark:text-surface-400 transition-transform duration-300"
         [class.rotate-180]="isExpanded">
         <i class="pi pi-chevron-down text-xs"></i>
       </div>
@@ -54,7 +59,8 @@
 
   <!-- Nested Categories Accordion Body -->
   @if (isExpanded) {
-    <div class="p-4 md:p-5 space-y-4 border-t border-surface-200/60 dark:border-surface-800/60 bg-surface-50/20 dark:bg-surface-950/20">
+    <div
+      class="p-4 md:p-5 space-y-4 border-t border-surface-200/60 dark:border-surface-800/60 bg-surface-50/20 dark:bg-surface-950/20">
       @for (group of nutrientGroup.categoryGroups; track group.category.id) {
         <pantry-ingredient-group
           [group]="group"

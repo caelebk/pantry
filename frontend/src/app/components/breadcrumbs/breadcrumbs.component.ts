@@ -35,9 +35,7 @@ export class BreadcrumbsComponent implements OnInit {
     const cleanUrl = pathPart.split('#')[0];
     const segments = cleanUrl.split('/').filter((s) => s.length > 0);
 
-    const items: BreadcrumbItem[] = [
-      { label: 'Home', url: '/home', icon: 'pi pi-home' },
-    ];
+    const items: BreadcrumbItem[] = [{ label: 'Home', url: '/home', icon: 'pi pi-home' }];
 
     if (segments.length === 0 || segments[0] === 'home' || segments[0] === 'dashboard') {
       this.breadcrumbs.set(items);
@@ -64,26 +62,46 @@ export class BreadcrumbsComponent implements OnInit {
         }
       } else if (secondSegment === 'ingredients') {
         if (thirdSegment === 'new') {
-          items.push({ label: 'Ingredients', url: '/inventory/ingredients', icon: 'pi pi-sparkles' });
+          items.push({
+            label: 'Ingredients',
+            url: '/inventory/ingredients',
+            icon: 'pi pi-sparkles',
+          });
           items.push({ label: 'Add Ingredient', icon: 'pi pi-plus-circle' });
         } else if (segments[3] === 'edit') {
-          items.push({ label: 'Ingredients', url: '/inventory/ingredients', icon: 'pi pi-sparkles' });
+          items.push({
+            label: 'Ingredients',
+            url: '/inventory/ingredients',
+            icon: 'pi pi-sparkles',
+          });
           items.push({ label: 'Edit Ingredient', icon: 'pi pi-pencil' });
         } else {
           items.push({ label: 'Ingredients', icon: 'pi pi-sparkles' });
         }
       } else if (secondSegment === 'groups') {
         if (thirdSegment === 'new') {
-          items.push({ label: 'Nutrient & Ingredient Groups', url: '/inventory/groups', icon: 'pi pi-tags' });
+          items.push({
+            label: 'Nutrient & Ingredient Groups',
+            url: '/inventory/groups',
+            icon: 'pi pi-tags',
+          });
           items.push({ label: 'Add Ingredient Group', icon: 'pi pi-plus-circle' });
         } else if (segments[3] === 'edit') {
-          items.push({ label: 'Nutrient & Ingredient Groups', url: '/inventory/groups', icon: 'pi pi-tags' });
+          items.push({
+            label: 'Nutrient & Ingredient Groups',
+            url: '/inventory/groups',
+            icon: 'pi pi-tags',
+          });
           items.push({ label: 'Edit Ingredient Group', icon: 'pi pi-pencil' });
         } else {
           items.push({ label: 'Nutrient & Ingredient Groups', icon: 'pi pi-tags' });
         }
       } else if (secondSegment === 'nutrients') {
-        items.push({ label: 'Nutrient & Ingredient Groups', url: '/inventory/groups', icon: 'pi pi-tags' });
+        items.push({
+          label: 'Nutrient & Ingredient Groups',
+          url: '/inventory/groups',
+          icon: 'pi pi-tags',
+        });
       } else if (secondSegment === 'new') {
         items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
         items.push({ label: 'Add New Item', icon: 'pi pi-plus-circle' });

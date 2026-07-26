@@ -24,7 +24,9 @@ export class ItemService {
 
   getIngredientItems(): Observable<IngredientItem[]> {
     return forkJoin({
-      items: this.http.get<ApiResponse<IngredientItemDTO[]>>(this.apiUrl).pipe(mapResponseData<IngredientItemDTO[]>()),
+      items: this.http
+        .get<ApiResponse<IngredientItemDTO[]>>(this.apiUrl)
+        .pipe(mapResponseData<IngredientItemDTO[]>()),
       units: this.unitService.getUnits(),
       locations: this.locationService.getLocations(),
     }).pipe(
@@ -53,7 +55,9 @@ export class ItemService {
 
   getIngredientItemById(id: string): Observable<IngredientItem> {
     return forkJoin({
-      item: this.http.get<ApiResponse<IngredientItemDTO>>(`${this.apiUrl}/${id}`).pipe(mapResponseData<IngredientItemDTO>()),
+      item: this.http
+        .get<ApiResponse<IngredientItemDTO>>(`${this.apiUrl}/${id}`)
+        .pipe(mapResponseData<IngredientItemDTO>()),
       units: this.unitService.getUnits(),
       locations: this.locationService.getLocations(),
     }).pipe(

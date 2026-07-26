@@ -111,7 +111,9 @@ export class RecipeDetailComponent implements OnInit {
 
     // Search pantry items matching ingredientId or ingredient name
     const matchingItems = this.pantryItems.filter(
-      (item) => item.ingredientId === ing.ingredientId || (ingredientName && item.name.toLowerCase().includes(ingredientName.toLowerCase()))
+      (item) =>
+        item.ingredientId === ing.ingredientId ||
+        (ingredientName && item.name.toLowerCase().includes(ingredientName.toLowerCase())),
     );
 
     if (matchingItems.length === 1) {
@@ -163,13 +165,23 @@ export class RecipeDetailComponent implements OnInit {
     }
   }
 
-  getIngredientDisplay(ing: { ingredientId: string; quantity: number; unitId?: number | null }): string {
+  getIngredientDisplay(ing: {
+    ingredientId: string;
+    quantity: number;
+    unitId?: number | null;
+  }): string {
     const ingredientName = this.ingredientMap.get(ing.ingredientId)?.name || ing.ingredientId;
-    const unitName = ing.unitId ? (this.unitMap.get(ing.unitId)?.shortName || this.unitMap.get(ing.unitId)?.name || '') : '';
+    const unitName = ing.unitId
+      ? this.unitMap.get(ing.unitId)?.shortName || this.unitMap.get(ing.unitId)?.name || ''
+      : '';
     return `${ing.quantity} ${unitName} ${ingredientName}`.trim();
   }
 
-  getIngredientAvailability(ing: { ingredientId: string; quantity: number; unitId?: number | null }): {
+  getIngredientAvailability(ing: {
+    ingredientId: string;
+    quantity: number;
+    unitId?: number | null;
+  }): {
     isAvailable: boolean;
   } {
     const unit = ing.unitId ? this.unitMap.get(ing.unitId) : null;

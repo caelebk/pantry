@@ -14,8 +14,7 @@
       'bg-gradient-to-r from-amber-500 to-amber-400': theme() === 'amber',
       'bg-gradient-to-r from-primary-500 to-primary-400': theme() === 'orange',
       'bg-gradient-to-r from-surface-400 to-surface-300': theme() === 'gray',
-    }">
-  </div>
+    }"></div>
 
   <div class="p-6">
     <div class="flex justify-between items-center mb-5">
@@ -26,9 +25,12 @@
         class="text-xs font-bold px-2.5 py-1 rounded-full"
         [ngClass]="{
           'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400': theme() === Theme.Red,
-          'bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400': theme() === Theme.Orange,
-          'bg-surface-200 dark:bg-surface-700 text-surface-600 dark:text-surface-300': theme() === Theme.Gray,
-          'bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400': theme() === Theme.Amber,
+          'bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400':
+            theme() === Theme.Orange,
+          'bg-surface-200 dark:bg-surface-700 text-surface-600 dark:text-surface-300':
+            theme() === Theme.Gray,
+          'bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400':
+            theme() === Theme.Amber,
         }">
         {{ items().length }}
       </span>
@@ -43,7 +45,8 @@
             <h4
               class="font-semibold text-sm text-surface-900 dark:text-white truncate"
               [ngClass]="{
-                'line-through decoration-surface-400 dark:decoration-surface-500 opacity-60': theme() === Theme.Red,
+                'line-through decoration-surface-400 dark:decoration-surface-500 opacity-60':
+                  theme() === Theme.Red,
               }">
               {{ item.name }}
             </h4>
@@ -56,7 +59,8 @@
             <span
               class="text-xs font-bold px-2 py-0.5 rounded-md inline-block"
               [ngClass]="{
-                'text-red-700 dark:text-red-400 bg-red-100/80 dark:bg-red-900/20': timeDiff.isExpired,
+                'text-red-700 dark:text-red-400 bg-red-100/80 dark:bg-red-900/20':
+                  timeDiff.isExpired,
                 'text-amber-700 dark:text-amber-400 bg-amber-100/80 dark:bg-amber-900/20':
                   !timeDiff.isExpired && timeDiff.isClose,
                 'text-primary-700 dark:text-primary-400 bg-primary-100/80 dark:bg-primary-900/20':

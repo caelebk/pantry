@@ -14,12 +14,7 @@ import { SelectModule } from 'primeng/select';
 @Component({
   selector: 'pantry-edit-ingredient-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    InputTextModule,
-    SelectModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, InputTextModule, SelectModule],
   templateUrl: './edit-ingredient-page.component.html',
 })
 export class EditIngredientPageComponent implements OnInit {
@@ -93,23 +88,25 @@ export class EditIngredientPageComponent implements OnInit {
     const val = this.ingredientForm.value;
     this.isSubmitting.set(true);
 
-    this.ingredientService.updateIngredient(id, {
-      name: val.name,
-      ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
-      defaultUnitId: val.defaultUnit ? val.defaultUnit.id : undefined,
-    }).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.toastService.showSuccess(`Ingredient "${val.name}" updated successfully.`);
-        this.router.navigate(['/inventory/ingredients']);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        const msg = err?.message || 'Failed to update ingredient.';
-        this.submitError.set(msg);
-        this.toastService.showError(msg);
-      },
-    });
+    this.ingredientService
+      .updateIngredient(id, {
+        name: val.name,
+        ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
+        defaultUnitId: val.defaultUnit ? val.defaultUnit.id : undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.toastService.showSuccess(`Ingredient "${val.name}" updated successfully.`);
+          this.router.navigate(['/inventory/ingredients']);
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          const msg = err?.message || 'Failed to update ingredient.';
+          this.submitError.set(msg);
+          this.toastService.showError(msg);
+        },
+      });
   }
 
   onCancel(): void {

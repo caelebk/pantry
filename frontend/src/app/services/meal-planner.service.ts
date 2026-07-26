@@ -16,7 +16,15 @@ export class MealPlannerService {
   private readonly toastService = inject(ToastService);
   private readonly apiUrl = 'http://localhost:8000/api/meal-plans';
 
-  readonly days: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  readonly days: DayOfWeek[] = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
 
   private readonly mealsSignal = signal<PlannedMeal[]>([]);
   readonly meals = this.mealsSignal.asReadonly();
@@ -45,7 +53,9 @@ export class MealPlannerService {
 
   addMealPlan(day: DayOfWeek, mealType: MealType, recipe: Recipe): void {
     const missing = recipe.ingredients
-      ? recipe.ingredients.map((i: any) => i.ingredientName || i.name || i.ingredient || 'Ingredient').slice(0, 3)
+      ? recipe.ingredients
+          .map((i: any) => i.ingredientName || i.name || i.ingredient || 'Ingredient')
+          .slice(0, 3)
       : [];
 
     const newMealPayload = {
@@ -67,7 +77,10 @@ export class MealPlannerService {
       .subscribe({
         next: (created) => {
           this.mealsSignal.update((curr) => [...curr, created]);
-          this.toastService.showSuccess(`Planned "${created.recipeName}" for ${day} ${mealType}`, 'Meal Planner');
+          this.toastService.showSuccess(
+            `Planned "${created.recipeName}" for ${day} ${mealType}`,
+            'Meal Planner',
+          );
         },
         error: (err) => {
           console.error('Failed to add meal plan:', err);
@@ -107,7 +120,10 @@ export class MealPlannerService {
         next: (updated) => {
           this.mealsSignal.update((curr) => curr.map((m) => (m.id === id ? updated : m)));
           if (nextCooked) {
-            this.toastService.showSuccess(`Bon Appétit! Marked "${meal.recipeName}" as cooked.`, 'Meal Completed');
+            this.toastService.showSuccess(
+              `Bon Appétit! Marked "${meal.recipeName}" as cooked.`,
+              'Meal Completed',
+            );
           }
         },
         error: (err) => {
@@ -137,7 +153,14 @@ export class MealPlannerService {
 
   addAllMissingToShoppingList(): void {
     const allMeals = this.mealsSignal().filter((m) => !m.cooked);
-    const missingItems: { name: string; category: string; quantity: number; unit: string; source: 'recipe_plan'; recipeName: string }[] = [];
+    const missingItems: {
+      name: string;
+      category: string;
+      quantity: number;
+      unit: string;
+      source: 'recipe_plan';
+      recipeName: string;
+    }[] = [];
 
     allMeals.forEach((meal) => {
       if (meal.missingIngredients && meal.missingIngredients.length > 0) {

@@ -40,7 +40,8 @@
   <div class="flex flex-col gap-3 mb-6">
     <!-- Expired Items Notice -->
     @if (expiredItemsCount() > 0) {
-      <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 flex items-center justify-between gap-4 text-xs">
+      <div
+        class="bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 flex items-center justify-between gap-4 text-xs">
         <div class="flex items-center gap-3">
           <i class="pi pi-exclamation-triangle text-red-600 dark:text-red-400 text-base"></i>
           <div>
@@ -62,7 +63,8 @@
 
     <!-- Expiring Soon Notice -->
     @if (expiringSoonItemsCount() > 0) {
-      <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3.5 flex items-center justify-between gap-4 text-xs">
+      <div
+        class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3.5 flex items-center justify-between gap-4 text-xs">
         <div class="flex items-center gap-3">
           <i class="pi pi-clock text-amber-600 dark:text-amber-400 text-base"></i>
           <div>
@@ -118,11 +120,8 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
   <!-- Left Main Column (2 Columns Wide): Watchlists & Recipes Spotlight -->
   <div class="lg:col-span-2 flex flex-col gap-6">
-
     <!-- "What You Can Cook Today" Recipe Spotlight -->
-    <pantry-cookable-recipes-container
-      [recipes]="recipes()">
-    </pantry-cookable-recipes-container>
+    <pantry-cookable-recipes-container [recipes]="recipes()"> </pantry-cookable-recipes-container>
 
     <!-- Expired Items Section (Target for Review button) -->
     @if (expiredItems().length > 0) {
@@ -162,9 +161,7 @@
     <pantry-quick-actions-container></pantry-quick-actions-container>
 
     <!-- Storage Locations Breakdown -->
-    <pantry-location-overview-container
-      [items]="items()"
-      [locations]="locations()">
+    <pantry-location-overview-container [items]="items()" [locations]="locations()">
     </pantry-location-overview-container>
   </div>
 </div>

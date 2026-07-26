@@ -15,13 +15,7 @@ export type PlannerSubTab = 'calendar' | 'daily';
 @Component({
   selector: 'pantry-meal-planner',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    TranslocoModule,
-    WeeklyViewComponent,
-    DailyFocusComponent,
-  ],
+  imports: [CommonModule, FormsModule, TranslocoModule, WeeklyViewComponent, DailyFocusComponent],
   templateUrl: './meal-planner.component.html',
   styleUrl: './meal-planner.component.scss',
 })
@@ -49,7 +43,10 @@ export class MealPlannerComponent implements OnInit {
   readonly cookedCount = computed(() => this.plannedMeals().filter((m) => m.cooked).length);
   readonly totalPlannedCount = computed(() => this.plannedMeals().length);
   readonly missingItemsCount = computed(() =>
-    this.plannedMeals().reduce((acc, m) => acc + (m.missingIngredients ? m.missingIngredients.length : 0), 0)
+    this.plannedMeals().reduce(
+      (acc, m) => acc + (m.missingIngredients ? m.missingIngredients.length : 0),
+      0,
+    ),
   );
 
   ngOnInit(): void {
@@ -107,9 +104,7 @@ export class MealPlannerComponent implements OnInit {
             name: 'Honey Garlic Salmon',
             prepTime: 25,
             servings: 2,
-            ingredients: [
-              { ingredientId: 'ing-7', quantity: 300, unitId: 1 },
-            ],
+            ingredients: [{ ingredientId: 'ing-7', quantity: 300, unitId: 1 }],
           },
         ];
         this.availableRecipes.set(mockRecipes);

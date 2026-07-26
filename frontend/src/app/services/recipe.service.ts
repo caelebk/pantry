@@ -13,9 +13,7 @@ export class RecipeService {
   private readonly apiUrl = 'http://localhost:8000/api/recipes';
 
   getRecipes(): Observable<Recipe[]> {
-    return this.http
-      .get<ApiResponse<Recipe[]>>(this.apiUrl)
-      .pipe(mapResponseData<Recipe[]>());
+    return this.http.get<ApiResponse<Recipe[]>>(this.apiUrl).pipe(mapResponseData<Recipe[]>());
   }
 
   getAvailableRecipes(): Observable<Recipe[]> {
@@ -31,9 +29,7 @@ export class RecipeService {
   }
 
   createRecipe(dto: CreateRecipeDTO): Observable<Recipe> {
-    return this.http
-      .post<ApiResponse<Recipe>>(this.apiUrl, dto)
-      .pipe(mapResponseData<Recipe>());
+    return this.http.post<ApiResponse<Recipe>>(this.apiUrl, dto).pipe(mapResponseData<Recipe>());
   }
 
   updateRecipe(id: string, dto: CreateRecipeDTO): Observable<Recipe> {

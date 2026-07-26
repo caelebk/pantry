@@ -94,7 +94,9 @@ export class EditItemPageComponent implements OnInit {
       unit: val.unit || this.units()[0] || { id: 1, name: 'piece', shortName: 'pc' },
       location: val.location || this.locations()[0] || { id: 1, name: 'Pantry' },
       purchaseDate: val.purchaseDate ? new Date(val.purchaseDate) : new Date(),
-      expirationDate: val.expirationDate ? new Date(val.expirationDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      expirationDate: val.expirationDate
+        ? new Date(val.expirationDate)
+        : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       openedDate: val.openedDate ? new Date(val.openedDate) : undefined,
       notes: val.notes || '',
     };

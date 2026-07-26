@@ -1,15 +1,15 @@
-import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { EnrichedIngredient, IngredientGroup } from "@models/inventory.models";
-import { Item } from "@models/items.model";
-import { SelectModule } from "primeng/select";
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { EnrichedIngredient, IngredientGroup } from '@models/inventory.models';
+import { Item } from '@models/items.model';
+import { SelectModule } from 'primeng/select';
 
 @Component({
-  selector: "pantry-unassigned-item-card",
+  selector: 'pantry-unassigned-item-card',
   standalone: true,
   imports: [CommonModule, FormsModule, SelectModule],
-  templateUrl: "./unassigned-item-card.component.html",
+  templateUrl: './unassigned-item-card.component.html',
 })
 export class UnassignedItemCardComponent {
   @Input({ required: true })

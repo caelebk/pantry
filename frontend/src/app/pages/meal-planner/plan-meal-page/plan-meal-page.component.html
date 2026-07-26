@@ -4,20 +4,38 @@
     <button
       (click)="goBack()"
       class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h16.5" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        class="w-4 h-4">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h16.5" />
       </svg>
       Back to Meal Planner
     </button>
 
-    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Plan a Meal</h2>
-    <p class="text-sm text-gray-500 dark:text-gray-400">Schedule a recipe to your weekly calendar with custom servings & preferences</p>
+    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+      Plan a Meal
+    </h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400">
+      Schedule a recipe to your weekly calendar with custom servings & preferences
+    </p>
   </div>
 
   <!-- STEP 1: Select Schedule Slot (Day & Meal Type) -->
-  <div class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs space-y-4">
-    <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-      <span class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold">1</span>
+  <div
+    class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs space-y-4">
+    <h3
+      class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+      <span
+        class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold"
+        >1</span
+      >
       Select Day & Meal Time
     </h3>
 
@@ -63,10 +81,15 @@
   </div>
 
   <!-- STEP 2: Choose Recipe Grid -->
-  <div class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs space-y-4">
+  <div
+    class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs space-y-4">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-        <span class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold">2</span>
+      <h3
+        class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <span
+          class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold"
+          >2</span
+        >
         Select Recipe
       </h3>
 
@@ -78,8 +101,17 @@
           (ngModelChange)="searchQuery.set($event)"
           placeholder="Search recipes..."
           class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 absolute left-2.5 top-2 text-gray-400">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="w-4 h-4 absolute left-2.5 top-2 text-gray-400">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
       </div>
     </div>
@@ -103,7 +135,8 @@
               <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
                 {{ recipe.description || 'Delicious recipe ready to cook.' }}
               </p>
-              <div class="flex items-center gap-3 text-[11px] text-gray-500 dark:text-gray-400 font-medium pt-1">
+              <div
+                class="flex items-center gap-3 text-[11px] text-gray-500 dark:text-gray-400 font-medium pt-1">
                 <span>⏱️ {{ recipe.prepTime || 15 }}m prep</span>
                 <span>•</span>
                 <span>🍽️ {{ recipe.servings || 2 }} servings</span>
@@ -119,15 +152,26 @@
                     : 'w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600'
                 ">
                 @if (selectedRecipe()?.id === recipe.id) {
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3 h-3">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="3"
+                    stroke="currentColor"
+                    class="w-3 h-3">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                 }
               </div>
             </div>
           </div>
         } @empty {
-          <div class="col-span-full p-8 text-center text-xs text-gray-500 font-medium">No recipes found matching "{{ searchQuery() }}"</div>
+          <div class="col-span-full p-8 text-center text-xs text-gray-500 font-medium">
+            No recipes found matching "{{ searchQuery() }}"
+          </div>
         }
       </div>
     }
@@ -135,22 +179,31 @@
 
   <!-- STEP 3: Servings & Customization -->
   @if (selectedRecipe()) {
-    <div class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs space-y-4">
-      <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-        <span class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold">3</span>
+    <div
+      class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs space-y-4">
+      <h3
+        class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <span
+          class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold"
+          >3</span
+        >
         Custom Servings
       </h3>
 
       <div class="flex items-center gap-4">
-        <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Servings to Prepare:</span>
-        <div class="flex items-center border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-[#262626] overflow-hidden">
+        <span class="text-xs font-semibold text-gray-700 dark:text-gray-300"
+          >Servings to Prepare:</span
+        >
+        <div
+          class="flex items-center border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-[#262626] overflow-hidden">
           <button
             type="button"
             (click)="decrementServings()"
             class="px-3 py-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-bold transition-colors cursor-pointer">
             -
           </button>
-          <span class="px-4 py-1.5 font-extrabold text-sm text-gray-900 dark:text-white border-x border-gray-200 dark:border-gray-800">
+          <span
+            class="px-4 py-1.5 font-extrabold text-sm text-gray-900 dark:text-white border-x border-gray-200 dark:border-gray-800">
             {{ servings() }}
           </span>
           <button
@@ -165,7 +218,8 @@
   }
 
   <!-- Action Bar -->
-  <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200/80 dark:border-gray-800">
+  <div
+    class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200/80 dark:border-gray-800">
     <button
       type="button"
       (click)="goBack()"

@@ -12,12 +12,7 @@ import { SelectModule } from 'primeng/select';
 @Component({
   selector: 'pantry-edit-ingredient-group-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    InputTextModule,
-    SelectModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, InputTextModule, SelectModule],
   templateUrl: './edit-ingredient-group-page.component.html',
 })
 export class EditIngredientGroupPageComponent implements OnInit {
@@ -58,7 +53,9 @@ export class EditIngredientGroupPageComponent implements OnInit {
       next: (group) => {
         this.groupForm.patchValue({
           name: group.name,
-          nutrientGroup: group.nutrientGroupId ? { id: group.nutrientGroupId, name: group.nutrientGroupName || '' } : null,
+          nutrientGroup: group.nutrientGroupId
+            ? { id: group.nutrientGroupId, name: group.nutrientGroupName || '' }
+            : null,
         });
         this.isLoading.set(false);
       },
@@ -84,22 +81,24 @@ export class EditIngredientGroupPageComponent implements OnInit {
     const val = this.groupForm.value;
     this.isSubmitting.set(true);
 
-    this.categoryService.updateIngredientGroup(id, {
-      name: val.name,
-      nutrientGroupId: val.nutrientGroup ? val.nutrientGroup.id : undefined,
-    }).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.toastService.showSuccess(`Ingredient Group "${val.name}" updated successfully.`);
-        this.router.navigate(['/inventory/groups']);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        const msg = err?.message || 'Failed to update ingredient group.';
-        this.submitError.set(msg);
-        this.toastService.showError(msg);
-      },
-    });
+    this.categoryService
+      .updateIngredientGroup(id, {
+        name: val.name,
+        nutrientGroupId: val.nutrientGroup ? val.nutrientGroup.id : undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.toastService.showSuccess(`Ingredient Group "${val.name}" updated successfully.`);
+          this.router.navigate(['/inventory/groups']);
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          const msg = err?.message || 'Failed to update ingredient group.';
+          this.submitError.set(msg);
+          this.toastService.showError(msg);
+        },
+      });
   }
 
   onCancel(): void {

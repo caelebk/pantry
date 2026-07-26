@@ -1,52 +1,52 @@
-import { CommonModule } from "@angular/common";
-import { Component, HostListener, inject, OnInit, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { TranslocoModule, TranslocoService } from "@jsverse/transloco";
-import { Category } from "@models/category.model";
-import { Ingredient } from "@models/ingredient.model";
-import { EnrichedIngredient, IngredientGroup, NutrientGroup } from "@models/inventory.models";
-import { Item } from "@models/items.model";
-import { Location } from "@models/location.model";
-import { Unit } from "@models/unit.model";
-import { NutrientType } from "@models/nutrient-type.model";
-import { NutrientTypeService } from "@services/inventory/nutrient-type.service";
-import { CategoryService } from "@services/inventory/category.service";
-import { IngredientService } from "@services/inventory/ingredient.service";
-import { ItemService } from "@services/inventory/item.service";
-import { LocationService } from "@services/inventory/location.service";
-import { UnitService } from "@services/inventory/unit.service";
-import { ToastService } from "@services/toast.service";
+import { CommonModule } from '@angular/common';
+import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
+import { Category } from '@models/category.model';
+import { Ingredient } from '@models/ingredient.model';
+import { EnrichedIngredient, IngredientGroup, NutrientGroup } from '@models/inventory.models';
+import { Item } from '@models/items.model';
+import { Location } from '@models/location.model';
+import { NutrientType } from '@models/nutrient-type.model';
+import { Unit } from '@models/unit.model';
+import { CategoryService } from '@services/inventory/category.service';
+import { IngredientService } from '@services/inventory/ingredient.service';
+import { ItemService } from '@services/inventory/item.service';
+import { LocationService } from '@services/inventory/location.service';
+import { NutrientTypeService } from '@services/inventory/nutrient-type.service';
+import { UnitService } from '@services/inventory/unit.service';
+import { ToastService } from '@services/toast.service';
 import {
   fadeInOut,
   STAGGER_DELAY_PER_ITEM_MS,
   staggeredFadeIn,
-} from "@utility/animationUtility/animations";
+} from '@utility/animationUtility/animations';
 import {
   isExpired,
   isExpiringSoon,
   sortItemsByExpirationDate,
-} from "@utility/itemUtility/ItemUtility";
-import { ConfirmationService } from "primeng/api";
-import { ConfirmDialogModule } from "primeng/confirmdialog";
-import { DialogModule } from "primeng/dialog";
-import { SelectModule } from "primeng/select";
-import { ToastModule } from "primeng/toast";
-import { AddItemFormComponent } from "./inventory-components/add-item-form/add-item-form.component";
+} from '@utility/itemUtility/ItemUtility';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { SelectModule } from 'primeng/select';
+import { ToastModule } from 'primeng/toast';
+import { AddItemFormComponent } from './inventory-components/add-item-form/add-item-form.component';
 
-import { ItemCardComponent } from "./inventory-components/item-card/item-card.component";
+import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
 import {
   InventoryTab,
   TabNavigationComponent,
-} from "./inventory-components/tab-navigation/tab-navigation.component";
-import { UnassignedItemsContainerComponent } from "./inventory-components/unassigned-items-container/unassigned-items-container.component";
+} from './inventory-components/tab-navigation/tab-navigation.component';
+import { UnassignedItemsContainerComponent } from './inventory-components/unassigned-items-container/unassigned-items-container.component';
 
-import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Router } from '@angular/router';
 
 export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh';
 export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'status';
 
 @Component({
-  selector: "pantry-inventory",
+  selector: 'pantry-inventory',
   standalone: true,
   imports: [
     CommonModule,
@@ -62,7 +62,7 @@ export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'stat
     UnassignedItemsContainerComponent,
   ],
   providers: [ConfirmationService],
-  templateUrl: "./inventory.component.html",
+  templateUrl: './inventory.component.html',
   animations: [fadeInOut, staggeredFadeIn],
 })
 export class InventoryComponent implements OnInit {
@@ -92,15 +92,15 @@ export class InventoryComponent implements OnInit {
   public nutrientTypes: NutrientType[] = [];
 
   public showScrollTopButton = false;
-  public searchQuery = "";
+  public searchQuery = '';
   public selectedLocationId: number | null = null;
-  public selectedStatusFilter: StatusFilter = "all";
-  public sortBy: SortOption = "expiration";
+  public selectedStatusFilter: StatusFilter = 'all';
+  public sortBy: SortOption = 'expiration';
   public displayAddModal = false;
 
   public selectedCategory: Category | null = null;
   public isLoading = signal(true);
-  public activeTab: InventoryTab = "items";
+  public activeTab: InventoryTab = 'items';
 
   public viewMode: 'table' | 'grid' = 'table';
   public sortDirection: 'asc' | 'desc' = 'asc';
@@ -128,10 +128,13 @@ export class InventoryComponent implements OnInit {
     return this.items
       .filter((item) => {
         // 1. Text Search
-        const matchesSearch = !this.searchQuery || item.name.toLowerCase().includes(this.searchQuery.toLowerCase().trim());
+        const matchesSearch =
+          !this.searchQuery ||
+          item.name.toLowerCase().includes(this.searchQuery.toLowerCase().trim());
 
         // 2. Location Filter
-        const matchesLocation = this.selectedLocationId === null || item.location?.id === this.selectedLocationId;
+        const matchesLocation =
+          this.selectedLocationId === null || item.location?.id === this.selectedLocationId;
 
         // 3. Status Filter
         let matchesStatus = true;
@@ -179,11 +182,11 @@ export class InventoryComponent implements OnInit {
   public get locationSelectOptions(): { id: number | null; name: string; icon: string }[] {
     return [
       { id: null, name: 'All Locations', icon: '📍' },
-      ...this.locations.map(loc => ({
+      ...this.locations.map((loc) => ({
         id: loc.id,
         name: loc.name,
-        icon: loc.name === 'Fridge' ? '❄️' : (loc.name === 'Freezer' ? '🧊' : '🥫')
-      }))
+        icon: loc.name === 'Fridge' ? '❄️' : loc.name === 'Freezer' ? '🧊' : '🥫',
+      })),
     ];
   }
 
@@ -208,9 +211,8 @@ export class InventoryComponent implements OnInit {
 
   // Ingredient Groups stats
   public get inStockIngredientsCount(): number {
-    return this.ingredients.filter((ing) =>
-      this.items.some((item) => item.ingredientId === ing.id)
-    ).length;
+    return this.ingredients.filter((ing) => this.items.some((item) => item.ingredientId === ing.id))
+      .length;
   }
 
   public get outOfStockIngredientsCount(): number {
@@ -231,9 +233,7 @@ export class InventoryComponent implements OnInit {
     const ingredientMap = new Map();
 
     this.ingredients.forEach((ingredient) => {
-      const ingredientItems = this.items.filter(
-        (item) => item.ingredientId === ingredient.id,
-      );
+      const ingredientItems = this.items.filter((item) => item.ingredientId === ingredient.id);
       ingredientMap.set(ingredient.id, {
         ...ingredient,
         items: ingredientItems,
@@ -255,17 +255,17 @@ export class InventoryComponent implements OnInit {
     const normalizedQuery = this.searchQuery.toLowerCase().trim();
 
     categoryMap.forEach((ingredients, categoryId) => {
-      const category = categoryId === -1
-        ? { id: -1, name: "Uncategorized" }
-        : this.categories.find((c) => c.id === categoryId) ??
-          { id: -1, name: "Unknown" };
+      const category =
+        categoryId === -1
+          ? { id: -1, name: 'Uncategorized' }
+          : (this.categories.find((c) => c.id === categoryId) ?? { id: -1, name: 'Unknown' });
 
       if (this.selectedCategory && this.selectedCategory.id !== category.id) {
         return;
       }
 
       const filteredIngredients = ingredients.filter((ing: any) =>
-        ing.name.toLowerCase().includes(normalizedQuery)
+        ing.name.toLowerCase().includes(normalizedQuery),
       );
 
       if (filteredIngredients.length > 0) {
@@ -273,9 +273,7 @@ export class InventoryComponent implements OnInit {
       }
     });
 
-    return groups.sort((a, b) =>
-      a.category.name.localeCompare(b.category.name)
-    );
+    return groups.sort((a, b) => a.category.name.localeCompare(b.category.name));
   }
 
   public get nutrientGroups(): NutrientGroup[] {
@@ -294,10 +292,21 @@ export class InventoryComponent implements OnInit {
     const result: NutrientGroup[] = [];
 
     nutrientMap.forEach((categoryGroups, ntId) => {
-      const nutrientType: NutrientType = ntId === -1
-        ? { id: -1, name: "Unclassified", icon: "📦", color: "#94a3b8", description: "Categories without an assigned nutrient group" }
-        : this.nutrientTypes.find((nt) => nt.id === ntId) ??
-          { id: ntId, name: "Other", icon: "📦", color: "#94a3b8" };
+      const nutrientType: NutrientType =
+        ntId === -1
+          ? {
+              id: -1,
+              name: 'Unclassified',
+              icon: '📦',
+              color: '#94a3b8',
+              description: 'Categories without an assigned nutrient group',
+            }
+          : (this.nutrientTypes.find((nt) => nt.id === ntId) ?? {
+              id: ntId,
+              name: 'Other',
+              icon: '📦',
+              color: '#94a3b8',
+            });
 
       result.push({ nutrientType, categoryGroups });
     });
@@ -313,9 +322,7 @@ export class InventoryComponent implements OnInit {
   public expandedCategories = new Set<number>();
   public loading = false;
 
-  public onAssignItem(
-    event: { item: Item; ingredient: EnrichedIngredient },
-  ): void {
+  public onAssignItem(event: { item: Item; ingredient: EnrichedIngredient }): void {
     const updatedItem: Item = {
       ...event.item,
       ingredientId: event.ingredient.id,
@@ -324,12 +331,12 @@ export class InventoryComponent implements OnInit {
       next: () => {
         this.toastService.showSuccess(
           `Assigned "${event.item.name}" to ${event.ingredient.name}`,
-          "Item Assigned",
+          'Item Assigned',
         );
         this.initParameters();
       },
       error: (err) => {
-        this.toastService.showError("Failed to assign item.", "Error");
+        this.toastService.showError('Failed to assign item.', 'Error');
       },
     });
   }
@@ -341,19 +348,16 @@ export class InventoryComponent implements OnInit {
     };
     this.inventoryService.updateItem(updatedItem).subscribe({
       next: () => {
-        this.toastService.showSuccess(
-          `Unassigned "${item.name}"`,
-          "Item Unassigned",
-        );
+        this.toastService.showSuccess(`Unassigned "${item.name}"`, 'Item Unassigned');
         this.initParameters();
       },
       error: (err) => {
-        this.toastService.showError("Failed to unassign item.", "Error");
+        this.toastService.showError('Failed to unassign item.', 'Error');
       },
     });
   }
 
-  @HostListener("window:scroll", [])
+  @HostListener('window:scroll', [])
   onWindowScroll(): void {
     this.showScrollTopButton = window.scrollY > 300;
 
@@ -367,7 +371,7 @@ export class InventoryComponent implements OnInit {
   }
 
   public scrollToTop(): void {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   private readonly route = inject(ActivatedRoute);
@@ -395,7 +399,8 @@ export class InventoryComponent implements OnInit {
         this.totalItemsCount = this.items.length;
         this.expiringSoonItemsCount = this.items.filter((item) => isExpiringSoon(item)).length;
         this.expiredItemsCount = this.items.filter((item) => isExpired(item)).length;
-        this.freshItemsCount = this.totalItemsCount - this.expiringSoonItemsCount - this.expiredItemsCount;
+        this.freshItemsCount =
+          this.totalItemsCount - this.expiringSoonItemsCount - this.expiredItemsCount;
 
         setTimeout(() => {
           this.isLoading.set(false);
@@ -403,7 +408,7 @@ export class InventoryComponent implements OnInit {
       },
       error: () => {
         this.isLoading.set(false);
-        this.toastService.showError("Unable to load inventory items.", "Network Error");
+        this.toastService.showError('Unable to load inventory items.', 'Network Error');
       },
     });
 
@@ -438,11 +443,11 @@ export class InventoryComponent implements OnInit {
     this.inventoryService.addItem(item).subscribe({
       next: () => {
         this.displayAddModal = false;
-        this.toastService.showSuccess(`"${item.name}" added to inventory!`, "Item Added");
+        this.toastService.showSuccess(`"${item.name}" added to inventory!`, 'Item Added');
         this.initParameters();
       },
       error: (err) => {
-        this.toastService.showError(err?.message || "Failed to add item.", "Error");
+        this.toastService.showError(err?.message || 'Failed to add item.', 'Error');
       },
     });
   }
@@ -452,17 +457,17 @@ export class InventoryComponent implements OnInit {
       event.stopPropagation();
     }
     this.confirmationService.confirm({
-      header: "Remove Item",
+      header: 'Remove Item',
       message: `Are you sure you want to remove "${item.name}" from inventory?`,
-      icon: "pi pi-exclamation-triangle",
+      icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.inventoryService.removeItem(item).subscribe({
           next: () => {
-            this.toastService.showSuccess(`"${item.name}" removed from inventory.`, "Item Removed");
+            this.toastService.showSuccess(`"${item.name}" removed from inventory.`, 'Item Removed');
             this.initParameters();
           },
           error: () => {
-            this.toastService.showError(`Failed to remove "${item.name}".`, "Error");
+            this.toastService.showError(`Failed to remove "${item.name}".`, 'Error');
           },
         });
       },
@@ -484,11 +489,11 @@ export class InventoryComponent implements OnInit {
   public onUpdateItem(updatedItem: Item): void {
     this.inventoryService.updateItem(updatedItem).subscribe({
       next: () => {
-        this.toastService.showSuccess(`Updated "${updatedItem.name}".`, "Item Updated");
+        this.toastService.showSuccess(`Updated "${updatedItem.name}".`, 'Item Updated');
         this.initParameters();
       },
       error: () => {
-        this.toastService.showError(`Failed to update "${updatedItem.name}".`, "Error");
+        this.toastService.showError(`Failed to update "${updatedItem.name}".`, 'Error');
       },
     });
   }

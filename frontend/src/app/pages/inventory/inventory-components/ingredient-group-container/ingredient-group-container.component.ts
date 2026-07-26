@@ -1,18 +1,18 @@
-import { CommonModule } from "@angular/common";
-import { Component, computed, input, output, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { Category } from "@models/category.model";
-import { NutrientGroup } from "@models/inventory.models";
-import { IconFieldModule } from "primeng/iconfield";
-import { InputIconModule } from "primeng/inputicon";
-import { InputTextModule } from "primeng/inputtext";
-import { MultiSelectModule } from "primeng/multiselect";
-import { SelectModule } from "primeng/select";
-import { Item } from "@models/items.model";
-import { NutrientGroupComponent } from "../nutrient-group/nutrient-group.component";
+import { CommonModule } from '@angular/common';
+import { Component, computed, input, output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Category } from '@models/category.model';
+import { NutrientGroup } from '@models/inventory.models';
+import { Item } from '@models/items.model';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { SelectModule } from 'primeng/select';
+import { NutrientGroupComponent } from '../nutrient-group/nutrient-group.component';
 
 @Component({
-  selector: "pantry-ingredient-group-container",
+  selector: 'pantry-ingredient-group-container',
   standalone: true,
   imports: [
     CommonModule,
@@ -24,13 +24,13 @@ import { NutrientGroupComponent } from "../nutrient-group/nutrient-group.compone
     MultiSelectModule,
     NutrientGroupComponent,
   ],
-  templateUrl: "./ingredient-group-container.component.html",
+  templateUrl: './ingredient-group-container.component.html',
 })
 export class IngredientGroupContainerComponent {
   // Inputs
   nutrientGroups = input.required<NutrientGroup[]>();
   categories = input.required<Category[]>();
-  searchQuery = input<string>("");
+  searchQuery = input<string>('');
   selectedCategory = input<Category | null>(null);
 
   // Outputs
@@ -50,7 +50,7 @@ export class IngredientGroupContainerComponent {
     return this.nutrientGroups().map((ng) => ({
       id: ng.nutrientType.id,
       name: ng.nutrientType.name,
-      icon: ng.nutrientType.icon || "📦",
+      icon: ng.nutrientType.icon || '📦',
     }));
   });
 
@@ -58,7 +58,7 @@ export class IngredientGroupContainerComponent {
     return this.categories().map((c) => ({
       id: c.id,
       name: c.name,
-      icon: "🏷️",
+      icon: '🏷️',
     }));
   });
 
@@ -71,30 +71,32 @@ export class IngredientGroupContainerComponent {
   }
 
   getNutrientName(itemOrId: any): string {
-    if (itemOrId == null) return "";
-    if (typeof itemOrId === "object") {
-      return itemOrId.name || itemOrId.label || "";
+    if (itemOrId == null) return '';
+    if (typeof itemOrId === 'object') {
+      return itemOrId.name || itemOrId.label || '';
     }
     const option = this.nutrientSelectOptions().find((opt) => opt.id === itemOrId);
-    return option ? option.name : "";
+    return option ? option.name : '';
   }
 
   getNutrientIcon(itemOrId: any): string {
-    if (itemOrId == null) return "✨";
-    if (typeof itemOrId === "object" && itemOrId.icon) {
+    if (itemOrId == null) return '✨';
+    if (typeof itemOrId === 'object' && itemOrId.icon) {
       return itemOrId.icon;
     }
-    const option = this.nutrientSelectOptions().find((opt) => opt.id === (typeof itemOrId === "object" ? itemOrId.id : itemOrId));
-    return option ? option.icon : "✨";
+    const option = this.nutrientSelectOptions().find(
+      (opt) => opt.id === (typeof itemOrId === 'object' ? itemOrId.id : itemOrId),
+    );
+    return option ? option.icon : '✨';
   }
 
   getCategoryName(itemOrId: any): string {
-    if (itemOrId == null) return "";
-    if (typeof itemOrId === "object") {
-      return itemOrId.name || itemOrId.label || "";
+    if (itemOrId == null) return '';
+    if (typeof itemOrId === 'object') {
+      return itemOrId.name || itemOrId.label || '';
     }
     const option = this.categoryGroupOptions().find((opt) => opt.id === itemOrId);
-    return option ? option.name : "";
+    return option ? option.name : '';
   }
 
   get filteredNutrientGroups(): NutrientGroup[] {
@@ -171,7 +173,7 @@ export class IngredientGroupContainerComponent {
   expandAll() {
     const allNtIds = new Set(this.nutrientGroups().map((ng) => ng.nutrientType.id));
     const allCatIds = new Set(
-      this.nutrientGroups().flatMap((ng) => ng.categoryGroups.map((cg) => cg.category.id))
+      this.nutrientGroups().flatMap((ng) => ng.categoryGroups.map((cg) => cg.category.id)),
     );
     this.expandedNutrientGroups.set(allNtIds);
     this.expandedCategories.set(allCatIds);
