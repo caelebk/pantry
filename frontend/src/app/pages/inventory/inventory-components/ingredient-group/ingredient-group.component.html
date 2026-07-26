@@ -40,18 +40,29 @@
           <span>{{ group.category.name }}</span>
         </h4>
         <p class="text-xs text-surface-500 dark:text-surface-400 font-medium mt-0.5">
-          {{ group.ingredients.length }}
-          {{ group.ingredients.length === 1 ? 'ingredient' : 'ingredients' }} •
-          {{ totalItemsCount }} {{ totalItemsCount === 1 ? 'item' : 'items' }} in stock
+          @if (group.ingredients.length === 0) {
+            0 items in stock
+          } @else {
+            {{ group.ingredients.length }}
+            {{ group.ingredients.length === 1 ? 'ingredient' : 'ingredients' }} •
+            {{ totalItemsCount }} {{ totalItemsCount === 1 ? 'item' : 'items' }} in stock
+          }
         </p>
       </div>
     </div>
 
     <div class="flex items-center gap-3">
-      <span
-        class="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-200/70 dark:bg-surface-700/60 text-surface-700 dark:text-surface-300 hidden sm:inline-block">
-        {{ inStockCount }}/{{ group.ingredients.length }} Active
-      </span>
+      @if (group.ingredients.length === 0) {
+        <span
+          class="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-200/70 dark:bg-surface-700/60 text-surface-700 dark:text-surface-300 hidden sm:inline-block">
+          0 Active
+        </span>
+      } @else {
+        <span
+          class="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-200/70 dark:bg-surface-700/60 text-surface-700 dark:text-surface-300 hidden sm:inline-block">
+          {{ inStockCount }}/{{ group.ingredients.length }} Active
+        </span>
+      }
       <div
         class="w-8 h-8 rounded-xl bg-surface-200/50 dark:bg-surface-700/50 flex items-center justify-center text-surface-600 dark:text-surface-300 transition-transform"
         [class.rotate-180]="isExpanded">
