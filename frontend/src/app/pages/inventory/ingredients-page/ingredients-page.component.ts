@@ -197,6 +197,10 @@ export class IngredientsPageComponent implements OnInit {
     return parts.join(', ');
   }
 
+  isExpanded(ingredientId: string): boolean {
+    return this.expandedIngredientIds().has(ingredientId);
+  }
+
   isGroupExpanded(groupName: string): boolean {
     return this.expandedGroupNames().has(groupName);
   }
