@@ -1,1 +1,26 @@
-/* Restock review page styles */
+:host ::ng-deep {
+  .p-select {
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+
+    .p-select-label {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      font-size: 0.75rem !important;
+      font-weight: 600 !important;
+      display: flex !important;
+      align-items: center !important;
+      line-height: 1 !important;
+    }
+
+    .p-select-dropdown {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 2rem !important;
+    }
+  }
+}
