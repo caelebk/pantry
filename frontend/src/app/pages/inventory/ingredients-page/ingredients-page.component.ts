@@ -68,6 +68,9 @@ export class IngredientsPageComponent implements OnInit {
   // Set of expanded ingredient IDs for collapsible rows
   public expandedIngredientIds = signal<Set<string>>(new Set());
 
+  // Set of collapsed group names for collapsible category tables
+  public collapsedGroupNames = signal<Set<string>>(new Set());
+
   public filteredIngredients = computed(() => {
     const list = this.ingredients();
     const query = this.searchQuery().toLowerCase().trim();
@@ -198,6 +201,20 @@ export class IngredientsPageComponent implements OnInit {
     return this.expandedIngredientIds().has(ingredientId);
   }
 
+  isGroupCollapsed(groupName: string): boolean {
+    return this.collapsedGroupNames().has(groupName);
+  }
+
+  toggleGroup(groupName: string): void {
+    const current = new Set(this.collapsedGroupNames());
+    if (current.has(groupName)) {
+      current.delete(groupName);
+    } else {
+      current.add(groupName);
+    }
+    this.collapsedGroupNames.set(current);
+  }
+
   toggleRow(ingredientId: string): void {
     const current = new Set(this.expandedIngredientIds());
     if (current.has(ingredientId)) {
@@ -211,10 +228,13 @@ export class IngredientsPageComponent implements OnInit {
   expandAll(): void {
     const allIds = new Set(this.filteredIngredients().map((i) => i.id));
     this.expandedIngredientIds.set(allIds);
+    this.collapsedGroupNames.set(new Set());
   }
 
   collapseAll(): void {
     this.expandedIngredientIds.set(new Set());
+    const allGroups = new Set(this.groupedIngredients().map((g) => g.groupName));
+    this.collapsedGroupNames.set(allGroups);
   }
 
   onAddIngredient(): void {
