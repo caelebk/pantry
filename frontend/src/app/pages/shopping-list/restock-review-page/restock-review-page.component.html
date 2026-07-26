@@ -84,7 +84,7 @@
               </div>
 
               <p-select
-                [options]="units"
+                [options]="unitsOptions()"
                 [(ngModel)]="item.unit"
                 styleClass="!rounded-xl !bg-gray-50 dark:!bg-[#262626] !border-gray-200 dark:!border-gray-800 !text-xs !font-semibold text-gray-700 dark:text-gray-300"
                 appendTo="body" />
@@ -97,7 +97,7 @@
             <div class="space-y-1">
               <label class="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Storage Location</label>
               <p-select
-                [options]="locations"
+                [options]="locationsOptions()"
                 [(ngModel)]="item.location"
                 styleClass="w-full !rounded-xl !bg-gray-50 dark:!bg-[#262626] !border-gray-200 dark:!border-gray-800 !text-xs !font-semibold"
                 appendTo="body" />
@@ -156,9 +156,9 @@
     <button
       type="button"
       (click)="confirmRestock()"
-      [disabled]="selectedCount === 0"
+      [disabled]="selectedCount === 0 || isSubmitting()"
       class="px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-90 disabled:opacity-50 text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-xs">
-      Confirm Restock ({{ selectedCount }} Item{{ selectedCount === 1 ? '' : 's' }})
+      {{ isSubmitting() ? 'Restocking...' : 'Confirm Restock (' + selectedCount + ' Item' + (selectedCount === 1 ? '' : 's') + ')' }}
     </button>
   </div>
 </div>
