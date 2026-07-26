@@ -176,3 +176,116 @@ html {
 .p-dialog .p-dialog-header {
   font-family: 'Inter', sans-serif !important;
 }
+
+/* PrimeNG Select & MultiSelect Dropdown Overlays */
+.p-select-overlay,
+.p-multiselect-overlay,
+.p-datepicker-panel,
+.p-popover {
+  background-color: var(--color-surface-50) !important;
+  border: 1px solid var(--color-surface-200) !important;
+  border-radius: 0.75rem !important;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  color: var(--color-surface-900) !important;
+}
+
+:where(.dark, .dark *) .p-select-overlay,
+:where(.dark, .dark *) .p-multiselect-overlay,
+:where(.dark, .dark *) .p-datepicker-panel,
+:where(.dark, .dark *) .p-popover {
+  background-color: var(--color-surface-900) !important;
+  border: 1px solid var(--color-surface-700) !important;
+  color: #ffffff !important;
+}
+
+/* Dropdown Option Items */
+.p-select-option,
+.p-multiselect-option {
+  color: var(--color-surface-800) !important;
+  border-radius: 0.5rem !important;
+  margin: 0.125rem 0.25rem !important;
+  padding: 0.5rem 0.75rem !important;
+  transition: all 0.15s ease !important;
+}
+
+:where(.dark, .dark *) .p-select-option,
+:where(.dark, .dark *) .p-multiselect-option {
+  color: var(--color-surface-200) !important;
+}
+
+/* Option Hover */
+.p-select-option:hover,
+.p-multiselect-option:hover,
+.p-select-option.p-focus,
+.p-multiselect-option.p-focus {
+  background-color: var(--color-surface-100) !important;
+  color: var(--color-primary-700) !important;
+}
+
+:where(.dark, .dark *) .p-select-option:hover,
+:where(.dark, .dark *) .p-multiselect-option:hover,
+:where(.dark, .dark *) .p-select-option.p-focus,
+:where(.dark, .dark *) .p-multiselect-option.p-focus {
+  background-color: var(--color-surface-800) !important;
+  color: var(--color-primary-400) !important;
+}
+
+/* Option Selected State */
+.p-select-option.p-select-option-selected,
+.p-multiselect-option.p-multiselect-option-selected {
+  background-color: var(--color-primary-50) !important;
+  color: var(--color-primary-700) !important;
+  font-weight: 700 !important;
+}
+
+:where(.dark, .dark *) .p-select-option.p-select-option-selected,
+:where(.dark, .dark *) .p-multiselect-option.p-multiselect-option-selected {
+  background-color: rgba(249, 115, 22, 0.15) !important;
+  color: var(--color-primary-400) !important;
+}
+
+/* Filter Input Container */
+.p-select-header,
+.p-multiselect-header {
+  padding: 0.5rem !important;
+  border-bottom: 1px solid var(--color-surface-200) !important;
+  background: transparent !important;
+}
+
+:where(.dark, .dark *) .p-select-header,
+:where(.dark, .dark *) .p-multiselect-header {
+  border-bottom: 1px solid var(--color-surface-800) !important;
+}
+
+/* Filter Input Text Field */
+.p-select-filter,
+.p-multiselect-filter {
+  background-color: #ffffff !important;
+  border: 1px solid var(--color-surface-200) !important;
+  color: var(--color-surface-900) !important;
+  border-radius: 0.5rem !important;
+  padding: 0.4rem 0.75rem !important;
+  font-size: 0.875rem !important;
+}
+
+:where(.dark, .dark *) .p-select-filter,
+:where(.dark, .dark *) .p-multiselect-filter {
+  background-color: var(--color-surface-800) !important;
+  border: 1px solid var(--color-surface-700) !important;
+  color: #ffffff !important;
+}
+
+.p-select-filter:focus,
+.p-multiselect-filter:focus {
+  border-color: var(--color-primary-500) !important;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2) !important;
+}
+
+/* Checkbox (MultiSelect & General) */
+.p-checkbox-checked .p-checkbox-box {
+  background-color: var(--color-primary-600) !important;
+  border-color: var(--color-primary-600) !important;
+  color: #ffffff !important;
+}
