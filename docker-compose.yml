@@ -1,15 +1,21 @@
 services:
   backend:
-    # Uses the official Deno image for the backend runtime
     image: denoland/deno:alpine
     container_name: pantry_backend
     working_dir: /app
-    # Mounts the backend directory and creates a persistent volume for SQLite
     volumes:
       - ./backend:/app
       - pantry_db_data:/app/data
-    # Executes the production start command defined in your deno.json
-    command: task start
+    # Inline shell script: checks if sqlite DB exists, runs migrations & seeds if missing, then starts the API
+    command: >
+      sh -c "
+        if [ ! -f /app/data/pantry.db ]; then
+          echo '📦 Initializing fresh database...'
+          deno task db:migrate &&
+          deno task db:seed
+        fi &&
+        deno task start
+      "
     ports:
       - "8000:8000"
     environment:
@@ -22,12 +28,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      # Maps the host port 4200 to the container's Nginx port (typically 80)
       - "4200:80"
     depends_on:
       - backend
     restart: unless-stopped
 
-# Defines the persistent named volume for the SQLite database
 volumes:
   pantry_db_data:
