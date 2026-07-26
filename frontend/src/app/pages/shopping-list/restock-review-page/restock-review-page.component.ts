@@ -5,11 +5,6 @@ import { Router } from '@angular/router';
 import { ShoppingItem } from '@models/shopping-list.model';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
-import { ButtonModule } from 'primeng/button';
-import { CheckboxModule } from 'primeng/checkbox';
-import { DatePickerModule } from 'primeng/datepicker';
-import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
 
 export interface RestockDraftItem {
   shoppingId: string;
@@ -18,7 +13,7 @@ export interface RestockDraftItem {
   quantity: number;
   unit: string;
   location: string;
-  expirationDate: Date; // Date object for p-datePicker
+  expirationDate: string; // YYYY-MM-DD
   notes: string;
   included: boolean;
 }
@@ -26,15 +21,7 @@ export interface RestockDraftItem {
 @Component({
   selector: 'pantry-restock-review-page',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    InputTextModule,
-    SelectModule,
-    DatePickerModule,
-    CheckboxModule,
-    ButtonModule,
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './restock-review-page.component.html',
   styleUrl: './restock-review-page.component.scss',
 })
@@ -56,7 +43,8 @@ export class RestockReviewPageComponent implements OnInit {
       ? boughtItems
       : this.shoppingListService.items();
 
-    const defaultExp = new Date(Date.now() + 14 * 86400000);
+    const today = new Date();
+    const defaultExp = new Date(today.setDate(today.getDate() + 14)).toISOString().split('T')[0];
 
     const drafts: RestockDraftItem[] = sourceItems.map((item) => ({
       shoppingId: item.id,
@@ -87,7 +75,7 @@ export class RestockReviewPageComponent implements OnInit {
   setExpirationPreset(draft: RestockDraftItem, daysToAdd: number): void {
     const d = new Date();
     d.setDate(d.getDate() + daysToAdd);
-    draft.expirationDate = d;
+    draft.expirationDate = d.toISOString().split('T')[0];
   }
 
   toggleAll(checked: boolean): void {
