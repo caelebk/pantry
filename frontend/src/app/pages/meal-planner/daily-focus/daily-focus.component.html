@@ -17,14 +17,14 @@
   <!-- Day Focus Summary Widgets -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
     <div
-      class="glass-card p-4 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-xs flex items-center justify-between">
+      class="glass-card p-4 rounded-2xl border border-surface-200 dark:border-surface-700/80 shadow-xs flex items-center justify-between">
       <div>
         <div
-          class="text-xs font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider">
+          class="text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider">
           Total Planned Calories
         </div>
         <div class="text-2xl font-extrabold text-surface-900 dark:text-white mt-1">
-          {{ totalCalories() }} <span class="text-xs font-medium text-surface-400">kcal</span>
+          {{ totalCalories() }} <span class="text-xs font-semibold text-surface-500">kcal</span>
         </div>
       </div>
       <div
@@ -34,14 +34,14 @@
     </div>
 
     <div
-      class="glass-card p-4 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-xs flex items-center justify-between">
+      class="glass-card p-4 rounded-2xl border border-surface-200 dark:border-surface-700/80 shadow-xs flex items-center justify-between">
       <div>
         <div
-          class="text-xs font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider">
+          class="text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider">
           Estimated Kitchen Time
         </div>
         <div class="text-2xl font-extrabold text-surface-900 dark:text-white mt-1">
-          {{ totalPrepTime() }} <span class="text-xs font-medium text-surface-400">mins</span>
+          {{ totalPrepTime() }} <span class="text-xs font-semibold text-surface-500">mins</span>
         </div>
       </div>
       <div
@@ -51,10 +51,10 @@
     </div>
 
     <div
-      class="glass-card p-4 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-xs flex items-center justify-between">
+      class="glass-card p-4 rounded-2xl border border-surface-200 dark:border-surface-700/80 shadow-xs flex items-center justify-between">
       <div>
         <div
-          class="text-xs font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider">
+          class="text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider">
           Stock Readiness
         </div>
         <div class="text-2xl font-extrabold text-surface-900 dark:text-white mt-1">
@@ -87,7 +87,7 @@
 
       @if (dayMeals().length === 0) {
         <div
-          class="glass-card rounded-2xl p-10 text-center border border-surface-200/80 dark:border-surface-800/80">
+          class="glass-card rounded-2xl p-10 text-center border border-surface-200 dark:border-surface-700/80">
           <div class="text-3xl mb-2">🍽️</div>
           <p class="font-bold text-surface-900 dark:text-white">
             No meals planned for {{ selectedDay() }}
@@ -105,16 +105,16 @@
         <div class="space-y-4">
           @for (meal of dayMeals(); track meal.id) {
             <div
-              class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center">
+              class="glass-card border border-surface-200 dark:border-surface-700/80 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center">
               <div class="space-y-1.5 flex-1 min-w-0">
                 <div class="flex items-center gap-2">
                   <span
-                    class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-surface-100 dark:bg-surface-800/60 text-surface-700 dark:text-surface-300">
+                    class="text-xs font-extrabold px-2.5 py-0.5 rounded-md bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100">
                     {{ meal.mealType }}
                   </span>
                   @for (tag of meal.tags; track tag) {
                     <span
-                      class="text-[10px] font-medium px-2 py-0.5 rounded-md bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 border border-primary-200/50">
+                      class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 border border-primary-200/50">
                       {{ tag }}
                     </span>
                   }
@@ -125,7 +125,7 @@
                 </h4>
 
                 <div
-                  class="flex items-center gap-3 text-xs text-surface-500 dark:text-surface-400 font-medium">
+                  class="flex items-center gap-3 text-xs text-surface-600 dark:text-surface-300 font-semibold">
                   <span>⏱️ {{ meal.prepTimeMinutes || 15 }} mins prep</span>
                   <span>•</span>
                   <span>🍽️ {{ meal.servings }} servings</span>

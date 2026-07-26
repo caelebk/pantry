@@ -102,16 +102,16 @@
                 [class.dark:bg-emerald-950/20]="meal.cooked"
                 [class.border-emerald-200]="meal.cooked"
                 [class.dark:border-emerald-900/40]="meal.cooked"
-                class="p-3.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200/80 dark:border-surface-800/80 shadow-xs space-y-2.5 transition-all hover:border-surface-300 dark:hover:border-surface-700 group">
+                class="p-3.5 rounded-xl bg-surface-100 dark:bg-surface-800/90 border border-surface-200 dark:border-surface-700/80 shadow-xs space-y-2.5 transition-all hover:border-surface-300 dark:hover:border-surface-600 group">
                 <!-- Meal Slot Badge + Title + Delete -->
                 <div class="flex items-start justify-between gap-2">
                   <div class="space-y-1 flex-1 min-w-0">
                     <div class="flex items-center gap-2">
                       <span
-                        class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-surface-200/80 dark:bg-surface-700 text-surface-800 dark:text-surface-200 uppercase tracking-wider">
+                        class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100 uppercase tracking-wider">
                         {{ meal.mealType }}
                       </span>
-                      <span class="text-xs text-surface-500 dark:text-surface-400 font-semibold">
+                      <span class="text-xs text-surface-600 dark:text-surface-300 font-bold">
                         ⏱️ {{ meal.prepTimeMinutes || 15 }}m • 🔥 {{ meal.calories || 400 }} kcal
                       </span>
                     </div>
@@ -147,7 +147,7 @@
                 ) {
                   <div
                     class="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                    <span class="text-amber-800 dark:text-amber-200 font-medium truncate">
+                    <span class="text-amber-800 dark:text-amber-200 font-semibold truncate">
                       ⚠️ Missing: {{ meal.missingIngredients.join(', ') }}
                     </span>
                     <button
@@ -171,7 +171,7 @@
                     [class]="
                       meal.cooked
                         ? 'px-3 py-1.5 bg-emerald-600 text-white font-bold rounded-xl text-xs transition-all cursor-pointer ml-auto'
-                        : 'px-3 py-1.5 bg-surface-200/80 dark:bg-surface-700 hover:bg-surface-300 dark:hover:bg-surface-600 text-surface-800 dark:text-surface-200 font-semibold rounded-xl text-xs transition-all cursor-pointer ml-auto'
+                        : 'px-3 py-1.5 bg-surface-200 dark:bg-surface-700 hover:bg-surface-300 dark:hover:bg-surface-600 text-surface-900 dark:text-white font-bold rounded-xl text-xs transition-all cursor-pointer ml-auto'
                     ">
                     {{ meal.cooked ? '✓ Cooked!' : 'Mark as Cooked' }}
                   </button>
@@ -228,10 +228,10 @@
                 [class.opacity-60]="meal.cooked"
                 [class.bg-emerald-50/50]="meal.cooked"
                 [class.dark:bg-emerald-950/20]="meal.cooked"
-                class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200/80 dark:border-surface-800/80 space-y-2">
+                class="p-3 rounded-xl bg-surface-100 dark:bg-surface-800/90 border border-surface-200 dark:border-surface-700/80 space-y-2">
                 <div class="flex items-center justify-between gap-1">
                   <span
-                    class="text-[10px] font-bold px-2 py-0.5 rounded bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-300">
+                    class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100">
                     {{ meal.mealType }}
                   </span>
                   <button
@@ -243,7 +243,7 @@
                 <h4 class="font-bold text-xs text-surface-900 dark:text-white truncate">
                   {{ meal.recipeName }}
                 </h4>
-                <div class="text-[10px] text-surface-500 font-medium">
+                <div class="text-[10px] text-surface-600 dark:text-surface-300 font-semibold">
                   ⏱️ {{ meal.prepTimeMinutes || 15 }}m • 🔥 {{ meal.calories || 400 }} kcal
                 </div>
 
@@ -261,7 +261,7 @@
                   (click)="toggleCooked(meal.id)"
                   [class.bg-emerald-600]="meal.cooked"
                   [class.text-white]="meal.cooked"
-                  class="w-full py-1 text-[10px] bg-surface-200 dark:bg-surface-700 text-surface-800 dark:text-surface-200 font-semibold rounded">
+                  class="w-full py-1 text-[10px] bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-white font-bold rounded">
                   {{ meal.cooked ? '✓ Cooked' : 'Mark Cooked' }}
                 </button>
               </div>
