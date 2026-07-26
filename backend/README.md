@@ -1,47 +1,44 @@
 # Pantry Backend API
 
-A Deno + Hono backend for the Pantry inventory management application.
+A Deno + Hono RESTful backend API for the Pantry inventory management application, backed by an embedded SQLite database.
 
-## 📁 Project Structure
+---
+
+## 🏗️ Architecture
 
 ```
 backend/
 ├── src/
-│   ├── config/          # Configuration files
-│   │   └── env.ts       # Environment configuration
-│   ├── db/              # Database setup
-│   │   └── client.ts    # Database client
-│   ├── messages/        # Centralized message constants
-│   ├── middleware/      # Custom middleware
-│   │   ├── cors.ts      # CORS configuration
-│   │   ├── errorHandler.ts  # Global error handling
-│   │   └── logger.ts    # Request logging
-│   ├── models/          # TypeScript interfaces/types
-│   │   ├── data-models/     # Application data models (DTOs)
-│   │   └── schema-models/   # Database schema models
-│   ├── routes/          # API routes
-│   │   ├── index.ts     # Main router
-│   │   ├── categories.routes.ts
-│   │   ├── ingredients.routes.ts
+│   ├── config/          # Configuration & environment setup
+│   ├── db/              # SQLite client connection & PRAGMAs (WAL mode, FKs)
+│   ├── messages/        # Centralized response/error string constants
+│   ├── middleware/      # CORS, Request Logger, Global Error Handler
+│   ├── models/          # DTOs and Database schema interfaces
+│   ├── routes/          # Hono route endpoints
+│   │   ├── index.ts     # Main API router mounting sub-routes
 │   │   ├── items.routes.ts
+│   │   ├── ingredient-items.routes.ts
+│   │   ├── ingredients.routes.ts
+│   │   ├── ingredient-groups.routes.ts
+│   │   ├── nutrient-groups.routes.ts
 │   │   ├── locations.routes.ts
+│   │   ├── units.routes.ts
 │   │   ├── recipes.routes.ts
-│   │   └── units.routes.ts
-│   ├── services/        # Business logic
-│   ├── utils/           # Utility functions
-│   │   ├── response.ts  # API response helpers
-│   │   └── validators.ts # Generic validation functions
-│   ├── validators/      # Domain-specific validators
-│   └── app.ts           # Main app setup
-├── tests/               # Test files
-├── .env                 # Environment variables (not committed)
-├── .env.example         # Environment variables template
-├── .gitignore
-├── deno.json            # Deno configuration
-├── deno.lock            # Dependency lock file
-├── main.ts              # Entry point
+│   │   ├── meal-plans.routes.ts
+│   │   └── shopping-list.routes.ts
+│   ├── services/        # Business logic & SQL query execution
+│   ├── utils/           # Response formatter & generic validators
+│   ├── validators/      # Domain-specific payload validation
+│   └── app.ts           # Hono application setup
+├── migrations/          # Sequential SQL schema migrations
+├── scripts/             # Database migration, reset, and seed scripts
+├── tests/               # Backend integration and unit tests
+├── deno.json            # Deno tasks and import map
+├── main.ts              # Server entry point
 └── README.md
 ```
+
+---
 
 ## 🚀 Getting Started
 
@@ -49,107 +46,98 @@ backend/
 
 - [Deno](https://deno.land/) v1.37 or higher
 
-### Installation
+### Setup & Run
 
-1. Clone the repository
-
-2. Start PostgreSQL with Docker:
-   ```bash
-   docker compose up -d
-   ```
-
-3. Copy `.env.example` to `.env`:
+1. Copy `.env.example` to `.env` (optional for defaults):
    ```bash
    cp .env.example .env
    ```
 
-   The default values work for local development. Update if needed.
+2. Run database migrations:
+   ```bash
+   deno task db:migrate
+   ```
 
-4. The database will automatically initialize with the schema from `init.sql`
+3. Seed initial taxonomy data and sample inventory:
+   ```bash
+   deno task db:seed
+   ```
 
-### Running the Application
+4. Start development server:
+   ```bash
+   deno task dev
+   ```
+   *Server listens at `http://localhost:8000`.*
+
+---
+
+## 🛠️ CLI Tasks
 
 ```bash
-# Development mode with auto-reload
+# Start server in watch mode
 deno task dev
 
-# Production mode
+# Start server in production mode
 deno task start
 
-# Run tests
+# Run unit & integration tests
 deno task test
 
-# Database Operations
-deno task db:migrate  # Run pending migrations
-deno task db:reset    # Reset database (DATA LOSS)
-deno task db:seed     # Populate with sample data
-```
+# Run database migrations
+deno task db:migrate
 
-## 📡 API Endpoints
+# Seed database
+deno task db:seed
 
-### Health Check
+# Reset database schema & data
+deno task db:reset
 
-- `GET /api/health` - API health check
-
-### Items
-
-- `GET /api/items` - Get all items
-- `GET /api/items/expiring-soon` - Get items expiring soon (optional query param `?days=7`)
-- `GET /api/items/:id` - Get item by ID
-- `POST /api/items` - Create new item
-- `PUT /api/items/:id` - Update item
-- `DELETE /api/items/:id` - Delete item
-
-### Ingredients
-
-- `GET /api/ingredients` - Get all ingredients
-- `GET /api/ingredients/:id` - Get ingredient by ID
-- `POST /api/ingredients` - Create new ingredient
-- `PUT /api/ingredients/:id` - Update ingredient
-- `DELETE /api/ingredients/:id` - Delete ingredient
-
-### Categories
-
-- `GET /api/categories` - Get all categories
-- `GET /api/categories/:id` - Get category by ID
-- `GET /api/categories/:id/ingredients` - Get ingredients in a category
-
-### Units
-
-- `GET /api/units` - Get all units
-- `GET /api/units/:id` - Get unit by ID
-- `GET /api/units/convert` - Convert quantity (query params: `quantity`, `from`, `to`)
-
-### Locations
-
-- `GET /api/locations` - Get all locations
-- `GET /api/locations/:id` - Get location by ID
-
-### Recipes
-
-- `GET /api/recipes` - Get all recipes
-- `GET /api/recipes/:id` - Get recipe by ID
-- `POST /api/recipes` - Create new recipe
-- `PUT /api/recipes/:id` - Update recipe
-- `DELETE /api/recipes/:id` - Delete recipe
-
-## 🛠️ Development
-
-### Code Formatting
-
-```bash
+# Code formatting & linting
 deno fmt
-```
-
-### Linting
-
-```bash
 deno lint
 ```
 
-## 🏗️ Tech Stack
+---
+
+## 📡 API Endpoints Summary
+
+### System
+- `GET /api/health` - API health check
+
+### Inventory & Items
+- `GET /api/ingredient-items` - List physical inventory items (with optional filters)
+- `GET /api/ingredient-items/expiring-soon` - Get items expiring within specified days
+- `GET /api/ingredient-items/:id` - Get item details by ID
+- `POST /api/ingredient-items` - Add new inventory batch
+- `PUT /api/ingredient-items/:id` - Update inventory item
+- `DELETE /api/ingredient-items/:id` - Remove item
+
+### Taxonomy & Ingredients
+- `GET /api/ingredients` - List all master ingredients
+- `GET /api/ingredients/:id` - Get ingredient by ID
+- `POST /api/ingredients` - Create master ingredient
+- `PUT /api/ingredients/:id` - Update master ingredient
+- `DELETE /api/ingredients/:id` - Delete master ingredient
+- `GET /api/ingredient-groups` - List ingredient categories/groups
+- `GET /api/nutrient-groups` - List top-level nutrient groups
+
+### Locations & Units
+- `GET /api/locations` - Storage locations (Fridge, Freezer, Pantry, etc.)
+- `GET /api/units` - Measurement units & standard unit conversions
+
+### Recipes, Meal Planner & Shopping List
+- `GET /api/recipes` - List recipes with required ingredients
+- `POST /api/recipes` - Create new recipe
+- `GET /api/meal-plans` - Get scheduled meals
+- `POST /api/meal-plans` - Schedule a meal
+- `GET /api/shopping-list` - Get shopping list items
+- `POST /api/shopping-list` - Add/sync items to shopping list
+
+---
+
+## ⚙️ Tech Stack
 
 - **Runtime**: Deno
-- **Framework**: Hono
-- **Database**: PostgreSQL
-- **Testing**: Deno's built-in test runner
+- **Framework**: Hono (`jsr:@hono/hono`)
+- **Database**: SQLite (`@db/sqlite`) with WAL mode & Foreign Keys enabled
+- **Testing**: Deno built-in test runner
