@@ -100,3 +100,4 @@ Always adhere to the updated 4-tier domain hierarchy and terminology:
 - **UI/UX Principles:** Keep UI/UX clean and minimalist. Avoid verboseness, redundant copy, and unnecessary visual or structural complexity. Use design tokens when possible.
 - **Type Safety:** Always define explicit interfaces in `models/` for request/response bodies and component state.
 - **Formatting:** Run `deno fmt` for backend code and `npm run format` for frontend code before committing.
+- **Testing** After creating any new feature or fixing any bug, create a test to ensure that we do not regress to a previous state.
