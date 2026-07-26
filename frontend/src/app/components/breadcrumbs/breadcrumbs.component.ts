@@ -81,6 +81,20 @@ export class BreadcrumbsComponent implements OnInit {
           items.push({ label: 'Recipe Details', icon: 'pi pi-align-left' });
         }
       }
+    } else if (firstSegment === 'meal-planner') {
+      if (segments[1] === 'new') {
+        items.push({ label: 'Meal Planner', url: '/meal-planner', icon: 'pi pi-calendar' });
+        items.push({ label: 'Plan a Meal', icon: 'pi pi-plus-circle' });
+      } else {
+        items.push({ label: 'Meal Planner', icon: 'pi pi-calendar' });
+      }
+    } else if (firstSegment === 'shopping-list') {
+      if (segments[1] === 'new') {
+        items.push({ label: 'Shopping List', url: '/shopping-list', icon: 'pi pi-shopping-bag' });
+        items.push({ label: 'Add Shopping Item', icon: 'pi pi-plus-circle' });
+      } else {
+        items.push({ label: 'Shopping List', icon: 'pi pi-shopping-bag' });
+      }
     }
 
     this.breadcrumbs.set(items);
