@@ -172,6 +172,68 @@
       }
       <span class="whitespace-nowrap md:hidden">{{ 'nav.recipes' | transloco }}</span>
     </button>
+
+    <!-- Shopping List Link -->
+    <button
+      (click)="selectTab(tabs.ShoppingList)"
+      [attr.title]="'nav.shoppingList' | transloco"
+      [class.justify-center]="isCollapsed"
+      [class.px-2.5]="isCollapsed"
+      [class.px-3.5]="!isCollapsed"
+      [class.bg-primary-500/10]="isShoppingListActive()"
+      [class.dark:bg-primary-500/15]="isShoppingListActive()"
+      [class.text-primary-600]="isShoppingListActive()"
+      [class.dark:text-primary-400]="isShoppingListActive()"
+      [class.font-semibold]="isShoppingListActive()"
+      [class.text-surface-600]="!isShoppingListActive()"
+      [class.dark:text-surface-400]="!isShoppingListActive()"
+      [class.hover:bg-surface-100]="!isShoppingListActive()"
+      [class.dark:hover:bg-surface-800/60]="!isShoppingListActive()"
+      [class.hover:text-surface-900]="!isShoppingListActive()"
+      [class.dark:hover:text-surface-100]="!isShoppingListActive()"
+      class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative">
+      @if (isShoppingListActive()) {
+        <div class="absolute left-0 top-2 bottom-2 w-1 bg-primary-500 rounded-r-full"></div>
+      }
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+      </svg>
+      @if (!isCollapsed) {
+        <span class="whitespace-nowrap hidden md:inline">{{ 'nav.shoppingList' | transloco }}</span>
+      }
+      <span class="whitespace-nowrap md:hidden">{{ 'nav.shoppingList' | transloco }}</span>
+    </button>
+
+    <!-- Meal Planner Link -->
+    <button
+      (click)="selectTab(tabs.MealPlanner)"
+      [attr.title]="'nav.mealPlanner' | transloco"
+      [class.justify-center]="isCollapsed"
+      [class.px-2.5]="isCollapsed"
+      [class.px-3.5]="!isCollapsed"
+      [class.bg-primary-500/10]="isMealPlannerActive()"
+      [class.dark:bg-primary-500/15]="isMealPlannerActive()"
+      [class.text-primary-600]="isMealPlannerActive()"
+      [class.dark:text-primary-400]="isMealPlannerActive()"
+      [class.font-semibold]="isMealPlannerActive()"
+      [class.text-surface-600]="!isMealPlannerActive()"
+      [class.dark:text-surface-400]="!isMealPlannerActive()"
+      [class.hover:bg-surface-100]="!isMealPlannerActive()"
+      [class.dark:hover:bg-surface-800/60]="!isMealPlannerActive()"
+      [class.hover:text-surface-900]="!isMealPlannerActive()"
+      [class.dark:hover:text-surface-100]="!isMealPlannerActive()"
+      class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative">
+      @if (isMealPlannerActive()) {
+        <div class="absolute left-0 top-2 bottom-2 w-1 bg-primary-500 rounded-r-full"></div>
+      }
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+      </svg>
+      @if (!isCollapsed) {
+        <span class="whitespace-nowrap hidden md:inline">{{ 'nav.mealPlanner' | transloco }}</span>
+      }
+      <span class="whitespace-nowrap md:hidden">{{ 'nav.mealPlanner' | transloco }}</span>
+    </button>
   </nav>
 
   <!-- Sidebar Footer Options -->

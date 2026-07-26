@@ -51,4 +51,12 @@ export class SidebarComponent {
   isRecipesActive(): boolean {
     return this.activeTab === Tab.Recipes;
   }
+
+  isShoppingListActive(): boolean {
+    return this.activeTab === Tab.ShoppingList;
+  }
+
+  isMealPlannerActive(): boolean {
+    return this.activeTab === Tab.MealPlanner;
+  }
 }
