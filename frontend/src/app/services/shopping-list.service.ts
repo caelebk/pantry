@@ -1,32 +1,34 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { AddShoppingItemDTO, ShoppingItem } from '@models/shopping-list.model';
-import { ItemService } from './inventory/item.service';
 import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ShoppingListService {
-  private readonly itemService = inject(ItemService);
   private readonly toastService = inject(ToastService);
 
   private readonly itemsSignal = signal<ShoppingItem[]>([
     {
       id: 'shop-1',
-      name: 'Olive Oil',
+      name: 'Olive Oil (Extra Virgin)',
       category: 'Pantry',
       quantity: 1,
       unit: 'bottle',
       checked: false,
+      estimatedPrice: 9.99,
+      storeName: 'Trader Joe\'s',
       source: 'low_stock',
     },
     {
       id: 'shop-2',
       name: 'Heavy Cream',
       category: 'Dairy',
-      quantity: 500,
-      unit: 'ml',
+      quantity: 1,
+      unit: 'carton',
       checked: true,
+      estimatedPrice: 3.49,
+      storeName: 'Safeway',
       source: 'recipe_plan',
       recipeName: 'Creamy Garlic Chicken',
     },
@@ -37,8 +39,10 @@ export class ShoppingListService {
       quantity: 1,
       unit: 'bunch',
       checked: false,
+      estimatedPrice: 2.50,
+      storeName: 'Whole Foods',
       source: 'recipe_plan',
-      recipeName: 'Simple Pasta',
+      recipeName: 'Simple Tomato Basil Pasta',
     },
     {
       id: 'shop-4',
@@ -47,7 +51,33 @@ export class ShoppingListService {
       quantity: 2,
       unit: 'heads',
       checked: false,
+      estimatedPrice: 1.20,
+      storeName: 'Trader Joe\'s',
       source: 'low_stock',
+    },
+    {
+      id: 'shop-5',
+      name: 'Salmon Fillets',
+      category: 'Seafood',
+      quantity: 2,
+      unit: 'pcs',
+      checked: false,
+      estimatedPrice: 14.50,
+      storeName: 'Costco',
+      source: 'recipe_plan',
+      recipeName: 'Honey Garlic Salmon',
+    },
+    {
+      id: 'shop-6',
+      name: 'Parmesan Cheese',
+      category: 'Dairy',
+      quantity: 1,
+      unit: 'wedge',
+      checked: false,
+      estimatedPrice: 5.99,
+      storeName: 'Whole Foods',
+      source: 'recipe_plan',
+      recipeName: 'Simple Tomato Basil Pasta',
     },
   ]);
 
@@ -65,6 +95,8 @@ export class ShoppingListService {
       quantity: dto.quantity || 1,
       unit: dto.unit || 'pcs',
       checked: false,
+      estimatedPrice: dto.estimatedPrice || 0,
+      storeName: dto.storeName || '',
       source: dto.source || 'manual',
       recipeName: dto.recipeName,
     };
@@ -80,12 +112,27 @@ export class ShoppingListService {
       quantity: dto.quantity || 1,
       unit: dto.unit || 'pcs',
       checked: false,
+      estimatedPrice: dto.estimatedPrice || 0,
+      storeName: dto.storeName || '',
       source: dto.source || 'recipe_plan',
       recipeName: dto.recipeName,
     }));
 
     this.itemsSignal.update((curr) => [...newItems, ...curr]);
     this.toastService.showSuccess(`Added ${items.length} missing ingredient(s) to shopping list`, 'Shopping List');
+  }
+
+  updateItemPrice(id: string, price: number): void {
+    this.itemsSignal.update((curr) =>
+      curr.map((item) => (item.id === id ? { ...item, estimatedPrice: price } : item))
+    );
+  }
+
+  updateItemQuantity(id: string, qty: number): void {
+    if (qty <= 0) return;
+    this.itemsSignal.update((curr) =>
+      curr.map((item) => (item.id === id ? { ...item, quantity: qty } : item))
+    );
   }
 
   toggleItem(id: string): void {
@@ -117,7 +164,6 @@ export class ShoppingListService {
       return;
     }
 
-    // Keep non-checked items in list
     this.itemsSignal.update((curr) => curr.filter((i) => !i.checked));
     this.toastService.showSuccess(
       `Restocked ${checkedItems.length} item(s) directly into your pantry inventory!`,
