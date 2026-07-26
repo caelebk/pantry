@@ -184,7 +184,7 @@
                       @for (ing of groupSection.ingredients; track ing.id) {
                         <!-- Ingredient Row -->
                         <tr
-                          class="hover:bg-surface-50/80 dark:hover:bg-surface-800/40 transition-colors group cursor-pointer"
+                          class="odd:bg-surface-50/50 dark:odd:bg-surface-800/20 hover:bg-surface-100/80 dark:hover:bg-surface-800/50 transition-colors group cursor-pointer"
                           (click)="toggleRow(ing.id)">
                           <!-- Expand Chevron -->
                           <td class="py-2.5 px-3 text-center align-middle">
@@ -309,7 +309,7 @@
                                         class="divide-y divide-surface-100 dark:divide-surface-800/50 text-xs">
                                         @for (item of getConnectedItems(ing.id); track item.id) {
                                           <tr
-                                            class="hover:bg-surface-50 dark:hover:bg-surface-900/50 transition-colors">
+                                            class="odd:bg-surface-50/50 dark:odd:bg-surface-800/20 hover:bg-surface-100/80 dark:hover:bg-surface-900/50 transition-colors">
                                             <td
                                               class="py-2.5 px-3 font-semibold text-surface-900 dark:text-white align-middle">
                                               {{ item.name }}
