@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { DayOfWeek, MealType } from '@models/meal-planner.model';
 import { Recipe } from '@models/recipe.model';
@@ -25,6 +26,7 @@ export type PlannerSubTab = 'calendar' | 'daily';
   styleUrl: './meal-planner.component.scss',
 })
 export class MealPlannerComponent implements OnInit {
+  private readonly router = inject(Router);
   readonly mealPlannerService = inject(MealPlannerService);
   readonly recipeService = inject(RecipeService);
 
@@ -119,13 +121,12 @@ export class MealPlannerComponent implements OnInit {
 
   openAddModal(eventPayload?: { day: DayOfWeek; mealType: MealType }): void {
     if (eventPayload) {
-      this.selectedDay.set(eventPayload.day);
-      this.selectedMealType.set(eventPayload.mealType);
+      this.router.navigate(['/meal-planner/new'], {
+        queryParams: { day: eventPayload.day, type: eventPayload.mealType },
+      });
     } else {
-      this.selectedDay.set('Monday');
-      this.selectedMealType.set('Dinner');
+      this.router.navigate(['/meal-planner/new']);
     }
-    this.isAddModalOpen.set(true);
   }
 
   closeAddModal(): void {

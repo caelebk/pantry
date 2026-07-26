@@ -5,6 +5,7 @@ import { AddItemPageComponent } from './pages/inventory/add-item-page/add-item-p
 import { EditItemPageComponent } from './pages/inventory/edit-item-page/edit-item-page.component';
 import { InventoryComponent } from './pages/inventory/inventory.component';
 import { MealPlannerComponent } from './pages/meal-planner/meal-planner.component';
+import { PlanMealPageComponent } from './pages/meal-planner/plan-meal-page/plan-meal-page.component';
 import { AddRecipeFormComponent } from './pages/recipes/recipe-components/add-recipe-form/add-recipe-form.component';
 import { RecipeDetailComponent } from './pages/recipes/recipe-detail/recipe-detail.component';
 import { RecipesComponent } from './pages/recipes/recipes.component';
@@ -23,6 +24,8 @@ export const routes: Routes = [
   { path: 'recipes/:id/edit', component: AddRecipeFormComponent },
   { path: Tab.ShoppingList, component: ShoppingListComponent },
   { path: Tab.MealPlanner, component: MealPlannerComponent },
+  { path: 'meal-planner/new', component: PlanMealPageComponent },
+  { path: 'meal-planner/add', redirectTo: 'meal-planner/new', pathMatch: 'full' },
   { path: '**', redirectTo: Tab.Home },
 ];
 
