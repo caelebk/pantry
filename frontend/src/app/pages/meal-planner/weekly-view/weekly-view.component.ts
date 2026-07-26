@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
+
+export type WeeklyLayoutMode = 'grid' | 'timeline';
 
 @Component({
   selector: 'pantry-weekly-view',
@@ -19,6 +21,16 @@ export class WeeklyViewComponent {
   readonly days = this.mealPlannerService.days;
   readonly mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
 
+  layoutMode = signal<WeeklyLayoutMode>('grid');
+
+  setLayoutMode(mode: WeeklyLayoutMode): void {
+    this.layoutMode.set(mode);
+  }
+
+  getMealsForDay(day: DayOfWeek): PlannedMeal[] {
+    return this.meals.filter((m) => m.day === day);
+  }
+
   getMealsForSlot(day: DayOfWeek, mealType: MealType): PlannedMeal[] {
     return this.meals.filter((m) => m.day === day && m.mealType === mealType);
   }
@@ -29,7 +41,7 @@ export class WeeklyViewComponent {
       .reduce((sum, m) => sum + (m.calories || 0), 0);
   }
 
-  onRequestAdd(day: DayOfWeek, type: MealType): void {
+  onRequestAdd(day: DayOfWeek, type: MealType = 'Dinner'): void {
     this.addMealRequested.emit({ day, mealType: type });
   }
 
