@@ -36,27 +36,77 @@
         <span class="text-sm font-medium">Loading nutrient pillars...</span>
       </div>
     </div>
+  } @else if (nutrientGroups().length === 0) {
+    <div
+      class="glass-card rounded-2xl p-12 text-center border border-surface-200/80 dark:border-surface-800/80">
+      <div
+        class="w-16 h-16 rounded-2xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center mx-auto mb-4 text-purple-500 text-2xl">
+        <i class="pi pi-shield"></i>
+      </div>
+      <h4 class="text-base font-bold text-surface-900 dark:text-white mb-1">
+        No Nutrient Groups Found
+      </h4>
+      <p class="text-xs text-surface-500 dark:text-surface-400">
+        No nutrient groups exist in the database yet.
+      </p>
+    </div>
   } @else {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       @for (ng of nutrientGroups(); track ng.id) {
         <div
-          class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 bg-white/70 dark:bg-surface-900/70 p-6 shadow-md hover:shadow-xl transition-all space-y-4">
-          <div class="flex items-center gap-3">
-            <div
-              class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-2xl font-bold">
-              {{ ng.icon || '🧬' }}
+          class="glass-card rounded-2xl border border-surface-200/80 dark:border-surface-800/80 bg-white/80 dark:bg-surface-900/80 p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3.5">
+                <div
+                  class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-bold border shadow-xs"
+                  [style.backgroundColor]="(ng.color || '#8b5cf6') + '15'"
+                  [style.borderColor]="(ng.color || '#8b5cf6') + '30'">
+                  <span>{{ ng.icon || '🧬' }}</span>
+                </div>
+                <div>
+                  <h3 class="text-lg font-bold text-surface-900 dark:text-white">{{ ng.name }}</h3>
+                  <p class="text-xs text-surface-500 dark:text-surface-400 font-medium">
+                    Nutritional Pillar
+                  </p>
+                </div>
+              </div>
+
+              <span
+                class="px-2.5 py-1 text-xs font-bold rounded-full bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200/60 dark:border-surface-700/60">
+                {{ getCategoriesForNutrientGroup(ng.id).length }}
+                {{ getCategoriesForNutrientGroup(ng.id).length === 1 ? 'Group' : 'Groups' }}
+              </span>
             </div>
-            <div>
-              <h3 class="text-lg font-bold text-surface-900 dark:text-white">{{ ng.name }}</h3>
-              <p class="text-xs text-surface-500 dark:text-surface-400">Nutritional Pillar</p>
+
+            @if (ng.description) {
+              <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed font-medium">
+                {{ ng.description }}
+              </p>
+            }
+
+            <!-- Associated Ingredient Groups (Categories) Chips -->
+            <div class="pt-2 border-t border-surface-200/60 dark:border-surface-800/60 space-y-2">
+              <span
+                class="text-[11px] font-bold uppercase tracking-wider text-surface-400 dark:text-surface-500">
+                Associated Ingredient Groups
+              </span>
+              <div class="flex flex-wrap gap-1.5">
+                @if (getCategoriesForNutrientGroup(ng.id).length === 0) {
+                  <span class="text-xs text-surface-400 dark:text-surface-500 italic">
+                    None assigned
+                  </span>
+                } @else {
+                  @for (cat of getCategoriesForNutrientGroup(ng.id); track cat.id) {
+                    <span
+                      class="px-2.5 py-1 rounded-lg text-xs font-bold bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700/80">
+                      {{ cat.name }}
+                    </span>
+                  }
+                }
+              </div>
             </div>
           </div>
-
-          @if (ng.description) {
-            <p class="text-sm text-surface-600 dark:text-surface-300">
-              {{ ng.description }}
-            </p>
-          }
         </div>
       }
     </div>
