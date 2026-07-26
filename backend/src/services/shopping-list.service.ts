@@ -95,7 +95,7 @@ export class ShoppingListBackendService {
   async deleteCheckedItems(): Promise<number> {
     const db = getDB();
     const result = db.prepare('DELETE FROM shopping_list_items WHERE checked = 1').run();
-    return result.changes || 0;
+    return typeof result === 'number' ? result : 0;
   }
 
   private mapRowToDTO(row: ShoppingListItemRow): ShoppingListItemDTO {
