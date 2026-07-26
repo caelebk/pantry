@@ -28,7 +28,6 @@
   p-datepicker, .p-datepicker, .p-date-picker {
     width: 100% !important;
     display: flex !important;
-    flex-direction: row !important;
     align-items: center !important;
     position: relative !important;
 
@@ -49,7 +48,10 @@
       line-height: 1 !important;
     }
 
-    .p-datepicker-dropdown, .p-datepicker-icon-button, .p-datepicker-input-icon {
+    .p-datepicker-dropdown,
+    .p-datepicker-icon-button,
+    .p-datepicker-input-icon,
+    .p-datepicker-icon {
       position: absolute !important;
       right: 0.75rem !important;
       top: 50% !important;
@@ -58,6 +60,16 @@
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
+      height: 1rem !important;
+      width: 1rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+
+      svg, p-icon {
+        width: 1rem !important;
+        height: 1rem !important;
+        display: block !important;
+      }
     }
   }
 }
