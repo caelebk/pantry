@@ -33,25 +33,9 @@ function seedDB() {
         "DELETE FROM sqlite_sequence WHERE name IN ('locations', 'nutrient_groups', 'ingredient_groups', 'units', 'difficulties');",
       );
 
-      // Seed bare necessities (Locations, Nutrient Groups, Ingredient Groups, Units, Difficulties)
-      const { locationIds, categoryIds, unitIds, difficultyIds } = seedBareNecessities(db);
-
-      // 5. Insert Ingredients
-      console.log('🥦 Seeding ingredients...');
-      const insertIngredient = db.prepare(
-        'INSERT INTO ingredients (id, name, ingredient_group_id, default_unit_id) VALUES (?, ?, ?, ?)',
-      );
-      for (const ing of seedData.ingredients) {
-        const catId = categoryIds.get(ing.category);
-        const unitId = unitIds.get(ing.default_unit);
-
-        if (!catId) throw new Error(`Ingredient group not found: ${ing.category}`);
-        if (!unitId) throw new Error(`Unit not found: ${ing.default_unit}`);
-
-        const id = crypto.randomUUID();
-        insertIngredient.run(id, ing.name, catId, unitId);
-        ingredientIds.set(ing.name, id);
-      }
+      // Seed bare necessities (Locations, Nutrient Groups, Ingredient Groups, Units, Difficulties, Master Ingredients Catalog)
+      const { locationIds, categoryIds, unitIds, difficultyIds, ingredientIds } =
+        seedBareNecessities(db);
 
       // 6. Insert Ingredient Items (Pantry Inventory)
       console.log('📦 Seeding pantry ingredient items...');
@@ -269,5 +253,23 @@ export function seedBareNecessities(db: ReturnType<typeof getDB>) {
     difficultyIds.set(diff.name, row.id);
   }
 
-  return { locationIds, nutrientGroupIds, categoryIds, unitIds, difficultyIds };
+  // 6. Insert Master Ingredients Catalog
+  console.log('🥦 Seeding master ingredients catalog...');
+  const ingredientIds = new Map<string, string>();
+  const insertIngredient = db.prepare(
+    'INSERT INTO ingredients (id, name, ingredient_group_id, default_unit_id) VALUES (?, ?, ?, ?)',
+  );
+  for (const ing of seedData.ingredients) {
+    const catId = categoryIds.get(ing.category);
+    const unitId = unitIds.get(ing.default_unit);
+
+    if (!catId) throw new Error(`Ingredient group not found: ${ing.category}`);
+    if (!unitId) throw new Error(`Unit not found: ${ing.default_unit}`);
+
+    const id = crypto.randomUUID();
+    insertIngredient.run(id, ing.name, catId, unitId);
+    ingredientIds.set(ing.name, id);
+  }
+
+  return { locationIds, nutrientGroupIds, categoryIds, unitIds, difficultyIds, ingredientIds };
 }
