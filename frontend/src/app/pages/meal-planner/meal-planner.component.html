@@ -1,0 +1,236 @@
+<div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="space-y-1">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-surface-900 dark:text-white tracking-tight">Weekly Meal Planner</h1>
+          <p class="text-xs sm:text-sm text-surface-500 dark:text-surface-400">Schedule recipe meals, track ingredient availability, and auto-sync to shopping list</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Add Action -->
+    <button
+      (click)="openAddModal('Monday', 'Dinner')"
+      class="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all duration-200 cursor-pointer active:scale-95 self-start md:self-auto">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Plan a Meal
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="p-4 rounded-2xl bg-white/70 dark:bg-surface-900/60 backdrop-blur-md border border-surface-200/60 dark:border-surface-800/80 shadow-sm flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl">
+        {{ totalPlannedCount() }}
+      </div>
+      <div>
+        <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">Planned Meals</div>
+        <div class="text-sm font-semibold text-surface-800 dark:text-surface-200">This Week</div>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-2xl bg-white/70 dark:bg-surface-900/60 backdrop-blur-md border border-surface-200/60 dark:border-surface-800/80 shadow-sm flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl">
+        {{ cookedCount() }}
+      </div>
+      <div>
+        <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">Completed</div>
+        <div class="text-sm font-semibold text-surface-800 dark:text-surface-200">Meals Cooked</div>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-2xl bg-white/70 dark:bg-surface-900/60 backdrop-blur-md border border-surface-200/60 dark:border-surface-800/80 shadow-sm flex items-center gap-4">
+      <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xl">
+        {{ missingItemsCount() }}
+      </div>
+      <div>
+        <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">Missing Needed</div>
+        <div class="text-sm font-semibold text-surface-800 dark:text-surface-200">Ingredients</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly 7-Day Grid View -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
+    @for (day of days; track day) {
+      <div class="rounded-2xl bg-white/70 dark:bg-surface-900/70 backdrop-blur-xl border border-surface-200/60 dark:border-surface-800/80 shadow-md p-3.5 flex flex-col gap-3 min-h-[380px]">
+        
+        <!-- Day Header -->
+        <div class="pb-2 border-b border-surface-200/60 dark:border-surface-800/80 flex items-center justify-between">
+          <span class="font-bold text-sm text-surface-900 dark:text-white tracking-wide uppercase text-xs">
+            {{ day }}
+          </span>
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-500">
+            {{ getMealsForSlot(day, 'Breakfast').length + getMealsForSlot(day, 'Lunch').length + getMealsForSlot(day, 'Dinner').length }} planned
+          </span>
+        </div>
+
+        <!-- Meal Slots (Breakfast, Lunch, Dinner) -->
+        <div class="flex-1 space-y-3">
+          @for (type of mealTypes; track type) {
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-[11px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-wider">
+                <span>{{ type }}</span>
+                <button
+                  (click)="openAddModal(day, type)"
+                  title="Add meal to {{ day }} {{ type }}"
+                  class="text-primary-600 dark:text-primary-400 hover:underline cursor-pointer text-[11px] font-medium">
+                  + Add
+                </button>
+              </div>
+
+              <!-- Planned Meals in Slot -->
+              @for (meal of getMealsForSlot(day, type); track meal.id) {
+                <div
+                  [class.opacity-60]="meal.cooked"
+                  [class.bg-emerald-500/10]="meal.cooked"
+                  [class.border-emerald-500/30]="meal.cooked"
+                  class="p-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700/80 shadow-2xs space-y-2 transition-all group">
+                  
+                  <div class="flex items-start justify-between gap-1">
+                    <div class="font-semibold text-xs text-surface-900 dark:text-white leading-tight">
+                      {{ meal.recipeName }}
+                    </div>
+
+                    <button
+                      (click)="removeMeal(meal.id)"
+                      title="Remove from plan"
+                      class="text-surface-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div class="flex items-center gap-2 text-[10px] text-surface-500 dark:text-surface-400">
+                    <span>⏱️ {{ meal.prepTimeMinutes || 15 }}m</span>
+                    <span>•</span>
+                    <span>🍽️ {{ meal.servings }} serv</span>
+                  </div>
+
+                  <!-- Missing Ingredients Warning & Shopping List Action -->
+                  @if (meal.missingIngredients && meal.missingIngredients.length > 0 && !meal.cooked) {
+                    <div class="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[10px] space-y-1">
+                      <div class="text-amber-600 dark:text-amber-400 font-medium">
+                        ⚠️ Missing: {{ meal.missingIngredients.join(', ') }}
+                      </div>
+                      <button
+                        (click)="addMissingToShoppingList(meal)"
+                        class="w-full py-1 px-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 font-semibold rounded text-[10px] transition-colors cursor-pointer flex items-center justify-center gap-1">
+                        🛒 Add Missing to Cart
+                      </button>
+                    </div>
+                  } @else if (!meal.cooked) {
+                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+                      <span>✅ Ready to Cook</span>
+                    </div>
+                  }
+
+                  <!-- Cook Action Button -->
+                  <button
+                    (click)="toggleCooked(meal.id)"
+                    [class.bg-emerald-600]="meal.cooked"
+                    [class.text-white]="meal.cooked"
+                    [class.bg-surface-200/70]="!meal.cooked"
+                    [class.dark:bg-surface-700]="!meal.cooked"
+                    [class.text-surface-700]="!meal.cooked"
+                    [class.dark:text-surface-200]="!meal.cooked"
+                    class="w-full py-1 px-2 font-medium text-[11px] rounded-lg transition-colors cursor-pointer text-center">
+                    {{ meal.cooked ? '✓ Cooked!' : 'Mark as Cooked' }}
+                  </button>
+                </div>
+              } @empty {
+                <div
+                  (click)="openAddModal(day, type)"
+                  class="p-2.5 rounded-xl border border-dashed border-surface-200 dark:border-surface-700/60 text-center text-[11px] text-surface-400 dark:text-surface-500 hover:border-primary-400 hover:text-primary-500 cursor-pointer transition-colors">
+                  + Empty Slot
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Add Meal Modal -->
+  @if (isAddModalOpen()) {
+    <div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="w-full max-w-md bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 shadow-2xl p-6 space-y-5">
+        <div class="flex items-center justify-between border-b border-surface-200 dark:border-surface-800 pb-3">
+          <h3 class="text-lg font-bold text-surface-900 dark:text-white">Plan Meal</h3>
+          <button (click)="closeAddModal()" class="text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Day Select -->
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-surface-700 dark:text-surface-300">Day of Week</label>
+            <select
+              [(ngModel)]="selectedDay"
+              class="w-full px-3 py-2 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white text-sm">
+              @for (d of days; track d) {
+                <option [value]="d">{{ d }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Meal Type Select -->
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-surface-700 dark:text-surface-300">Meal Time</label>
+            <select
+              [(ngModel)]="selectedMealType"
+              class="w-full px-3 py-2 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white text-sm">
+              @for (m of mealTypes; track m) {
+                <option [value]="m">{{ m }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Recipe Select -->
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-surface-700 dark:text-surface-300">Select Recipe</label>
+            @if (isLoadingRecipes()) {
+              <div class="text-xs text-surface-500">Loading recipes...</div>
+            } @else {
+              <select
+                [(ngModel)]="selectedRecipeId"
+                class="w-full px-3 py-2 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white text-sm">
+                @for (r of availableRecipes(); track r.id) {
+                  <option [value]="r.id">{{ r.name }}</option>
+                }
+              </select>
+            }
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-surface-200 dark:border-surface-800">
+          <button
+            (click)="closeAddModal()"
+            class="px-4 py-2 border border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-300 text-sm font-medium rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button
+            (click)="saveMealPlan()"
+            [disabled]="!selectedRecipeId()"
+            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-all cursor-pointer shadow-md">
+            Save to Plan
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
