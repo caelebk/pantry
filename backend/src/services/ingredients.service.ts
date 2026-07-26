@@ -49,10 +49,11 @@ export class IngredientsService {
       const db = getDB();
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
+      const groupId = ingredient.ingredientGroupId ?? ingredient.categoryId ?? null;
 
       db.prepare(
-        'INSERT INTO ingredients (id, name, category_id, default_unit_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
-      ).run(id, ingredient.name, ingredient.categoryId ?? null, ingredient.defaultUnitId ?? null, now, now);
+        'INSERT INTO ingredients (id, name, ingredient_group_id, default_unit_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+      ).run(id, ingredient.name, groupId, ingredient.defaultUnitId ?? null, now, now);
 
       const row = db.prepare('SELECT * FROM ingredients WHERE id = ?').get(id) as IngredientRow;
       return this.mapIngredientRowToIngredient(row);
@@ -74,12 +75,13 @@ export class IngredientsService {
   ): Promise<IngredientDTO | null> {
     try {
       const db = getDB();
+      const groupId = ingredient.ingredientGroupId ?? ingredient.categoryId ?? null;
 
       db.prepare(
-        'UPDATE ingredients SET name = COALESCE(?, name), category_id = COALESCE(?, category_id), default_unit_id = COALESCE(?, default_unit_id) WHERE id = ?',
+        'UPDATE ingredients SET name = COALESCE(?, name), ingredient_group_id = COALESCE(?, ingredient_group_id), default_unit_id = COALESCE(?, default_unit_id) WHERE id = ?',
       ).run(
         ingredient.name ?? null,
-        ingredient.categoryId ?? null,
+        groupId,
         ingredient.defaultUnitId ?? null,
         id,
       );
@@ -109,26 +111,28 @@ export class IngredientsService {
   }
 
   /**
-   * Retrieves all ingredients by category from the database.
-   * @param {string} categoryId - The ID of the category to retrieve ingredients from.
+   * Retrieves all ingredients by ingredient group / category from the database.
+   * @param {number} groupId - The ID of the group to retrieve ingredients from.
    * @returns {Promise<IngredientDTO[]>} A promise that resolves to an array of Ingredient objects.
    */
-  async getIngredientsByCategory(categoryId: number): Promise<IngredientDTO[]> {
+  async getIngredientsByCategory(groupId: number): Promise<IngredientDTO[]> {
     try {
       const db = getDB();
-      const rows = db.prepare('SELECT * FROM ingredients WHERE category_id = ?').all(categoryId) as IngredientRow[];
+      const rows = db.prepare('SELECT * FROM ingredients WHERE ingredient_group_id = ?').all(groupId) as IngredientRow[];
       return rows.map(this.mapIngredientRowToIngredient);
     } catch (error: unknown) {
-      console.error('Error finding ingredients by category:', error);
+      console.error('Error finding ingredients by group:', error);
       throw new Error(IngredientMessages.DB_RETRIEVE_ITEMS_ERROR);
     }
   }
 
   private mapIngredientRowToIngredient(row: IngredientRow): IngredientDTO {
+    const groupId = row.ingredient_group_id ?? row.category_id ?? undefined;
     return {
       id: row.id,
       name: row.name,
-      categoryId: row.category_id ? row.category_id : undefined,
+      ingredientGroupId: groupId,
+      categoryId: groupId,
       defaultUnitId: row.default_unit_id ? row.default_unit_id : undefined,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),

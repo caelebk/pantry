@@ -1,26 +1,35 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { ApiResponse } from "@models/http.model";
-import { NutrientType } from "@models/nutrient-type.model";
+import { NutrientGroup } from "@models/nutrient-type.model";
 import { mapResponseData } from "@utility/httpUtility/HttpResponse.operator";
 import { Observable } from "rxjs";
 
 @Injectable({
-    providedIn: "root",
+  providedIn: "root",
 })
 export class NutrientTypeService {
-    private readonly http = inject(HttpClient);
-    private readonly apiUrl = "http://localhost:8000/api/nutrient-types";
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = "http://localhost:8000/api/nutrient-groups";
 
-    getNutrientTypes(): Observable<NutrientType[]> {
-        return this.http
-            .get<ApiResponse<NutrientType[]>>(this.apiUrl)
-            .pipe(mapResponseData<NutrientType[]>());
-    }
+  getNutrientGroups(): Observable<NutrientGroup[]> {
+    return this.http
+      .get<ApiResponse<NutrientGroup[]>>(this.apiUrl)
+      .pipe(mapResponseData<NutrientGroup[]>());
+  }
 
-    getNutrientTypeById(id: number): Observable<NutrientType> {
-        return this.http
-            .get<ApiResponse<NutrientType>>(`${this.apiUrl}/${id}`)
-            .pipe(mapResponseData<NutrientType>());
-    }
+  getNutrientGroupById(id: number): Observable<NutrientGroup> {
+    return this.http
+      .get<ApiResponse<NutrientGroup>>(`${this.apiUrl}/${id}`)
+      .pipe(mapResponseData<NutrientGroup>());
+  }
+
+  // Legacy Aliases
+  getNutrientTypes(): Observable<NutrientGroup[]> {
+    return this.getNutrientGroups();
+  }
+
+  getNutrientTypeById(id: number): Observable<NutrientGroup> {
+    return this.getNutrientGroupById(id);
+  }
 }

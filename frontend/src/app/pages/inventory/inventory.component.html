@@ -1,5 +1,6 @@
-<!-- Page Title & Header Actions -->
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+<div class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+  <!-- Page Title & Header Actions -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
   <div>
     <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
       {{ 'inventory.title' | transloco }}
@@ -10,8 +11,7 @@
   </div>
 
   <div class="flex items-center gap-3">
-    <button
-      (click)="openAddModal()"
+    <button (click)="openAddModal()"
       class="px-5 py-3 cursor-pointer inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl shadow-md shadow-primary-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
       <i class="pi pi-plus text-base font-bold"></i>
       <span>Add New Item</span>
@@ -21,9 +21,7 @@
 
 <!-- Tab Navigation -->
 <div class="mb-6">
-  <pantry-tab-navigation
-    [activeTab]="activeTab"
-    [unassignedCount]="unassignedItems.length"
+  <pantry-tab-navigation [activeTab]="activeTab" [unassignedCount]="unassignedItems.length"
     (tabChange)="onTabChange($event)">
   </pantry-tab-navigation>
 </div>
@@ -32,411 +30,383 @@
 
 <!-- Inventory Items View -->
 @if (activeTab === 'items') {
-  <!-- Filter & Control Bar -->
-  <div class="glass-card rounded-2xl p-4 mb-8 border border-surface-200/60 dark:border-surface-800/80 relative z-20">
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-      
-      <!-- Search Input -->
-      <div class="relative flex-1 min-w-[240px]">
-        <i class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 text-sm"></i>
-        <input
-          type="text"
-          placeholder="Search items by name..."
-          [(ngModel)]="searchQuery"
-          class="w-full pl-10 pr-4 py-2.5 bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-700/80 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
-        @if (searchQuery) {
-          <button (click)="searchQuery = ''" class="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200">
-            <i class="pi pi-times text-xs"></i>
-          </button>
-        }
-      </div>
+<!-- Filter & Control Bar -->
+<div class="glass-card rounded-2xl p-4 mb-8 border border-surface-200/60 dark:border-surface-800/80 relative z-20">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
 
-      <!-- Controls Group -->
-      <div class="flex flex-wrap items-center gap-3">
-        
-        <!-- Status Filter Pills -->
-        <div class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs">
-          <button
-            (click)="setStatusFilter('all')"
-            [class.bg-white]="selectedStatusFilter === 'all'"
-            [class.dark:bg-surface-700]="selectedStatusFilter === 'all'"
-            [class.shadow-xs]="selectedStatusFilter === 'all'"
-            [class.text-primary-600]="selectedStatusFilter === 'all'"
-            [class.dark:text-primary-400]="selectedStatusFilter === 'all'"
-            [class.font-bold]="selectedStatusFilter === 'all'"
-            [class.text-surface-600]="selectedStatusFilter !== 'all'"
-            [class.dark:text-surface-400]="selectedStatusFilter !== 'all'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
-            All
-          </button>
-          <button
-            (click)="setStatusFilter('fresh')"
-            [class.bg-white]="selectedStatusFilter === 'fresh'"
-            [class.dark:bg-surface-700]="selectedStatusFilter === 'fresh'"
-            [class.shadow-xs]="selectedStatusFilter === 'fresh'"
-            [class.text-emerald-600]="selectedStatusFilter === 'fresh'"
-            [class.dark:text-emerald-400]="selectedStatusFilter === 'fresh'"
-            [class.font-bold]="selectedStatusFilter === 'fresh'"
-            [class.text-surface-600]="selectedStatusFilter !== 'fresh'"
-            [class.dark:text-surface-400]="selectedStatusFilter !== 'fresh'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
-            <span>Fresh</span>
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          </button>
-          <button
-            (click)="setStatusFilter('expiring')"
-            [class.bg-white]="selectedStatusFilter === 'expiring'"
-            [class.dark:bg-surface-700]="selectedStatusFilter === 'expiring'"
-            [class.shadow-xs]="selectedStatusFilter === 'expiring'"
-            [class.text-amber-600]="selectedStatusFilter === 'expiring'"
-            [class.dark:text-amber-400]="selectedStatusFilter === 'expiring'"
-            [class.font-bold]="selectedStatusFilter === 'expiring'"
-            [class.text-surface-600]="selectedStatusFilter !== 'expiring'"
-            [class.dark:text-surface-400]="selectedStatusFilter !== 'expiring'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
-            <span>Near Expiry</span>
-            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-          </button>
-          <button
-            (click)="setStatusFilter('expired')"
-            [class.bg-white]="selectedStatusFilter === 'expired'"
-            [class.dark:bg-surface-700]="selectedStatusFilter === 'expired'"
-            [class.shadow-xs]="selectedStatusFilter === 'expired'"
-            [class.text-rose-600]="selectedStatusFilter === 'expired'"
-            [class.dark:text-rose-400]="selectedStatusFilter === 'expired'"
-            [class.font-bold]="selectedStatusFilter === 'expired'"
-            [class.text-surface-600]="selectedStatusFilter !== 'expired'"
-            [class.dark:text-surface-400]="selectedStatusFilter !== 'expired'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
-            <span>Expired</span>
-            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-          </button>
-        </div>
-
-        <!-- Location Filter Styled Dropdown (PrimeNG p-select) -->
-        <div class="flex items-center gap-1">
-          <p-select
-            [(ngModel)]="selectedLocationId"
-            (onChange)="resetPagination()"
-            [options]="locationSelectOptions"
-            optionLabel="name"
-            optionValue="id"
-            appendTo="body"
-            placeholder="Select Location"
-            styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
-            <ng-template pTemplate="selectedItem" let-selected>
-              @if (selected) {
-                <div class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-surface-200">
-                  <span>{{ selected.icon }}</span>
-                  <span>{{ selected.name }}</span>
-                </div>
-              }
-            </ng-template>
-            <ng-template pTemplate="item" let-item>
-              <div class="flex items-center gap-2 text-xs font-medium py-0.5">
-                <span>{{ item.icon }}</span>
-                <span>{{ item.name }}</span>
-              </div>
-            </ng-template>
-          </p-select>
-
-          @if (selectedLocationId !== null) {
-            <button
-              type="button"
-              (click)="selectedLocationId = null; resetPagination()"
-              class="p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
-              title="Reset location filter">
-              <i class="pi pi-times text-xs font-bold"></i>
-            </button>
-          }
-        </div>
-
-        <!-- View Mode Toggle (Table / Grid) -->
-        <div class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs">
-          <button
-            (click)="viewMode = 'table'"
-            [class.bg-white]="viewMode === 'table'"
-            [class.dark:bg-surface-700]="viewMode === 'table'"
-            [class.shadow-xs]="viewMode === 'table'"
-            [class.text-primary-600]="viewMode === 'table'"
-            [class.dark:text-primary-400]="viewMode === 'table'"
-            [class.font-bold]="viewMode === 'table'"
-            [class.text-surface-600]="viewMode !== 'table'"
-            [class.dark:text-surface-400]="viewMode !== 'table'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
-            title="Table View">
-            <i class="pi pi-list text-xs"></i>
-            <span>Table</span>
-          </button>
-          <button
-            (click)="viewMode = 'grid'"
-            [class.bg-white]="viewMode === 'grid'"
-            [class.dark:bg-surface-700]="viewMode === 'grid'"
-            [class.shadow-xs]="viewMode === 'grid'"
-            [class.text-primary-600]="viewMode === 'grid'"
-            [class.dark:text-primary-400]="viewMode === 'grid'"
-            [class.font-bold]="viewMode === 'grid'"
-            [class.text-surface-600]="viewMode !== 'grid'"
-            [class.dark:text-surface-400]="viewMode !== 'grid'"
-            class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
-            title="Grid Cards View">
-            <i class="pi pi-th-large text-xs"></i>
-            <span>Grid</span>
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- Inventory Content Area (Table View or Grid Cards) -->
-  @if (!isLoading()) {
-    @if (filteredItems.length > 0) {
-      @if (viewMode === 'table') {
-        <!-- High-Density Interactive Data Table -->
-        <div class="glass-card rounded-2xl overflow-hidden border border-surface-200/70 dark:border-surface-800/80 shadow-xs">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="bg-surface-100/70 dark:bg-surface-800/50 border-b border-surface-200/80 dark:border-surface-800 text-[11px] font-extrabold uppercase tracking-wider text-surface-500 dark:text-surface-400 select-none">
-                  
-                  <!-- Item Name Column Header -->
-                  <th (click)="toggleSort('name')" class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                    <div class="flex items-center gap-1.5">
-                      <span>Item Name</span>
-                      @if (sortBy === 'name') {
-                        <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'" [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
-                      } @else {
-                        <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
-                      }
-                    </div>
-                  </th>
-
-                  <!-- Location Column Header -->
-                  <th class="py-3.5 px-4">
-                    <span>Location</span>
-                  </th>
-
-                  <!-- Quantity Column Header -->
-                  <th (click)="toggleSort('quantity')" class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                    <div class="flex items-center gap-1.5">
-                      <span>Quantity</span>
-                      @if (sortBy === 'quantity') {
-                        <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'" [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
-                      } @else {
-                        <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
-                      }
-                    </div>
-                  </th>
-
-                  <!-- Expiration Date Column Header -->
-                  <th (click)="toggleSort('expiration')" class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                    <div class="flex items-center gap-1.5">
-                      <span>Expiration Date</span>
-                      @if (sortBy === 'expiration') {
-                        <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'" [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
-                      } @else {
-                        <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
-                      }
-                    </div>
-                  </th>
-
-                  <!-- Purchase Date Column Header -->
-                  <th (click)="toggleSort('purchase')" class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors hidden md:table-cell">
-                    <div class="flex items-center gap-1.5">
-                      <span>Purchased</span>
-                      @if (sortBy === 'purchase') {
-                        <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'" [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
-                      } @else {
-                        <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
-                      }
-                    </div>
-                  </th>
-
-                  <!-- Actions Header -->
-                  <th class="py-3.5 px-4 text-right">
-                    <span>Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-surface-200/60 dark:divide-surface-800/60 text-xs font-medium">
-                @for (item of displayedItems; track item.id; let i = $index) {
-                  <tr
-                    (click)="onEditItem(item)"
-                    [@staggeredFadeIn]="{ value: '', params: { delay: i * (staggerDelayPerItemMs / 2) } }"
-                    class="hover:bg-primary-50/50 dark:hover:bg-surface-800/60 transition-colors group cursor-pointer">
-                    
-                    <!-- Item Name & Freshness Badge -->
-                    <td class="py-3.5 px-4 font-bold text-surface-900 dark:text-white">
-                      <div class="flex items-center gap-2">
-                        <span class="truncate max-w-[200px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{{ item.name }}</span>
-                        @if (isExpiredItem(item)) {
-                          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
-                            🚨 Expired
-                          </span>
-                        } @else if (isExpiringSoonItem(item)) {
-                          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
-                            ⚠️ Expiring Soon
-                          </span>
-                        } @else {
-                          <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
-                            ✨ Fresh
-                          </span>
-                        }
-                      </div>
-                    </td>
-
-                    <!-- Location Pill -->
-                    <td class="py-3.5 px-4">
-                      <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 px-2.5 py-1 rounded-lg">
-                        <span>
-                          @if (item.location.name === 'Fridge') { ❄️ }
-                          @else if (item.location.name === 'Freezer') { 🧊 }
-                          @else { 🥫 }
-                        </span>
-                        <span>{{ item.location.name }}</span>
-                      </span>
-                    </td>
-
-                    <!-- Quantity (View-Only) -->
-                    <td class="py-3.5 px-4">
-                      <span class="font-extrabold text-surface-900 dark:text-white">
-                        {{ item.quantity }} <span class="text-xs font-normal text-surface-500">{{ item.unit.shortName }}</span>
-                      </span>
-                    </td>
-
-                    <!-- Expiration Date -->
-                    <td class="py-3.5 px-4">
-                      <span
-                        [class.text-rose-600]="isExpiredItem(item)"
-                        [class.dark:text-rose-400]="isExpiredItem(item)"
-                        [class.text-amber-600]="isExpiringSoonItem(item)"
-                        [class.dark:text-amber-400]="isExpiringSoonItem(item)"
-                        [class.font-bold]="isExpiredItem(item) || isExpiringSoonItem(item)"
-                        class="text-surface-700 dark:text-surface-300">
-                        {{ item.expirationDate | date: 'mediumDate' }}
-                      </span>
-                    </td>
-
-                    <!-- Purchased Date -->
-                    <td class="py-3.5 px-4 text-surface-500 dark:text-surface-400 hidden md:table-cell">
-                      {{ item.purchaseDate | date: 'mediumDate' }}
-                    </td>
-
-                    <!-- Actions Column -->
-                    <td class="py-3.5 px-4 text-right">
-                      <div class="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          (click)="onDeleteItem(item, $event)"
-                          class="p-2 rounded-lg text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
-                          title="Delete Item">
-                          <i class="pi pi-trash text-xs"></i>
-                        </button>
-                      </div>
-                    </td>
-
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </div>
-      } @else {
-        <!-- Grid View -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          @for (item of displayedItems; track item.name; let i = $index) {
-            <pantry-item-card
-              [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
-              [item]="item"
-              [units]="units"
-              [locations]="locations"
-              (delete)="onDeleteItem(item)"
-              (update)="onUpdateItem($event)"></pantry-item-card>
-          }
-        </div>
+    <!-- Search Input -->
+    <div class="relative flex-1 min-w-[240px]">
+      <i class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 text-sm"></i>
+      <input type="text" placeholder="Search items by name..." [(ngModel)]="searchQuery"
+        class="w-full pl-10 pr-4 py-2.5 bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-700/80 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
+      @if (searchQuery) {
+      <button (click)="searchQuery = ''"
+        class="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200">
+        <i class="pi pi-times text-xs"></i>
+      </button>
       }
+    </div>
 
-      <!-- Lazy Loading Progress Bar & Controls -->
-      <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-50 dark:bg-surface-800/40 rounded-2xl border border-surface-200/80 dark:border-surface-700/60 text-xs font-semibold text-surface-600 dark:text-surface-300">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Showing {{ displayedItems.length }} of {{ filteredItems.length }} items</span>
-        </div>
+    <!-- Controls Group -->
+    <div class="flex flex-wrap items-center gap-3">
 
-        @if (displayLimit < filteredItems.length) {
-          <button
-            (click)="loadMoreItems()"
-            type="button"
-            class="px-4 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer flex items-center gap-2">
-            <span>Load More Items (+15)</span>
-            <i class="pi pi-angle-down text-xs"></i>
-          </button>
-        } @else {
-          <span class="text-surface-400 font-normal">All items loaded</span>
-        }
-      </div>
-    } @else {
-      <!-- Empty Filter State -->
-      <div class="glass-card rounded-2xl p-12 text-center max-w-md mx-auto border border-surface-200/60 dark:border-surface-800/80">
-        <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mx-auto mb-4 text-surface-400 dark:text-surface-500 text-2xl">
-          <i class="pi pi-box"></i>
-        </div>
-        <h4 class="text-lg font-bold text-surface-900 dark:text-white mb-2">No Items Found</h4>
-        <p class="text-sm text-surface-500 dark:text-surface-400 mb-6">
-          No inventory items match your current search and filter criteria.
-        </p>
-        <button
-          (click)="searchQuery = ''; selectedLocationId = null; selectedStatusFilter = 'all'"
-          class="px-4 py-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 font-semibold text-xs rounded-xl transition-all">
-          Reset Filters
+      <!-- Status Filter Pills -->
+      <div class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs">
+        <button (click)="setStatusFilter('all')" [class.bg-white]="selectedStatusFilter === 'all'"
+          [class.dark:bg-surface-700]="selectedStatusFilter === 'all'"
+          [class.shadow-xs]="selectedStatusFilter === 'all'" [class.text-primary-600]="selectedStatusFilter === 'all'"
+          [class.dark:text-primary-400]="selectedStatusFilter === 'all'"
+          [class.font-bold]="selectedStatusFilter === 'all'" [class.text-surface-600]="selectedStatusFilter !== 'all'"
+          [class.dark:text-surface-400]="selectedStatusFilter !== 'all'"
+          class="px-3 py-1.5 rounded-lg transition-all cursor-pointer">
+          All
+        </button>
+        <button (click)="setStatusFilter('fresh')" [class.bg-white]="selectedStatusFilter === 'fresh'"
+          [class.dark:bg-surface-700]="selectedStatusFilter === 'fresh'"
+          [class.shadow-xs]="selectedStatusFilter === 'fresh'"
+          [class.text-emerald-600]="selectedStatusFilter === 'fresh'"
+          [class.dark:text-emerald-400]="selectedStatusFilter === 'fresh'"
+          [class.font-bold]="selectedStatusFilter === 'fresh'"
+          [class.text-surface-600]="selectedStatusFilter !== 'fresh'"
+          [class.dark:text-surface-400]="selectedStatusFilter !== 'fresh'"
+          class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
+          <span>Fresh</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        </button>
+        <button (click)="setStatusFilter('expiring')" [class.bg-white]="selectedStatusFilter === 'expiring'"
+          [class.dark:bg-surface-700]="selectedStatusFilter === 'expiring'"
+          [class.shadow-xs]="selectedStatusFilter === 'expiring'"
+          [class.text-amber-600]="selectedStatusFilter === 'expiring'"
+          [class.dark:text-amber-400]="selectedStatusFilter === 'expiring'"
+          [class.font-bold]="selectedStatusFilter === 'expiring'"
+          [class.text-surface-600]="selectedStatusFilter !== 'expiring'"
+          [class.dark:text-surface-400]="selectedStatusFilter !== 'expiring'"
+          class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
+          <span>Near Expiry</span>
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+        </button>
+        <button (click)="setStatusFilter('expired')" [class.bg-white]="selectedStatusFilter === 'expired'"
+          [class.dark:bg-surface-700]="selectedStatusFilter === 'expired'"
+          [class.shadow-xs]="selectedStatusFilter === 'expired'"
+          [class.text-rose-600]="selectedStatusFilter === 'expired'"
+          [class.dark:text-rose-400]="selectedStatusFilter === 'expired'"
+          [class.font-bold]="selectedStatusFilter === 'expired'"
+          [class.text-surface-600]="selectedStatusFilter !== 'expired'"
+          [class.dark:text-surface-400]="selectedStatusFilter !== 'expired'"
+          class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1">
+          <span>Expired</span>
+          <span class="w-2 h-2 rounded-full bg-rose-500"></span>
         </button>
       </div>
-    }
-  } @else {
-    <div class="flex justify-center items-center h-64">
-      <div
-        class="w-10 h-10 border-3 border-surface-200 border-t-primary-500 rounded-full animate-spin dark:border-surface-700 dark:border-t-primary-400"></div>
+
+      <!-- Location Filter Styled Dropdown (PrimeNG p-select) -->
+      <div class="flex items-center gap-1">
+        <p-select [(ngModel)]="selectedLocationId" (onChange)="resetPagination()" [options]="locationSelectOptions"
+          optionLabel="name" optionValue="id" appendTo="body" placeholder="Select Location"
+          styleClass="!bg-white/80 dark:!bg-surface-900/80 !border-surface-200/80 dark:!border-surface-700/80 !rounded-xl text-xs font-semibold shadow-xs">
+          <ng-template pTemplate="selectedItem" let-selected>
+            @if (selected) {
+            <div class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-surface-200">
+              <span>{{ selected.icon }}</span>
+              <span>{{ selected.name }}</span>
+            </div>
+            }
+          </ng-template>
+          <ng-template pTemplate="item" let-item>
+            <div class="flex items-center gap-2 text-xs font-medium py-0.5">
+              <span>{{ item.icon }}</span>
+              <span>{{ item.name }}</span>
+            </div>
+          </ng-template>
+        </p-select>
+
+        @if (selectedLocationId !== null) {
+        <button type="button" (click)="selectedLocationId = null; resetPagination()"
+          class="p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+          title="Reset location filter">
+          <i class="pi pi-times text-xs font-bold"></i>
+        </button>
+        }
+      </div>
+
+      <!-- View Mode Toggle (Table / Grid) -->
+      <div class="flex items-center bg-surface-100/80 dark:bg-surface-800/60 p-1 rounded-xl gap-1 text-xs">
+        <button (click)="viewMode = 'table'" [class.bg-white]="viewMode === 'table'"
+          [class.dark:bg-surface-700]="viewMode === 'table'" [class.shadow-xs]="viewMode === 'table'"
+          [class.text-primary-600]="viewMode === 'table'" [class.dark:text-primary-400]="viewMode === 'table'"
+          [class.font-bold]="viewMode === 'table'" [class.text-surface-600]="viewMode !== 'table'"
+          [class.dark:text-surface-400]="viewMode !== 'table'"
+          class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5" title="Table View">
+          <i class="pi pi-list text-xs"></i>
+          <span>Table</span>
+        </button>
+        <button (click)="viewMode = 'grid'" [class.bg-white]="viewMode === 'grid'"
+          [class.dark:bg-surface-700]="viewMode === 'grid'" [class.shadow-xs]="viewMode === 'grid'"
+          [class.text-primary-600]="viewMode === 'grid'" [class.dark:text-primary-400]="viewMode === 'grid'"
+          [class.font-bold]="viewMode === 'grid'" [class.text-surface-600]="viewMode !== 'grid'"
+          [class.dark:text-surface-400]="viewMode !== 'grid'"
+          class="px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
+          title="Grid Cards View">
+          <i class="pi pi-th-large text-xs"></i>
+          <span>Grid</span>
+        </button>
+      </div>
+
     </div>
+  </div>
+</div>
+
+<!-- Inventory Content Area (Table View or Grid Cards) -->
+@if (!isLoading()) {
+@if (filteredItems.length > 0) {
+@if (viewMode === 'table') {
+<!-- High-Density Interactive Data Table -->
+<div class="glass-card rounded-2xl overflow-hidden border border-surface-200/70 dark:border-surface-800/80 shadow-xs">
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr
+          class="bg-surface-100/70 dark:bg-surface-800/50 border-b border-surface-200/80 dark:border-surface-800 text-[11px] font-extrabold uppercase tracking-wider text-surface-500 dark:text-surface-400 select-none">
+
+          <!-- Item Name Column Header -->
+          <th (click)="toggleSort('name')"
+            class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+            <div class="flex items-center gap-1.5">
+              <span>Item Name</span>
+              @if (sortBy === 'name') {
+              <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'"
+                [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
+              } @else {
+              <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+              }
+            </div>
+          </th>
+
+          <!-- Ingredient Column Header -->
+          <th class="py-3.5 px-4">
+            <span>Ingredient</span>
+          </th>
+
+          <!-- Location Column Header -->
+          <th class="py-3.5 px-4">
+            <span>Location</span>
+          </th>
+
+          <!-- Quantity Column Header -->
+          <th (click)="toggleSort('quantity')"
+            class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+            <div class="flex items-center gap-1.5">
+              <span>Quantity</span>
+              @if (sortBy === 'quantity') {
+              <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'"
+                [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
+              } @else {
+              <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+              }
+            </div>
+          </th>
+
+          <!-- Expiration Date Column Header -->
+          <th (click)="toggleSort('expiration')"
+            class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+            <div class="flex items-center gap-1.5">
+              <span>Expiration Date</span>
+              @if (sortBy === 'expiration') {
+              <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'"
+                [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
+              } @else {
+              <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+              }
+            </div>
+          </th>
+
+          <!-- Purchase Date Column Header -->
+          <th (click)="toggleSort('purchase')"
+            class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors hidden md:table-cell">
+            <div class="flex items-center gap-1.5">
+              <span>Purchased</span>
+              @if (sortBy === 'purchase') {
+              <i class="pi text-[10px]" [class.pi-sort-up-fill]="sortDirection === 'asc'"
+                [class.pi-sort-down-fill]="sortDirection === 'desc'"></i>
+              } @else {
+              <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+              }
+            </div>
+          </th>
+
+          <!-- Actions Header -->
+          <th class="py-3.5 px-4 text-right">
+            <span>Actions</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-surface-200/60 dark:divide-surface-800/60 text-xs font-medium">
+        @for (item of displayedItems; track item.id; let i = $index) {
+        <tr (click)="onEditItem(item)"
+          [@staggeredFadeIn]="{ value: '', params: { delay: i * (staggerDelayPerItemMs / 2) } }"
+          class="hover:bg-primary-50/50 dark:hover:bg-surface-800/60 transition-colors group cursor-pointer">
+
+          <!-- Item Name & Freshness Badge -->
+          <td class="py-3.5 px-4 font-bold text-surface-900 dark:text-white">
+            <div class="flex items-center gap-2">
+              <span
+                class="truncate max-w-[200px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{{
+                item.name }}</span>
+              @if (isExpiredItem(item)) {
+              <span
+                class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
+                🚨 Expired
+              </span>
+              } @else if (isExpiringSoonItem(item)) {
+              <span
+                class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                ⚠️ Expiring Soon
+              </span>
+              } @else {
+              <span
+                class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                ✨ Fresh
+              </span>
+              }
+            </div>
+          </td>
+
+          <!-- Connected Ingredient -->
+          <td class="py-3.5 px-4">
+            @if (getIngredientName(item.ingredientId)) {
+            <span
+              class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800/50 px-2.5 py-1 rounded-lg">
+              🥦 {{ getIngredientName(item.ingredientId) }}
+            </span>
+            } @else {
+            <span
+              class="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 px-2 py-0.5 rounded-md">
+              Unassigned
+            </span>
+            }
+          </td>
+
+          <!-- Location Pill -->
+          <td class="py-3.5 px-4">
+            <span
+              class="inline-flex items-center gap-1 text-[11px] font-semibold text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 px-2.5 py-1 rounded-lg">
+              <span>
+                @if (item.location.name === 'Fridge') { ❄️ }
+                @else if (item.location.name === 'Freezer') { 🧊 }
+                @else { 🥫 }
+              </span>
+              <span>{{ item.location.name }}</span>
+            </span>
+          </td>
+
+          <!-- Quantity (View-Only) -->
+          <td class="py-3.5 px-4">
+            <span class="font-extrabold text-surface-900 dark:text-white">
+              {{ item.quantity }} <span class="text-xs font-normal text-surface-500">{{ item.unit.shortName }}</span>
+            </span>
+          </td>
+
+          <!-- Expiration Date -->
+          <td class="py-3.5 px-4">
+            <span [class.text-rose-600]="isExpiredItem(item)" [class.dark:text-rose-400]="isExpiredItem(item)"
+              [class.text-amber-600]="isExpiringSoonItem(item)" [class.dark:text-amber-400]="isExpiringSoonItem(item)"
+              [class.font-bold]="isExpiredItem(item) || isExpiringSoonItem(item)"
+              class="text-surface-700 dark:text-surface-300">
+              {{ item.expirationDate | date: 'mediumDate' }}
+            </span>
+          </td>
+
+          <!-- Purchased Date -->
+          <td class="py-3.5 px-4 text-surface-500 dark:text-surface-400 hidden md:table-cell">
+            {{ item.purchaseDate | date: 'mediumDate' }}
+          </td>
+
+          <!-- Actions Column -->
+          <td class="py-3.5 px-4 text-right">
+            <div class="flex items-center justify-end gap-1">
+              <button type="button" (click)="onDeleteItem(item, $event)"
+                class="p-2 rounded-lg text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+                title="Delete Item">
+                <i class="pi pi-trash text-xs"></i>
+              </button>
+            </div>
+          </td>
+
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+} @else {
+<!-- Grid View -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+  @for (item of displayedItems; track item.name; let i = $index) {
+  <pantry-item-card [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }" [item]="item"
+    [units]="units" [locations]="locations" [ingredients]="ingredients" (delete)="onDeleteItem(item)"
+    (update)="onUpdateItem($event)"></pantry-item-card>
   }
+</div>
 }
 
-<!-- Ingredient Groups View -->
-@if (activeTab === 'groups') {
-  <pantry-ingredient-group-container
-    [nutrientGroups]="nutrientGroups"
-    [categories]="categories"
-    [searchQuery]="searchQuery"
-    [selectedCategory]="selectedCategory"
-    (searchChange)="searchQuery = $event"
-    (categorySelect)="selectedCategory = $event"
-    (unassignItem)="onUnassignItem($event)">
-  </pantry-ingredient-group-container>
+<!-- Lazy Loading Progress Bar & Controls -->
+<div
+  class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-50 dark:bg-surface-800/40 rounded-2xl border border-surface-200/80 dark:border-surface-700/60 text-xs font-semibold text-surface-600 dark:text-surface-300">
+  <div class="flex items-center gap-2">
+    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+    <span>Showing {{ displayedItems.length }} of {{ filteredItems.length }} items</span>
+  </div>
+
+  @if (displayLimit < filteredItems.length) { <button (click)="loadMoreItems()" type="button"
+    class="px-4 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer flex items-center gap-2">
+    <span>Load More Items (+15)</span>
+    <i class="pi pi-angle-down text-xs"></i>
+    </button>
+    } @else {
+    <span class="text-surface-400 font-normal">All items loaded</span>
+    }
+</div>
+} @else {
+<!-- Empty Filter State -->
+<div
+  class="glass-card rounded-2xl p-12 text-center max-w-md mx-auto border border-surface-200/60 dark:border-surface-800/80">
+  <div
+    class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mx-auto mb-4 text-surface-400 dark:text-surface-500 text-2xl">
+    <i class="pi pi-box"></i>
+  </div>
+  <h4 class="text-lg font-bold text-surface-900 dark:text-white mb-2">No Items Found</h4>
+  <p class="text-sm text-surface-500 dark:text-surface-400 mb-6">
+    No inventory items match your current search and filter criteria.
+  </p>
+  <button (click)="searchQuery = ''; selectedLocationId = null; selectedStatusFilter = 'all'"
+    class="px-4 py-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 font-semibold text-xs rounded-xl transition-all">
+    Reset Filters
+  </button>
+</div>
 }
+} @else {
+<div class="flex justify-center items-center h-64">
+  <div
+    class="w-10 h-10 border-3 border-surface-200 border-t-primary-500 rounded-full animate-spin dark:border-surface-700 dark:border-t-primary-400">
+  </div>
+</div>
+}
+}
+
+
 
 <!-- Assign Items View (Dedicated Triage Workspace) -->
 @if (activeTab === 'assign') {
-  <pantry-unassigned-items-container
-    [unassignedItems]="unassignedItems"
-    [categoryGroups]="categoryGroups"
-    [loading]="loading"
-    (assignItem)="onAssignItem($event)"
-    (switchToGroupsTab)="onTabChange('groups')">
-  </pantry-unassigned-items-container>
+<pantry-unassigned-items-container [unassignedItems]="unassignedItems" [categoryGroups]="categoryGroups"
+  [loading]="loading" (assignItem)="onAssignItem($event)" (switchToGroupsTab)="onTabChange('groups')">
+</pantry-unassigned-items-container>
 }
 
 <!-- Add Item Modal Dialog -->
-<p-dialog
-  [(visible)]="displayAddModal"
-  [modal]="true"
-  [dismissableMask]="true"
-  [style]="{ width: '90vw', maxWidth: '540px' }"
-  [header]="'Add New Pantry Item'">
+<p-dialog [(visible)]="displayAddModal" [modal]="true" [dismissableMask]="true"
+  [style]="{ width: '90vw', maxWidth: '540px' }" [header]="'Add New Pantry Item'">
   <div class="pt-2">
-    <pantry-add-item-form
-      (addItem$)="onAddItem($event)"
-      [units]="units"
-      [locations]="locations"></pantry-add-item-form>
+    <pantry-add-item-form (addItem$)="onAddItem($event)" [units]="units" [locations]="locations"></pantry-add-item-form>
   </div>
 </p-dialog>
 
@@ -444,44 +414,41 @@
 <p-confirmDialog [dismissableMask]="dismissableMask">
   <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
     @if (message) {
-      <div class="glass-card rounded-2xl p-6 max-w-md">
-        <div class="flex items-start gap-4">
-          <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/20 flex items-center justify-center shrink-0">
-            <i [class]="message.icon" class="text-xl text-rose-600 dark:text-rose-400"></i>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-bold text-surface-900 dark:text-white mb-2">
-              {{ message.header }}
-            </h3>
-            <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">
-              {{ message.message }}
-            </p>
-            <div class="flex gap-3 justify-end">
-              <button
-                (click)="onReject()"
-                class="px-4 py-2 text-sm font-medium text-surface-700 dark:text-surface-300 bg-white/60 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-700 rounded-xl hover:bg-white dark:hover:bg-surface-800 transition-all">
-                Cancel
-              </button>
-              <button
-                (click)="onAccept()"
-                class="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-xl hover:bg-rose-700 transition-all shadow-sm shadow-rose-500/20">
-                Remove Item
-              </button>
-            </div>
+    <div class="glass-card rounded-2xl p-6 max-w-md">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/20 flex items-center justify-center shrink-0">
+          <i [class]="message.icon" class="text-xl text-rose-600 dark:text-rose-400"></i>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-lg font-bold text-surface-900 dark:text-white mb-2">
+            {{ message.header }}
+          </h3>
+          <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">
+            {{ message.message }}
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button (click)="onReject()"
+              class="px-4 py-2 text-sm font-medium text-surface-700 dark:text-surface-300 bg-white/60 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-700 rounded-xl hover:bg-white dark:hover:bg-surface-800 transition-all">
+              Cancel
+            </button>
+            <button (click)="onAccept()"
+              class="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-xl hover:bg-rose-700 transition-all shadow-sm shadow-rose-500/20">
+              Remove Item
+            </button>
           </div>
         </div>
       </div>
+    </div>
     }
   </ng-template>
 </p-confirmDialog>
+</div>
 
 <!-- Scroll to Top Button -->
 @if (showScrollTopButton) {
-  <button
-    (click)="scrollToTop()"
-    @fadeInOut
-    class="fixed bottom-8 right-8 p-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl shadow-lg shadow-primary-600/25 transition-all duration-300 z-50 cursor-pointer hover:scale-110 active:scale-95"
-    aria-label="Scroll to top">
-    <i class="pi pi-arrow-up text-lg"></i>
-  </button>
+<button (click)="scrollToTop()" @fadeInOut
+  class="fixed bottom-8 right-8 p-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl shadow-lg shadow-primary-600/25 transition-all duration-300 z-50 cursor-pointer hover:scale-110 active:scale-95"
+  aria-label="Scroll to top">
+  <i class="pi pi-arrow-up text-lg"></i>
+</button>
 }

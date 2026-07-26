@@ -5,12 +5,12 @@ import { CreateItemDTO, UpdateItemDTO } from '../src/models/data-models/item.mod
 import { ItemRow } from '../src/models/schema-models/item.model.ts';
 import { itemService } from '../src/services/item.service.ts';
 
-// Helper: create an in-memory SQLite database with the items schema
+// Helper: create an in-memory SQLite database with the ingredient_items schema
 function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec('PRAGMA foreign_keys = OFF');
   db.exec(`
-    CREATE TABLE items (
+    CREATE TABLE ingredient_items (
       id TEXT PRIMARY KEY,
       ingredient_id TEXT,
       label TEXT NOT NULL,
@@ -48,7 +48,7 @@ function seedMockItem(db: Database): ItemRow {
     updated_at: mockDate.toISOString(),
   };
   db.prepare(
-    'INSERT INTO items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
   ).run(
     row.id, row.ingredient_id, row.label, row.quantity, row.unit_id, row.location_id,
     row.expiration_date, row.opened_date, row.purchase_date, row.notes, row.created_at, row.updated_at,
@@ -165,7 +165,7 @@ Deno.test('ItemService - findExpiringSoon - success', async () => {
   // Insert an item expiring soon (tomorrow)
   const tomorrow = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
   db.prepare(
-    'INSERT INTO items (id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO ingredient_items (id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
   ).run(
     '123e4567-e89b-12d3-a456-426614174001',
     'Expiring Soon',
@@ -179,7 +179,7 @@ Deno.test('ItemService - findExpiringSoon - success', async () => {
   // Insert item expiring far in the future
   const farFuture = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
   db.prepare(
-    'INSERT INTO items (id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO ingredient_items (id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
   ).run(
     '123e4567-e89b-12d3-a456-426614174002',
     'Not Expiring',

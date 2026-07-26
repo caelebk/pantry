@@ -1,7 +1,7 @@
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
 
-export interface Item {
+export interface IngredientItem {
   id: string;
   ingredientId?: string;
   name: string;
@@ -14,7 +14,7 @@ export interface Item {
   notes: string;
 }
 
-export interface ItemDTO {
+export interface IngredientItemDTO {
   id: string;
   ingredientId?: string;
   label: string;
@@ -27,7 +27,7 @@ export interface ItemDTO {
   notes?: string;
 }
 
-export interface UpdateItemDTO {
+export interface UpdateIngredientItemDTO {
   label?: string;
   ingredientId?: string | null;
   quantity?: number;
@@ -38,6 +38,11 @@ export interface UpdateItemDTO {
   locationId?: number;
   notes?: string;
 }
+
+// Legacy Aliases
+export type Item = IngredientItem;
+export type ItemDTO = IngredientItemDTO;
+export type UpdateItemDTO = UpdateIngredientItemDTO;
 
 export interface ItemTimeStatus {
   label: string;

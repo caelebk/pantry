@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Output, computed, input, signal } from '@angular/core';
+import { Component, computed, inject, input, Output, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
+import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
@@ -8,8 +10,6 @@ import { getTimeDifferenceString, isExpired, isExpiringSoon, itemProgress } from
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { Subject } from 'rxjs';
-
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'pantry-item-card',
@@ -24,6 +24,7 @@ export class ItemCardComponent {
   item = input.required<Item>();
   units = input.required<Unit[]>();
   locations = input.required<Location[]>();
+  ingredients = input<Ingredient[]>([]);
 
   @Output() delete = new Subject<void>();
   @Output() update = new Subject<Item>();
@@ -35,6 +36,13 @@ export class ItemCardComponent {
     getTimeDifferenceString(new Date(), this.item().expirationDate),
   );
 
+  public ingredientName = computed(() => {
+    const ingId = this.item().ingredientId;
+    if (!ingId) return null;
+    const found = this.ingredients().find((i) => i.id === ingId);
+    return found ? found.name : null;
+  });
+
   public displayNoteDialog = signal(false);
 
   showNote() {
@@ -45,6 +53,6 @@ export class ItemCardComponent {
     if (event) {
       event.stopPropagation();
     }
-    this.router.navigate(['/inventory', this.item().id, 'edit']);
+    this.router.navigate(['/inventory/items', this.item().id, 'edit']);
   }
 }

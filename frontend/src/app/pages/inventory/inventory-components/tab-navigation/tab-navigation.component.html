@@ -17,23 +17,7 @@
     {{ 'inventory.tabs.inventoryItems' | transloco }}
   </button>
 
-  <button
-    (click)="onTabClick('groups')"
-    class="px-5 py-2 text-sm font-medium transition-all duration-200 rounded-lg"
-    [class.bg-white]="activeTab === 'groups'"
-    [class.dark:bg-surface-700]="activeTab === 'groups'"
-    [class.shadow-sm]="activeTab === 'groups'"
-    [class.text-primary-600]="activeTab === 'groups'"
-    [class.dark:text-primary-400]="activeTab === 'groups'"
-    [class.font-semibold]="activeTab === 'groups'"
-    [class.text-surface-500]="activeTab !== 'groups'"
-    [class.dark:text-surface-400]="activeTab !== 'groups'"
-    [class.hover:text-surface-700]="activeTab !== 'groups'"
-    [class.dark:hover:text-surface-300]="activeTab !== 'groups'"
-    [class.hover:bg-white/50]="activeTab !== 'groups'"
-    [class.dark:hover:bg-surface-700/50]="activeTab !== 'groups'">
-    {{ 'inventory.tabs.ingredientGroups' | transloco }}
-  </button>
+
 
   <button
     (click)="onTabClick('assign')"

@@ -1,17 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { IngredientGroup } from '@models/category.model';
+import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit, UnitType } from '@models/unit.model';
+import { CategoryService } from '@services/inventory/category.service';
+import { IngredientService } from '@services/inventory/ingredient.service';
+import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
-import { ItemService } from '@services/inventory/item.service';
 import { ToastService } from '@services/toast.service';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
 import { getTimeDifferenceString, isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
+import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
+import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -22,29 +28,49 @@ import { TextareaModule } from 'primeng/textarea';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     InputTextModule,
     InputNumberModule,
     SelectModule,
     DatePickerModule,
     TextareaModule,
+    DialogModule,
+    ButtonModule,
   ],
   templateUrl: './add-item-page.component.html',
 })
 export class AddItemPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly itemService = inject(ItemService);
+  private readonly ingredientService = inject(IngredientService);
+  private readonly categoryService = inject(CategoryService);
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly toastService = inject(ToastService);
 
   public addItemForm: FormGroup<ItemFormControls> = createItemForm();
+  public ingredients = signal<Ingredient[]>([]);
+  public ingredientGroups = signal<IngredientGroup[]>([]);
   public units = signal<Unit[]>([]);
   public locations = signal<Location[]>([]);
   public isSubmitting = signal<boolean>(false);
   public submitError = signal<string | null>(null);
 
+  // Quick Create Ingredient Dialog state
+  public displayQuickCreateDialog = signal<boolean>(false);
+  public newIngredientName = signal<string>('');
+  public newIngredientGroup = signal<IngredientGroup | null>(null);
+  public newIngredientDefaultUnit = signal<Unit | null>(null);
+  public isCreatingIngredient = signal<boolean>(false);
+
   ngOnInit(): void {
+    this.loadIngredients();
+
+    this.categoryService.getIngredientGroups().subscribe({
+      next: (groups) => this.ingredientGroups.set(groups),
+    });
+
     this.unitService.getUnits().subscribe({
       next: (units) => {
         this.units.set(units);
@@ -62,6 +88,66 @@ export class AddItemPageComponent implements OnInit {
         }
       },
     });
+
+    // Auto fill Item Name when selecting an Ingredient if Name is empty
+    this.addItemForm.controls.ingredient.valueChanges.subscribe((selectedIng) => {
+      if (selectedIng && !this.addItemForm.controls.name.value) {
+        this.addItemForm.controls.name.setValue(selectedIng.name);
+      }
+    });
+  }
+
+  loadIngredients(selectNewId?: string): void {
+    this.ingredientService.getIngredients().subscribe({
+      next: (ingredients) => {
+        this.ingredients.set(ingredients);
+        if (selectNewId) {
+          const found = ingredients.find((i) => i.id === selectNewId);
+          if (found) {
+            this.addItemForm.controls.ingredient.setValue(found);
+            if (!this.addItemForm.controls.name.value) {
+              this.addItemForm.controls.name.setValue(found.name);
+            }
+          }
+        }
+      },
+    });
+  }
+
+  openQuickCreateIngredient(): void {
+    this.newIngredientName.set(this.addItemForm.controls.name.value || '');
+    this.newIngredientGroup.set(null);
+    this.newIngredientDefaultUnit.set(this.addItemForm.controls.unit.value || null);
+    this.displayQuickCreateDialog.set(true);
+  }
+
+  submitQuickCreateIngredient(): void {
+    const name = this.newIngredientName().trim();
+    if (!name) {
+      this.toastService.showError('Please enter an ingredient name.');
+      return;
+    }
+
+    this.isCreatingIngredient.set(true);
+    const dto = {
+      name,
+      ingredientGroupId: this.newIngredientGroup()?.id,
+      defaultUnitId: this.newIngredientDefaultUnit()?.id,
+    };
+
+    this.ingredientService.createIngredient(dto).subscribe({
+      next: (createdDto) => {
+        this.isCreatingIngredient.set(false);
+        this.displayQuickCreateDialog.set(false);
+        this.toastService.showSuccess(`Ingredient "${name}" created!`, 'Ingredient Created');
+        this.loadIngredients(createdDto.id);
+      },
+      error: (err) => {
+        this.isCreatingIngredient.set(false);
+        console.error('Failed to create ingredient:', err);
+        this.toastService.showError('Failed to create ingredient.');
+      },
+    });
   }
 
   selectLocation(loc: Location): void {
@@ -74,7 +160,7 @@ export class AddItemPageComponent implements OnInit {
 
     return {
       id: 'preview',
-      ingredientId: '',
+      ingredientId: raw.ingredient?.id || '',
       name: raw.name || 'Item Name',
       quantity: raw.quantity || 1,
       unit: raw.unit || { id: 1, name: 'Piece', shortName: 'pc', type: UnitType.Count, toBaseFactor: 1 },

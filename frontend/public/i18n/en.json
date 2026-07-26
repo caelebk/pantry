@@ -7,6 +7,7 @@
     "dashboard": "Home",
     "inventory": "Inventory",
     "recipes": "Recipes",
+    "shoppingList": "Shopping List",
     "mealPlanner": "Meal Planner"
   },
   "home": {
@@ -112,11 +113,11 @@
     }
   },
   "inventory": {
-    "title": "Kitchen Inventory",
+    "title": "Ingredient Items",
     "subtitle": "Track your ingredients and manage expiration dates",
     "yourInventory": "Your Inventory",
     "tabs": {
-      "inventoryItems": "Inventory Items",
+      "inventoryItems": "Ingredient Items",
       "ingredientGroups": "Ingredient Groups"
     },
     "stats": {
@@ -126,7 +127,7 @@
     },
     "filters": {
       "searchPlaceholder": "Search items...",
-      "categoryPlaceholder": "Filter by Category"
+      "categoryPlaceholder": "Filter by Ingredient Group"
     },
     "notificationService": {
       "itemAddedHeader": "Added: ",
@@ -181,10 +182,10 @@
     }
   },
   "addItemForm": {
-    "title": "Add New Item",
+    "title": "Add New Ingredient Item",
     "itemName": "Item Name",
     "itemNamePlaceholder": "e.g., Chicken Breast",
-    "category": "Category",
+    "category": "Ingredient Group",
     "quantity": "Quantity",
     "unit": "Unit",
     "purchaseDate": "Purchase Date",
@@ -192,9 +193,9 @@
     "notes": "Notes",
     "notesPlaceholder": "Optional notes...",
     "optionalDetails": "Optional Details",
-    "addButton": "Add Item",
-    "editTitle": "Edit Item",
-    "updateButton": "Update Item",
+    "addButton": "Add Ingredient Item",
+    "editTitle": "Edit Ingredient Item",
+    "updateButton": "Update Ingredient Item",
     "openedDate": "Opened Date",
     "location": "Location"
   },

@@ -7,4 +7,7 @@ export const CategoryMessages = {
   // Service errors
   DB_RETRIEVE_CATEGORIES_ERROR: 'Failed to retrieve categories from the database.',
   DB_RETRIEVE_CATEGORY_ERROR: 'Failed to retrieve category from the database.',
+  DB_CREATE_CATEGORY_ERROR: 'Failed to create category in the database.',
+  DB_UPDATE_CATEGORY_ERROR: 'Failed to update category in the database.',
+  DB_DELETE_CATEGORY_ERROR: 'Failed to delete category from the database.',
 };

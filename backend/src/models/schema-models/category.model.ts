@@ -1,8 +1,1 @@
-/**
- * Category Database Schema
- */
-export interface CategoryRow {
-  id: number;
-  name: string;
-  nutrient_type_id: number | null;
-}
+export * from './ingredient-group.model.ts';

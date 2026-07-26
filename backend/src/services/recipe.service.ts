@@ -268,7 +268,7 @@ export class RecipeService {
       // items joined with units to get to_base_factor (excluding expired items)
       const pantryRows = db.prepare(`
         SELECT i.ingredient_id, i.quantity, COALESCE(u.to_base_factor, 1.0) as to_base_factor
-        FROM items i
+        FROM ingredient_items i
         LEFT JOIN units u ON i.unit_id = u.id
         WHERE i.ingredient_id IS NOT NULL
           AND (i.expiration_date IS NULL OR datetime(i.expiration_date) >= datetime('now'))
