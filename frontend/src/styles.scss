@@ -215,6 +215,9 @@ html {
 /* PrimeNG Select & MultiSelect Triggers */
 .p-select,
 .p-multiselect {
+  height: 42px !important;
+  display: inline-flex !important;
+  align-items: center !important;
   background-color: var(--color-surface-100) !important;
   border: 1px solid var(--color-surface-200) !important;
   border-radius: 0.75rem !important;
@@ -243,9 +246,12 @@ html {
 
 .p-select-label,
 .p-multiselect-label {
-  padding: 0.5rem 0.75rem !important;
+  padding: 0 0.75rem !important;
   font-size: 0.75rem !important;
   font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
 }
 
 .p-select-dropdown,
