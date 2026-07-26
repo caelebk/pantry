@@ -1,10 +1,12 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
 
 export interface ItemFormControls {
   name: FormControl<string>;
+  ingredient: FormControl<Ingredient | null>;
   quantity: FormControl<number>;
   unit: FormControl<Unit | null>;
   purchaseDate: FormControl<Date | null>;
@@ -18,6 +20,9 @@ export function createItemForm(): FormGroup<ItemFormControls> {
   return new FormGroup<ItemFormControls>({
     name: new FormControl<string>('', {
       nonNullable: true,
+      validators: Validators.required,
+    }),
+    ingredient: new FormControl<Ingredient | null>(null, {
       validators: Validators.required,
     }),
     quantity: new FormControl<number>(1, {
@@ -50,7 +55,7 @@ export function toItem(form: FormGroup<ItemFormControls>): Item | null {
 
   return {
     id: '0',
-    ingredientId: '',
+    ingredientId: formValue.ingredient?.id || '',
     name: formValue.name,
     quantity: formValue.quantity,
     unit: formValue.unit!,

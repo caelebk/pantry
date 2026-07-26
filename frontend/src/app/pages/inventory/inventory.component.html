@@ -212,6 +212,11 @@
                     </div>
                   </th>
 
+                  <!-- Master Ingredient Column Header -->
+                  <th class="py-3.5 px-4">
+                    <span>Master Ingredient</span>
+                  </th>
+
                   <!-- Location Column Header -->
                   <th class="py-3.5 px-4">
                     <span>Location</span>
@@ -286,6 +291,19 @@
                       </div>
                     </td>
 
+                    <!-- Connected Master Ingredient -->
+                    <td class="py-3.5 px-4">
+                      @if (getIngredientName(item.ingredientId)) {
+                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800/50 px-2.5 py-1 rounded-lg">
+                          🥦 {{ getIngredientName(item.ingredientId) }}
+                        </span>
+                      } @else {
+                        <span class="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 px-2 py-0.5 rounded-md">
+                          Unassigned
+                        </span>
+                      }
+                    </td>
+
                     <!-- Location Pill -->
                     <td class="py-3.5 px-4">
                       <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 px-2.5 py-1 rounded-lg">
@@ -351,6 +369,7 @@
               [item]="item"
               [units]="units"
               [locations]="locations"
+              [ingredients]="ingredients"
               (delete)="onDeleteItem(item)"
               (update)="onUpdateItem($event)"></pantry-item-card>
           }
@@ -401,18 +420,7 @@
   }
 }
 
-<!-- Ingredient Groups View -->
-@if (activeTab === 'groups') {
-  <pantry-ingredient-group-container
-    [nutrientGroups]="nutrientGroups"
-    [categories]="categories"
-    [searchQuery]="searchQuery"
-    [selectedCategory]="selectedCategory"
-    (searchChange)="searchQuery = $event"
-    (categorySelect)="selectedCategory = $event"
-    (unassignItem)="onUnassignItem($event)">
-  </pantry-ingredient-group-container>
-}
+
 
 <!-- Assign Items View (Dedicated Triage Workspace) -->
 @if (activeTab === 'assign') {
