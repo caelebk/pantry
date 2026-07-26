@@ -166,6 +166,72 @@ export class RecipeCardComponent implements OnInit {
     };
   }
 
+  getIngredientExpirationInfo(ing: { ingredientId: string }): { expiringSoon: boolean; minDays: number | null } {
+    if (!this.pantryItems || this.pantryItems.length === 0) {
+      return { expiringSoon: false, minDays: null };
+    }
+    const now = new Date();
+    const matchingItems = this.pantryItems.filter(
+      (item) => item.ingredientId === ing.ingredientId && item.expirationDate
+    );
+
+    let minDays: number | null = null;
+    for (const item of matchingItems) {
+      if (!item.expirationDate) continue;
+      const exp = new Date(item.expirationDate);
+      const diffMs = exp.getTime() - now.getTime();
+      const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      if (days <= 7) {
+        if (minDays === null || days < minDays) {
+          minDays = days;
+        }
+      }
+    }
+
+    return {
+      expiringSoon: minDays !== null,
+      minDays,
+    };
+  }
+
+  get expiringIngredients(): { name: string; daysLeft: number }[] {
+    if (!this.recipe.ingredients || this.recipe.ingredients.length === 0 || this.pantryItems.length === 0) {
+      return [];
+    }
+    const now = new Date();
+    const result: { name: string; daysLeft: number }[] = [];
+    const processedIngs = new Set<string>();
+
+    for (const ing of this.recipe.ingredients) {
+      if (processedIngs.has(ing.ingredientId)) continue;
+
+      const matchingItems = this.pantryItems.filter(
+        (item) => item.ingredientId === ing.ingredientId && item.expirationDate
+      );
+
+      let minDays: number | null = null;
+      for (const item of matchingItems) {
+        if (!item.expirationDate) continue;
+        const exp = new Date(item.expirationDate);
+        const diffMs = exp.getTime() - now.getTime();
+        const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        if (days <= 7) {
+          if (minDays === null || days < minDays) {
+            minDays = days;
+          }
+        }
+      }
+
+      if (minDays !== null) {
+        processedIngs.add(ing.ingredientId);
+        const ingName = this.ingredientMap.get(ing.ingredientId)?.name || 'Ingredient';
+        result.push({ name: ingName, daysLeft: minDays });
+      }
+    }
+
+    return result.sort((a, b) => a.daysLeft - b.daysLeft);
+  }
+
   viewDetails(): void {
     this.router.navigate(['/recipes', this.recipe.id]);
   }

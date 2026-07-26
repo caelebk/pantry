@@ -136,22 +136,34 @@
         <ul class="space-y-1 text-xs">
           @for (ing of sortedIngredients; track $index) {
             @let avail = getIngredientAvailability(ing);
+            @let expInfo = getIngredientExpirationInfo(ing);
             <li (click)="onIngredientClick($event, ing)"
                 class="flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors cursor-pointer hover:bg-gray-100 dark:hover:bg-[#262626]"
                 [class.bg-rose-500/5]="!avail.isAvailable"
-                [class.bg-emerald-500/5]="avail.isAvailable"
+                [class.bg-amber-500/10]="avail.isAvailable && expInfo.expiringSoon"
+                [class.bg-emerald-500/5]="avail.isAvailable && !expInfo.expiringSoon"
                 title="View ingredient in inventory">
               <div class="flex items-center gap-1.5 min-w-0">
                 @if (avail.isAvailable) {
-                  <span class="w-3.5 h-3.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-extrabold flex items-center justify-center shrink-0">
-                    ✓
-                  </span>
+                  @if (expInfo.expiringSoon) {
+                    <span class="w-3.5 h-3.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[9px] font-extrabold flex items-center justify-center shrink-0">
+                      ⏳
+                    </span>
+                  } @else {
+                    <span class="w-3.5 h-3.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-extrabold flex items-center justify-center shrink-0">
+                      ✓
+                    </span>
+                  }
                 } @else {
                   <span class="w-3.5 h-3.5 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 text-[9px] font-extrabold flex items-center justify-center shrink-0">
                     ✕
                   </span>
                 }
-                <span class="truncate text-gray-700 dark:text-gray-200 text-xs hover:underline hover:text-primary-600 dark:hover:text-primary-400" [class.font-semibold]="!avail.isAvailable" [class.text-rose-600]="!avail.isAvailable">
+                <span class="truncate text-gray-700 dark:text-gray-200 text-xs hover:underline hover:text-primary-600 dark:hover:text-primary-400"
+                      [class.font-semibold]="!avail.isAvailable || expInfo.expiringSoon"
+                      [class.text-rose-600]="!avail.isAvailable"
+                      [class.text-amber-600]="avail.isAvailable && expInfo.expiringSoon"
+                      [class.dark:text-amber-400]="avail.isAvailable && expInfo.expiringSoon">
                   {{ getIngredientDisplay(ing) }}
                 </span>
               </div>
@@ -159,6 +171,10 @@
               @if (!avail.isAvailable) {
                 <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
                   Missing
+                </span>
+              } @else if (expInfo.expiringSoon) {
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 shrink-0 flex items-center gap-0.5">
+                  <span>{{ expInfo.minDays! <= 0 ? 'Exp. today' : expInfo.minDays! + 'd left' }}</span>
                 </span>
               } @else {
                 <span class="text-[9px] font-medium px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
