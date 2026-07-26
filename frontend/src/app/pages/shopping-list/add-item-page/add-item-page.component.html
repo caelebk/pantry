@@ -3,7 +3,7 @@
   <div class="space-y-2">
     <button
       (click)="goBack()"
-      class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer">
+      class="inline-flex items-center gap-1.5 text-xs font-semibold text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors cursor-pointer">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -19,10 +19,10 @@
       Back to Shopping List
     </button>
 
-    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+    <h2 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
       Add Shopping Item
     </h2>
-    <p class="text-sm text-gray-500 dark:text-gray-400">
+    <p class="text-sm text-surface-500 dark:text-surface-400">
       Add a new grocery item with category, store location, and estimated price
     </p>
   </div>
@@ -30,10 +30,10 @@
   <!-- Main Form Card -->
   <form
     (ngSubmit)="saveItem()"
-    class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-6 shadow-xs space-y-5">
+    class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-6 shadow-xs space-y-5">
     <!-- Item Name Field -->
     <div class="space-y-1.5">
-      <label class="text-xs font-semibold text-gray-700 dark:text-gray-300"
+      <label class="text-xs font-semibold text-surface-700 dark:text-surface-300"
         >Item Name <span class="text-rose-500">*</span></label
       >
       <input
@@ -42,7 +42,7 @@
         (ngModelChange)="name.set($event)"
         name="name"
         placeholder="e.g., Organic Avocados, Extra Virgin Olive Oil..."
-        class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20"
+        class="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white placeholder-surface-400 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20"
         required
         autofocus />
     </div>
@@ -50,12 +50,12 @@
     <!-- Category & Store Name Row -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Category</label>
+        <label class="text-xs font-semibold text-surface-700 dark:text-surface-300">Category</label>
         <select
           [ngModel]="category()"
           (ngModelChange)="category.set($event)"
           name="category"
-          class="w-full px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white text-xs font-medium focus:outline-none">
+          class="w-full px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white text-xs font-medium focus:outline-none">
           @for (cat of categories; track cat) {
             <option [value]="cat">{{ cat }}</option>
           }
@@ -63,7 +63,7 @@
       </div>
 
       <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300"
+        <label class="text-xs font-semibold text-surface-700 dark:text-surface-300"
           >Store Name (Optional)</label
         >
         <input
@@ -72,7 +72,7 @@
           (ngModelChange)="storeName.set($event)"
           name="storeName"
           placeholder="e.g., Trader Joe's, Costco, Whole Foods..."
-          class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white placeholder-gray-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
+          class="w-full px-3.5 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white placeholder-surface-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
       </div>
     </div>
 
@@ -80,23 +80,23 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
       <!-- Quantity Counter -->
       <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Quantity</label>
+        <label class="text-xs font-semibold text-surface-700 dark:text-surface-300">Quantity</label>
         <div
-          class="flex items-center border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-[#262626] overflow-hidden">
+          class="flex items-center border border-surface-200 dark:border-surface-800 rounded-xl bg-surface-50 dark:bg-surface-800/60 overflow-hidden">
           <button
             type="button"
             (click)="decrementQuantity()"
-            class="px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-bold text-xs transition-colors cursor-pointer">
+            class="px-3 py-2 text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white font-bold text-xs transition-colors cursor-pointer">
             -
           </button>
           <span
-            class="flex-1 text-center font-extrabold text-xs text-gray-900 dark:text-white border-x border-gray-200 dark:border-gray-800 py-2">
+            class="flex-1 text-center font-extrabold text-xs text-surface-900 dark:text-white border-x border-surface-200 dark:border-surface-800 py-2">
             {{ quantity() }}
           </span>
           <button
             type="button"
             (click)="incrementQuantity()"
-            class="px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-bold text-xs transition-colors cursor-pointer">
+            class="px-3 py-2 text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white font-bold text-xs transition-colors cursor-pointer">
             +
           </button>
         </div>
@@ -104,12 +104,12 @@
 
       <!-- Unit Select -->
       <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Unit</label>
+        <label class="text-xs font-semibold text-surface-700 dark:text-surface-300">Unit</label>
         <select
           [ngModel]="unit()"
           (ngModelChange)="unit.set($event)"
           name="unit"
-          class="w-full px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white text-xs font-medium focus:outline-none">
+          class="w-full px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white text-xs font-medium focus:outline-none">
           @for (u of units; track u) {
             <option [value]="u">{{ u }}</option>
           }
@@ -118,9 +118,11 @@
 
       <!-- Est Price Input -->
       <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Est. Price ($)</label>
+        <label class="text-xs font-semibold text-surface-700 dark:text-surface-300"
+          >Est. Price ($)</label
+        >
         <div class="relative">
-          <span class="absolute left-3 top-2.5 text-xs text-gray-400 font-bold">$</span>
+          <span class="absolute left-3 top-2.5 text-xs text-surface-400 font-bold">$</span>
           <input
             type="number"
             step="0.01"
@@ -129,24 +131,24 @@
             (ngModelChange)="estimatedPrice.set($event)"
             name="estimatedPrice"
             placeholder="0.00"
-            class="w-full pl-7 pr-3 py-2 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white placeholder-gray-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
+            class="w-full pl-7 pr-3 py-2 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white placeholder-surface-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
         </div>
       </div>
     </div>
 
     <!-- Action Bar -->
     <div
-      class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200/80 dark:border-gray-800">
+      class="flex items-center justify-end gap-3 pt-6 border-t border-surface-200/80 dark:border-surface-800/80">
       <button
         type="button"
         (click)="goBack()"
-        class="px-5 py-2.5 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 text-xs font-semibold rounded-xl hover:bg-gray-100 dark:hover:bg-[#262626] transition-colors cursor-pointer">
+        class="px-5 py-2.5 border border-surface-200 dark:border-surface-800 text-surface-700 dark:text-surface-300 text-xs font-semibold rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors cursor-pointer">
         Cancel
       </button>
       <button
         type="submit"
         [disabled]="!name().trim()"
-        class="px-6 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 disabled:opacity-50 text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-xs">
+        class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-xs">
         Save to Shopping List
       </button>
     </div>

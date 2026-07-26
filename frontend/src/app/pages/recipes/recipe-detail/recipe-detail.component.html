@@ -101,35 +101,35 @@
     <!-- Overview Quick Stats Grid -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
       <div
-        class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-4 border border-gray-100 dark:border-gray-800 text-center shadow-sm">
-        <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider"
+        class="glass-card rounded-2xl p-4 border border-surface-200/80 dark:border-surface-800/80 text-center shadow-sm">
+        <span class="block text-xs font-semibold text-surface-400 uppercase tracking-wider"
           >Servings</span
         >
-        <span class="block text-xl font-extrabold text-gray-900 dark:text-white mt-1">{{
+        <span class="block text-xl font-extrabold text-surface-900 dark:text-white mt-1">{{
           recipe.servings || '-'
         }}</span>
       </div>
       <div
-        class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-4 border border-gray-100 dark:border-gray-800 text-center shadow-sm">
-        <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider"
+        class="glass-card rounded-2xl p-4 border border-surface-200/80 dark:border-surface-800/80 text-center shadow-sm">
+        <span class="block text-xs font-semibold text-surface-400 uppercase tracking-wider"
           >Prep Time</span
         >
-        <span class="block text-xl font-extrabold text-gray-900 dark:text-white mt-1"
+        <span class="block text-xl font-extrabold text-surface-900 dark:text-white mt-1"
           >{{ recipe.prepTime || 0 }} min</span
         >
       </div>
       <div
-        class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-4 border border-gray-100 dark:border-gray-800 text-center shadow-sm">
-        <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider"
+        class="glass-card rounded-2xl p-4 border border-surface-200/80 dark:border-surface-800/80 text-center shadow-sm">
+        <span class="block text-xs font-semibold text-surface-400 uppercase tracking-wider"
           >Cook Time</span
         >
-        <span class="block text-xl font-extrabold text-gray-900 dark:text-white mt-1"
+        <span class="block text-xl font-extrabold text-surface-900 dark:text-white mt-1"
           >{{ recipe.cookTime || 0 }} min</span
         >
       </div>
       <div
-        class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-4 border border-gray-100 dark:border-gray-800 text-center shadow-sm">
-        <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider"
+        class="glass-card rounded-2xl p-4 border border-surface-200/80 dark:border-surface-800/80 text-center shadow-sm">
+        <span class="block text-xs font-semibold text-surface-400 uppercase tracking-wider"
           >Total Time</span
         >
         <span class="block text-xl font-extrabold text-primary-600 dark:text-primary-400 mt-1"
@@ -155,14 +155,14 @@
       <!-- Ingredients Section (Left Column) -->
       <div class="lg:col-span-5 space-y-4">
         <div
-          class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+          class="glass-card rounded-2xl p-6 border border-surface-200/80 dark:border-surface-800/80 shadow-sm space-y-4">
           <div
-            class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            class="flex items-center justify-between pb-3 border-b border-surface-200/80 dark:border-surface-800/80">
+            <h3 class="text-lg font-bold text-surface-900 dark:text-white flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
               Ingredients
             </h3>
-            <span class="text-xs font-medium text-gray-500">
+            <span class="text-xs font-medium text-surface-500">
               {{ recipe.ingredients?.length || 0 }} required
             </span>
           </div>
@@ -229,14 +229,14 @@
       <!-- Instructions Section (Right Column) -->
       <div class="lg:col-span-7 space-y-4">
         <div
-          class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+          class="glass-card rounded-2xl p-6 border border-surface-200/80 dark:border-surface-800/80 shadow-sm space-y-4">
           <div
-            class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            class="flex items-center justify-between pb-3 border-b border-surface-200/80 dark:border-surface-800/80">
+            <h3 class="text-lg font-bold text-surface-900 dark:text-white flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
               Step-by-Step Instructions
             </h3>
-            <span class="text-xs font-medium text-gray-500">
+            <span class="text-xs font-medium text-surface-500">
               {{ recipe.steps?.length || 0 }} steps
             </span>
           </div>
@@ -244,13 +244,14 @@
           <div class="space-y-4">
             @for (step of recipe.steps; track step.stepNumber; let i = $index) {
               <div
-                class="flex gap-4 p-4 rounded-xl bg-gray-50/60 dark:bg-[#262626]/40 border border-gray-100 dark:border-gray-800/80">
+                class="flex gap-4 p-4 rounded-xl bg-surface-50/60 dark:bg-surface-800/40 border border-surface-200/80 dark:border-surface-800/80">
                 <span
                   class="w-7 h-7 rounded-full bg-primary-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   {{ i + 1 }}
                 </span>
                 <div class="space-y-1 flex-1">
-                  <p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed font-normal">
+                  <p
+                    class="text-sm text-surface-800 dark:text-surface-200 leading-relaxed font-normal">
                     {{ step.instructionText }}
                   </p>
                   @if (step.timerSeconds) {

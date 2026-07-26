@@ -1,6 +1,6 @@
 <div
   (click)="viewDetails()"
-  class="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-100 dark:border-gray-800/80 shadow-sm hover:shadow-md hover:border-primary-500/30 dark:hover:border-primary-500/30 transition-all duration-200 flex flex-col justify-between h-[480px] relative overflow-hidden cursor-pointer group">
+  class="glass-card rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-sm hover:shadow-md hover:border-primary-500/30 dark:hover:border-primary-500/30 transition-all duration-200 flex flex-col justify-between h-[480px] relative overflow-hidden cursor-pointer group">
   <!-- Main Scrollable/Clippable Content Area -->
   <div class="p-6 overflow-hidden relative flex-1">
     <!-- Card Top Header -->
@@ -8,7 +8,7 @@
       <div class="space-y-1 min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
           <h4
-            class="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate">
+            class="text-xl font-extrabold text-surface-900 dark:text-white tracking-tight group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate">
             {{ recipe.name }}
           </h4>
 
@@ -45,7 +45,7 @@
         </div>
 
         @if (recipe.description) {
-          <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed line-clamp-1">
+          <p class="text-surface-500 dark:text-surface-400 text-xs leading-relaxed line-clamp-1">
             {{ recipe.description }}
           </p>
         }
@@ -56,7 +56,7 @@
         <button
           type="button"
           (click)="onDelete($event)"
-          class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors cursor-pointer"
+          class="p-2 text-surface-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors cursor-pointer"
           title="Delete Recipe">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -76,33 +76,33 @@
 
     <!-- Quick Stats Bar -->
     <div
-      class="grid grid-cols-4 gap-1 py-2 px-3 mb-3 bg-gray-50/80 dark:bg-[#262626]/50 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
+      class="grid grid-cols-4 gap-1 py-2 px-3 mb-3 bg-surface-100/60 dark:bg-surface-800/50 rounded-xl border border-surface-200/80 dark:border-surface-800/80 text-center">
       <div>
-        <span class="block text-[10px] font-medium text-gray-400 uppercase tracking-wider"
+        <span class="block text-[10px] font-medium text-surface-400 uppercase tracking-wider"
           >Servings</span
         >
-        <span class="block font-bold text-gray-900 dark:text-white text-xs mt-0.5">
+        <span class="block font-bold text-surface-900 dark:text-white text-xs mt-0.5">
           {{ recipe.servings || '-' }}
         </span>
       </div>
       <div>
-        <span class="block text-[10px] font-medium text-gray-400 uppercase tracking-wider"
+        <span class="block text-[10px] font-medium text-surface-400 uppercase tracking-wider"
           >Prep</span
         >
-        <span class="block font-bold text-gray-900 dark:text-white text-xs mt-0.5">
+        <span class="block font-bold text-surface-900 dark:text-white text-xs mt-0.5">
           {{ recipe.prepTime || 0 }}m
         </span>
       </div>
       <div>
-        <span class="block text-[10px] font-medium text-gray-400 uppercase tracking-wider"
+        <span class="block text-[10px] font-medium text-surface-400 uppercase tracking-wider"
           >Cook</span
         >
-        <span class="block font-bold text-gray-900 dark:text-white text-xs mt-0.5">
+        <span class="block font-bold text-surface-900 dark:text-white text-xs mt-0.5">
           {{ recipe.cookTime || 0 }}m
         </span>
       </div>
       <div>
-        <span class="block text-[10px] font-medium text-gray-400 uppercase tracking-wider"
+        <span class="block text-[10px] font-medium text-surface-400 uppercase tracking-wider"
           >Total</span
         >
         <span class="block font-bold text-primary-600 dark:text-primary-400 text-xs mt-0.5">
@@ -115,7 +115,9 @@
     @if (ingredientStats.totalCount > 0) {
       <div class="mb-3 space-y-1">
         <div class="flex justify-between items-center text-[10px] font-semibold">
-          <span class="text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock Match</span>
+          <span class="text-surface-500 dark:text-surface-400 uppercase tracking-wider"
+            >Stock Match</span
+          >
           <span
             [class]="
               ingredientStats.isFullyMakeable
@@ -127,7 +129,7 @@
             }}%)
           </span>
         </div>
-        <div class="w-full bg-gray-100 dark:bg-[#262626] h-1.5 rounded-full overflow-hidden">
+        <div class="w-full bg-surface-100 dark:bg-surface-800 h-1.5 rounded-full overflow-hidden">
           <div
             [class]="
               ingredientStats.isFullyMakeable
@@ -142,11 +144,12 @@
     }
 
     <!-- Ingredients & Steps Grid -->
-    <div class="grid md:grid-cols-2 gap-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+    <div
+      class="grid md:grid-cols-2 gap-4 pt-3 border-t border-surface-200/80 dark:border-surface-800/80">
       <!-- Ingredients List (Sorted with Missing Ingredients at the Top) -->
       <div>
         <h5
-          class="text-[11px] font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          class="text-[11px] font-bold text-surface-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
           Ingredients
         </h5>
@@ -156,7 +159,7 @@
             @let expInfo = getIngredientExpirationInfo(ing);
             <li
               (click)="onIngredientClick($event, ing)"
-              class="flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors cursor-pointer hover:bg-gray-100 dark:hover:bg-[#262626]"
+              class="flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-800/60"
               [class.bg-rose-500/5]="!avail.isAvailable"
               [class.bg-amber-500/10]="avail.isAvailable && expInfo.expiringSoon"
               [class.bg-emerald-500/5]="avail.isAvailable && !expInfo.expiringSoon"
@@ -181,7 +184,7 @@
                   </span>
                 }
                 <span
-                  class="truncate text-gray-700 dark:text-gray-200 text-xs hover:underline hover:text-primary-600 dark:hover:text-primary-400"
+                  class="truncate text-surface-700 dark:text-surface-200 text-xs hover:underline hover:text-primary-600 dark:hover:text-primary-400"
                   [class.font-semibold]="!avail.isAvailable || expInfo.expiringSoon"
                   [class.text-rose-600]="!avail.isAvailable"
                   [class.text-amber-600]="avail.isAvailable && expInfo.expiringSoon"
@@ -216,15 +219,15 @@
       <!-- Instructions -->
       <div>
         <h5
-          class="text-[11px] font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          class="text-[11px] font-bold text-surface-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
           Steps ({{ recipe.steps?.length || 0 }})
         </h5>
-        <ol class="space-y-1 text-xs text-gray-600 dark:text-gray-300">
+        <ol class="space-y-1 text-xs text-surface-600 dark:text-surface-300">
           @for (step of recipe.steps; track step.stepNumber; let i = $index) {
             <li class="flex items-start gap-1.5">
               <span
-                class="w-3.5 h-3.5 rounded-full bg-gray-100 dark:bg-[#262626] text-gray-600 dark:text-gray-400 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                class="w-3.5 h-3.5 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                 {{ i + 1 }}
               </span>
               <span class="leading-tight line-clamp-2">{{ step.instructionText }}</span>
@@ -236,12 +239,12 @@
 
     <!-- Gradient Overflow Fade Indicator -->
     <div
-      class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-[#1a1a1a] dark:via-[#1a1a1a]/80 pointer-events-none"></div>
+      class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-surface-50 via-surface-50/80 to-transparent dark:from-surface-900 dark:via-surface-900/80 pointer-events-none"></div>
   </div>
 
   <!-- Bottom Card Footer (View Details Link) -->
   <div
-    class="px-6 py-3 bg-gray-50/90 dark:bg-[#262626]/80 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs font-semibold text-primary-600 dark:text-primary-400 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors">
+    class="px-6 py-3 bg-surface-100/60 dark:bg-surface-800/80 border-t border-surface-200/80 dark:border-surface-800/80 flex justify-between items-center text-xs font-semibold text-primary-600 dark:text-primary-400 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors">
     <span>View Recipe & Instructions</span>
     <svg
       xmlns="http://www.w3.org/2000/svg"
