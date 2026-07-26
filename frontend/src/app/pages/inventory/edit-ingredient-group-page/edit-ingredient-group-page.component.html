@@ -70,7 +70,8 @@
       <form [formGroup]="groupForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <!-- Name Field -->
         <div>
-          <label class="block text-sm font-semibold text-surface-700 dark:text-surface-300 mb-2">
+          <label
+            class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider mb-1.5">
             Group Name <span class="text-red-500">*</span>
           </label>
           <input
@@ -88,7 +89,8 @@
 
         <!-- Parent Nutrient Group Select -->
         <div>
-          <label class="block text-sm font-semibold text-surface-700 dark:text-surface-300 mb-2">
+          <label
+            class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider mb-1.5">
             Parent Nutrient Group
           </label>
           <p-select
@@ -113,7 +115,7 @@
           <button
             type="submit"
             [disabled]="isSubmitting()"
-            class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold shadow-lg shadow-primary-500/25 transition-all cursor-pointer text-sm disabled:opacity-50 flex items-center gap-2">
+            class="px-6 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold shadow-md shadow-primary-600/20 transition-all cursor-pointer text-sm disabled:opacity-50 flex items-center gap-2">
             @if (isSubmitting()) {
               <svg
                 class="animate-spin h-4 w-4 text-white"
