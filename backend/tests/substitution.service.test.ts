@@ -60,9 +60,9 @@ Deno.test('SubstitutionService - getSubstitutions - ranks same category higher t
 
   const substitutions = await substitutionService.getSubstitutions('ing1');
   assertEquals(substitutions.length, 2);
-  // Parmesan Cheese should be first (same_category)
+  // Parmesan Cheese should be first (same_group)
   assertEquals(substitutions[0].ingredient.name, 'Parmesan Cheese');
-  assertEquals(substitutions[0].matchLevel, 'same_category');
+  assertEquals(substitutions[0].matchLevel, 'same_group');
   // Chicken Breast should be second (same_nutrient_type)
   assertEquals(substitutions[1].ingredient.name, 'Chicken Breast');
   assertEquals(substitutions[1].matchLevel, 'same_nutrient_type');

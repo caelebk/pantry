@@ -115,11 +115,11 @@ export class IngredientsService {
   }
 
   /**
-   * Retrieves all ingredients by ingredient group / category from the database.
+   * Retrieves all ingredients by ingredient group from the database.
    * @param {number} groupId - The ID of the group to retrieve ingredients from.
    * @returns {Promise<IngredientDTO[]>} A promise that resolves to an array of Ingredient objects.
    */
-  async getIngredientsByCategory(groupId: number): Promise<IngredientDTO[]> {
+  async getIngredientsByGroup(groupId: number): Promise<IngredientDTO[]> {
     try {
       const db = getDB();
       const rows = db.prepare('SELECT * FROM ingredients WHERE ingredient_group_id = ?').all(

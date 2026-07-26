@@ -1,5 +1,5 @@
 import { getDB } from '../db/client.ts';
-import { CategoryMessages } from '../messages/category.messages.ts';
+import { IngredientGroupMessages } from '../messages/ingredient-group.messages.ts';
 import {
   CreateIngredientGroupDTO,
   IngredientGroupDTO,
@@ -29,7 +29,7 @@ export class IngredientGroupService {
       return rows.map(this.mapRowToDTO);
     } catch (error: unknown) {
       console.error('Error finding ingredient groups:', error);
-      throw new Error(CategoryMessages.DB_RETRIEVE_CATEGORIES_ERROR);
+      throw new Error(IngredientGroupMessages.DB_RETRIEVE_CATEGORIES_ERROR);
     }
   }
 
@@ -48,7 +48,7 @@ export class IngredientGroupService {
       return row ? this.mapRowToDTO(row) : null;
     } catch (error: unknown) {
       console.error('Error finding ingredient group by ID:', error);
-      throw new Error(CategoryMessages.DB_RETRIEVE_CATEGORY_ERROR);
+      throw new Error(IngredientGroupMessages.DB_RETRIEVE_CATEGORY_ERROR);
     }
   }
 

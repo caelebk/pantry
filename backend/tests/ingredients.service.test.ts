@@ -141,23 +141,23 @@ Deno.test('IngredientsService - deleteIngredient - success', async () => {
   db.close();
 });
 
-Deno.test('IngredientsService - getIngredientsByCategory - success', async () => {
+Deno.test('IngredientsService - getIngredientsByGroup - success', async () => {
   const db = createTestDB();
   setDB(db);
   seedMockIngredient(db);
 
-  const ingredients = await ingredientService.getIngredientsByCategory(1);
+  const ingredients = await ingredientService.getIngredientsByGroup(1);
   assertEquals(ingredients.length, 1);
   assertEquals(ingredients[0].id, mockId);
   db.close();
 });
 
-Deno.test('IngredientsService - getIngredientsByCategory - empty', async () => {
+Deno.test('IngredientsService - getIngredientsByGroup - empty', async () => {
   const db = createTestDB();
   setDB(db);
   seedMockIngredient(db);
 
-  const ingredients = await ingredientService.getIngredientsByCategory(999);
+  const ingredients = await ingredientService.getIngredientsByGroup(999);
   assertEquals(ingredients.length, 0);
   db.close();
 });

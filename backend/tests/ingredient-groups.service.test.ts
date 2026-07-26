@@ -1,7 +1,7 @@
 import { assert, assertEquals } from '@std/assert';
 import { Database } from '@db/sqlite';
 import { setDB } from '../src/db/client.ts';
-import { CategoryRow } from '../src/models/schema-models/category.model.ts';
+import { IngredientGroupRow } from '../src/models/schema-models/ingredient-group.model.ts';
 import { ingredientGroupService } from '../src/services/ingredient-group.service.ts';
 
 function createTestDB(): Database {
@@ -23,18 +23,18 @@ function createTestDB(): Database {
   return db;
 }
 
-function seedMockCategory(db: Database): CategoryRow {
+function seedMockGroup(db: Database): IngredientGroupRow {
   db.prepare('INSERT INTO ingredient_groups (name) VALUES (?)').run('Test Category');
   const row = db.prepare('SELECT * FROM ingredient_groups WHERE name = ?').get(
     'Test Category',
-  ) as CategoryRow;
+  ) as IngredientGroupRow;
   return row;
 }
 
 Deno.test('IngredientGroupService - getAllIngredientGroups - success', async () => {
   const db = createTestDB();
   setDB(db);
-  seedMockCategory(db);
+  seedMockGroup(db);
 
   const groups = await ingredientGroupService.getAllIngredientGroups();
   assertEquals(groups.length, 1);
@@ -54,7 +54,7 @@ Deno.test('IngredientGroupService - getAllIngredientGroups - empty', async () =>
 Deno.test('IngredientGroupService - getIngredientGroupById - success', async () => {
   const db = createTestDB();
   setDB(db);
-  const mockRow = seedMockCategory(db);
+  const mockRow = seedMockGroup(db);
 
   const group = await ingredientGroupService.getIngredientGroupById(mockRow.id);
   assert(group !== null);
@@ -87,7 +87,7 @@ Deno.test('IngredientGroupService - createIngredientGroup - success', async () =
 Deno.test('IngredientGroupService - updateIngredientGroup - success', async () => {
   const db = createTestDB();
   setDB(db);
-  const mockRow = seedMockCategory(db);
+  const mockRow = seedMockGroup(db);
 
   const updated = await ingredientGroupService.updateIngredientGroup(mockRow.id, {
     name: 'Updated Name',
@@ -100,7 +100,7 @@ Deno.test('IngredientGroupService - updateIngredientGroup - success', async () =
 Deno.test('IngredientGroupService - deleteIngredientGroup - success', async () => {
   const db = createTestDB();
   setDB(db);
-  const mockRow = seedMockCategory(db);
+  const mockRow = seedMockGroup(db);
 
   const res = await ingredientGroupService.deleteIngredientGroup(mockRow.id);
   assertEquals(res, true);

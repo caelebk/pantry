@@ -8,8 +8,8 @@ import type { IngredientDTO } from '../models/data-models/ingredient.model.ts';
 export interface SubstitutionSuggestion {
   ingredient: IngredientDTO;
   availableQuantityBase: number; // total quantity in base units
-  matchLevel: 'same_category' | 'same_nutrient_type';
-  categoryName: string;
+  matchLevel: 'same_group' | 'same_nutrient_type';
+  groupName: string;
 }
 
 export class SubstitutionService {
@@ -72,10 +72,10 @@ export class SubstitutionService {
     const suggestions: SubstitutionSuggestion[] = [];
 
     for (const row of candidates) {
-      let matchLevel: 'same_category' | 'same_nutrient_type' | null = null;
+      let matchLevel: 'same_group' | 'same_nutrient_type' | null = null;
 
       if (source.ingredient_group_id && row.ingredient_group_id === source.ingredient_group_id) {
-        matchLevel = 'same_category';
+        matchLevel = 'same_group';
       } else if (source.nutrient_group_id && row.nutrient_group_id === source.nutrient_group_id) {
         matchLevel = 'same_nutrient_type';
       }
@@ -91,15 +91,15 @@ export class SubstitutionService {
           },
           availableQuantityBase: row.available_base_qty,
           matchLevel,
-          categoryName: row.group_name,
+          groupName: row.group_name,
         });
       }
     }
 
-    // Sort: same_category first, then same_nutrient_type, then alphabetically
+    // Sort: same_group first, then same_nutrient_type, then alphabetically
     suggestions.sort((a, b) => {
       if (a.matchLevel !== b.matchLevel) {
-        return a.matchLevel === 'same_category' ? -1 : 1;
+        return a.matchLevel === 'same_group' ? -1 : 1;
       }
       return a.ingredient.name.localeCompare(b.ingredient.name);
     });

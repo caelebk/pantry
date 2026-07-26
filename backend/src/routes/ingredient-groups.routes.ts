@@ -1,5 +1,5 @@
 import { Context, Hono } from 'hono';
-import { CategoryMessages } from '../messages/category.messages.ts';
+import { IngredientGroupMessages } from '../messages/ingredient-group.messages.ts';
 import { IngredientMessages } from '../messages/ingredient.messages.ts';
 import {
   CreateIngredientGroupDTO,
@@ -21,7 +21,7 @@ ingredientGroups.get('/', async (c: Context) => {
     return c.json(successResponse(groups), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
-      errorResponse(CategoryMessages.DB_RETRIEVE_CATEGORIES_ERROR),
+      errorResponse(IngredientGroupMessages.DB_RETRIEVE_CATEGORIES_ERROR),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
@@ -35,16 +35,16 @@ ingredientGroups.get('/:id', async (c: Context) => {
     const id = c.req.param('id');
     const numericId = Number(id);
     if (!isPositiveNumber(numericId)) {
-      return c.json(errorResponse(CategoryMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+      return c.json(errorResponse(IngredientGroupMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
     const group = await ingredientGroupService.getIngredientGroupById(numericId);
     if (!group) {
-      return c.json(errorResponse(CategoryMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
+      return c.json(errorResponse(IngredientGroupMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
     return c.json(successResponse(group), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
-      errorResponse(CategoryMessages.DB_RETRIEVE_CATEGORY_ERROR),
+      errorResponse(IngredientGroupMessages.DB_RETRIEVE_CATEGORY_ERROR),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
@@ -57,13 +57,13 @@ ingredientGroups.post('/', async (c: Context) => {
   try {
     const body = await c.req.json<CreateIngredientGroupDTO>();
     if (!body || !body.name || typeof body.name !== 'string' || body.name.trim().length === 0) {
-      return c.json(errorResponse(CategoryMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+      return c.json(errorResponse(IngredientGroupMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
     }
     const created = await ingredientGroupService.createIngredientGroup(body);
     return c.json(successResponse(created), HttpStatusCode.CREATED);
   } catch (_error: unknown) {
     return c.json(
-      errorResponse(CategoryMessages.DB_CREATE_CATEGORY_ERROR),
+      errorResponse(IngredientGroupMessages.DB_CREATE_CATEGORY_ERROR),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
@@ -77,17 +77,17 @@ ingredientGroups.put('/:id', async (c: Context) => {
     const id = c.req.param('id');
     const numericId = Number(id);
     if (!isPositiveNumber(numericId)) {
-      return c.json(errorResponse(CategoryMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+      return c.json(errorResponse(IngredientGroupMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
     const body = await c.req.json<UpdateIngredientGroupDTO>();
     const updated = await ingredientGroupService.updateIngredientGroup(numericId, body);
     if (!updated) {
-      return c.json(errorResponse(CategoryMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
+      return c.json(errorResponse(IngredientGroupMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
     return c.json(successResponse(updated), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
-      errorResponse(CategoryMessages.DB_UPDATE_CATEGORY_ERROR),
+      errorResponse(IngredientGroupMessages.DB_UPDATE_CATEGORY_ERROR),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
@@ -101,16 +101,16 @@ ingredientGroups.delete('/:id', async (c: Context) => {
     const id = c.req.param('id');
     const numericId = Number(id);
     if (!isPositiveNumber(numericId)) {
-      return c.json(errorResponse(CategoryMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+      return c.json(errorResponse(IngredientGroupMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
     const deleted = await ingredientGroupService.deleteIngredientGroup(numericId);
     if (!deleted) {
-      return c.json(errorResponse(CategoryMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
+      return c.json(errorResponse(IngredientGroupMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
     return c.json(successResponse(true), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
-      errorResponse(CategoryMessages.DB_DELETE_CATEGORY_ERROR),
+      errorResponse(IngredientGroupMessages.DB_DELETE_CATEGORY_ERROR),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
@@ -124,15 +124,15 @@ ingredientGroups.get('/:id/ingredients', async (c: Context) => {
     const id = c.req.param('id');
     const numericId = Number(id);
     if (!isPositiveNumber(numericId)) {
-      return c.json(errorResponse(CategoryMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+      return c.json(errorResponse(IngredientGroupMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
 
     const group = await ingredientGroupService.getIngredientGroupById(numericId);
     if (!group) {
-      return c.json(errorResponse(CategoryMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
+      return c.json(errorResponse(IngredientGroupMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
 
-    const ingredients = await ingredientService.getIngredientsByCategory(numericId);
+    const ingredients = await ingredientService.getIngredientsByGroup(numericId);
     return c.json(successResponse(ingredients), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
