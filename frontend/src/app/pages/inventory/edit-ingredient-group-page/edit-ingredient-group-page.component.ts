@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NutrientGroup } from '@models/nutrient-type.model';
+import { IngredientCategory } from '@models/ingredient-category.model';
+import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
-import { NutrientTypeService } from '@services/inventory/nutrient-type.service';
 import { ToastService } from '@services/toast.service';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -20,12 +20,12 @@ export class EditIngredientGroupPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly ingredientGroupService = inject(IngredientGroupService);
-  private readonly nutrientTypeService = inject(NutrientTypeService);
+  private readonly ingredientCategoryService = inject(IngredientCategoryService);
   private readonly toastService = inject(ToastService);
 
   public groupId = signal<number | null>(null);
   public groupForm!: FormGroup;
-  public nutrientGroups = signal<NutrientGroup[]>([]);
+  public ingredientCategories = signal<IngredientCategory[]>([]);
   public isLoading = signal<boolean>(true);
   public isSubmitting = signal<boolean>(false);
   public submitError = signal<string | null>(null);
@@ -42,20 +42,20 @@ export class EditIngredientGroupPageComponent implements OnInit {
 
     this.groupForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
-      nutrientGroup: [null],
+      ingredientCategory: [null],
     });
 
-    this.nutrientTypeService.getNutrientGroups().subscribe({
-      next: (groups) => this.nutrientGroups.set(groups),
+    this.ingredientCategoryService.getIngredientCategories().subscribe({
+      next: (categories) => this.ingredientCategories.set(categories),
     });
 
     this.ingredientGroupService.getIngredientGroupById(id).subscribe({
       next: (group) => {
+        const catId = group.ingredientCategoryId ?? group.nutrientGroupId;
+        const catName = group.ingredientCategoryName ?? group.nutrientGroupName ?? '';
         this.groupForm.patchValue({
           name: group.name,
-          nutrientGroup: group.nutrientGroupId
-            ? { id: group.nutrientGroupId, name: group.nutrientGroupName || '' }
-            : null,
+          ingredientCategory: catId ? { id: catId, name: catName } : null,
         });
         this.isLoading.set(false);
       },
@@ -81,10 +81,11 @@ export class EditIngredientGroupPageComponent implements OnInit {
     const val = this.groupForm.value;
     this.isSubmitting.set(true);
 
+    const categoryObj = val.ingredientCategory || val.nutrientGroup;
     this.ingredientGroupService
       .updateIngredientGroup(id, {
         name: val.name,
-        nutrientGroupId: val.nutrientGroup ? val.nutrientGroup.id : undefined,
+        ingredientCategoryId: categoryObj ? categoryObj.id : undefined,
       })
       .subscribe({
         next: () => {

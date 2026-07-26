@@ -73,10 +73,10 @@ Or run services individually:
 Always adhere to the updated 4-tier domain hierarchy and terminology:
 
 ```
-[ Nutrient Group ]    (Tier 1: Protein & Dairy, Fiber & Produce, Carbs & Grains, etc.)
+[ Ingredient Category ] (Tier 1: Protein & Dairy, Fiber & Produce, Carbs & Grains, etc.)
        │
        ▼
-[ Ingredient Group ]  (Tier 2: Meat, Seafood, Beans, Vegetables, Fruits, Grains, etc.)
+[ Ingredient Group ]    (Tier 2: Meat, Seafood, Beans, Vegetables, Fruits, Grains, etc.)
        │
        ▼
 [ Ingredient ]        (Tier 3: Master definition e.g. Chicken Breast, Gala Apple, Jasmine Rice)
@@ -86,9 +86,9 @@ Always adhere to the updated 4-tier domain hierarchy and terminology:
 ```
 
 ### Terminology Rules:
-- **Use `Ingredient`** (catalog entry) — *Do NOT use "Master Ingredient"*.
+- **Use `Ingredient Category`** — *Do NOT use "Nutrient Group" or "Nutrient Type"*.
 - **Use `Ingredient Group`** — *Do NOT use generic "Category"*.
-- **Use `Nutrient Group`** — *Do NOT use "Nutrient Type"*.
+- **Use `Ingredient`** (catalog entry) — *Do NOT use "Master Ingredient"*.
 - **Use `Ingredient Item`** — *Do NOT use plain "Item" when referring to physical inventory batches*.
 
 ---

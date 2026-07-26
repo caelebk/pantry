@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NutrientGroup } from '@models/nutrient-type.model';
+import { IngredientCategory } from '@models/ingredient-category.model';
+import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
-import { NutrientTypeService } from '@services/inventory/nutrient-type.service';
 import { ToastService } from '@services/toast.service';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -19,22 +19,22 @@ export class AddIngredientGroupPageComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly ingredientGroupService = inject(IngredientGroupService);
-  private readonly nutrientTypeService = inject(NutrientTypeService);
+  private readonly ingredientCategoryService = inject(IngredientCategoryService);
   private readonly toastService = inject(ToastService);
 
   public groupForm!: FormGroup;
-  public nutrientGroups = signal<NutrientGroup[]>([]);
+  public ingredientCategories = signal<IngredientCategory[]>([]);
   public isSubmitting = signal<boolean>(false);
   public submitError = signal<string | null>(null);
 
   ngOnInit(): void {
     this.groupForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
-      nutrientGroup: [null],
+      ingredientCategory: [null],
     });
 
-    this.nutrientTypeService.getNutrientGroups().subscribe({
-      next: (groups) => this.nutrientGroups.set(groups),
+    this.ingredientCategoryService.getIngredientCategories().subscribe({
+      next: (categories) => this.ingredientCategories.set(categories),
     });
   }
 
@@ -49,10 +49,11 @@ export class AddIngredientGroupPageComponent implements OnInit {
     const val = this.groupForm.value;
     this.isSubmitting.set(true);
 
+    const categoryObj = val.ingredientCategory || val.nutrientGroup;
     this.ingredientGroupService
       .createIngredientGroup({
         name: val.name,
-        nutrientGroupId: val.nutrientGroup ? val.nutrientGroup.id : undefined,
+        ingredientCategoryId: categoryObj ? categoryObj.id : undefined,
       })
       .subscribe({
         next: () => {

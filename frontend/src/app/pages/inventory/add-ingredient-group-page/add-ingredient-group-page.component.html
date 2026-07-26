@@ -62,23 +62,23 @@
         }
       </div>
 
-      <!-- Parent Nutrient Group Select -->
+      <!-- Parent Ingredient Category Select -->
       <div>
         <label
           class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider mb-1.5">
-          Parent Nutrient Group
+          Parent Ingredient Category
         </label>
         <p-select
-          [options]="nutrientGroups()"
-          formControlName="nutrientGroup"
+          [options]="ingredientCategories()"
+          formControlName="ingredientCategory"
           optionLabel="name"
-          placeholder="Select Nutrient Group (e.g. Fiber & Produce, Protein, Carbs)"
+          placeholder="Select Ingredient Category (e.g. Fiber & Produce, Protein, Carbs)"
           [showClear]="true"
           class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700"
           appendTo="body">
         </p-select>
         <p class="mt-1 text-xs text-surface-400">
-          Classifies this ingredient group under top-level nutritional pillars.
+          Classifies this ingredient group under top-level ingredient categories.
         </p>
       </div>
 

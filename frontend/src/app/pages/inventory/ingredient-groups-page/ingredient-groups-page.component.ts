@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { IngredientCategory } from '@models/ingredient-category.model';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import {
-  IngredientGroup as InventoryIngredientGroup,
-  NutrientGroup,
+  IngredientCategoryCluster,
+  IngredientGroupCluster,
 } from '@models/inventory.models';
 import { Item } from '@models/items.model';
-import { NutrientType } from '@models/nutrient-type.model';
+import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
-import { NutrientTypeService } from '@services/inventory/nutrient-type.service';
 import { ToastService } from '@services/toast.service';
 import { IngredientGroupContainerComponent } from '../inventory-components/ingredient-group-container/ingredient-group-container.component';
 
@@ -26,17 +26,17 @@ export class IngredientGroupsPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly itemService = inject(ItemService);
   private readonly ingredientService = inject(IngredientService);
-  private readonly categoryService = inject(CategoryService);
-  private readonly nutrientTypeService = inject(NutrientTypeService);
+  private readonly ingredientGroupService = inject(IngredientGroupService);
+  private readonly ingredientCategoryService = inject(IngredientCategoryService);
   private readonly toastService = inject(ToastService);
 
   public items = signal<Item[]>([]);
   public ingredients = signal<Ingredient[]>([]);
-  public categories = signal<Category[]>([]);
-  public nutrientTypes = signal<NutrientType[]>([]);
+  public ingredientGroups = signal<IngredientGroup[]>([]);
+  public ingredientCategories = signal<IngredientCategory[]>([]);
   public isLoading = signal<boolean>(true);
   public searchQuery = signal<string>('');
-  public selectedCategory = signal<Category | null>(null);
+  public selectedGroup = signal<IngredientGroup | null>(null);
 
   ngOnInit(): void {
     this.loadData();
@@ -53,13 +53,13 @@ export class IngredientGroupsPageComponent implements OnInit {
       next: (ingredients) => this.ingredients.set(ingredients),
     });
 
-    this.categoryService.getCategories().subscribe({
-      next: (categories) => this.categories.set(categories),
+    this.ingredientGroupService.getIngredientGroups().subscribe({
+      next: (groups) => this.ingredientGroups.set(groups),
     });
 
-    this.nutrientTypeService.getNutrientTypes().subscribe({
-      next: (nutrientTypes) => {
-        this.nutrientTypes.set(nutrientTypes);
+    this.ingredientCategoryService.getIngredientCategories().subscribe({
+      next: (categories) => {
+        this.ingredientCategories.set(categories);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -73,9 +73,9 @@ export class IngredientGroupsPageComponent implements OnInit {
   public categoryGroups = computed(() => {
     const itemsList = this.items();
     const ingredientsList = this.ingredients();
-    const categoriesList = this.categories();
+    const groupsList = this.ingredientGroups();
     const query = this.searchQuery().toLowerCase().trim();
-    const selCategory = this.selectedCategory();
+    const selGroup = this.selectedGroup();
 
     const ingredientMap = new Map();
 
@@ -88,25 +88,25 @@ export class IngredientGroupsPageComponent implements OnInit {
       });
     });
 
-    const categoryMap = new Map();
+    const groupMap = new Map();
 
     ingredientMap.forEach((ingredient) => {
-      const categoryId = ingredient.category?.id ?? -1;
-      if (!categoryMap.has(categoryId)) {
-        categoryMap.set(categoryId, []);
+      const groupId = ingredient.ingredientGroup?.id ?? -1;
+      if (!groupMap.has(groupId)) {
+        groupMap.set(groupId, []);
       }
-      categoryMap.get(categoryId).push(ingredient);
+      groupMap.get(groupId).push(ingredient);
     });
 
-    const groups: InventoryIngredientGroup[] = [];
+    const clusters: IngredientGroupCluster[] = [];
 
-    categoryMap.forEach((ingList, categoryId) => {
-      const category =
-        categoryId === -1
+    groupMap.forEach((ingList, groupId) => {
+      const group =
+        groupId === -1
           ? { id: -1, name: 'Uncategorized' }
-          : (categoriesList.find((c) => c.id === categoryId) ?? { id: -1, name: 'Unknown' });
+          : (groupsList.find((g) => g.id === groupId) ?? { id: -1, name: 'Unknown' });
 
-      if (selCategory && selCategory.id !== category.id) {
+      if (selGroup && selGroup.id !== group.id) {
         return;
       }
 
@@ -115,78 +115,78 @@ export class IngredientGroupsPageComponent implements OnInit {
       );
 
       if (filteredIngredients.length > 0) {
-        groups.push({ category, ingredients: filteredIngredients });
+        clusters.push({ group, ingredients: filteredIngredients });
       }
     });
 
-    return groups.sort((a, b) => a.category.name.localeCompare(b.category.name));
+    return clusters.sort((a, b) => a.group.name.localeCompare(b.group.name));
   });
 
   public nutrientGroups = computed(() => {
     const catGroups = this.categoryGroups();
-    const categoriesList = this.categories();
-    const nutrientTypesList = this.nutrientTypes();
+    const groupsList = this.ingredientGroups();
+    const categoriesList = this.ingredientCategories();
     const query = this.searchQuery().toLowerCase().trim();
-    const selCategory = this.selectedCategory();
-    const hasSearchOrCategoryFilter = query.length > 0 || selCategory !== null;
+    const selGroup = this.selectedGroup();
+    const hasSearchOrFilter = query.length > 0 || selGroup !== null;
 
-    const catGroupsMap = new Map<number, InventoryIngredientGroup>();
+    const groupClustersMap = new Map<number, IngredientGroupCluster>();
     catGroups.forEach((cg) => {
-      catGroupsMap.set(cg.category.id, cg);
+      groupClustersMap.set(cg.group.id, cg);
     });
 
-    const result: NutrientGroup[] = [];
+    const result: IngredientCategoryCluster[] = [];
 
-    nutrientTypesList.forEach((nt) => {
-      const categoriesForNt = categoriesList.filter((c) => c.nutrientTypeId === nt.id);
-      const categoryGroupsInNt: InventoryIngredientGroup[] = [];
+    categoriesList.forEach((cat) => {
+      const groupsForCat = groupsList.filter((g) => (g.ingredientCategoryId ?? g.nutrientGroupId) === cat.id);
+      const categoryGroupsInCat: IngredientGroupCluster[] = [];
 
-      categoriesForNt.forEach((cat) => {
-        if (selCategory && selCategory.id !== cat.id) {
+      groupsForCat.forEach((grp) => {
+        if (selGroup && selGroup.id !== grp.id) {
           return;
         }
-        const existingGroup = catGroupsMap.get(cat.id);
-        if (existingGroup) {
-          categoryGroupsInNt.push(existingGroup);
-        } else if (!hasSearchOrCategoryFilter) {
-          categoryGroupsInNt.push({ category: cat, ingredients: [] });
+        const existingCluster = groupClustersMap.get(grp.id);
+        if (existingCluster) {
+          categoryGroupsInCat.push(existingCluster);
+        } else if (!hasSearchOrFilter) {
+          categoryGroupsInCat.push({ group: grp, ingredients: [] });
         }
       });
 
-      if (!hasSearchOrCategoryFilter || categoryGroupsInNt.length > 0) {
+      if (!hasSearchOrFilter || categoryGroupsInCat.length > 0) {
         result.push({
-          nutrientType: nt,
-          categoryGroups: categoryGroupsInNt.sort((a, b) =>
-            a.category.name.localeCompare(b.category.name),
+          category: cat,
+          ingredientGroups: categoryGroupsInCat.sort((a, b) =>
+            a.group.name.localeCompare(b.group.name),
           ),
         });
       }
     });
 
-    const knownCatIds = new Set(categoriesList.map((c) => c.id));
-    const uncategorizedCatGroups = catGroups.filter(
+    const knownGroupIds = new Set(groupsList.map((g) => g.id));
+    const uncategorizedClusters = catGroups.filter(
       (cg) =>
-        !knownCatIds.has(cg.category.id) ||
-        !categoriesList.find((c) => c.id === cg.category.id)?.nutrientTypeId,
+        !knownGroupIds.has(cg.group.id) ||
+        !groupsList.find((g) => g.id === cg.group.id)?.ingredientCategoryId,
     );
 
-    if (uncategorizedCatGroups.length > 0) {
+    if (uncategorizedClusters.length > 0) {
       result.push({
-        nutrientType: {
+        category: {
           id: -1,
           name: 'Unclassified',
           icon: '📦',
           color: '#94a3b8',
-          description: 'Categories without an assigned nutrient group',
+          description: 'Groups without an assigned ingredient category',
         },
-        categoryGroups: uncategorizedCatGroups,
+        ingredientGroups: uncategorizedClusters,
       });
     }
 
     return result.sort((a, b) => {
-      if (a.nutrientType.id === -1) return 1;
-      if (b.nutrientType.id === -1) return -1;
-      return a.nutrientType.name.localeCompare(b.nutrientType.name);
+      if (a.category.id === -1) return 1;
+      if (b.category.id === -1) return -1;
+      return a.category.name.localeCompare(b.category.name);
     });
   });
 
