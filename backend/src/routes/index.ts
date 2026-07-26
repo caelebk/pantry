@@ -7,8 +7,10 @@ import categories from './categories.routes.ts';
 import ingredients from './ingredients.routes.ts';
 import items from './items.routes.ts';
 import locations from './locations.routes.ts';
+import mealPlans from './meal-plans.routes.ts';
 import nutrientTypes from './nutrient-types.routes.ts';
 import recipes from './recipes.routes.ts';
+import shoppingList from './shopping-list.routes.ts';
 import units from './units.routes.ts';
 
 const api = new Hono();
@@ -21,6 +23,8 @@ api.route('/categories', categories);
 api.route('/units', units);
 api.route('/locations', locations);
 api.route('/nutrient-types', nutrientTypes);
+api.route('/meal-plans', mealPlans);
+api.route('/shopping-list', shoppingList);
 
 // Health check endpoint
 api.get('/health', (c) => {

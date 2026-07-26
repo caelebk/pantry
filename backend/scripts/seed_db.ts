@@ -189,6 +189,56 @@ function seedDB() {
         }
       }
 
+      // 8. Insert Meal Plans
+      console.log('📅 Seeding meal plans...');
+      db.exec('DELETE FROM meal_plans;');
+      const insertMealPlan = db.prepare(
+        `INSERT INTO meal_plans (id, day, meal_type, recipe_name, prep_time_minutes, calories, servings, cooked, missing_ingredients, tags)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      );
+      if (seedData.meal_plans) {
+        for (const mp of seedData.meal_plans) {
+          const mpId = crypto.randomUUID();
+          insertMealPlan.run(
+            mpId,
+            mp.day,
+            mp.meal_type,
+            mp.recipe_name,
+            mp.prep_time_minutes,
+            mp.calories,
+            mp.servings,
+            mp.cooked,
+            JSON.stringify(mp.missing_ingredients || []),
+            JSON.stringify(mp.tags || [])
+          );
+        }
+      }
+
+      // 9. Insert Shopping List Items
+      console.log('🛒 Seeding shopping list items...');
+      db.exec('DELETE FROM shopping_list_items;');
+      const insertShoppingItem = db.prepare(
+        `INSERT INTO shopping_list_items (id, name, category, quantity, unit, checked, estimated_price, store_name, source, recipe_name)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      );
+      if (seedData.shopping_list_items) {
+        for (const item of seedData.shopping_list_items) {
+          const sId = crypto.randomUUID();
+          insertShoppingItem.run(
+            sId,
+            item.name,
+            item.category,
+            item.quantity,
+            item.unit,
+            item.checked,
+            item.estimated_price,
+            item.store_name,
+            item.source,
+            item.recipe_name || null
+          );
+        }
+      }
+
       db.exec('COMMIT');
       console.log('✅ Database seeded successfully!');
     } catch (err) {

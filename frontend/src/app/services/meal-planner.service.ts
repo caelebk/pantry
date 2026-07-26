@@ -1,136 +1,42 @@
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
+import { ApiResponse } from '@models/http.model';
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
 import { Recipe } from '@models/recipe.model';
+import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { ShoppingListService } from './shopping-list.service';
 import { ToastService } from './toast.service';
-
-const MEAL_PLANNER_STORAGE_KEY = 'pantry_meal_planner_meals';
-
-const SEEDED_MEALS: PlannedMeal[] = [
-  {
-    id: 'meal-1',
-    day: 'Monday',
-    mealType: 'Breakfast',
-    recipeId: 'rec-pancakes',
-    recipeName: 'Classic Pancakes',
-    prepTimeMinutes: 25,
-    calories: 480,
-    servings: 4,
-    cooked: true,
-    missingIngredients: [],
-    tags: ['Easy', 'Breakfast'],
-  },
-  {
-    id: 'meal-2',
-    day: 'Monday',
-    mealType: 'Dinner',
-    recipeId: 'rec-spaghetti',
-    recipeName: 'Spaghetti with Marinara',
-    prepTimeMinutes: 20,
-    calories: 520,
-    servings: 2,
-    cooked: false,
-    missingIngredients: ['Spaghetti', 'Marinara Sauce', 'Parmesan Cheese'],
-    tags: ['Italian', 'Pasta'],
-  },
-  {
-    id: 'meal-3',
-    day: 'Tuesday',
-    mealType: 'Lunch',
-    recipeId: 'rec-greek-salad',
-    recipeName: 'Greek Salad',
-    prepTimeMinutes: 15,
-    calories: 340,
-    servings: 2,
-    cooked: false,
-    missingIngredients: ['Feta Cheese', 'Avocados'],
-    tags: ['Healthy', 'Vegetarian'],
-  },
-  {
-    id: 'meal-4',
-    day: 'Wednesday',
-    mealType: 'Lunch',
-    recipeId: 'rec-fried-rice',
-    recipeName: 'Simple Egg Fried Rice',
-    prepTimeMinutes: 15,
-    calories: 420,
-    servings: 2,
-    cooked: true,
-    missingIngredients: [],
-    tags: ['Quick', 'Asian'],
-  },
-  {
-    id: 'meal-5',
-    day: 'Thursday',
-    mealType: 'Dinner',
-    recipeId: 'rec-curry',
-    recipeName: 'Chicken Curry',
-    prepTimeMinutes: 50,
-    calories: 650,
-    servings: 4,
-    cooked: false,
-    missingIngredients: ['Chicken Breast', 'Coconut Milk'],
-    tags: ['High Protein', 'Curry'],
-  },
-  {
-    id: 'meal-6',
-    day: 'Friday',
-    mealType: 'Snacks',
-    recipeId: 'rec-fruit-salad',
-    recipeName: 'Fresh Fruit Salad',
-    prepTimeMinutes: 5,
-    calories: 180,
-    servings: 2,
-    cooked: false,
-    missingIngredients: [],
-    tags: ['Fresh', 'Fruit'],
-  },
-  {
-    id: 'meal-7',
-    day: 'Saturday',
-    mealType: 'Snacks',
-    recipeId: 'rec-banana-bread',
-    recipeName: 'Banana Bread',
-    prepTimeMinutes: 75,
-    calories: 310,
-    servings: 8,
-    cooked: false,
-    missingIngredients: ['Cinnamon', 'Vanilla Extract'],
-    tags: ['Baking', 'Dessert'],
-  },
-];
-
-function loadMealsFromStorage(): PlannedMeal[] {
-  try {
-    const raw = localStorage.getItem(MEAL_PLANNER_STORAGE_KEY);
-    if (raw) {
-      return JSON.parse(raw);
-    }
-  } catch (err) {
-    console.error('Failed to load meal plan from localStorage:', err);
-  }
-  return SEEDED_MEALS;
-}
 
 @Injectable({
   providedIn: 'root',
 })
 export class MealPlannerService {
+  private readonly http = inject(HttpClient);
   private readonly shoppingListService = inject(ShoppingListService);
   private readonly toastService = inject(ToastService);
+  private readonly apiUrl = 'http://localhost:8000/api/meal-plans';
 
   readonly days: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-  private readonly mealsSignal = signal<PlannedMeal[]>(loadMealsFromStorage());
-
+  private readonly mealsSignal = signal<PlannedMeal[]>([]);
   readonly meals = this.mealsSignal.asReadonly();
 
-  private persistMeals(meals: PlannedMeal[]): void {
-    try {
-      localStorage.setItem(MEAL_PLANNER_STORAGE_KEY, JSON.stringify(meals));
-    } catch (err) {
-      console.error('Failed to save meal plan to localStorage:', err);
-    }
+  constructor() {
+    this.loadMealsFromBackend();
+  }
+
+  public loadMealsFromBackend(): void {
+    this.http
+      .get<ApiResponse<PlannedMeal[]>>(this.apiUrl)
+      .pipe(mapResponseData<PlannedMeal[]>())
+      .subscribe({
+        next: (data) => {
+          this.mealsSignal.set(data || []);
+        },
+        error: (err) => {
+          console.error('Failed to load meal plans from backend:', err);
+        },
+      });
   }
 
   getMealsForDay(day: DayOfWeek): PlannedMeal[] {
@@ -142,8 +48,7 @@ export class MealPlannerService {
       ? recipe.ingredients.map((i: any) => i.ingredientName || i.name || i.ingredient || 'Ingredient').slice(0, 3)
       : [];
 
-    const newMeal: PlannedMeal = {
-      id: 'plan-' + Date.now(),
+    const newMealPayload = {
       day,
       mealType,
       recipeId: recipe.id,
@@ -156,42 +61,60 @@ export class MealPlannerService {
       tags: recipe.difficulty ? [recipe.difficulty] : ['Custom'],
     };
 
-    this.mealsSignal.update((curr) => {
-      const next = [...curr, newMeal];
-      this.persistMeals(next);
-      return next;
-    });
-
-    this.toastService.showSuccess(`Planned "${newMeal.recipeName}" for ${day} ${mealType}`, 'Meal Planner');
+    this.http
+      .post<ApiResponse<PlannedMeal>>(this.apiUrl, newMealPayload)
+      .pipe(mapResponseData<PlannedMeal>())
+      .subscribe({
+        next: (created) => {
+          this.mealsSignal.update((curr) => [...curr, created]);
+          this.toastService.showSuccess(`Planned "${created.recipeName}" for ${day} ${mealType}`, 'Meal Planner');
+        },
+        error: (err) => {
+          console.error('Failed to add meal plan:', err);
+          this.toastService.showError('Failed to save meal plan to server.');
+        },
+      });
   }
 
   removeMealPlan(id: string): void {
     const meal = this.mealsSignal().find((m) => m.id === id);
-    this.mealsSignal.update((curr) => {
-      const next = curr.filter((m) => m.id !== id);
-      this.persistMeals(next);
-      return next;
-    });
-    if (meal) {
-      this.toastService.showInfo(`Removed ${meal.recipeName} from plan`);
-    }
+    this.http
+      .delete<ApiResponse<any>>(`${this.apiUrl}/${id}`)
+      .pipe(mapResponseData<any>())
+      .subscribe({
+        next: () => {
+          this.mealsSignal.update((curr) => curr.filter((m) => m.id !== id));
+          if (meal) {
+            this.toastService.showInfo(`Removed ${meal.recipeName} from plan`);
+          }
+        },
+        error: (err) => {
+          console.error('Failed to remove meal plan:', err);
+          this.toastService.showError('Failed to remove meal plan from server.');
+        },
+      });
   }
 
   toggleCooked(id: string): void {
-    this.mealsSignal.update((curr) => {
-      const next = curr.map((meal) => {
-        if (meal.id === id) {
-          const nextCooked = !meal.cooked;
+    const meal = this.mealsSignal().find((m) => m.id === id);
+    if (!meal) return;
+
+    const nextCooked = !meal.cooked;
+    this.http
+      .put<ApiResponse<PlannedMeal>>(`${this.apiUrl}/${id}`, { cooked: nextCooked })
+      .pipe(mapResponseData<PlannedMeal>())
+      .subscribe({
+        next: (updated) => {
+          this.mealsSignal.update((curr) => curr.map((m) => (m.id === id ? updated : m)));
           if (nextCooked) {
             this.toastService.showSuccess(`Bon Appétit! Marked "${meal.recipeName}" as cooked.`, 'Meal Completed');
           }
-          return { ...meal, cooked: nextCooked };
-        }
-        return meal;
+        },
+        error: (err) => {
+          console.error('Failed to toggle cooked state:', err);
+          this.toastService.showError('Failed to update meal status.');
+        },
       });
-      this.persistMeals(next);
-      return next;
-    });
   }
 
   addMissingToShoppingList(meal: PlannedMeal): void {
