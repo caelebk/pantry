@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Category } from '@models/category.model';
+import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import {
   IngredientGroup as InventoryIngredientGroup,
@@ -9,7 +9,7 @@ import {
 } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { NutrientType } from '@models/nutrient-type.model';
-import { CategoryService } from '@services/inventory/category.service';
+import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { NutrientTypeService } from '@services/inventory/nutrient-type.service';

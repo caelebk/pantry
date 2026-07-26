@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { IngredientGroup } from '@models/category.model';
+import { IngredientGroup } from '@models/ingredient-group.model';
 import { NutrientGroup } from '@models/nutrient-type.model';
-import { CategoryService } from '@services/inventory/category.service';
+import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { NutrientTypeService } from '@services/inventory/nutrient-type.service';
 import { ToastService } from '@services/toast.service';
 import { forkJoin } from 'rxjs';

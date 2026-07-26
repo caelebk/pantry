@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Category } from '@models/category.model';
+import { IngredientGroup } from '@models/ingredient-group.model';
 import { NutrientGroup } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { IconFieldModule } from 'primeng/iconfield';

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { IngredientGroup } from '@models/category.model';
+import { IngredientGroup } from '@models/ingredient-group.model';
 import { ApiResponse } from '@models/http.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { Observable } from 'rxjs';
@@ -18,7 +18,7 @@ export interface UpdateIngredientGroupDTO {
 @Injectable({
   providedIn: 'root',
 })
-export class CategoryService {
+export class IngredientGroupService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:8000/api/ingredient-groups';
 
@@ -51,13 +51,7 @@ export class CategoryService {
       .delete<ApiResponse<boolean>>(`${this.apiUrl}/${id}`)
       .pipe(mapResponseData<boolean>());
   }
-
-  // Legacy Aliases
-  getCategories(): Observable<IngredientGroup[]> {
-    return this.getIngredientGroups();
-  }
-
-  getCategoryById(id: number): Observable<IngredientGroup> {
-    return this.getIngredientGroupById(id);
-  }
 }
+
+// Legacy Alias
+export { IngredientGroupService as CategoryService };

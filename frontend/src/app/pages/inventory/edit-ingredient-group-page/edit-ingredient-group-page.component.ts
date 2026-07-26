@@ -3,7 +3,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NutrientGroup } from '@models/nutrient-type.model';
-import { CategoryService } from '@services/inventory/category.service';
+import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { NutrientTypeService } from '@services/inventory/nutrient-type.service';
 import { ToastService } from '@services/toast.service';
 import { InputTextModule } from 'primeng/inputtext';
@@ -19,7 +19,7 @@ export class EditIngredientGroupPageComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly categoryService = inject(CategoryService);
+  private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly nutrientTypeService = inject(NutrientTypeService);
   private readonly toastService = inject(ToastService);
 
@@ -49,7 +49,7 @@ export class EditIngredientGroupPageComponent implements OnInit {
       next: (groups) => this.nutrientGroups.set(groups),
     });
 
-    this.categoryService.getIngredientGroupById(id).subscribe({
+    this.ingredientGroupService.getIngredientGroupById(id).subscribe({
       next: (group) => {
         this.groupForm.patchValue({
           name: group.name,
@@ -81,7 +81,7 @@ export class EditIngredientGroupPageComponent implements OnInit {
     const val = this.groupForm.value;
     this.isSubmitting.set(true);
 
-    this.categoryService
+    this.ingredientGroupService
       .updateIngredientGroup(id, {
         name: val.name,
         nutrientGroupId: val.nutrientGroup ? val.nutrientGroup.id : undefined,
