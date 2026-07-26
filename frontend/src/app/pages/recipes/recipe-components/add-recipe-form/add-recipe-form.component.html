@@ -132,13 +132,14 @@
               Recipe Name *
             </label>
             <input
+              pInputText
               type="text"
               id="recipe-name"
               [(ngModel)]="name"
               name="name"
               required
               placeholder="e.g., Creamy Tuscan Chicken"
-              class="w-full rounded-lg border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/60 text-surface-900 dark:text-white shadow-sm focus:border-primary-600 focus:ring-1 focus:ring-primary-600 sm:text-sm p-3 border transition-colors" />
+              class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white" />
           </div>
 
           <!-- Description -->
@@ -149,12 +150,13 @@
               Description
             </label>
             <textarea
+              pTextarea
               id="recipe-description"
               rows="3"
               [(ngModel)]="description"
               name="description"
               placeholder="Describe what makes this dish special..."
-              class="w-full rounded-lg border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/60 text-surface-900 dark:text-white shadow-sm focus:border-primary-600 focus:ring-1 focus:ring-primary-600 sm:text-sm p-3 border transition-colors"></textarea>
+              class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white"></textarea>
           </div>
 
           <!-- Difficulty Selector -->
@@ -169,8 +171,8 @@
                 (click)="difficultyId = 1"
                 [class]="
                   difficultyId === 1
-                    ? 'py-2 px-3 text-xs font-semibold rounded-lg border-2 border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 transition-all'
-                    : 'py-2 px-3 text-xs font-medium rounded-lg border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300 transition-all'
+                    ? 'py-2 px-3 text-xs font-semibold rounded-xl border-2 border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 transition-all'
+                    : 'py-2 px-3 text-xs font-medium rounded-xl border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300 transition-all'
                 ">
                 Easy
               </button>
@@ -179,8 +181,8 @@
                 (click)="difficultyId = 2"
                 [class]="
                   difficultyId === 2
-                    ? 'py-2 px-3 text-xs font-semibold rounded-lg border-2 border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400 transition-all'
-                    : 'py-2 px-3 text-xs font-medium rounded-lg border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300 transition-all'
+                    ? 'py-2 px-3 text-xs font-semibold rounded-xl border-2 border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400 transition-all'
+                    : 'py-2 px-3 text-xs font-medium rounded-xl border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300 transition-all'
                 ">
                 Medium
               </button>
@@ -189,8 +191,8 @@
                 (click)="difficultyId = 3"
                 [class]="
                   difficultyId === 3
-                    ? 'py-2 px-3 text-xs font-semibold rounded-lg border-2 border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400 transition-all'
-                    : 'py-2 px-3 text-xs font-medium rounded-lg border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300 transition-all'
+                    ? 'py-2 px-3 text-xs font-semibold rounded-xl border-2 border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400 transition-all'
+                    : 'py-2 px-3 text-xs font-medium rounded-xl border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300 transition-all'
                 ">
                 Hard
               </button>
@@ -205,13 +207,14 @@
                 for="recipe-servings">
                 Servings
               </label>
-              <input
-                type="number"
-                id="recipe-servings"
+              <p-inputnumber
+                inputId="recipe-servings"
                 [(ngModel)]="servings"
                 name="servings"
-                min="1"
-                class="w-full rounded-lg border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/60 text-surface-900 dark:text-white shadow-sm focus:border-primary-600 text-sm p-2.5 border text-center transition-colors" />
+                [min]="1"
+                class="w-full"
+                inputStyleClass="w-full !p-2.5 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-center">
+              </p-inputnumber>
             </div>
 
             <div>
@@ -220,13 +223,14 @@
                 for="recipe-prep-time">
                 Prep (min)
               </label>
-              <input
-                type="number"
-                id="recipe-prep-time"
+              <p-inputnumber
+                inputId="recipe-prep-time"
                 [(ngModel)]="prepTime"
                 name="prepTime"
-                min="0"
-                class="w-full rounded-lg border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/60 text-surface-900 dark:text-white shadow-sm focus:border-primary-600 text-sm p-2.5 border text-center transition-colors" />
+                [min]="0"
+                class="w-full"
+                inputStyleClass="w-full !p-2.5 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-center">
+              </p-inputnumber>
             </div>
 
             <div>
@@ -235,19 +239,20 @@
                 for="recipe-cook-time">
                 Cook (min)
               </label>
-              <input
-                type="number"
-                id="recipe-cook-time"
+              <p-inputnumber
+                inputId="recipe-cook-time"
                 [(ngModel)]="cookTime"
                 name="cookTime"
-                min="0"
-                class="w-full rounded-lg border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/60 text-surface-900 dark:text-white shadow-sm focus:border-primary-600 text-sm p-2.5 border text-center transition-colors" />
+                [min]="0"
+                class="w-full"
+                inputStyleClass="w-full !p-2.5 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-center">
+              </p-inputnumber>
             </div>
           </div>
 
           <!-- Total Time Badge -->
           <div
-            class="bg-surface-100/60 dark:bg-surface-800/50 rounded-lg p-3 flex justify-between items-center text-xs">
+            class="bg-surface-100/60 dark:bg-surface-800/50 rounded-xl p-3 flex justify-between items-center text-xs">
             <span class="text-surface-500 dark:text-surface-400 font-medium"
               >Estimated Total Time:</span
             >
@@ -268,13 +273,14 @@
             </div>
 
             <input
+              pInputText
               type="text"
               id="recipe-tags"
               [(ngModel)]="tagInput"
               name="tagInput"
               (keydown.enter)="addTag($event)"
               placeholder="e.g., Italian, Dinner, Quick"
-              class="w-full rounded-lg border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/60 text-surface-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2.5 border transition-colors mb-2" />
+              class="w-full !p-2.5 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white mb-2" />
 
             @if (tags.length > 0) {
               <div class="flex flex-wrap gap-1.5">
@@ -316,7 +322,7 @@
             <button
               type="button"
               (click)="addIngredientRow()"
-              class="inline-flex items-center gap-1 text-xs font-semibold bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40 px-3 py-1.5 rounded-md transition-colors cursor-pointer">
+              class="inline-flex items-center gap-1 text-xs font-semibold bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40 px-3 py-1.5 rounded-xl transition-colors cursor-pointer">
               + Add Ingredient
             </button>
           </div>
@@ -328,18 +334,19 @@
                 <!-- Searchable Ingredient Input -->
                 <div class="flex-1 relative">
                   <input
+                    pInputText
                     type="text"
                     [(ngModel)]="row.searchFilter"
                     [name]="'ingSearch_' + i"
                     (focus)="row.dropdownOpen = true"
                     (input)="row.dropdownOpen = true; row.ingredientId = ''"
                     placeholder="Search ingredient..."
-                    class="w-full rounded-lg border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/60 text-surface-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2 border transition-colors" />
+                    class="w-full !p-2 !rounded-lg !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-sm" />
 
                   <!-- Search Suggestions Dropdown -->
                   @if (row.dropdownOpen && getFilteredIngredients(row.searchFilter).length > 0) {
                     <ul
-                      class="absolute z-50 left-0 right-0 top-full mt-1 max-h-48 overflow-y-auto bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-lg shadow-xl py-1 text-sm">
+                      class="absolute z-50 left-0 right-0 top-full mt-1 max-h-48 overflow-y-auto bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl shadow-xl py-1 text-sm">
                       @for (ing of getFilteredIngredients(row.searchFilter); track ing.id) {
                         <li
                           (mousedown)="selectIngredient(row, ing)"
@@ -358,25 +365,27 @@
                 </div>
 
                 <!-- Quantity -->
-                <input
-                  type="number"
+                <p-inputnumber
                   [(ngModel)]="row.quantity"
                   [name]="'ingQty_' + i"
-                  min="0.1"
-                  step="any"
+                  [min]="0.1"
+                  [step]="0.1"
                   placeholder="Qty"
-                  class="w-20 rounded-lg border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/60 text-surface-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2 border text-center transition-colors" />
+                  class="w-24"
+                  inputStyleClass="w-full !p-2 !rounded-lg !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-center text-sm">
+                </p-inputnumber>
 
                 <!-- Unit Select -->
-                <select
+                <p-select
+                  [options]="availableUnits"
                   [(ngModel)]="row.unitId"
+                  optionValue="id"
+                  optionLabel="shortName"
                   [name]="'ingUnit_' + i"
-                  class="w-28 rounded-lg border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/60 text-surface-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2 border transition-colors">
-                  <option [ngValue]="null">Unit</option>
-                  @for (unit of availableUnits; track unit.id) {
-                    <option [ngValue]="unit.id">{{ unit.shortName || unit.name }}</option>
-                  }
-                </select>
+                  placeholder="Unit"
+                  class="w-28 !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 text-sm"
+                  appendTo="body">
+                </p-select>
 
                 <!-- Remove Row Button -->
                 @if (recipeIngredients.length > 1) {
@@ -422,7 +431,7 @@
             <button
               type="button"
               (click)="addStepRow()"
-              class="inline-flex items-center gap-1 text-xs font-semibold bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40 px-3 py-1.5 rounded-md transition-colors cursor-pointer">
+              class="inline-flex items-center gap-1 text-xs font-semibold bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40 px-3 py-1.5 rounded-xl transition-colors cursor-pointer">
               + Add Step
             </button>
           </div>
@@ -438,11 +447,12 @@
 
                 <div class="flex-1 space-y-2">
                   <textarea
+                    pTextarea
                     rows="2"
                     [(ngModel)]="step.instructionText"
                     [name]="'step_' + i"
                     placeholder="Describe this step..."
-                    class="w-full rounded-lg border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/60 text-surface-900 dark:text-white shadow-sm focus:border-primary-600 sm:text-sm p-2.5 border transition-colors"></textarea>
+                    class="w-full !p-2.5 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-sm"></textarea>
                 </div>
 
                 @if (recipeSteps.length > 1) {

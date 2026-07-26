@@ -24,10 +24,23 @@ interface FormStepRow {
   timerSeconds?: number | null;
 }
 
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { TextareaModule } from 'primeng/textarea';
+
 @Component({
   selector: 'pantry-add-recipe-form',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, FormsModule],
+  imports: [
+    CommonModule,
+    TranslocoModule,
+    FormsModule,
+    InputTextModule,
+    TextareaModule,
+    SelectModule,
+    InputNumberModule,
+  ],
   templateUrl: './add-recipe-form.component.html',
 })
 export class AddRecipeFormComponent implements OnInit {

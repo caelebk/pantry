@@ -29,12 +29,13 @@
         >Item Name <span class="text-rose-500">*</span></label
       >
       <input
+        pInputText
         type="text"
         [ngModel]="name()"
         (ngModelChange)="name.set($event)"
         name="name"
         placeholder="e.g., Organic Avocados, Extra Virgin Olive Oil..."
-        class="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white placeholder-surface-400 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20"
+        class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white"
         required
         autofocus />
     </div>
@@ -46,15 +47,14 @@
           class="text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider"
           >Category</label
         >
-        <select
+        <p-select
+          [options]="categories"
           [ngModel]="category()"
           (ngModelChange)="category.set($event)"
           name="category"
-          class="w-full px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white text-xs font-medium focus:outline-none">
-          @for (cat of categories; track cat) {
-            <option [value]="cat">{{ cat }}</option>
-          }
-        </select>
+          class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700"
+          appendTo="body">
+        </p-select>
       </div>
 
       <div class="space-y-1.5">
@@ -63,12 +63,13 @@
           >Store Name (Optional)</label
         >
         <input
+          pInputText
           type="text"
           [ngModel]="storeName()"
           (ngModelChange)="storeName.set($event)"
           name="storeName"
           placeholder="e.g., Trader Joe's, Costco, Whole Foods..."
-          class="w-full px-3.5 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white placeholder-surface-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
+          class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white" />
       </div>
     </div>
 
@@ -80,25 +81,15 @@
           class="text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider"
           >Quantity</label
         >
-        <div
-          class="flex items-center border border-surface-200 dark:border-surface-800 rounded-xl bg-surface-50 dark:bg-surface-800/60 overflow-hidden">
-          <button
-            type="button"
-            (click)="decrementQuantity()"
-            class="px-3 py-2 text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white font-bold text-xs transition-colors cursor-pointer">
-            -
-          </button>
-          <span
-            class="flex-1 text-center font-extrabold text-xs text-surface-900 dark:text-white border-x border-surface-200 dark:border-surface-800 py-2">
-            {{ quantity() }}
-          </span>
-          <button
-            type="button"
-            (click)="incrementQuantity()"
-            class="px-3 py-2 text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white font-bold text-xs transition-colors cursor-pointer">
-            +
-          </button>
-        </div>
+        <p-inputnumber
+          [ngModel]="quantity()"
+          (ngModelChange)="quantity.set($event || 1)"
+          name="quantity"
+          [min]="1"
+          [showButtons]="true"
+          class="w-full"
+          inputStyleClass="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white">
+        </p-inputnumber>
       </div>
 
       <!-- Unit Select -->
@@ -107,15 +98,14 @@
           class="text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider"
           >Unit</label
         >
-        <select
+        <p-select
+          [options]="units"
           [ngModel]="unit()"
           (ngModelChange)="unit.set($event)"
           name="unit"
-          class="w-full px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white text-xs font-medium focus:outline-none">
-          @for (u of units; track u) {
-            <option [value]="u">{{ u }}</option>
-          }
-        </select>
+          class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700"
+          appendTo="body">
+        </p-select>
       </div>
 
       <!-- Est Price Input -->
@@ -124,18 +114,18 @@
           class="text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider"
           >Est. Price ($)</label
         >
-        <div class="relative">
-          <span class="absolute left-3 top-2.5 text-xs text-surface-400 font-bold">$</span>
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            [ngModel]="estimatedPrice()"
-            (ngModelChange)="estimatedPrice.set($event)"
-            name="estimatedPrice"
-            placeholder="0.00"
-            class="w-full pl-7 pr-3 py-2 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-white placeholder-surface-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary-600/20" />
-        </div>
+        <p-inputnumber
+          [ngModel]="estimatedPrice()"
+          (ngModelChange)="estimatedPrice.set($event)"
+          name="estimatedPrice"
+          mode="currency"
+          currency="USD"
+          locale="en-US"
+          [min]="0"
+          placeholder="$0.00"
+          class="w-full"
+          inputStyleClass="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white">
+        </p-inputnumber>
       </div>
     </div>
 
