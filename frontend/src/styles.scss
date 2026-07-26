@@ -7,17 +7,17 @@
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  --color-primary-50: #ecfdf5;
-  --color-primary-100: #d1fae5;
-  --color-primary-200: #a7f3d0;
-  --color-primary-300: #6ee7b7;
-  --color-primary-400: #34d399;
-  --color-primary-500: #10b981;
-  --color-primary-600: #059669;
-  --color-primary-700: #047857;
-  --color-primary-800: #065f46;
-  --color-primary-900: #064e3b;
-  --color-primary-950: #022c22;
+  --color-primary-50: #fff7ed;
+  --color-primary-100: #ffedd5;
+  --color-primary-200: #fed7aa;
+  --color-primary-300: #fdba74;
+  --color-primary-400: #fb923c;
+  --color-primary-500: #f97316;
+  --color-primary-600: #ea580c;
+  --color-primary-700: #c2410c;
+  --color-primary-800: #9a3412;
+  --color-primary-900: #7c2d12;
+  --color-primary-950: #431407;
 
   --color-amber-50: #fffbeb;
   --color-amber-100: #fef3c7;
@@ -31,17 +31,17 @@
   --color-amber-900: #78350f;
   --color-amber-950: #451a03;
 
-  --color-surface-50: #fafafa;
-  --color-surface-100: #f4f4f5;
-  --color-surface-200: #e4e4e7;
-  --color-surface-300: #d4d4d8;
-  --color-surface-400: #a1a1aa;
-  --color-surface-500: #71717a;
-  --color-surface-600: #52525b;
-  --color-surface-700: #3f3f46;
-  --color-surface-800: #27272a;
-  --color-surface-900: #18181b;
-  --color-surface-950: #09090b;
+  --color-surface-50: #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e2e8f0;
+  --color-surface-300: #cbd5e1;
+  --color-surface-400: #94a3b8;
+  --color-surface-500: #64748b;
+  --color-surface-600: #475569;
+  --color-surface-700: #334155;
+  --color-surface-800: #1e293b;
+  --color-surface-900: #0f172a;
+  --color-surface-950: #020617;
 }
 
 /* ── Smooth scrolling ───────────────────────────────────────── */
@@ -51,28 +51,28 @@ html {
 
 /* ── Glass card utility ─────────────────────────────────────── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(228, 228, 231, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 :where(.dark, .dark *) .glass-card {
-  background: rgba(24, 24, 27, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(30, 41, 59, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* ── Glass header ───────────────────────────────────────────── */
 .glass-header {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(248, 250, 252, 0.9);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-bottom: 1px solid rgba(228, 228, 231, 0.7);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 :where(.dark, .dark *) .glass-header {
-  background: rgba(9, 9, 11, 0.85);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* ── Gradient text utility ──────────────────────────────────── */
@@ -83,32 +83,44 @@ html {
   background-clip: text;
 }
 
-/* ── Ambient static background ───────────────────────────── */
+/* ── Classic Cool Slate Navy background ────────────────────────── */
 .animated-gradient-bg {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 60%), #fafafa;
+  background-color: #f8fafc;
 }
 
 :where(.dark, .dark *) .animated-gradient-bg {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 60%), #09090b;
+  background-color: #0f172a;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* ── Glow effect for primary buttons ────────────────────────── */
 .glow-primary {
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
 }
 
 .glow-primary:hover {
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 0 30px rgba(249, 115, 22, 0.25);
 }
 
 :where(.dark, .dark *) .glow-primary {
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.1);
 }
 
 :where(.dark, .dark *) .glow-primary:hover {
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 30px rgba(249, 115, 22, 0.2);
 }
 
 /* ── Subtle shine animation on cards ────────────────────────── */
@@ -137,7 +149,7 @@ html {
 .gradient-border {
   border: double 1px transparent;
   background-image:
-    linear-gradient(var(--bg, white), var(--bg, white)), linear-gradient(135deg, #10b981, #34d399);
+    linear-gradient(var(--bg, white), var(--bg, white)), linear-gradient(135deg, #f97316, #fb923c);
   background-origin: border-box;
   background-clip: padding-box, border-box;
 }
