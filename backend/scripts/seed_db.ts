@@ -32,7 +32,7 @@ function seedDB() {
       );
 
       // 1. Seed bare necessities (Locations, Ingredient Categories, Ingredient Groups, Units, Difficulties)
-      const { categoryIds, unitIds, difficultyIds } = seedBareNecessities(db);
+      const { locationIds, categoryIds, unitIds, difficultyIds } = seedBareNecessities(db);
 
       // 2. Seed development-only mock data (Ingredients, Stock Items, Recipes, Meal Plans, Shopping Items)
       const isProduction = Deno.env.get('DENO_ENV') === 'production';
@@ -49,13 +49,13 @@ function seedDB() {
         );
         for (const ing of seedData.ingredients) {
           const catId = categoryIds.get(ing.category);
-          const unitId = unitIds.get(ing.default_unit);
+          const uId = unitIds.get(ing.default_unit);
 
           if (!catId) throw new Error(`Ingredient group not found: ${ing.category}`);
-          if (!unitId) throw new Error(`Unit not found: ${ing.default_unit}`);
+          if (!uId) throw new Error(`Unit not found: ${ing.default_unit}`);
 
           const id = crypto.randomUUID();
-          insertIngredient.run(id, ing.name, catId, unitId);
+          insertIngredient.run(id, ing.name, catId, uId);
           ingredientIds.set(ing.name, id);
         }
 
@@ -68,11 +68,11 @@ function seedDB() {
         );
         for (const item of seedData.items) {
           const ingId = ingredientIds.get(item.ingredient);
-          const unitId = unitIds.get(item.unit);
-          const locId = seedBareNecessities(db).locationIds.get(item.location);
+          const uId = unitIds.get(item.unit);
+          const locId = locationIds.get(item.location); // Fixed: Reusing locationIds map
 
           if (!ingId) throw new Error(`Ingredient not found: ${item.ingredient}`);
-          if (!unitId) throw new Error(`Unit not found: ${item.unit}`);
+          if (!uId) throw new Error(`Unit not found: ${item.unit}`);
           if (!locId) throw new Error(`Location not found: ${item.location}`);
 
           const id = crypto.randomUUID();
@@ -81,7 +81,7 @@ function seedDB() {
             ingId,
             item.label,
             item.quantity,
-            unitId,
+            uId,
             locId,
             item.expiration_date.toISOString(),
             item.purchase_date.toISOString(),
@@ -107,15 +107,15 @@ function seedDB() {
         );
 
         for (const recipe of seedData.recipes) {
-          const difficultyId = difficultyIds.get(recipe.difficulty);
-          if (!difficultyId) throw new Error(`Difficulty not found: ${recipe.difficulty}`);
+          const diffId = difficultyIds.get(recipe.difficulty);
+          if (!diffId) throw new Error(`Difficulty not found: ${recipe.difficulty}`);
 
           const recipeId = crypto.randomUUID();
           insertRecipe.run(
             recipeId,
             recipe.name,
             recipe.description,
-            difficultyId,
+            diffId,
             recipe.servings,
             recipe.prep_time,
             recipe.cook_time,
@@ -123,12 +123,12 @@ function seedDB() {
 
           for (const ri of recipe.ingredients) {
             const ingId = ingredientIds.get(ri.ingredient);
-            const unitId = unitIds.get(ri.unit);
+            const uId = unitIds.get(ri.unit);
 
             if (!ingId) throw new Error(`Ingredient not found for recipe: ${ri.ingredient}`);
-            if (!unitId) throw new Error(`Unit not found for recipe: ${ri.unit}`);
+            if (!uId) throw new Error(`Unit not found for recipe: ${ri.unit}`);
 
-            insertRecipeIngredient.run(recipeId, ingId, ri.quantity, unitId);
+            insertRecipeIngredient.run(recipeId, ingId, ri.quantity, uId);
           }
 
           for (const step of recipe.steps) {
