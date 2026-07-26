@@ -68,8 +68,8 @@ export class IngredientsPageComponent implements OnInit {
   // Set of expanded ingredient IDs for collapsible rows
   public expandedIngredientIds = signal<Set<string>>(new Set());
 
-  // Set of collapsed group names for collapsible category tables
-  public collapsedGroupNames = signal<Set<string>>(new Set());
+  // Set of expanded group names for collapsible category tables (collapsed by default)
+  public expandedGroupNames = signal<Set<string>>(new Set());
 
   public filteredIngredients = computed(() => {
     const list = this.ingredients();
@@ -197,22 +197,18 @@ export class IngredientsPageComponent implements OnInit {
     return parts.join(', ');
   }
 
-  isExpanded(ingredientId: string): boolean {
-    return this.expandedIngredientIds().has(ingredientId);
-  }
-
-  isGroupCollapsed(groupName: string): boolean {
-    return this.collapsedGroupNames().has(groupName);
+  isGroupExpanded(groupName: string): boolean {
+    return this.expandedGroupNames().has(groupName);
   }
 
   toggleGroup(groupName: string): void {
-    const current = new Set(this.collapsedGroupNames());
+    const current = new Set(this.expandedGroupNames());
     if (current.has(groupName)) {
       current.delete(groupName);
     } else {
       current.add(groupName);
     }
-    this.collapsedGroupNames.set(current);
+    this.expandedGroupNames.set(current);
   }
 
   toggleRow(ingredientId: string): void {
@@ -228,13 +224,13 @@ export class IngredientsPageComponent implements OnInit {
   expandAll(): void {
     const allIds = new Set(this.filteredIngredients().map((i) => i.id));
     this.expandedIngredientIds.set(allIds);
-    this.collapsedGroupNames.set(new Set());
+    const allGroups = new Set(this.groupedIngredients().map((g) => g.groupName));
+    this.expandedGroupNames.set(allGroups);
   }
 
   collapseAll(): void {
     this.expandedIngredientIds.set(new Set());
-    const allGroups = new Set(this.groupedIngredients().map((g) => g.groupName));
-    this.collapsedGroupNames.set(allGroups);
+    this.expandedGroupNames.set(new Set());
   }
 
   onAddIngredient(): void {
