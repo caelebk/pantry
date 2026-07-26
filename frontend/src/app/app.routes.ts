@@ -10,6 +10,7 @@ import { AddRecipeFormComponent } from './pages/recipes/recipe-components/add-re
 import { RecipeDetailComponent } from './pages/recipes/recipe-detail/recipe-detail.component';
 import { RecipesComponent } from './pages/recipes/recipes.component';
 import { AddShoppingItemPageComponent } from './pages/shopping-list/add-item-page/add-item-page.component';
+import { RestockReviewPageComponent } from './pages/shopping-list/restock-review-page/restock-review-page.component';
 import { ShoppingListComponent } from './pages/shopping-list/shopping-list.component';
 
 export const routes: Routes = [
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: Tab.ShoppingList, component: ShoppingListComponent },
   { path: 'shopping-list/new', component: AddShoppingItemPageComponent },
   { path: 'shopping-list/add', redirectTo: 'shopping-list/new', pathMatch: 'full' },
+  { path: 'shopping-list/restock', component: RestockReviewPageComponent },
   { path: Tab.MealPlanner, component: MealPlannerComponent },
   { path: 'meal-planner/new', component: PlanMealPageComponent },
   { path: 'meal-planner/add', redirectTo: 'meal-planner/new', pathMatch: 'full' },

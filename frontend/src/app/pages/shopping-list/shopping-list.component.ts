@@ -84,7 +84,7 @@ export class ShoppingListComponent {
   }
 
   restockChecked(): void {
-    this.shoppingListService.restockCheckedItems();
+    this.router.navigate(['/shopping-list/restock']);
   }
 
   setFilter(filter: 'all' | 'unchecked' | 'checked'): void {

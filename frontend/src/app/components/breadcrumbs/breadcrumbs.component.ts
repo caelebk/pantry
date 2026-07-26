@@ -92,6 +92,9 @@ export class BreadcrumbsComponent implements OnInit {
       if (segments[1] === 'new') {
         items.push({ label: 'Shopping List', url: '/shopping-list', icon: 'pi pi-shopping-bag' });
         items.push({ label: 'Add Shopping Item', icon: 'pi pi-plus-circle' });
+      } else if (segments[1] === 'restock') {
+        items.push({ label: 'Shopping List', url: '/shopping-list', icon: 'pi pi-shopping-bag' });
+        items.push({ label: 'Restock Review', icon: 'pi pi-check-circle' });
       } else {
         items.push({ label: 'Shopping List', icon: 'pi pi-shopping-bag' });
       }
