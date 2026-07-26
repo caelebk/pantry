@@ -82,16 +82,6 @@
         ">
         <span>🎯</span> Daily Focus
       </button>
-
-      <button
-        (click)="setSubTab('batch')"
-        [class]="
-          activeSubTab() === 'batch'
-            ? 'px-4 py-2 font-bold rounded-lg bg-white dark:bg-[#1a1a1a] text-emerald-600 dark:text-emerald-400 shadow-xs transition-all text-xs flex items-center gap-2 cursor-pointer'
-            : 'px-4 py-2 font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-xs flex items-center gap-2 cursor-pointer'
-        ">
-        <span>👨‍🍳</span> Batch Prep Guide
-      </button>
     </div>
   </div>
 
@@ -106,10 +96,6 @@
       [meals]="plannedMeals()"
       (addMealRequested)="openAddModal($event)">
     </pantry-daily-focus>
-  } @else if (activeSubTab() === 'batch') {
-    <pantry-batch-prep
-      [meals]="plannedMeals()">
-    </pantry-batch-prep>
   }
 
   <!-- Add Meal Modal -->

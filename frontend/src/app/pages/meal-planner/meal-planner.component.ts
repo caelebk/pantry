@@ -2,15 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
-import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
+import { DayOfWeek, MealType } from '@models/meal-planner.model';
 import { Recipe } from '@models/recipe.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
-import { BatchPrepComponent } from './batch-prep/batch-prep.component';
 import { DailyFocusComponent } from './daily-focus/daily-focus.component';
 import { WeeklyViewComponent } from './weekly-view/weekly-view.component';
 
-export type PlannerSubTab = 'calendar' | 'daily' | 'batch';
+export type PlannerSubTab = 'calendar' | 'daily';
 
 @Component({
   selector: 'pantry-meal-planner',
@@ -21,7 +20,6 @@ export type PlannerSubTab = 'calendar' | 'daily' | 'batch';
     TranslocoModule,
     WeeklyViewComponent,
     DailyFocusComponent,
-    BatchPrepComponent,
   ],
   templateUrl: './meal-planner.component.html',
   styleUrl: './meal-planner.component.scss',
