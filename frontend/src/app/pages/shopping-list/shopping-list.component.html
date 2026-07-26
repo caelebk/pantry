@@ -20,10 +20,19 @@
       @if (checkedCount() > 0) {
         <button
           (click)="restockChecked()"
-          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer">
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer">
           Restock {{ checkedCount() }} to Pantry
         </button>
       }
+
+      <button
+        (click)="goToAddItemPage()"
+        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-primary-600 hover:bg-primary-700 text-white shadow-xs transition-all cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        Add Item
+      </button>
     </div>
   </div>
 
@@ -50,45 +59,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Minimalist Single-Line Quick Add Bar -->
-  <form (ngSubmit)="addItem()" class="flex flex-col sm:flex-row items-center gap-2 bg-white dark:bg-[#1a1a1a] p-2 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-xs">
-    <input
-      type="text"
-      [(ngModel)]="newName"
-      name="newName"
-      placeholder="Add item (e.g., Avocado)..."
-      class="flex-1 w-full px-3 py-1.5 bg-transparent text-xs font-medium text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none"
-      required />
-
-    <select
-      [(ngModel)]="newCategory"
-      name="newCategory"
-      class="w-full sm:w-auto px-3 py-1.5 bg-gray-50 dark:bg-[#262626] border border-gray-200/80 dark:border-gray-800 rounded-xl text-xs font-medium text-gray-700 dark:text-gray-300 focus:outline-none">
-      @for (cat of categories; track cat) {
-        <option [value]="cat">{{ cat }}</option>
-      }
-    </select>
-
-    <div class="flex items-center gap-1 bg-gray-50 dark:bg-[#262626] border border-gray-200/80 dark:border-gray-800 px-2.5 py-1.5 rounded-xl w-full sm:w-28">
-      <span class="text-xs text-gray-400 font-bold">$</span>
-      <input
-        type="number"
-        step="0.01"
-        min="0"
-        [(ngModel)]="newEstimatedPrice"
-        name="newEstimatedPrice"
-        placeholder="0.00"
-        class="w-full bg-transparent text-xs font-semibold text-gray-900 dark:text-white focus:outline-none" />
-    </div>
-
-    <button
-      type="submit"
-      [disabled]="!newName.trim()"
-      class="w-full sm:w-auto px-4 py-1.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-40 text-white font-semibold rounded-xl text-xs transition-all cursor-pointer shrink-0">
-      + Add
-    </button>
-  </form>
 
   <!-- Filter Pills -->
   <div class="flex items-center justify-between">
@@ -136,8 +106,13 @@
   <!-- Minimalist Items Table View -->
   <div class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl overflow-hidden shadow-xs">
     @if (filteredItems().length === 0) {
-      <div class="p-8 text-center text-xs text-gray-400 font-medium">
-        No items in list.
+      <div class="p-8 text-center text-xs text-gray-400 font-medium space-y-3">
+        <p>No items in shopping list.</p>
+        <button
+          (click)="goToAddItemPage()"
+          class="px-4 py-1.5 bg-primary-600 text-white rounded-xl text-xs font-semibold hover:bg-primary-700 transition-all cursor-pointer">
+          + Add First Item
+        </button>
       </div>
     } @else {
       <div class="divide-y divide-gray-100 dark:divide-gray-800/80">
@@ -154,7 +129,7 @@
                 (change)="toggleItem(item.id)"
                 class="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 cursor-pointer accent-primary-600" />
 
-              <div class="flex items-center gap-2 min-w-0">
+              <div class="flex items-center gap-2 min-w-0 flex-wrap">
                 <span
                   [class.line-through]="item.checked"
                   class="font-semibold text-xs text-gray-900 dark:text-white truncate">
@@ -162,12 +137,18 @@
                 </span>
 
                 <span class="text-[11px] text-gray-400 font-normal shrink-0">
-                  {{ item.quantity }} {{ item.unit }}
+                  ({{ item.quantity }} {{ item.unit }})
                 </span>
 
                 <span class="text-[10px] px-2 py-0.5 rounded bg-gray-100 dark:bg-[#262626] text-gray-500 font-medium shrink-0">
                   {{ item.category }}
                 </span>
+
+                @if (item.storeName) {
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 border border-purple-200/50 font-medium shrink-0">
+                    🏪 {{ item.storeName }}
+                  </span>
+                }
 
                 @if (item.recipeName) {
                   <span class="text-[10px] px-2 py-0.5 rounded bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 font-medium shrink-0 truncate max-w-[140px]">
