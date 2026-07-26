@@ -1,5 +1,5 @@
 export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
-export type MealType = 'Breakfast' | 'Lunch' | 'Dinner';
+export type MealType = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snacks';
 
 export interface PlannedMeal {
   id: string;
@@ -9,13 +9,16 @@ export interface PlannedMeal {
   recipeName: string;
   recipeImage?: string;
   prepTimeMinutes?: number;
+  calories?: number;
   servings: number;
   cooked: boolean;
   missingIngredients: string[];
+  tags?: string[];
 }
 
 export interface MealPlanDay {
   day: DayOfWeek;
   dateStr: string;
   meals: PlannedMeal[];
+  totalCalories?: number;
 }

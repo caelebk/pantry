@@ -1,0 +1,179 @@
+<div class="space-y-6">
+  <!-- Day Selector Segmented Control -->
+  <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+    @for (day of days; track day) {
+      <button
+        (click)="selectDay(day)"
+        [class]="
+          selectedDay() === day
+            ? 'px-4 py-2 font-bold rounded-xl bg-primary-600 text-white shadow-xs transition-all text-xs shrink-0 cursor-pointer'
+            : 'px-4 py-2 font-semibold rounded-xl bg-white dark:bg-[#1a1a1a] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-gray-200/80 dark:border-gray-800 transition-all text-xs shrink-0 cursor-pointer'
+        ">
+        {{ day }}
+      </button>
+    }
+  </div>
+
+  <!-- Day Focus Summary Widgets -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="p-4 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs flex items-center justify-between">
+      <div>
+        <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total Planned Calories</div>
+        <div class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">
+          {{ totalCalories() }} <span class="text-xs font-medium text-gray-400">kcal</span>
+        </div>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 flex items-center justify-center text-lg">
+        🔥
+      </div>
+    </div>
+
+    <div class="p-4 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs flex items-center justify-between">
+      <div>
+        <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Estimated Kitchen Time</div>
+        <div class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">
+          {{ totalPrepTime() }} <span class="text-xs font-medium text-gray-400">mins</span>
+        </div>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
+        ⏱️
+      </div>
+    </div>
+
+    <div class="p-4 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs flex items-center justify-between">
+      <div>
+        <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Stock Readiness</div>
+        <div class="text-2xl font-extrabold text-gray-900 dark:text-white mt-1">
+          {{ missingIngredients().length === 0 ? '100% Ready' : missingIngredients().length + ' Missing' }}
+        </div>
+      </div>
+      <div [class]="missingIngredients().length === 0 ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600' : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600'" class="w-10 h-10 rounded-xl flex items-center justify-center text-lg">
+        {{ missingIngredients().length === 0 ? '✅' : '⚠️' }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Focused Timeline & Recipe Details -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Column (2 wide): Chronological Meal Timeline -->
+    <div class="lg:col-span-2 space-y-4">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <span>📅</span> {{ selectedDay() }} Schedule
+      </h3>
+
+      @if (dayMeals().length === 0) {
+        <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-10 text-center border border-gray-200/80 dark:border-gray-800">
+          <div class="text-3xl mb-2">🍽️</div>
+          <p class="font-bold text-gray-900 dark:text-white">No meals planned for {{ selectedDay() }}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">Click below to add breakfast, lunch, dinner, or snacks.</p>
+          <button
+            (click)="onRequestAdd('Dinner')"
+            class="bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-xs cursor-pointer">
+            + Plan Dinner
+          </button>
+        </div>
+      } @else {
+        <div class="space-y-4">
+          @for (meal of dayMeals(); track meal.id) {
+            <div class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center">
+              <div class="space-y-1.5 flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-gray-100 dark:bg-[#262626] text-gray-700 dark:text-gray-300">
+                    {{ meal.mealType }}
+                  </span>
+                  @for (tag of meal.tags; track tag) {
+                    <span class="text-[10px] font-medium px-2 py-0.5 rounded-md bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 border border-primary-200/50">
+                      {{ tag }}
+                    </span>
+                  }
+                </div>
+
+                <h4 class="text-base font-extrabold text-gray-900 dark:text-white">
+                  {{ meal.recipeName }}
+                </h4>
+
+                <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  <span>⏱️ {{ meal.prepTimeMinutes || 15 }} mins prep</span>
+                  <span>•</span>
+                  <span>🍽️ {{ meal.servings }} servings</span>
+                  <span>•</span>
+                  <span>🔥 {{ meal.calories || 400 }} kcal</span>
+                </div>
+
+                @if (meal.missingIngredients && meal.missingIngredients.length > 0) {
+                  <div class="text-xs text-amber-600 dark:text-amber-400 font-semibold pt-1">
+                    ⚠️ Missing ingredients: {{ meal.missingIngredients.join(', ') }}
+                  </div>
+                }
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                @if (meal.missingIngredients && meal.missingIngredients.length > 0 && !meal.cooked) {
+                  <button
+                    (click)="addMissingToShoppingList(meal)"
+                    class="px-3 py-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-bold rounded-xl text-xs transition-colors cursor-pointer border border-amber-200">
+                    🛒 Add Missing
+                  </button>
+                }
+
+                <button
+                  (click)="toggleCooked(meal.id)"
+                  [class]="
+                    meal.cooked
+                      ? 'px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs transition-all cursor-pointer'
+                      : 'px-4 py-2 bg-gray-100 dark:bg-[#262626] hover:bg-gray-200 dark:hover:bg-[#333333] text-gray-800 dark:text-gray-200 font-semibold rounded-xl text-xs transition-all cursor-pointer'
+                  ">
+                  {{ meal.cooked ? '✓ Cooked' : 'Mark Cooked' }}
+                </button>
+
+                <button
+                  (click)="removeMeal(meal.id)"
+                  class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-all cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Right Column (1 wide): Ingredient Checklist for the Day -->
+    <div class="space-y-4">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <span>🛒</span> {{ selectedDay() }} Ingredients
+      </h3>
+
+      <div class="bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-xs space-y-4">
+        @if (dayMeals().length === 0) {
+          <p class="text-xs text-gray-500 text-center py-4">No ingredients required today.</p>
+        } @else {
+          <div class="space-y-3 text-xs">
+            <div class="font-semibold text-gray-400 uppercase tracking-wider text-[10px]">Ingredient Breakdown</div>
+            
+            @for (meal of dayMeals(); track meal.id) {
+              <div class="space-y-1.5 pb-3 border-b border-gray-100 dark:border-gray-800/80 last:border-0 last:pb-0">
+                <div class="font-bold text-gray-800 dark:text-gray-200">{{ meal.recipeName }}</div>
+                
+                @if (meal.missingIngredients && meal.missingIngredients.length > 0) {
+                  @for (ing of meal.missingIngredients; track ing) {
+                    <div class="flex items-center justify-between text-amber-700 dark:text-amber-300 font-medium pl-2">
+                      <span>⚠️ {{ ing }}</span>
+                      <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/40">Missing</span>
+                    </div>
+                  }
+                } @else {
+                  <div class="text-emerald-600 dark:text-emerald-400 font-medium pl-2">
+                    ✅ All ingredients in pantry
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

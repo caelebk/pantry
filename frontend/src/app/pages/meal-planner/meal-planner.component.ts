@@ -6,11 +6,23 @@ import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
 import { Recipe } from '@models/recipe.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
+import { BatchPrepComponent } from './batch-prep/batch-prep.component';
+import { DailyFocusComponent } from './daily-focus/daily-focus.component';
+import { WeeklyViewComponent } from './weekly-view/weekly-view.component';
+
+export type PlannerSubTab = 'calendar' | 'daily' | 'batch';
 
 @Component({
   selector: 'pantry-meal-planner',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslocoModule,
+    WeeklyViewComponent,
+    DailyFocusComponent,
+    BatchPrepComponent,
+  ],
   templateUrl: './meal-planner.component.html',
   styleUrl: './meal-planner.component.scss',
 })
@@ -19,7 +31,10 @@ export class MealPlannerComponent implements OnInit {
   readonly recipeService = inject(RecipeService);
 
   readonly days = this.mealPlannerService.days;
-  readonly mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner'];
+  readonly mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+
+  // Active Sub-Page View Tab
+  activeSubTab = signal<PlannerSubTab>('calendar');
 
   availableRecipes = signal<Recipe[]>([]);
   isLoadingRecipes = signal<boolean>(false);
@@ -41,6 +56,10 @@ export class MealPlannerComponent implements OnInit {
     this.loadRecipes();
   }
 
+  setSubTab(tab: PlannerSubTab): void {
+    this.activeSubTab.set(tab);
+  }
+
   loadRecipes(): void {
     this.isLoadingRecipes.set(true);
     this.recipeService.getRecipes().subscribe({
@@ -52,7 +71,6 @@ export class MealPlannerComponent implements OnInit {
         this.isLoadingRecipes.set(false);
       },
       error: () => {
-        // Fallback mock recipes if backend offline
         const mockRecipes: Recipe[] = [
           {
             id: 'rec-1',
@@ -84,6 +102,15 @@ export class MealPlannerComponent implements OnInit {
               { ingredientId: 'ing-6', quantity: 100, unitId: 5 },
             ],
           },
+          {
+            id: 'rec-4',
+            name: 'Honey Garlic Salmon',
+            prepTime: 25,
+            servings: 2,
+            ingredients: [
+              { ingredientId: 'ing-7', quantity: 300, unitId: 1 },
+            ],
+          },
         ];
         this.availableRecipes.set(mockRecipes);
         this.selectedRecipeId.set(mockRecipes[0].id);
@@ -92,13 +119,14 @@ export class MealPlannerComponent implements OnInit {
     });
   }
 
-  getMealsForSlot(day: DayOfWeek, mealType: MealType): PlannedMeal[] {
-    return this.plannedMeals().filter((m) => m.day === day && m.mealType === mealType);
-  }
-
-  openAddModal(day: DayOfWeek, mealType: MealType): void {
-    this.selectedDay.set(day);
-    this.selectedMealType.set(mealType);
+  openAddModal(eventPayload?: { day: DayOfWeek; mealType: MealType }): void {
+    if (eventPayload) {
+      this.selectedDay.set(eventPayload.day);
+      this.selectedMealType.set(eventPayload.mealType);
+    } else {
+      this.selectedDay.set('Monday');
+      this.selectedMealType.set('Dinner');
+    }
     this.isAddModalOpen.set(true);
   }
 
@@ -116,15 +144,7 @@ export class MealPlannerComponent implements OnInit {
     this.closeAddModal();
   }
 
-  toggleCooked(id: string): void {
-    this.mealPlannerService.toggleCooked(id);
-  }
-
-  removeMeal(id: string): void {
-    this.mealPlannerService.removeMealPlan(id);
-  }
-
-  addMissingToShoppingList(meal: PlannedMeal): void {
-    this.mealPlannerService.addMissingToShoppingList(meal);
+  syncAllMissingToShoppingList(): void {
+    this.mealPlannerService.addAllMissingToShoppingList();
   }
 }

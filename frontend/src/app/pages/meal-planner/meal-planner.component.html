@@ -1,23 +1,33 @@
 <div class="space-y-6">
-  <!-- Page Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <!-- Page Header & Action Bar -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
     <div>
       <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Weekly Meal Planner</h2>
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Schedule recipe meals, track ingredient availability, and auto-sync to shopping list</p>
     </div>
 
-    <!-- Quick Add Action -->
-    <button
-      (click)="openAddModal('Monday', 'Dinner')"
-      class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer shrink-0 self-start sm:self-auto">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </svg>
-      Plan a Meal
-    </button>
+    <!-- Quick Actions Group -->
+    <div class="flex items-center gap-2.5 shrink-0 self-start md:self-auto">
+      @if (missingItemsCount() > 0) {
+        <button
+          (click)="syncAllMissingToShoppingList()"
+          class="inline-flex items-center gap-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-900/50 text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer">
+          🛒 Sync {{ missingItemsCount() }} Missing Item{{ missingItemsCount() > 1 ? 's' : '' }}
+        </button>
+      }
+
+      <button
+        (click)="openAddModal()"
+        class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        Plan a Meal
+      </button>
+    </div>
   </div>
 
-  <!-- Summary Cards Grid -->
+  <!-- Executive Summary Cards Grid -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
     <div class="p-4 rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs flex items-center gap-4">
       <div class="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 flex items-center justify-center font-extrabold text-xl">
@@ -50,110 +60,57 @@
     </div>
   </div>
 
-  <!-- Weekly 7-Day Grid View -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
-    @for (day of days; track day) {
-      <div class="rounded-2xl bg-white dark:bg-[#1a1a1a] border border-gray-200/80 dark:border-gray-800 shadow-xs p-3.5 flex flex-col gap-3 min-h-[380px]">
-        
-        <!-- Day Header -->
-        <div class="pb-2 border-b border-gray-200/80 dark:border-gray-800 flex items-center justify-between">
-          <span class="font-bold text-gray-900 dark:text-white tracking-wide uppercase text-xs">
-            {{ day }}
-          </span>
-          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-[#262626] text-gray-500 dark:text-gray-400">
-            {{ getMealsForSlot(day, 'Breakfast').length + getMealsForSlot(day, 'Lunch').length + getMealsForSlot(day, 'Dinner').length }} planned
-          </span>
-        </div>
+  <!-- Sub-Page Navigation Tabs -->
+  <div class="flex items-center justify-between border-b border-gray-200/80 dark:border-gray-800 pb-3">
+    <div class="flex items-center gap-1 bg-gray-100 dark:bg-[#262626] p-1 rounded-xl border border-gray-200/80 dark:border-gray-800">
+      <button
+        (click)="setSubTab('calendar')"
+        [class]="
+          activeSubTab() === 'calendar'
+            ? 'px-4 py-2 font-bold rounded-lg bg-white dark:bg-[#1a1a1a] text-primary-600 dark:text-primary-400 shadow-xs transition-all text-xs flex items-center gap-2 cursor-pointer'
+            : 'px-4 py-2 font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-xs flex items-center gap-2 cursor-pointer'
+        ">
+        <span>📅</span> Weekly Calendar
+      </button>
 
-        <!-- Meal Slots (Breakfast, Lunch, Dinner) -->
-        <div class="flex-1 space-y-3">
-          @for (type of mealTypes; track type) {
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                <span>{{ type }}</span>
-                <button
-                  (click)="openAddModal(day, type)"
-                  title="Add meal to {{ day }} {{ type }}"
-                  class="text-primary-600 dark:text-primary-400 hover:underline cursor-pointer text-[11px] font-semibold">
-                  + Add
-                </button>
-              </div>
+      <button
+        (click)="setSubTab('daily')"
+        [class]="
+          activeSubTab() === 'daily'
+            ? 'px-4 py-2 font-bold rounded-lg bg-white dark:bg-[#1a1a1a] text-primary-600 dark:text-primary-400 shadow-xs transition-all text-xs flex items-center gap-2 cursor-pointer'
+            : 'px-4 py-2 font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-xs flex items-center gap-2 cursor-pointer'
+        ">
+        <span>🎯</span> Daily Focus
+      </button>
 
-              <!-- Planned Meals in Slot -->
-              @for (meal of getMealsForSlot(day, type); track meal.id) {
-                <div
-                  [class.opacity-60]="meal.cooked"
-                  [class.bg-emerald-50/50]="meal.cooked"
-                  [class.dark:bg-emerald-950/20]="meal.cooked"
-                  [class.border-emerald-200]="meal.cooked"
-                  [class.dark:border-emerald-900/40]="meal.cooked"
-                  class="p-2.5 rounded-xl bg-gray-50 dark:bg-[#262626] border border-gray-200 dark:border-gray-800 shadow-xs space-y-2 transition-all group">
-                  
-                  <div class="flex items-start justify-between gap-1">
-                    <div class="font-semibold text-xs text-gray-900 dark:text-white leading-tight">
-                      {{ meal.recipeName }}
-                    </div>
-
-                    <button
-                      (click)="removeMeal(meal.id)"
-                      title="Remove from plan"
-                      class="text-gray-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div class="flex items-center gap-2 text-[10px] text-gray-500 dark:text-gray-400">
-                    <span>⏱️ {{ meal.prepTimeMinutes || 15 }}m</span>
-                    <span>•</span>
-                    <span>🍽️ {{ meal.servings }} serv</span>
-                  </div>
-
-                  <!-- Missing Ingredients Warning & Shopping List Action -->
-                  @if (meal.missingIngredients && meal.missingIngredients.length > 0 && !meal.cooked) {
-                    <div class="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-[10px] space-y-1">
-                      <div class="text-amber-700 dark:text-amber-300 font-medium">
-                        ⚠️ Missing: {{ meal.missingIngredients.join(', ') }}
-                      </div>
-                      <button
-                        (click)="addMissingToShoppingList(meal)"
-                        class="w-full py-1 px-2 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-200 font-semibold rounded text-[10px] transition-colors cursor-pointer flex items-center justify-center gap-1">
-                        🛒 Add Missing to Cart
-                      </button>
-                    </div>
-                  } @else if (!meal.cooked) {
-                    <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                      <span>✅ Ready to Cook</span>
-                    </div>
-                  }
-
-                  <!-- Cook Action Button -->
-                  <button
-                    (click)="toggleCooked(meal.id)"
-                    [class.bg-emerald-600]="meal.cooked"
-                    [class.text-white]="meal.cooked"
-                    [class.bg-gray-200/80]="!meal.cooked"
-                    [class.dark:bg-[#333333]"]="!meal.cooked"
-                    [class.text-gray-700]="!meal.cooked"
-                    [class.dark:text-gray-200]="!meal.cooked"
-                    class="w-full py-1 px-2 font-medium text-[11px] rounded-lg transition-colors cursor-pointer text-center">
-                    {{ meal.cooked ? '✓ Cooked!' : 'Mark as Cooked' }}
-                  </button>
-                </div>
-              } @empty {
-                <div
-                  (click)="openAddModal(day, type)"
-                  class="p-2.5 rounded-xl border border-dashed border-gray-200 dark:border-gray-800 text-center text-[11px] text-gray-400 dark:text-gray-500 hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 cursor-pointer transition-colors">
-                  + Empty Slot
-                </div>
-              }
-            </div>
-          }
-        </div>
-      </div>
-    }
+      <button
+        (click)="setSubTab('batch')"
+        [class]="
+          activeSubTab() === 'batch'
+            ? 'px-4 py-2 font-bold rounded-lg bg-white dark:bg-[#1a1a1a] text-emerald-600 dark:text-emerald-400 shadow-xs transition-all text-xs flex items-center gap-2 cursor-pointer'
+            : 'px-4 py-2 font-medium rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-xs flex items-center gap-2 cursor-pointer'
+        ">
+        <span>👨‍🍳</span> Batch Prep Guide
+      </button>
+    </div>
   </div>
+
+  <!-- Dynamic Views -->
+  @if (activeSubTab() === 'calendar') {
+    <pantry-weekly-view
+      [meals]="plannedMeals()"
+      (addMealRequested)="openAddModal($event)">
+    </pantry-weekly-view>
+  } @else if (activeSubTab() === 'daily') {
+    <pantry-daily-focus
+      [meals]="plannedMeals()"
+      (addMealRequested)="openAddModal($event)">
+    </pantry-daily-focus>
+  } @else if (activeSubTab() === 'batch') {
+    <pantry-batch-prep
+      [meals]="plannedMeals()">
+    </pantry-batch-prep>
+  }
 
   <!-- Add Meal Modal -->
   @if (isAddModalOpen()) {
