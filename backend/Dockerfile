@@ -2,17 +2,20 @@ FROM denoland/deno:2.5.6
 
 WORKDIR /app
 
-# Prefer not to run as root.
+# Ensure data directory exists and is owned by deno user
+RUN mkdir -p /app/data && chown -R deno:deno /app
+
 USER deno
 
-# Cache the dependencies as a layer (the following two steps are optional but recommended)
-COPY deno.json .
-COPY deno.lock .
+# Cache dependencies
+COPY --chown=deno:deno deno.json .
+COPY --chown=deno:deno deno.lock .
 RUN deno cache deno.json
 
-# These steps will be re-run upon each file change in your working directory:
-COPY . .
-# Compile the main app so that it doesn't need to be compiled each startup/entry.
+# Copy remaining project files
+COPY --chown=deno:deno . .
+
+# Pre-compile entrypoint
 RUN deno cache main.ts
 
 CMD ["task", "start"]
