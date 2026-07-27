@@ -76,7 +76,10 @@ export class SubstitutionService {
 
       if (source.ingredient_group_id && row.ingredient_group_id === source.ingredient_group_id) {
         matchLevel = 'same_group';
-      } else if (source.ingredient_category_id && row.ingredient_category_id === source.ingredient_category_id) {
+      } else if (
+        source.ingredient_category_id &&
+        row.ingredient_category_id === source.ingredient_category_id
+      ) {
         matchLevel = 'same_ingredient_category';
       }
 

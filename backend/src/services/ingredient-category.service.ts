@@ -48,4 +48,7 @@ export class IngredientCategoryService {
 export const ingredientCategoryService = new IngredientCategoryService();
 
 // Legacy Aliases
-export { IngredientCategoryService as NutrientGroupService, ingredientCategoryService as nutrientGroupService };
+export {
+  IngredientCategoryService as NutrientGroupService,
+  ingredientCategoryService as nutrientGroupService,
+};

@@ -43,7 +43,9 @@ Deno.test('IngredientCategories API - GET /api/ingredient-categories/:id - succe
     const app = new Hono();
     app.route('/api/ingredient-categories', ingredientCategories);
 
-    const res = await app.request(createRequest(`/api/ingredient-categories/${mockCategory.id}`, 'GET'));
+    const res = await app.request(
+      createRequest(`/api/ingredient-categories/${mockCategory.id}`, 'GET'),
+    );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.id, mockCategory.id);

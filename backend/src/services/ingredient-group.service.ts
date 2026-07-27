@@ -58,7 +58,8 @@ export class IngredientGroupService {
   async createIngredientGroup(dto: CreateIngredientGroupDTO): Promise<IngredientGroupDTO> {
     try {
       const db = getDB();
-      const categoryId = dto.ingredientCategoryId ?? dto.nutrientGroupId ?? dto.nutrientTypeId ?? null;
+      const categoryId = dto.ingredientCategoryId ?? dto.nutrientGroupId ?? dto.nutrientTypeId ??
+        null;
       const lastInsertId = db.prepare(`
         INSERT INTO ingredient_groups (name, ingredient_category_id)
         VALUES (?, ?)

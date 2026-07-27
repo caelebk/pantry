@@ -57,7 +57,10 @@ ingredientGroups.post('/', async (c: Context) => {
   try {
     const body = await c.req.json<CreateIngredientGroupDTO>();
     if (!body || !body.name || typeof body.name !== 'string' || body.name.trim().length === 0) {
-      return c.json(errorResponse(IngredientGroupMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+      return c.json(
+        errorResponse(IngredientGroupMessages.INVALID_BODY),
+        HttpStatusCode.BAD_REQUEST,
+      );
     }
     const created = await ingredientGroupService.createIngredientGroup(body);
     return c.json(successResponse(created), HttpStatusCode.CREATED);

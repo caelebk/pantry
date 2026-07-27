@@ -62,8 +62,16 @@ export const seedData = {
   categories: [
     // Fiber & Produce
     { name: 'Fruits', ingredient_category: 'Fiber & Produce', nutrient_type: 'Fiber & Produce' },
-    { name: 'Vegetables', ingredient_category: 'Fiber & Produce', nutrient_type: 'Fiber & Produce' },
-    { name: 'Fresh Herbs & Greens', ingredient_category: 'Fiber & Produce', nutrient_type: 'Fiber & Produce' },
+    {
+      name: 'Vegetables',
+      ingredient_category: 'Fiber & Produce',
+      nutrient_type: 'Fiber & Produce',
+    },
+    {
+      name: 'Fresh Herbs & Greens',
+      ingredient_category: 'Fiber & Produce',
+      nutrient_type: 'Fiber & Produce',
+    },
     { name: 'Aromatics', ingredient_category: 'Fiber & Produce', nutrient_type: 'Fiber & Produce' },
 
     // Protein
