@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { IngredientGroup } from '@models/ingredient-group.model';
 import { ApiResponse } from '@models/http.model';
+import { IngredientGroup } from '@models/ingredient-group.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { Observable } from 'rxjs';
 
@@ -22,7 +22,7 @@ export interface UpdateIngredientGroupDTO {
 })
 export class IngredientGroupService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8000/api/ingredient-groups';
+  private readonly apiUrl = '/api/ingredient-groups';
 
   getIngredientGroups(): Observable<IngredientGroup[]> {
     return this.http

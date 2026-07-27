@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { IngredientGroup } from '@models/ingredient-group.model';
 import { ApiResponse } from '@models/http.model';
+import { IngredientGroup } from '@models/ingredient-group.model';
 import {
   CreateIngredientDTO,
   Ingredient,
@@ -23,7 +23,7 @@ export class IngredientService {
   private readonly http = inject(HttpClient);
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly unitService = inject(UnitService);
-  private readonly apiUrl = 'http://localhost:8000/api/ingredients';
+  private readonly apiUrl = '/api/ingredients';
 
   getIngredients(): Observable<Ingredient[]> {
     return forkJoin({

@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 })
 export class IngredientCategoryService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8000/api/ingredient-categories';
+  private readonly apiUrl = '/api/ingredient-categories';
 
   getIngredientCategories(): Observable<IngredientCategory[]> {
     return this.http

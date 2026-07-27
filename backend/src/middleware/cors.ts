@@ -8,14 +8,10 @@ export async function cors(c: Context, next: Next) {
   // Allow requests from your frontend origin
   const origin = c.req.header('Origin');
 
-  // Configure allowed origins (update based on your needs)
-  const allowedOrigins = [
-    'http://localhost:4200', // Angular default
-    'http://localhost:3000',
-  ];
-
-  if (origin && allowedOrigins.includes(origin)) {
+  if (origin) {
     c.header('Access-Control-Allow-Origin', origin);
+  } else {
+    c.header('Access-Control-Allow-Origin', '*');
   }
 
   c.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');

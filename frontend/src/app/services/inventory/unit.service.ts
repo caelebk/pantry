@@ -12,7 +12,7 @@ import { map } from 'rxjs/operators';
 })
 export class UnitService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8000/api/units';
+  private readonly apiUrl = '/api/units';
 
   getUnits(): Observable<Unit[]> {
     return this.http.get<ApiResponse<UnitDTO[]>>(this.apiUrl).pipe(

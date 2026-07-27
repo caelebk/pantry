@@ -45,7 +45,9 @@ export class NutrientGroupsPageComponent implements OnInit {
   }
 
   public getGroupsForIngredientCategory(categoryId: number): IngredientGroup[] {
-    return this.ingredientGroups().filter((ig) => (ig.ingredientCategoryId ?? ig.nutrientGroupId) === categoryId);
+    return this.ingredientGroups().filter(
+      (ig) => (ig.ingredientCategoryId ?? ig.nutrientGroupId) === categoryId,
+    );
   }
 
   public getCategoriesForNutrientGroup(categoryId: number): IngredientGroup[] {

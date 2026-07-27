@@ -20,7 +20,7 @@ export class ItemService {
   private readonly http = inject(HttpClient);
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
-  private readonly apiUrl = 'http://localhost:8000/api/ingredient-items';
+  private readonly apiUrl = '/api/ingredient-items';
 
   getIngredientItems(): Observable<IngredientItem[]> {
     return forkJoin({

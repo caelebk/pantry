@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 })
 export class RecipeService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8000/api/recipes';
+  private readonly apiUrl = '/api/recipes';
 
   getRecipes(): Observable<Recipe[]> {
     return this.http.get<ApiResponse<Recipe[]>>(this.apiUrl).pipe(mapResponseData<Recipe[]>());

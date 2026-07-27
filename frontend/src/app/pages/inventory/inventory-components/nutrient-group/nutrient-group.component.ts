@@ -64,7 +64,11 @@ export class NutrientGroupComponent {
     if (!this.categoryClusters) return 0;
     return this.categoryClusters.reduce((acc: number, catGroup: any) => {
       return (
-        acc + (catGroup.ingredients?.reduce((ingAcc: number, ing: any) => ingAcc + (ing.itemCount || 0), 0) || 0)
+        acc +
+        (catGroup.ingredients?.reduce(
+          (ingAcc: number, ing: any) => ingAcc + (ing.itemCount || 0),
+          0,
+        ) || 0)
       );
     }, 0);
   }

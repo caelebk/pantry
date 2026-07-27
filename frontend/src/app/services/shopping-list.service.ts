@@ -11,7 +11,7 @@ import { ToastService } from './toast.service';
 export class ShoppingListService {
   private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
-  private readonly apiUrl = 'http://localhost:8000/api/shopping-list';
+  private readonly apiUrl = '/api/shopping-list';
 
   private readonly itemsSignal = signal<ShoppingItem[]>([]);
   readonly items = this.itemsSignal.asReadonly();

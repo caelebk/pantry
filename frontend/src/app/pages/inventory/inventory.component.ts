@@ -256,7 +256,9 @@ export class InventoryComponent implements OnInit {
       }
     });
 
-    return groups.sort((a, b) => (a.group || a.category!).name.localeCompare((b.group || b.category!).name));
+    return groups.sort((a, b) =>
+      (a.group || a.category!).name.localeCompare((b.group || b.category!).name),
+    );
   }
 
   public get nutrientGroups(): IngredientCategoryCluster[] {

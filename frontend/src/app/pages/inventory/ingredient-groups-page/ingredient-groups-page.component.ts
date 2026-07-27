@@ -4,10 +4,7 @@ import { Router } from '@angular/router';
 import { IngredientCategory } from '@models/ingredient-category.model';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
-import {
-  IngredientCategoryCluster,
-  IngredientGroupCluster,
-} from '@models/inventory.models';
+import { IngredientCategoryCluster, IngredientGroupCluster } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
@@ -146,7 +143,9 @@ export class IngredientGroupsPageComponent implements OnInit {
     const result: IngredientCategoryCluster[] = [];
 
     categoriesList.forEach((cat) => {
-      const groupsForCat = groupsList.filter((g) => (g.ingredientCategoryId ?? g.nutrientGroupId) === cat.id);
+      const groupsForCat = groupsList.filter(
+        (g) => (g.ingredientCategoryId ?? g.nutrientGroupId) === cat.id,
+      );
       const categoryGroupsInCat: IngredientGroupCluster[] = [];
 
       groupsForCat.forEach((grp) => {

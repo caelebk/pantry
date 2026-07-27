@@ -12,7 +12,7 @@ import { map } from 'rxjs/operators';
 })
 export class LocationService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8000/api/locations';
+  private readonly apiUrl = '/api/locations';
 
   getLocations(): Observable<Location[]> {
     return this.http.get<ApiResponse<LocationDTO[]>>(this.apiUrl).pipe(

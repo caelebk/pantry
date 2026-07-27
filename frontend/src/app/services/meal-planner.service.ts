@@ -14,7 +14,7 @@ export class MealPlannerService {
   private readonly http = inject(HttpClient);
   private readonly shoppingListService = inject(ShoppingListService);
   private readonly toastService = inject(ToastService);
-  private readonly apiUrl = 'http://localhost:8000/api/meal-plans';
+  private readonly apiUrl = '/api/meal-plans';
 
   readonly days: DayOfWeek[] = [
     'Monday',

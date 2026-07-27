@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IngredientGroup } from '@models/ingredient-group.model';
-import { IngredientCategoryCluster, IngredientGroupCluster } from '@models/inventory.models';
+import { IngredientCategoryCluster } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
