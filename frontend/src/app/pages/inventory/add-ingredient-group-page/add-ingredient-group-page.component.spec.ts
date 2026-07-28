@@ -24,8 +24,16 @@ describe('AddIngredientGroupPageComponent', () => {
   ];
 
   const mockIngredients = [
-    { id: 'ing-1', name: 'Spaghetti', ingredientGroup: { id: 10, name: 'Pasta' } },
-    { id: 'ing-2', name: 'Chicken Breast', ingredientGroup: { id: 20, name: 'Meat' } },
+    {
+      id: 'ing-1',
+      name: 'Spaghetti',
+      ingredientGroup: { id: 10, name: 'Pasta' },
+    },
+    {
+      id: 'ing-2',
+      name: 'Chicken Breast',
+      ingredientGroup: { id: 20, name: 'Meat' },
+    },
     { id: 'ing-3', name: 'Fettuccine', ingredientGroup: undefined },
   ];
 
@@ -61,8 +69,14 @@ describe('AddIngredientGroupPageComponent', () => {
       providers: [
         provideAnimations(),
         { provide: Router, useValue: mockRouter },
-        { provide: IngredientGroupService, useValue: mockIngredientGroupService },
-        { provide: IngredientCategoryService, useValue: mockIngredientCategoryService },
+        {
+          provide: IngredientGroupService,
+          useValue: mockIngredientGroupService,
+        },
+        {
+          provide: IngredientCategoryService,
+          useValue: mockIngredientCategoryService,
+        },
         { provide: IngredientService, useValue: mockIngredientService },
         { provide: ToastService, useValue: mockToastService },
       ],
