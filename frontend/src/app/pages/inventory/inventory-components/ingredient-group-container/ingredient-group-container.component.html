@@ -33,9 +33,9 @@
           [showClear]="false"
           [showToggleAll]="false"
           [filter]="true"
-          filterPlaceholder="Search nutrients..."
+          filterPlaceholder="Search categories..."
           appendTo="body"
-          placeholder="✨ All Nutrients"
+          placeholder="✨ All Categories"
           styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
@@ -46,7 +46,7 @@
                   <span>{{ getNutrientName(selectedItems[0]) }}</span>
                 } @else {
                   <span>✨</span>
-                  <span>{{ selectedItems.length }} Nutrients</span>
+                  <span>{{ selectedItems.length }} Categories</span>
                 }
               </div>
             }
@@ -64,7 +64,7 @@
             type="button"
             (click)="onNutrientTypesSelect([])"
             class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
-            title="Reset nutrient filter">
+            title="Reset category filter">
             <i class="pi pi-times text-xs font-bold"></i>
           </button>
         }
@@ -142,7 +142,7 @@
   </div>
 </div>
 
-<!-- Nutrient Group Accordions -->
+<!-- Ingredient Category Accordions -->
 <div class="space-y-4">
   @if (filteredNutrientGroups.length === 0) {
     <div
@@ -152,15 +152,15 @@
         <i class="pi pi-folder-open"></i>
       </div>
       <h4 class="text-base font-bold text-surface-900 dark:text-white mb-1">
-        No Nutrient Groups Found
+        No Ingredient Categories Found
       </h4>
       <p class="text-xs text-surface-500 dark:text-surface-400">
-        No nutrient groups or categories match your search or filter criteria.
+        No ingredient categories or groups match your search or filter criteria.
       </p>
     </div>
   } @else {
     @for (ng of filteredNutrientGroups; track getCategoryId(ng)) {
-      <pantry-nutrient-group
+      <pantry-ingredient-category
         [nutrientGroup]="ng"
         [isExpanded]="isNutrientGroupExpanded(getCategoryId(ng))"
         [expandedCategories]="expandedCategories()"
@@ -169,7 +169,7 @@
         (toggleCategory)="onToggleCategory($event)"
         (toggleIngredient)="onToggleIngredient($event)"
         (unassignItem)="unassignItem.emit($event)">
-      </pantry-nutrient-group>
+      </pantry-ingredient-category>
     }
   }
 </div>

@@ -5,12 +5,12 @@ import { Item } from '@models/items.model';
 import { IngredientGroupComponent } from '../ingredient-group/ingredient-group.component';
 
 @Component({
-  selector: 'pantry-nutrient-group',
+  selector: 'pantry-ingredient-category',
   standalone: true,
   imports: [CommonModule, IngredientGroupComponent],
-  templateUrl: './nutrient-group.component.html',
+  templateUrl: './ingredient-category.component.html',
 })
-export class NutrientGroupComponent {
+export class IngredientCategoryComponent {
   @Input({ required: true })
   nutrientGroup!: IngredientCategoryCluster;
 

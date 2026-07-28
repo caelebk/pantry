@@ -72,8 +72,11 @@ export class SidebarComponent {
     return this.router.url.startsWith('/inventory/groups');
   }
 
-  isNutrientGroupsActive(): boolean {
-    return this.router.url.startsWith('/inventory/nutrients');
+  isIngredientCategoriesActive(): boolean {
+    return (
+      this.router.url.startsWith('/inventory/nutrients') ||
+      this.router.url.startsWith('/inventory/categories')
+    );
   }
 
   isRecipesActive(): boolean {

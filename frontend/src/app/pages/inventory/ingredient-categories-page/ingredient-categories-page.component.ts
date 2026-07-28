@@ -8,12 +8,12 @@ import { ToastService } from '@services/toast.service';
 import { forkJoin } from 'rxjs';
 
 @Component({
-  selector: 'pantry-nutrient-groups-page',
+  selector: 'pantry-ingredient-categories-page',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './nutrient-groups-page.component.html',
+  templateUrl: './ingredient-categories-page.component.html',
 })
-export class NutrientGroupsPageComponent implements OnInit {
+export class IngredientCategoriesPageComponent implements OnInit {
   private readonly ingredientCategoryService = inject(IngredientCategoryService);
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly toastService = inject(ToastService);
@@ -40,17 +40,9 @@ export class NutrientGroupsPageComponent implements OnInit {
     });
   }
 
-  public get nutrientGroups() {
-    return this.ingredientCategories;
-  }
-
   public getGroupsForIngredientCategory(categoryId: number): IngredientGroup[] {
     return this.ingredientGroups().filter(
       (ig) => (ig.ingredientCategoryId ?? ig.nutrientGroupId) === categoryId,
     );
-  }
-
-  public getCategoriesForNutrientGroup(categoryId: number): IngredientGroup[] {
-    return this.getGroupsForIngredientCategory(categoryId);
   }
 }

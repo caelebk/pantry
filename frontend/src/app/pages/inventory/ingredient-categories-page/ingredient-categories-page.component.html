@@ -36,7 +36,7 @@
         <span class="text-sm font-medium">Loading ingredient categories...</span>
       </div>
     </div>
-  } @else if (nutrientGroups().length === 0) {
+  } @else if (ingredientCategories().length === 0) {
     <div
       class="glass-card rounded-2xl p-12 text-center border border-surface-200/80 dark:border-surface-800/80">
       <div
@@ -52,7 +52,7 @@
     </div>
   } @else {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @for (ng of nutrientGroups(); track ng.id) {
+      @for (ng of ingredientCategories(); track ng.id) {
         <div
           class="glass-card rounded-2xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
           <div class="space-y-4">
@@ -74,8 +74,8 @@
 
               <span
                 class="px-2.5 py-1 text-xs font-bold rounded-full bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200/60 dark:border-surface-700/60">
-                {{ getCategoriesForNutrientGroup(ng.id).length }}
-                {{ getCategoriesForNutrientGroup(ng.id).length === 1 ? 'Group' : 'Groups' }}
+                {{ getGroupsForIngredientCategory(ng.id).length }}
+                {{ getGroupsForIngredientCategory(ng.id).length === 1 ? 'Group' : 'Groups' }}
               </span>
             </div>
 
@@ -92,12 +92,12 @@
                 Associated Ingredient Groups
               </span>
               <div class="flex flex-wrap gap-1.5">
-                @if (getCategoriesForNutrientGroup(ng.id).length === 0) {
+                @if (getGroupsForIngredientCategory(ng.id).length === 0) {
                   <span class="text-xs text-surface-400 dark:text-surface-500 italic">
                     None assigned
                   </span>
                 } @else {
-                  @for (cat of getCategoriesForNutrientGroup(ng.id); track cat.id) {
+                  @for (cat of getGroupsForIngredientCategory(ng.id); track cat.id) {
                     <span
                       class="px-2.5 py-1 rounded-lg text-xs font-bold bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700/80">
                       {{ cat.name }}

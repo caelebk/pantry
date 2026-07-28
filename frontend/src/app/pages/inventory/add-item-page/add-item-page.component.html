@@ -76,8 +76,7 @@
                 class="w-full"
                 appendTo="body">
                 <ng-template pTemplate="footer">
-                  <div
-                    class="p-2 border-t border-surface-200 dark:border-surface-700 sub-card">
+                  <div class="p-2 border-t border-surface-200 dark:border-surface-700 sub-card">
                     <button
                       type="button"
                       (click)="openQuickCreateIngredient()"
@@ -387,8 +386,7 @@
                   }
                 </div>
 
-                <span
-                  class="location-badge text-[11px] px-2.5 py-0.5 rounded-md gap-1">
+                <span class="location-badge text-[11px] px-2.5 py-0.5 rounded-md gap-1">
                   📍 {{ previewItem?.location?.name || 'Storage' }}
                 </span>
               </div>
@@ -410,7 +408,9 @@
             <!-- Dates Grid -->
             <div class="sub-card rounded-xl p-3 mb-3 grid grid-cols-2 gap-3 text-xs">
               <div>
-                <span class="text-[10px] card-label block uppercase tracking-wider">Expiration</span>
+                <span class="text-[10px] card-label block uppercase tracking-wider"
+                  >Expiration</span
+                >
                 <span class="font-bold text-xs text-surface-900 dark:text-white">
                   {{
                     previewItem?.expirationDate

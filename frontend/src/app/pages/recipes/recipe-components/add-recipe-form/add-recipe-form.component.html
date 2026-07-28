@@ -251,8 +251,7 @@
           </div>
 
           <!-- Total Time Badge -->
-          <div
-            class="sub-card rounded-xl p-3.5 flex justify-between items-center text-xs">
+          <div class="sub-card rounded-xl p-3.5 flex justify-between items-center text-xs">
             <span class="card-label font-bold text-surface-700 dark:text-surface-300"
               >Estimated Total Time:</span
             >
@@ -329,8 +328,7 @@
 
           <div class="space-y-3">
             @for (row of recipeIngredients; track $index; let i = $index) {
-              <div
-                class="flex gap-3 items-center relative sub-card p-3 rounded-xl">
+              <div class="flex gap-3 items-center relative sub-card p-3 rounded-xl">
                 <!-- Searchable Ingredient Input -->
                 <div class="flex-1 min-w-0 relative">
                   <input
@@ -442,8 +440,7 @@
 
           <div class="space-y-3">
             @for (step of recipeSteps; track $index; let i = $index) {
-              <div
-                class="flex gap-3 items-start sub-card p-4 rounded-xl">
+              <div class="flex gap-3 items-start sub-card p-4 rounded-xl">
                 <span
                   class="w-7 h-7 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-1 shadow-xs">
                   {{ i + 1 }}

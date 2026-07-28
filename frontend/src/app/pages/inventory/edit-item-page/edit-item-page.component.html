@@ -81,8 +81,7 @@
                   class="w-full"
                   appendTo="body">
                   <ng-template pTemplate="footer">
-                    <div
-                      class="p-2 border-t border-surface-200 dark:border-surface-700 sub-card">
+                    <div class="p-2 border-t border-surface-200 dark:border-surface-700 sub-card">
                       <button
                         type="button"
                         (click)="openQuickCreateIngredient()"
@@ -358,8 +357,7 @@
                     class="text-base font-extrabold text-surface-900 dark:text-white leading-tight truncate mb-1">
                     {{ previewItem()?.name }}
                   </h4>
-                  <span
-                    class="location-badge text-[11px] px-2.5 py-0.5 rounded-md gap-1">
+                  <span class="location-badge text-[11px] px-2.5 py-0.5 rounded-md gap-1">
                     📍 {{ previewItem()?.location?.name || 'Storage' }}
                   </span>
                 </div>
@@ -367,7 +365,9 @@
 
               <div class="sub-card rounded-xl p-3 mb-3 flex items-center justify-between">
                 <div>
-                  <span class="text-[10px] card-label uppercase tracking-wider block">Quantity</span>
+                  <span class="text-[10px] card-label uppercase tracking-wider block"
+                    >Quantity</span
+                  >
                   <span class="text-sm font-extrabold text-surface-900 dark:text-white">
                     {{ previewItem()?.quantity }}
                     <span class="text-xs font-semibold text-surface-600 dark:text-surface-400">{{
@@ -379,7 +379,9 @@
 
               <div class="sub-card rounded-xl p-3 mb-3 grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <span class="text-[10px] card-label block uppercase tracking-wider">Expiration</span>
+                  <span class="text-[10px] card-label block uppercase tracking-wider"
+                    >Expiration</span
+                  >
                   <span class="font-bold text-xs text-surface-900 dark:text-white">
                     {{
                       previewItem()?.expirationDate
@@ -389,7 +391,9 @@
                   </span>
                 </div>
                 <div>
-                  <span class="text-[10px] card-label block uppercase tracking-wider">Purchased</span>
+                  <span class="text-[10px] card-label block uppercase tracking-wider"
+                    >Purchased</span
+                  >
                   <span class="font-bold text-xs text-surface-900 dark:text-white">
                     {{
                       previewItem()?.purchaseDate

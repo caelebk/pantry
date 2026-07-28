@@ -9,7 +9,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
-import { NutrientGroupComponent } from '../nutrient-group/nutrient-group.component';
+import { IngredientCategoryComponent } from '../ingredient-category/ingredient-category.component';
 
 @Component({
   selector: 'pantry-ingredient-group-container',
@@ -22,7 +22,7 @@ import { NutrientGroupComponent } from '../nutrient-group/nutrient-group.compone
     InputTextModule,
     SelectModule,
     MultiSelectModule,
-    NutrientGroupComponent,
+    IngredientCategoryComponent,
   ],
   templateUrl: './ingredient-group-container.component.html',
 })

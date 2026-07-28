@@ -81,7 +81,7 @@ export class EditIngredientGroupPageComponent implements OnInit {
     const val = this.groupForm.value;
     this.isSubmitting.set(true);
 
-    const categoryObj = val.ingredientCategory || val.nutrientGroup;
+    const categoryObj = val.ingredientCategory;
     this.ingredientGroupService
       .updateIngredientGroup(id, {
         name: val.name,

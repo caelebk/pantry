@@ -42,8 +42,7 @@
         </div>
 
         <div class="flex items-center gap-1.5 flex-wrap mt-1">
-          <span
-            class="location-badge text-[11px] px-2.5 py-0.5 rounded-md gap-1">
+          <span class="location-badge text-[11px] px-2.5 py-0.5 rounded-md gap-1">
             📍 {{ item().location.name }}
           </span>
           @if (ingredientName()) {
@@ -103,10 +102,7 @@
     <!-- Dates Grid Sub-Card -->
     <div class="sub-card rounded-xl p-3 mb-3 grid grid-cols-2 gap-3 text-xs">
       <div>
-        <span
-          class="text-[10px] card-label block uppercase tracking-wider">
-          Expiration
-        </span>
+        <span class="text-[10px] card-label block uppercase tracking-wider"> Expiration </span>
         <span
           [ngClass]="
             expired()
@@ -120,10 +116,7 @@
         </span>
       </div>
       <div>
-        <span
-          class="text-[10px] card-label block uppercase tracking-wider">
-          Purchased
-        </span>
+        <span class="text-[10px] card-label block uppercase tracking-wider"> Purchased </span>
         <span class="font-bold text-surface-900 dark:text-white truncate block text-xs">
           {{ item().purchaseDate.toLocaleDateString() }}
         </span>
