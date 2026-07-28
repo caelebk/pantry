@@ -14,8 +14,8 @@ Run both backend and frontend concurrently in development watch mode:
 
 Or run services individually:
 
-- **Backend (Deno + Hono)**: `cd backend && deno task dev` *(Runs on http://localhost:8000)*
-- **Frontend (Angular 20)**: `cd frontend && npm start` *(Runs on http://localhost:4200)*
+- **Backend (Deno + Hono)**: `cd backend && deno task dev` _(Runs on http://localhost:8000)_
+- **Frontend (Angular 20)**: `cd frontend && npm start` _(Runs on http://localhost:4200)_
 
 ---
 
@@ -23,33 +23,34 @@ Or run services individually:
 
 ### Backend (`/backend`)
 
-| Command | Description |
-| :--- | :--- |
-| `deno task dev` | Start backend in watch mode |
-| `deno task start` | Start backend in production mode |
-| `deno task test` | Run backend Deno unit/integration test suite |
-| `deno task db:migrate` | Execute pending SQL migrations |
-| `deno task db:seed` | Seed database with taxonomy & sample inventory |
-| `deno task db:reset` | Reset and recreate database from scratch |
-| `deno fmt` | Format TypeScript files |
-| `deno lint` | Lint backend code |
+| Command                | Description                                    |
+| :--------------------- | :--------------------------------------------- |
+| `deno task dev`        | Start backend in watch mode                    |
+| `deno task start`      | Start backend in production mode               |
+| `deno task test`       | Run backend Deno unit/integration test suite   |
+| `deno task db:migrate` | Execute pending SQL migrations                 |
+| `deno task db:seed`    | Seed database with taxonomy & sample inventory |
+| `deno task db:reset`   | Reset and recreate database from scratch       |
+| `deno fmt`             | Format TypeScript files                        |
+| `deno lint`            | Lint backend code                              |
 
 ### Frontend (`/frontend`)
 
-| Command | Description |
-| :--- | :--- |
-| `npm start` | Start Angular dev server (`ng serve`) |
-| `npm run build` | Build production bundle (`ng build`) |
-| `npm run test` | Run unit tests with Karma & Jasmine |
-| `npm run e2e` | Run E2E tests with Playwright |
-| `npm run lint` | Run ESLint static check |
-| `npm run format` | Prettify code using Prettier |
+| Command          | Description                           |
+| :--------------- | :------------------------------------ |
+| `npm start`      | Start Angular dev server (`ng serve`) |
+| `npm run build`  | Build production bundle (`ng build`)  |
+| `npm run test`   | Run unit tests with Karma & Jasmine   |
+| `npm run e2e`    | Run E2E tests with Playwright         |
+| `npm run lint`   | Run ESLint static check               |
+| `npm run format` | Prettify code using Prettier          |
 
 ---
 
 ## 🏗️ Architecture & Stack Overview
 
 ### 1. Backend Stack & Patterns
+
 - **Runtime:** Deno (v1.37+)
 - **HTTP Framework:** Hono (`jsr:@hono/hono`)
 - **Database:** Embedded SQLite via `@db/sqlite` (`pantry.db`), WAL mode enabled with foreign keys enforced.
@@ -61,6 +62,7 @@ Or run services individually:
   - `src/db/client.ts`: Database connection singleton.
 
 ### 2. Frontend Stack & Patterns
+
 - **Framework:** Angular 20 (Standalone Components architecture).
 - **Styling:** TailwindCSS v4 + PostCSS, PrimeNG 20 (`@primeng/themes`), and custom SCSS Glassmorphism themes (`glass-card`).
 - **i18n:** Transloco (`@jsverse/transloco`) for internationalization keys located in `frontend/public/i18n/`.
@@ -86,10 +88,11 @@ Always adhere to the updated 4-tier domain hierarchy and terminology:
 ```
 
 ### Terminology Rules:
-- **Use `Ingredient Category`** — *Do NOT use "Nutrient Group" or "Nutrient Type"*.
-- **Use `Ingredient Group`** — *Do NOT use generic "Category"*.
-- **Use `Ingredient`** (catalog entry) — *Do NOT use "Master Ingredient"*.
-- **Use `Ingredient Item`** — *Do NOT use plain "Item" when referring to physical inventory batches*.
+
+- **Use `Ingredient Category`** — _Do NOT use "Nutrient Group" or "Nutrient Type"_.
+- **Use `Ingredient Group`** — _Do NOT use generic "Category"_.
+- **Use `Ingredient`** (catalog entry) — _Do NOT use "Master Ingredient"_.
+- **Use `Ingredient Item`** — _Do NOT use plain "Item" when referring to physical inventory batches_.
 
 ---
 
@@ -100,6 +103,6 @@ Always adhere to the updated 4-tier domain hierarchy and terminology:
 - **UI/UX Principles:** Keep UI/UX clean, CONSISTENT, and minimalist. Avoid verboseness, redundant copy, and unnecessary visual or structural complexity. Use design tokens when possible so we don't have to change as much individually.
 - **Type Safety:** Always define explicit interfaces in `models/` for request/response bodies and component state.
 - **Formatting:** Run `deno fmt` for backend code and `npm run format` for frontend code before committing.
-- **Testing** After creating any new feature or fixing any bug, create a test to ensure that we do not regress to a previous state.
+- **Testing** After creating any new feature or fixing any bug, you MUST create a test to ensure that we do not regress to a previous state.
 - **Commits** organize commits whenever you make changes.
 - **Compiler** ensure before you're done that everything is compiling properly.

@@ -121,31 +121,38 @@
           </div>
 
           <!-- Floating Autocomplete Suggestion Dropdown -->
-          @if (isDropdownOpen() && suggestions().length > 0) {
+          @if (isDropdownOpen() && newIngredientInput().trim().length > 0) {
             <div
               class="absolute left-0 right-16 top-full mt-1.5 bg-white/95 dark:bg-surface-800/95 backdrop-blur-md border border-surface-200 dark:border-surface-700 rounded-xl shadow-xl z-50 max-h-56 overflow-y-auto py-1 divide-y divide-surface-100 dark:divide-surface-700/50">
-              @for (sug of suggestions(); track sug.id) {
-                <button
-                  type="button"
-                  (click)="selectSuggestion(sug)"
-                  class="w-full px-3.5 py-2.5 text-left hover:bg-primary-50 dark:hover:bg-surface-700/60 transition-colors flex items-center justify-between group/sug cursor-pointer">
-                  <div class="flex items-center gap-2.5">
-                    <span
-                      class="text-sm font-bold text-surface-900 dark:text-white group-hover/sug:text-primary-600 dark:group-hover/sug:text-primary-400">
-                      {{ sug.name }}
-                    </span>
-                    @if (sug.ingredientGroup?.name || sug.category?.name) {
+              @if (suggestions().length > 0) {
+                @for (sug of suggestions(); track sug.id) {
+                  <button
+                    type="button"
+                    (click)="selectSuggestion(sug)"
+                    class="w-full px-3.5 py-2.5 text-left hover:bg-primary-50 dark:hover:bg-surface-700/60 transition-colors flex items-center justify-between group/sug cursor-pointer">
+                    <div class="flex items-center gap-2.5">
                       <span
-                        class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-700 text-surface-500 dark:text-surface-400">
-                        Current: {{ sug.ingredientGroup?.name || sug.category?.name }}
+                        class="text-sm font-bold text-surface-900 dark:text-white group-hover/sug:text-primary-600 dark:group-hover/sug:text-primary-400">
+                        {{ sug.name }}
                       </span>
-                    }
-                  </div>
-                  <span
-                    class="text-xs font-semibold text-primary-600 dark:text-primary-400 opacity-0 group-hover/sug:opacity-100 transition-opacity">
-                    + Select
-                  </span>
-                </button>
+                      @if (sug.ingredientGroup?.name || sug.category?.name) {
+                        <span
+                          class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-700 text-surface-500 dark:text-surface-400">
+                          Current: {{ sug.ingredientGroup?.name || sug.category?.name }}
+                        </span>
+                      }
+                    </div>
+                    <span
+                      class="text-xs font-semibold text-primary-600 dark:text-primary-400 opacity-0 group-hover/sug:opacity-100 transition-opacity">
+                      + Select
+                    </span>
+                  </button>
+                }
+              } @else {
+                <div class="px-3.5 py-3 text-xs text-surface-500 dark:text-surface-400 flex items-center gap-2">
+                  <i class="pi pi-info-circle text-surface-400"></i>
+                  <span>No matching ingredients found. Click <b>Add</b> or press <b>Enter</b> to create <b>"{{ newIngredientInput() }}"</b> as a new ingredient.</span>
+                </div>
               }
             </div>
           }
