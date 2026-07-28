@@ -388,3 +388,72 @@ html {
   border-color: var(--color-primary-600) !important;
   color: #ffffff !important;
 }
+
+/* ── PrimeNG InputNumber & DatePicker Global Styling ──────── */
+.p-inputnumber {
+  display: inline-flex !important;
+  width: 100% !important;
+  height: 42px !important;
+}
+
+.p-inputnumber-input {
+  height: 42px !important;
+  font-size: 0.875rem !important;
+}
+
+/* PrimeNG DatePicker Connected Input & Calendar Button Styling */
+.p-datepicker {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 42px !important;
+  position: relative !important;
+}
+
+.p-datepicker .p-datepicker-input {
+  height: 42px !important;
+  flex: 1 1 auto !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-right: 0 !important;
+}
+
+.p-datepicker .p-datepicker-dropdown,
+.p-datepicker .p-datepicker-trigger {
+  height: 42px !important;
+  width: 42px !important;
+  min-width: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: 0.75rem !important;
+  border-bottom-right-radius: 0.75rem !important;
+  background-color: var(--color-surface-100) !important;
+  border: 1px solid var(--color-surface-200) !important;
+  border-left: none !important;
+  color: var(--color-surface-600) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+:where(.dark, .dark *) .p-datepicker .p-datepicker-dropdown,
+:where(.dark, .dark *) .p-datepicker .p-datepicker-trigger {
+  background-color: var(--color-surface-800) !important;
+  border: 1px solid var(--color-surface-700) !important;
+  border-left: none !important;
+  color: var(--color-surface-300) !important;
+}
+
+.p-datepicker:hover .p-datepicker-dropdown,
+.p-datepicker:hover .p-datepicker-trigger {
+  border-color: var(--color-surface-300) !important;
+  border-left: none !important;
+}
+
+:where(.dark, .dark *) .p-datepicker:hover .p-datepicker-dropdown,
+:where(.dark, .dark *) .p-datepicker:hover .p-datepicker-trigger {
+  border-color: var(--color-surface-600) !important;
+  border-left: none !important;
+}

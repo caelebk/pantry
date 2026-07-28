@@ -132,7 +132,7 @@
                   id="name"
                   formControlName="name"
                   placeholder="e.g. Organic Whole Milk..."
-                  class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl !p-3 focus:!border-primary-500" />
+                  class="w-full h-[42px] px-3.5 bg-white/80 dark:bg-surface-900/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
                 @if (
                   editItemForm.controls.name.touched &&
                   editItemForm.controls.name.errors?.['required']
@@ -166,7 +166,7 @@
                       [class.dark:text-surface-300]="
                         editItemForm.controls.location.value?.id !== loc.id
                       "
-                      class="py-2 px-3 rounded-xl border border-surface-200 dark:border-surface-700 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]">
+                      class="h-[42px] px-3 rounded-xl border border-surface-200 dark:border-surface-700 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]">
                       <span class="text-base">
                         @if (loc.name === 'Fridge') {
                           ❄️
@@ -194,7 +194,7 @@
                     inputId="quantity"
                     formControlName="quantity"
                     class="w-full"
-                    inputStyleClass="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl !p-3"
+                    inputStyleClass="w-full !h-[42px] !px-3.5 !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl text-sm font-medium"
                     [min]="1"
                     [showButtons]="true">
                   </p-inputnumber>
@@ -241,7 +241,7 @@
                   inputId="purchaseDate"
                   formControlName="purchaseDate"
                   class="w-full"
-                  inputStyleClass="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl !p-3"
+                  inputStyleClass="w-full !h-[42px] !px-3.5 !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-l-xl text-sm font-medium"
                   [showIcon]="true"
                   appendTo="body">
                 </p-datepicker>
@@ -258,7 +258,7 @@
                   inputId="expirationDate"
                   formControlName="expirationDate"
                   class="w-full"
-                  inputStyleClass="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl !p-3"
+                  inputStyleClass="w-full !h-[42px] !px-3.5 !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-l-xl text-sm font-medium"
                   [showIcon]="true"
                   [showButtonBar]="true"
                   appendTo="body">
@@ -282,7 +282,7 @@
                   inputId="openedDate"
                   formControlName="openedDate"
                   class="w-full"
-                  inputStyleClass="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl !p-3"
+                  inputStyleClass="w-full !h-[42px] !px-3.5 !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-l-xl text-sm font-medium"
                   [showIcon]="true"
                   [showButtonBar]="true"
                   appendTo="body">
