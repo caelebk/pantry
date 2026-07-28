@@ -81,49 +81,103 @@
         </p>
       </div>
 
-      <!-- Ingredients Section -->
-      <div class="pt-2 border-t border-surface-200/50 dark:border-surface-800/50 space-y-3">
+      <!-- Ingredients Section with Autocomplete -->
+      <div
+        class="pt-2 border-t border-surface-200/50 dark:border-surface-800/50 space-y-3 relative">
         <div>
           <label
             class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider mb-1">
-            Initial Ingredients (Optional)
+            Ingredients in this Group (Optional)
           </label>
           <p class="text-xs text-surface-500 dark:text-surface-400">
-            Add ingredients that belong to this group (e.g. Spaghetti, Fettuccine, Penne).
+            Search existing master ingredients or type a new name (e.g. Spaghetti, Fettuccine,
+            Penne).
           </p>
         </div>
 
-        <!-- Add Input Box -->
-        <div class="flex items-center gap-2">
-          <input
-            pInputText
-            type="text"
-            [ngModel]="newIngredientInput()"
-            (ngModelChange)="newIngredientInput.set($event)"
-            [ngModelOptions]="{ standalone: true }"
-            (keydown.enter)="addIngredient($event)"
-            placeholder="Type ingredient name and press Enter (e.g. Spaghetti)..."
-            class="flex-1 !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-sm" />
-          <button
-            type="button"
-            (click)="addIngredient($event)"
-            class="px-4 py-3 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-800 dark:text-surface-200 font-bold rounded-xl border border-surface-200 dark:border-surface-700 transition-colors text-xs inline-flex items-center gap-1.5 cursor-pointer shrink-0">
-            <i class="pi pi-plus text-xs font-bold"></i>
-            <span>Add</span>
-          </button>
+        <!-- Add Input Box & Autocomplete Dropdown -->
+        <div class="relative">
+          <div class="flex items-center gap-2">
+            <div class="relative flex-1">
+              <input
+                pInputText
+                type="text"
+                [ngModel]="newIngredientInput()"
+                (ngModelChange)="onInputChange($event)"
+                [ngModelOptions]="{ standalone: true }"
+                (focus)="isDropdownOpen.set(newIngredientInput().trim().length > 0)"
+                (keydown.enter)="addIngredient($event)"
+                placeholder="Search or type ingredient name (e.g. Chicken Breast)..."
+                class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-sm" />
+            </div>
+
+            <button
+              type="button"
+              (click)="addIngredient($event)"
+              class="px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl transition-all text-xs inline-flex items-center gap-1.5 cursor-pointer shrink-0 shadow-sm shadow-primary-600/20">
+              <i class="pi pi-plus text-xs font-bold"></i>
+              <span>Add</span>
+            </button>
+          </div>
+
+          <!-- Floating Autocomplete Suggestion Dropdown -->
+          @if (isDropdownOpen() && suggestions().length > 0) {
+            <div
+              class="absolute left-0 right-16 top-full mt-1.5 bg-white/95 dark:bg-surface-800/95 backdrop-blur-md border border-surface-200 dark:border-surface-700 rounded-xl shadow-xl z-50 max-h-56 overflow-y-auto py-1 divide-y divide-surface-100 dark:divide-surface-700/50">
+              @for (sug of suggestions(); track sug.id) {
+                <button
+                  type="button"
+                  (click)="selectSuggestion(sug)"
+                  class="w-full px-3.5 py-2.5 text-left hover:bg-primary-50 dark:hover:bg-surface-700/60 transition-colors flex items-center justify-between group/sug cursor-pointer">
+                  <div class="flex items-center gap-2.5">
+                    <span
+                      class="text-sm font-bold text-surface-900 dark:text-white group-hover/sug:text-primary-600 dark:group-hover/sug:text-primary-400">
+                      {{ sug.name }}
+                    </span>
+                    @if (sug.ingredientGroup?.name || sug.category?.name) {
+                      <span
+                        class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-700 text-surface-500 dark:text-surface-400">
+                        Current: {{ sug.ingredientGroup?.name || sug.category?.name }}
+                      </span>
+                    }
+                  </div>
+                  <span
+                    class="text-xs font-semibold text-primary-600 dark:text-primary-400 opacity-0 group-hover/sug:opacity-100 transition-opacity">
+                    + Select
+                  </span>
+                </button>
+              }
+            </div>
+          }
         </div>
 
         <!-- Added Ingredients Tag Chips List -->
         @if (initialIngredients().length > 0) {
           <div class="flex flex-wrap gap-2 pt-1">
-            @for (ingName of initialIngredients(); track $index) {
+            @for (item of initialIngredients(); track $index) {
               <span
-                class="px-3 py-1.5 rounded-xl text-xs font-bold bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20 flex items-center gap-2 shadow-2xs">
-                <span>🍎 {{ ingName }}</span>
+                class="px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center gap-2 shadow-2xs"
+                [class]="
+                  item.isExisting
+                    ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20'
+                    : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20'
+                ">
+                <span class="flex items-center gap-1.5">
+                  @if (item.isExisting) {
+                    <span>🔗 {{ item.name }}</span>
+                    @if (item.groupName) {
+                      <span class="text-[10px] opacity-75 font-medium"
+                        >(from {{ item.groupName }})</span
+                      >
+                    }
+                  } @else {
+                    <span>✦ {{ item.name }} (New)</span>
+                  }
+                </span>
                 <button
                   type="button"
                   (click)="removeIngredient($index)"
-                  class="text-primary-500 hover:text-red-500 font-extrabold text-xs transition-colors cursor-pointer"
+                  class="hover:text-red-500 font-extrabold text-xs transition-colors cursor-pointer ml-1"
                   title="Remove ingredient">
                   <i class="pi pi-times text-[10px]"></i>
                 </button>
@@ -132,7 +186,7 @@
           </div>
         } @else {
           <p class="text-xs text-surface-400 italic">
-            No ingredients added yet. Type a name above and click Add or press Enter.
+            No ingredients added yet. Search existing ingredients or type a new name above.
           </p>
         }
       </div>
