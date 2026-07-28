@@ -88,8 +88,15 @@
             <tr>
               <td
                 colspan="4"
-                class="py-6 text-center text-xs text-surface-400 dark:text-surface-500 italic">
-                No ingredients in this category yet.
+                class="py-6 text-center text-xs text-surface-400 dark:text-surface-500 italic space-y-2">
+                <p>No ingredients in this group yet.</p>
+                <button
+                  type="button"
+                  (click)="onAddIngredient($event)"
+                  class="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold transition-colors inline-flex items-center gap-1 cursor-pointer not-italic shadow-xs">
+                  <i class="pi pi-plus text-xs font-bold"></i>
+                  <span>Add Ingredient</span>
+                </button>
               </td>
             </tr>
           } @else {

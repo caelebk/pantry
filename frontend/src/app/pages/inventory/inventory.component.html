@@ -438,12 +438,23 @@
             class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mx-auto mb-4 text-surface-400 dark:text-surface-500 text-2xl">
             <i class="pi pi-box"></i>
           </div>
-          <h4 class="text-lg font-bold text-surface-900 dark:text-white mb-2">No Items Found</h4>
-          <button
-            (click)="searchQuery = ''; selectedLocationId = null; selectedStatusFilter = 'all'"
-            class="px-4 py-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 font-semibold text-xs rounded-xl transition-all cursor-pointer">
-            Reset Filters
-          </button>
+          <h4 class="text-lg font-bold text-surface-900 dark:text-white mb-1">No Items Found</h4>
+          <p class="text-xs text-surface-500 dark:text-surface-400 mb-4">
+            No pantry items match your current filter or search criteria.
+          </p>
+          <div class="flex items-center justify-center gap-3">
+            <button
+              (click)="searchQuery = ''; selectedLocationId = null; selectedStatusFilter = 'all'"
+              class="px-4 py-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 font-semibold text-xs rounded-xl transition-all cursor-pointer">
+              Reset Filters
+            </button>
+            <button
+              (click)="openAddModal()"
+              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-sm">
+              <i class="pi pi-plus text-xs font-bold"></i>
+              <span>Add New Item</span>
+            </button>
+          </div>
         </div>
       </div>
     }

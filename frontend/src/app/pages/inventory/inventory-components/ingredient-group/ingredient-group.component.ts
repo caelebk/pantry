@@ -46,6 +46,11 @@ export class IngredientGroupComponent {
     this.router.navigate(['/inventory', itemId, 'edit']);
   }
 
+  onAddIngredient(event?: Event) {
+    if (event) event.stopPropagation();
+    this.router.navigate(['/inventory/ingredients/new']);
+  }
+
   get totalItemsCount(): number {
     if (!this.group || !this.group.ingredients) return 0;
     return this.group.ingredients.reduce((acc, ing) => acc + (ing.itemCount || 0), 0);

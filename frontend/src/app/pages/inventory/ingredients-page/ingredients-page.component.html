@@ -131,8 +131,23 @@
           No ingredients found
         </h3>
         <p class="text-sm text-surface-500 max-w-md mx-auto">
-          No ingredients match your search. Create a new ingredient to populate your catalog.
+          No ingredients match your search or filter criteria. Create a new ingredient to populate your catalog.
         </p>
+        <div class="pt-2 flex items-center justify-center gap-3">
+          @if (searchQuery() || selectedGroup()) {
+            <button
+              (click)="onSearchChange(''); onGroupChange(null)"
+              class="px-4 py-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 font-semibold text-xs rounded-xl transition-all cursor-pointer">
+              Reset Filters
+            </button>
+          }
+          <button
+            (click)="onAddIngredient()"
+            class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-sm">
+            <i class="pi pi-plus text-xs font-bold"></i>
+            <span>Add Ingredient</span>
+          </button>
+        </div>
       </div>
     } @else {
       <!-- Subtables Grouped by Ingredient Group (With Lazy Viewport Rendering) -->
