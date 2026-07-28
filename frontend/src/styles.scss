@@ -59,42 +59,63 @@ html {
 
 :where(.dark, .dark *) .glass-card {
   background: rgba(41, 37, 36, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* ── Sub-card / Inner row design token utility ─────────────── */
-.sub-card {
-  background-color: #fafaf9;
-  border: 1px solid #e7e5e4;
+/* ── Centralized High-Contrast Sub-Card & Sub-Panel Utility System ──── */
+.sub-card,
+.sub-card-inset {
+  background-color: var(--color-surface-100) !important;
+  border: 1px solid var(--color-surface-300) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
 }
 
-:where(.dark, .dark *) .sub-card {
-  background-color: rgba(41, 37, 36, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+:where(.dark, .dark *) .sub-card,
+:where(.dark, .dark *) .sub-card-inset {
+  background-color: rgba(18, 16, 14, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4) !important;
 }
 
 .sub-card-hover {
-  transition: all 0.2s ease;
+  transition: all 0.2s ease !important;
 }
 
 .sub-card-hover:hover {
-  background-color: #ffffff;
-  border-color: #d6d3d1;
+  background-color: #ffffff !important;
+  border-color: var(--color-primary-500) !important;
 }
 
 :where(.dark, .dark *) .sub-card-hover:hover {
-  background-color: rgba(68, 64, 60, 0.95);
-  border-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(44, 40, 37, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
 }
 
-/* ── Card label utility ─────────────────────────────────────── */
+/* Centralized Location & Status Badge Utility */
+.location-badge {
+  background-color: var(--color-surface-200) !important;
+  border: 1px solid var(--color-surface-300) !important;
+  color: var(--color-surface-800) !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+:where(.dark, .dark *) .location-badge {
+  background-color: rgba(68, 64, 60, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: var(--color-surface-100) !important;
+}
+
+/* Centralized Card Section Label Utility */
 .card-label {
-  color: var(--color-surface-600);
-  font-weight: 700;
+  color: var(--color-surface-600) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
 }
 
 :where(.dark, .dark *) .card-label {
-  color: var(--color-surface-300);
+  color: var(--color-surface-300) !important;
 }
 
 /* ── Glass header ───────────────────────────────────────────── */

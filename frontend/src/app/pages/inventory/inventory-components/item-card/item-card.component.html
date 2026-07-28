@@ -43,7 +43,7 @@
 
         <div class="flex items-center gap-1.5 flex-wrap mt-1">
           <span
-            class="inline-flex items-center gap-1 text-[11px] font-medium text-surface-500 dark:text-surface-400 bg-surface-100/80 dark:bg-surface-800/60 px-2.5 py-0.5 rounded-md">
+            class="location-badge text-[11px] px-2.5 py-0.5 rounded-md gap-1">
             📍 {{ item().location.name }}
           </span>
           @if (ingredientName()) {
@@ -100,11 +100,11 @@
       </div>
     </div>
 
-    <!-- Dates Grid -->
-    <div class="grid grid-cols-2 gap-2 text-xs flex-1 mb-3">
+    <!-- Dates Grid Sub-Card -->
+    <div class="sub-card rounded-xl p-3 mb-3 grid grid-cols-2 gap-3 text-xs">
       <div>
         <span
-          class="text-[10px] text-surface-600 dark:text-surface-300 block uppercase tracking-wider font-bold">
+          class="text-[10px] card-label block uppercase tracking-wider">
           Expiration
         </span>
         <span
@@ -113,7 +113,7 @@
               ? 'text-rose-600 dark:text-rose-400 font-bold'
               : expiringSoon()
                 ? 'text-amber-600 dark:text-amber-400 font-bold'
-                : 'text-surface-700 dark:text-surface-200 font-semibold'
+                : 'text-surface-900 dark:text-white font-bold'
           "
           class="truncate block text-xs">
           {{ item().expirationDate.toLocaleDateString() }}
@@ -121,10 +121,10 @@
       </div>
       <div>
         <span
-          class="text-[10px] text-surface-600 dark:text-surface-300 block uppercase tracking-wider font-bold">
+          class="text-[10px] card-label block uppercase tracking-wider">
           Purchased
         </span>
-        <span class="font-semibold text-surface-700 dark:text-surface-300 truncate block text-xs">
+        <span class="font-bold text-surface-900 dark:text-white truncate block text-xs">
           {{ item().purchaseDate.toLocaleDateString() }}
         </span>
       </div>
