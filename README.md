@@ -40,7 +40,7 @@ graph TD
 
 The core domain relies on a 3-tier ingredient taxonomy and physical stock batch management:
 
-1. **Nutrient Group** *(Tier 1)*: Broad nutritional classification (e.g. *Protein & Dairy*, *Fiber & Produce*, *Carbs & Grains*, *Quick Foods*, *Fats & Oils*).
+1. **Ingredient Category** *(Tier 1)*: Broad nutritional classification (e.g. *Protein & Dairy*, *Fiber & Produce*, *Carbs & Grains*, *Quick Foods*, *Fats & Oils*).
 2. **Ingredient Group** *(Tier 2)*: Specific sub-categories (e.g. *Meat*, *Seafood*, *Beans*, *Vegetables*, *Fruits*, *Grains*, *Pasta*, *Snacks*, *Sweets*).
 3. **Ingredient** *(Tier 3)*: Master ingredient definition (e.g. *Chicken Breast*, *Jasmine Rice*, *Apple*) with default unit and group link.
 4. **Ingredient Item (Batch)**: Physical stock instance in a storage location (e.g. *Fridge*, *Freezer*, *Pantry*) tracking expiration date, quantity, purchase date, and status.

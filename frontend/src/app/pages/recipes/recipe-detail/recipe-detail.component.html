@@ -100,42 +100,26 @@
 
     <!-- Overview Quick Stats Grid -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-      <div
-        class="sub-card rounded-xl p-4 text-center">
-        <span
-          class="block text-xs font-bold card-label uppercase tracking-wider"
-          >Servings</span
-        >
+      <div class="sub-card rounded-xl p-4 text-center">
+        <span class="block text-xs font-bold card-label uppercase tracking-wider">Servings</span>
         <span class="block text-xl font-extrabold text-surface-900 dark:text-white mt-1">{{
           recipe.servings || '-'
         }}</span>
       </div>
-      <div
-        class="sub-card rounded-xl p-4 text-center">
-        <span
-          class="block text-xs font-bold card-label uppercase tracking-wider"
-          >Prep Time</span
-        >
+      <div class="sub-card rounded-xl p-4 text-center">
+        <span class="block text-xs font-bold card-label uppercase tracking-wider">Prep Time</span>
         <span class="block text-xl font-extrabold text-surface-900 dark:text-white mt-1"
           >{{ recipe.prepTime || 0 }} min</span
         >
       </div>
-      <div
-        class="sub-card rounded-xl p-4 text-center">
-        <span
-          class="block text-xs font-bold card-label uppercase tracking-wider"
-          >Cook Time</span
-        >
+      <div class="sub-card rounded-xl p-4 text-center">
+        <span class="block text-xs font-bold card-label uppercase tracking-wider">Cook Time</span>
         <span class="block text-xl font-extrabold text-surface-900 dark:text-white mt-1"
           >{{ recipe.cookTime || 0 }} min</span
         >
       </div>
-      <div
-        class="sub-card rounded-xl p-4 text-center">
-        <span
-          class="block text-xs font-bold card-label uppercase tracking-wider"
-          >Total Time</span
-        >
+      <div class="sub-card rounded-xl p-4 text-center">
+        <span class="block text-xs font-bold card-label uppercase tracking-wider">Total Time</span>
         <span class="block text-xl font-extrabold text-primary-600 dark:text-primary-400 mt-1"
           >{{ totalTime }} min</span
         >
@@ -247,8 +231,7 @@
 
           <div class="space-y-4">
             @for (step of recipe.steps; track step.stepNumber; let i = $index) {
-              <div
-                class="flex gap-4 p-4 rounded-xl sub-card">
+              <div class="flex gap-4 p-4 rounded-xl sub-card">
                 <span
                   class="w-7 h-7 rounded-full bg-primary-600 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                   {{ i + 1 }}
@@ -288,7 +271,7 @@
                 Substitutes for {{ activeSubstitutionIngredient.name }}
               </h3>
               <p class="text-xs text-surface-500 dark:text-surface-400">
-                In-stock replacements ranked by category & nutrient type
+                In-stock replacements ranked by category & ingredient category
               </p>
             </div>
           </div>
@@ -322,7 +305,8 @@
             class="p-6 text-center text-surface-500 dark:text-surface-400 bg-surface-50 dark:bg-surface-800/40 rounded-xl border border-surface-200/60 dark:border-surface-700/60">
             <p class="text-sm font-medium mb-1">No In-Stock Substitutes Found</p>
             <p class="text-xs text-surface-400">
-              There are currently no items in stock sharing the same category or nutrient group.
+              There are currently no items in stock sharing the same category or ingredient
+              category.
             </p>
           </div>
         } @else {
@@ -348,7 +332,9 @@
                           : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20'
                       ">
                       {{
-                        sub.matchLevel === 'same_category' ? 'Same Category' : 'Same Nutrient Group'
+                        sub.matchLevel === 'same_category'
+                          ? 'Same Category'
+                          : 'Same Ingredient Category'
                       }}
                     </span>
                   </div>
