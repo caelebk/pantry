@@ -9,6 +9,7 @@ import { EditIngredientPageComponent } from './pages/inventory/edit-ingredient-p
 import { EditItemPageComponent } from './pages/inventory/edit-item-page/edit-item-page.component';
 import { IngredientGroupsPageComponent } from './pages/inventory/ingredient-groups-page/ingredient-groups-page.component';
 import { IngredientsPageComponent } from './pages/inventory/ingredients-page/ingredients-page.component';
+import { InventoryOverviewPageComponent } from './pages/inventory/inventory-overview-page/inventory-overview-page.component';
 import { InventoryComponent } from './pages/inventory/inventory.component';
 import { MealPlannerComponent } from './pages/meal-planner/meal-planner.component';
 import { PlanMealPageComponent } from './pages/meal-planner/plan-meal-page/plan-meal-page.component';
@@ -25,7 +26,7 @@ export const routes: Routes = [
   { path: 'dashboard', redirectTo: Tab.Home, pathMatch: 'full' },
 
   // Inventory Sub-Routes & Dedicated Pages
-  { path: 'inventory', redirectTo: 'inventory/items', pathMatch: 'full' },
+  { path: 'inventory', component: InventoryOverviewPageComponent },
   { path: 'inventory/items', component: InventoryComponent },
   { path: 'inventory/items/new', component: AddItemPageComponent },
   { path: 'inventory/items/:id/edit', component: EditItemPageComponent },

@@ -1,0 +1,605 @@
+<div class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+  <!-- Page Header & Action Launchpad -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <div
+        class="flex items-center gap-2 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1">
+        <i class="pi pi-box text-primary-500"></i>
+        <span>Control Center</span>
+      </div>
+      <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
+        Kitchen Inventory Overview
+      </h2>
+      <p class="text-surface-500 dark:text-surface-400 mt-1 text-sm font-medium">
+        Manage taxonomy, monitor physical stock, and explore your 4-tier kitchen domain hierarchy.
+      </p>
+    </div>
+
+    <!-- Quick Action Launchpad -->
+    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+      <button
+        (click)="navigateTo('/inventory/items/new')"
+        class="px-4 py-2.5 cursor-pointer inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl shadow-md shadow-primary-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+        <i class="pi pi-plus text-xs font-bold"></i>
+        <span>Add Stock Item</span>
+      </button>
+      <button
+        (click)="navigateTo('/inventory/ingredients/new')"
+        class="px-4 py-2.5 cursor-pointer inline-flex items-center gap-2 glass-card hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-800 dark:text-surface-100 font-semibold text-sm rounded-xl border border-surface-200/80 dark:border-surface-700 transition-all duration-200">
+        <i class="pi pi-sparkles text-surface-500"></i>
+        <span>Add Ingredient</span>
+      </button>
+      <button
+        (click)="navigateTo('/inventory/groups/new')"
+        class="px-4 py-2.5 cursor-pointer inline-flex items-center gap-2 glass-card hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-800 dark:text-surface-100 font-semibold text-sm rounded-xl border border-surface-200/80 dark:border-surface-700 transition-all duration-200">
+        <i class="pi pi-tags text-surface-500"></i>
+        <span>Add Group</span>
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div
+      class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 p-12 flex items-center justify-center">
+      <div class="flex items-center gap-3 text-surface-500">
+        <svg
+          class="animate-spin h-6 w-6 text-primary-500"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24">
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span class="text-sm font-medium">Loading inventory metrics & hierarchy...</span>
+      </div>
+    </div>
+  } @else {
+    <!-- 4 Key Summary Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Tier 1 Stat: Ingredient Categories -->
+      <div
+        (click)="navigateTo('/inventory/groups')"
+        class="glass-card rounded-2xl p-5 border border-surface-200/60 dark:border-surface-800/80 hover:border-surface-400 dark:hover:border-surface-600 transition-all duration-200 cursor-pointer group shadow-xs hover:shadow-md">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-surface-400 uppercase tracking-wider">Tier 1</span>
+          <div
+            class="w-9 h-9 rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i class="pi pi-sitemap text-base"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <div class="text-2xl font-extrabold text-surface-900 dark:text-white">
+            {{ categoriesCount() }}
+          </div>
+          <div class="text-xs font-semibold text-surface-600 dark:text-surface-400 mt-0.5">
+            Ingredient Categories
+          </div>
+        </div>
+        <div
+          class="mt-3 pt-3 border-t border-surface-200/40 dark:border-surface-800/40 flex items-center justify-between text-xs text-surface-500 font-medium">
+          <span>Macro Classifications</span>
+          <i
+            class="pi pi-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </div>
+
+      <!-- Tier 2 Stat: Ingredient Groups -->
+      <div
+        (click)="navigateTo('/inventory/groups')"
+        class="glass-card rounded-2xl p-5 border border-surface-200/60 dark:border-surface-800/80 hover:border-surface-400 dark:hover:border-surface-600 transition-all duration-200 cursor-pointer group shadow-xs hover:shadow-md">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-surface-400 uppercase tracking-wider">Tier 2</span>
+          <div
+            class="w-9 h-9 rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i class="pi pi-tags text-base"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <div class="text-2xl font-extrabold text-surface-900 dark:text-white">
+            {{ groupsCount() }}
+          </div>
+          <div class="text-xs font-semibold text-surface-600 dark:text-surface-400 mt-0.5">
+            Ingredient Groups
+          </div>
+        </div>
+        <div
+          class="mt-3 pt-3 border-t border-surface-200/40 dark:border-surface-800/40 flex items-center justify-between text-xs text-surface-500 font-medium">
+          <span>Culinary Groups</span>
+          <i
+            class="pi pi-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </div>
+
+      <!-- Tier 3 Stat: Ingredients Catalog -->
+      <div
+        (click)="navigateTo('/inventory/ingredients')"
+        class="glass-card rounded-2xl p-5 border border-surface-200/60 dark:border-surface-800/80 hover:border-surface-400 dark:hover:border-surface-600 transition-all duration-200 cursor-pointer group shadow-xs hover:shadow-md">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-surface-400 uppercase tracking-wider">Tier 3</span>
+          <div
+            class="w-9 h-9 rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i class="pi pi-sparkles text-base"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <div class="text-2xl font-extrabold text-surface-900 dark:text-white">
+            {{ ingredientsCount() }}
+          </div>
+          <div class="text-xs font-semibold text-surface-600 dark:text-surface-400 mt-0.5">
+            Master Ingredients
+          </div>
+        </div>
+        <div
+          class="mt-3 pt-3 border-t border-surface-200/40 dark:border-surface-800/40 flex items-center justify-between text-xs text-surface-500 font-medium">
+          <span>Master Catalog</span>
+          <i
+            class="pi pi-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </div>
+
+      <!-- Tier 4 Stat: Ingredient Items (Stock) -->
+      <div
+        (click)="navigateTo('/inventory/items')"
+        class="glass-card rounded-2xl p-5 border border-primary-500/30 dark:border-primary-500/30 hover:border-primary-500 transition-all duration-200 cursor-pointer group shadow-xs hover:shadow-md">
+        <div class="flex items-center justify-between">
+          <span
+            class="text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider"
+            >Tier 4 Base</span
+          >
+          <div
+            class="w-9 h-9 rounded-xl bg-primary-500/10 text-primary-600 dark:text-primary-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i class="pi pi-box text-base"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-extrabold text-surface-900 dark:text-white">{{
+              itemsCount()
+            }}</span>
+            <span class="text-xs text-surface-500 font-medium">batches in stock</span>
+          </div>
+          <div class="flex items-center gap-2 mt-1">
+            @if (expiringCount() > 0) {
+              <span
+                class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                {{ expiringCount() }} expiring
+              </span>
+            }
+            @if (expiredCount() > 0) {
+              <span
+                class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+                {{ expiredCount() }} expired
+              </span>
+            }
+            @if (expiringCount() === 0 && expiredCount() === 0) {
+              <span
+                class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                All fresh
+              </span>
+            }
+          </div>
+        </div>
+        <div
+          class="mt-3 pt-3 border-t border-surface-200/40 dark:border-surface-800/40 flex items-center justify-between text-xs text-primary-600 dark:text-primary-400 font-medium">
+          <span>Physical Inventory</span>
+          <i
+            class="pi pi-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4-TIER DOMAIN HIERARCHY & TERMINOLOGY DIAGRAM CARD -->
+    <div
+      class="glass-card rounded-3xl p-6 md:p-8 border border-surface-200/60 dark:border-surface-800/80 shadow-xs">
+      <!-- Section Header -->
+      <div
+        class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-6 border-b border-surface-200/40 dark:border-surface-800/40">
+        <div>
+          <div
+            class="flex items-center gap-2 text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+            <i class="pi pi-sitemap text-primary-500"></i>
+            <span>Domain Architecture Model</span>
+          </div>
+          <h3 class="text-xl font-bold text-surface-900 dark:text-white mt-1">
+            Kitchen Inventory 4-Tier Hierarchy
+          </h3>
+          <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+            Structural encapsulation model separating macro taxonomy from physical fridge batches.
+          </p>
+        </div>
+        <div class="shrink-0">
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700">
+            <i class="pi pi-info-circle text-primary-500"></i>
+            Domain Hierarchy
+          </span>
+        </div>
+      </div>
+
+      <!-- Minimalist Triangle Pyramid Visual Diagram -->
+      <div class="my-8 flex flex-col items-center justify-center">
+        <div class="w-full max-w-3xl flex flex-col items-center gap-3 relative">
+          <!-- Pyramid Tier 1 (Apex - Narrowest) -->
+          <div
+            (click)="navigateTo('/inventory/groups')"
+            class="w-full max-w-[320px] p-3.5 rounded-2xl bg-surface-100/90 dark:bg-surface-800/90 text-surface-900 dark:text-white shadow-xs hover:border-primary-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer border border-surface-200 dark:border-surface-700 flex items-center justify-between group relative">
+            <div class="flex items-center gap-3 overflow-hidden">
+              <div
+                class="w-9 h-9 rounded-xl bg-surface-200/80 dark:bg-surface-700/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <i class="pi pi-sitemap text-sm text-surface-700 dark:text-surface-200"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span
+                    class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-surface-200/80 dark:bg-surface-700 text-surface-600 dark:text-surface-300 tracking-wider whitespace-nowrap"
+                    >Tier 1</span
+                  >
+                  <h4 class="text-xs font-bold text-surface-900 dark:text-white truncate">
+                    Ingredient Category
+                  </h4>
+                </div>
+                <p
+                  class="text-[11px] text-surface-500 dark:text-surface-400 font-medium mt-0.5 truncate">
+                  Macro Classification
+                </p>
+              </div>
+            </div>
+            <i
+              class="pi pi-chevron-right text-xs text-surface-400 group-hover:translate-x-1 transition-transform shrink-0"></i>
+          </div>
+
+          <!-- Down Arrow Connector 1 -->
+          <div
+            class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
+            <i class="pi pi-arrow-down text-xs opacity-75"></i>
+          </div>
+
+          <!-- Pyramid Tier 2 (Upper Middle) -->
+          <div
+            (click)="navigateTo('/inventory/groups')"
+            class="w-full max-w-[420px] p-3.5 rounded-2xl bg-surface-100/90 dark:bg-surface-800/90 text-surface-900 dark:text-white shadow-xs hover:border-primary-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer border border-surface-200 dark:border-surface-700 flex items-center justify-between group relative">
+            <div class="flex items-center gap-3 overflow-hidden">
+              <div
+                class="w-9 h-9 rounded-xl bg-surface-200/80 dark:bg-surface-700/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <i class="pi pi-tags text-sm text-surface-700 dark:text-surface-200"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span
+                    class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-surface-200/80 dark:bg-surface-700 text-surface-600 dark:text-surface-300 tracking-wider whitespace-nowrap"
+                    >Tier 2</span
+                  >
+                  <h4 class="text-xs font-bold text-surface-900 dark:text-white truncate">
+                    Ingredient Group
+                  </h4>
+                </div>
+                <p
+                  class="text-[11px] text-surface-500 dark:text-surface-400 font-medium mt-0.5 truncate">
+                  Culinary Sub-Grouping
+                </p>
+              </div>
+            </div>
+            <i
+              class="pi pi-chevron-right text-xs text-surface-400 group-hover:translate-x-1 transition-transform shrink-0"></i>
+          </div>
+
+          <!-- Down Arrow Connector 2 -->
+          <div
+            class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
+            <i class="pi pi-arrow-down text-xs opacity-75"></i>
+          </div>
+
+          <!-- Pyramid Tier 3 (Lower Middle) -->
+          <div
+            (click)="navigateTo('/inventory/ingredients')"
+            class="w-full max-w-[560px] p-3.5 rounded-2xl bg-surface-100/90 dark:bg-surface-800/90 text-surface-900 dark:text-white shadow-xs hover:border-primary-500/50 hover:scale-[1.01] active:scale-[0.98] transition-all duration-200 cursor-pointer border border-surface-200 dark:border-surface-700 flex items-center justify-between group relative">
+            <div class="flex items-center gap-3 overflow-hidden">
+              <div
+                class="w-9 h-9 rounded-xl bg-surface-200/80 dark:bg-surface-700/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <i class="pi pi-sparkles text-sm text-surface-700 dark:text-surface-200"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span
+                    class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-surface-200/80 dark:bg-surface-700 text-surface-600 dark:text-surface-300 tracking-wider whitespace-nowrap"
+                    >Tier 3</span
+                  >
+                  <h4 class="text-xs font-bold text-surface-900 dark:text-white truncate">
+                    Ingredient
+                  </h4>
+                </div>
+                <p
+                  class="text-[11px] text-surface-500 dark:text-surface-400 font-medium mt-0.5 truncate">
+                  Master Catalog Definition
+                </p>
+              </div>
+            </div>
+            <i
+              class="pi pi-chevron-right text-xs text-surface-400 group-hover:translate-x-1 transition-transform shrink-0"></i>
+          </div>
+
+          <!-- Down Arrow Connector 3 -->
+          <div
+            class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
+            <i class="pi pi-arrow-down text-xs opacity-75"></i>
+          </div>
+
+          <!-- Pyramid Tier 4 (Base Foundation - Widest) -->
+          <div
+            (click)="navigateTo('/inventory/items')"
+            class="w-full max-w-[700px] p-3.5 rounded-2xl bg-primary-500/10 dark:bg-primary-500/15 text-surface-900 dark:text-white shadow-xs hover:border-primary-500 hover:scale-[1.01] active:scale-[0.98] transition-all duration-200 cursor-pointer border border-primary-500/30 flex items-center justify-between group relative">
+            <div class="flex items-center gap-3 overflow-hidden">
+              <div
+                class="w-9 h-9 rounded-xl bg-primary-500/20 text-primary-600 dark:text-primary-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <i class="pi pi-box text-sm"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span
+                    class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-primary-500/20 text-primary-700 dark:text-primary-300 tracking-wider whitespace-nowrap"
+                    >Tier 4 Base</span
+                  >
+                  <h4 class="text-xs font-bold text-surface-900 dark:text-white truncate">
+                    Ingredient Item
+                  </h4>
+                </div>
+                <p
+                  class="text-[11px] text-surface-600 dark:text-surface-300 font-medium mt-0.5 truncate">
+                  Physical Inventory Stock (Fridge/Pantry Batches)
+                </p>
+              </div>
+            </div>
+            <i
+              class="pi pi-chevron-right text-xs text-primary-600 dark:text-primary-400 group-hover:translate-x-1 transition-transform shrink-0"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Detailed Tier Breakdown Cards Grid -->
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-surface-200/40 dark:border-surface-800/40">
+        <!-- Tier 1 Card -->
+        <div
+          class="p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/40 border border-surface-200/60 dark:border-surface-700/60 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-1.5">
+              <span
+                class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-200"
+                >Tier 1</span
+              >
+              <h4 class="text-sm font-bold text-surface-900 dark:text-white">
+                Ingredient Category
+              </h4>
+            </div>
+            <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
+              Macro classification encapsulating nutritional & culinary categories. Serves as
+              top-level taxonomy.
+            </p>
+          </div>
+          <div
+            class="mt-3 pt-2.5 border-t border-surface-200/40 dark:border-surface-700/40 flex items-center justify-between text-[11px]">
+            <span class="text-surface-500 font-medium">Examples:</span>
+            <span class="font-semibold text-surface-700 dark:text-surface-200"
+              >Protein & Dairy, Fiber & Produce, Carbs & Grains</span
+            >
+          </div>
+        </div>
+
+        <!-- Tier 2 Card -->
+        <div
+          class="p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/40 border border-surface-200/60 dark:border-surface-700/60 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-1.5">
+              <span
+                class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-200"
+                >Tier 2</span
+              >
+              <h4 class="text-sm font-bold text-surface-900 dark:text-white">Ingredient Group</h4>
+            </div>
+            <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
+              Sub-classification organizing related culinary ingredients under a parent Category.
+            </p>
+          </div>
+          <div
+            class="mt-3 pt-2.5 border-t border-surface-200/40 dark:border-surface-700/40 flex items-center justify-between text-[11px]">
+            <span class="text-surface-500 font-medium">Examples:</span>
+            <span class="font-semibold text-surface-700 dark:text-surface-200"
+              >Meat, Seafood, Beans, Vegetables, Fruits, Grains</span
+            >
+          </div>
+        </div>
+
+        <!-- Tier 3 Card -->
+        <div
+          class="p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/40 border border-surface-200/60 dark:border-surface-700/60 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-1.5">
+              <span
+                class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-200"
+                >Tier 3</span
+              >
+              <h4 class="text-sm font-bold text-surface-900 dark:text-white">Ingredient</h4>
+            </div>
+            <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
+              Master catalog culinary definition. Shared by recipes and physical inventory items.
+            </p>
+          </div>
+          <div
+            class="mt-3 pt-2.5 border-t border-surface-200/40 dark:border-surface-700/40 flex items-center justify-between text-[11px]">
+            <span class="text-surface-500 font-medium">Examples:</span>
+            <span class="font-semibold text-surface-700 dark:text-surface-200"
+              >Chicken Breast, Gala Apple, Jasmine Rice, Olive Oil</span
+            >
+          </div>
+        </div>
+
+        <!-- Tier 4 Card -->
+        <div
+          class="p-4 rounded-2xl bg-primary-500/5 dark:bg-primary-500/10 border border-primary-500/20 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-1.5">
+              <span
+                class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-primary-600 text-white"
+                >Tier 4</span
+              >
+              <h4 class="text-sm font-bold text-surface-900 dark:text-white">Ingredient Item</h4>
+            </div>
+            <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
+              Physical stock instance sitting in your fridge/pantry with specific quantity,
+              expiration, and location.
+            </p>
+          </div>
+          <div
+            class="mt-3 pt-2.5 border-t border-primary-500/10 flex items-center justify-between text-[11px]">
+            <span class="text-surface-500 font-medium">Examples:</span>
+            <span class="font-semibold text-primary-700 dark:text-primary-300"
+              >2 lbs Chicken Breast exp. Jul 30 in Refrigerator</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Hub: 3 Main Sub-views Access Cards -->
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-surface-900 dark:text-white">Inventory Sub-Systems</h3>
+        <span class="text-xs font-medium text-surface-500">Quick Access Hub</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Sub-system 1: Ingredient Items (Physical Stock) -->
+        <div
+          (click)="navigateTo('/inventory/items')"
+          class="glass-card rounded-2xl p-6 border border-surface-200/60 dark:border-surface-800/80 hover:border-primary-500/50 dark:hover:border-primary-500/50 transition-all duration-200 cursor-pointer group shadow-xs hover:shadow-md flex flex-col justify-between">
+          <div>
+            <div
+              class="w-11 h-11 rounded-2xl bg-primary-500/10 text-primary-600 dark:text-primary-400 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <i class="pi pi-box text-xl"></i>
+            </div>
+            <h4
+              class="text-base font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+              Ingredient Items
+            </h4>
+            <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5 leading-relaxed">
+              Track physical kitchen batches, stock levels, location storage (Fridge, Pantry,
+              Freezer), and expiration dates.
+            </p>
+          </div>
+          <div
+            class="mt-6 pt-4 border-t border-surface-200/40 dark:border-surface-800/40 flex items-center justify-between">
+            <span class="text-xs font-semibold text-primary-600 dark:text-primary-400"
+              >View Physical Stock</span
+            >
+            <i
+              class="pi pi-arrow-right text-xs text-primary-600 dark:text-primary-400 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+
+        <!-- Sub-system 2: Master Ingredients Catalog -->
+        <div
+          (click)="navigateTo('/inventory/ingredients')"
+          class="glass-card rounded-2xl p-6 border border-surface-200/60 dark:border-surface-800/80 hover:border-surface-400 dark:hover:border-surface-600 transition-all duration-200 cursor-pointer group shadow-xs hover:shadow-md flex flex-col justify-between">
+          <div>
+            <div
+              class="w-11 h-11 rounded-2xl bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <i class="pi pi-sparkles text-xl"></i>
+            </div>
+            <h4 class="text-base font-bold text-surface-900 dark:text-white transition-colors">
+              Master Ingredients
+            </h4>
+            <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5 leading-relaxed">
+              Define catalog ingredient definitions, default measurement units, and nutritional
+              baselines.
+            </p>
+          </div>
+          <div
+            class="mt-6 pt-4 border-t border-surface-200/40 dark:border-surface-800/40 flex items-center justify-between">
+            <span class="text-xs font-semibold text-surface-600 dark:text-surface-300"
+              >Explore Catalog</span
+            >
+            <i
+              class="pi pi-arrow-right text-xs text-surface-500 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+
+        <!-- Sub-system 3: Ingredient Categories & Groups -->
+        <div
+          (click)="navigateTo('/inventory/groups')"
+          class="glass-card rounded-2xl p-6 border border-surface-200/60 dark:border-surface-800/80 hover:border-surface-400 dark:hover:border-surface-600 transition-all duration-200 cursor-pointer group shadow-xs hover:shadow-md flex flex-col justify-between">
+          <div>
+            <div
+              class="w-11 h-11 rounded-2xl bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <i class="pi pi-tags text-xl"></i>
+            </div>
+            <h4 class="text-base font-bold text-surface-900 dark:text-white transition-colors">
+              Categories & Groups
+            </h4>
+            <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5 leading-relaxed">
+              Organize taxonomy, manage groups, and assign unclassified ingredients to appropriate
+              tiers.
+            </p>
+          </div>
+          <div
+            class="mt-6 pt-4 border-t border-surface-200/40 dark:border-surface-800/40 flex items-center justify-between">
+            <span class="text-xs font-semibold text-surface-600 dark:text-surface-300"
+              >Manage Taxonomy</span
+            >
+            <i
+              class="pi pi-arrow-right text-xs text-surface-500 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Storage Location Distribution Section -->
+    @if (locationStats().length > 0) {
+      <div
+        class="glass-card rounded-2xl p-6 border border-surface-200/60 dark:border-surface-800/80">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-compass text-surface-500"></i>
+            <h3 class="text-base font-bold text-surface-900 dark:text-white">
+              Storage Location Breakdown
+            </h3>
+          </div>
+          <span class="text-xs text-surface-500 font-medium"
+            >{{ itemsCount() }} total stock batches</span
+          >
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          @for (loc of locationStats(); track loc.id) {
+            <div
+              class="p-4 rounded-xl bg-surface-100/60 dark:bg-surface-800/50 border border-surface-200/40 dark:border-surface-700/50 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded-lg bg-surface-200/80 dark:bg-surface-700/80 text-surface-700 dark:text-surface-200 flex items-center justify-center">
+                  <i [class]="loc.icon"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-surface-900 dark:text-white">
+                    {{ loc.name }}
+                  </div>
+                  <div class="text-[11px] text-surface-500">{{ loc.count }} item batches</div>
+                </div>
+              </div>
+              <span class="text-xs font-extrabold text-primary-600 dark:text-primary-400">
+                {{ itemsCount() > 0 ? ((loc.count / itemsCount()) * 100 | number: '1.0-0') : 0 }}%
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

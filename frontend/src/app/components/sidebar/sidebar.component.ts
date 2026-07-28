@@ -61,7 +61,7 @@ export class SidebarComponent {
   }
 
   isInventoryItemsActive(): boolean {
-    return this.router.url.startsWith('/inventory/items') || this.router.url === '/inventory';
+    return this.router.url.startsWith('/inventory/items');
   }
 
   isIngredientsActive(): boolean {

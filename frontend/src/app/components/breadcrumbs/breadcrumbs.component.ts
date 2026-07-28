@@ -45,71 +45,75 @@ export class BreadcrumbsComponent implements OnInit {
     const firstSegment = segments[0];
 
     if (firstSegment === 'inventory') {
-      items.push({ label: 'Inventory', url: '/inventory/items', icon: 'pi pi-box' });
-
       const secondSegment = segments[1];
       const thirdSegment = segments[2];
 
-      if (secondSegment === 'items') {
-        if (thirdSegment === 'new') {
+      if (!secondSegment) {
+        items.push({ label: 'Inventory', icon: 'pi pi-box' });
+      } else {
+        items.push({ label: 'Inventory', url: '/inventory', icon: 'pi pi-box' });
+
+        if (secondSegment === 'items') {
+          if (thirdSegment === 'new') {
+            items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
+            items.push({ label: 'Add New Item', icon: 'pi pi-plus-circle' });
+          } else if (segments[3] === 'edit') {
+            items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
+            items.push({ label: 'Edit Item', icon: 'pi pi-pencil' });
+          } else {
+            items.push({ label: 'Ingredient Items', icon: 'pi pi-list' });
+          }
+        } else if (secondSegment === 'ingredients') {
+          if (thirdSegment === 'new') {
+            items.push({
+              label: 'Ingredients',
+              url: '/inventory/ingredients',
+              icon: 'pi pi-sparkles',
+            });
+            items.push({ label: 'Add Ingredient', icon: 'pi pi-plus-circle' });
+          } else if (segments[3] === 'edit') {
+            items.push({
+              label: 'Ingredients',
+              url: '/inventory/ingredients',
+              icon: 'pi pi-sparkles',
+            });
+            items.push({ label: 'Edit Ingredient', icon: 'pi pi-pencil' });
+          } else {
+            items.push({ label: 'Ingredients', icon: 'pi pi-sparkles' });
+          }
+        } else if (secondSegment === 'groups') {
+          if (thirdSegment === 'new') {
+            items.push({
+              label: 'Ingredient Categories & Groups',
+              url: '/inventory/groups',
+              icon: 'pi pi-tags',
+            });
+            items.push({ label: 'Add Ingredient Group', icon: 'pi pi-plus-circle' });
+          } else if (segments[3] === 'edit') {
+            items.push({
+              label: 'Ingredient Categories & Groups',
+              url: '/inventory/groups',
+              icon: 'pi pi-tags',
+            });
+            items.push({ label: 'Edit Ingredient Group', icon: 'pi pi-pencil' });
+          } else {
+            items.push({ label: 'Ingredient Categories & Groups', icon: 'pi pi-tags' });
+          }
+        } else if (secondSegment === 'nutrients') {
+          items.push({
+            label: 'Ingredient Categories & Groups',
+            url: '/inventory/groups',
+            icon: 'pi pi-tags',
+          });
+        } else if (secondSegment === 'new') {
           items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
           items.push({ label: 'Add New Item', icon: 'pi pi-plus-circle' });
-        } else if (segments[3] === 'edit') {
+        } else if (thirdSegment === 'edit') {
           items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
           items.push({ label: 'Edit Item', icon: 'pi pi-pencil' });
         } else {
           items.push({ label: 'Ingredient Items', icon: 'pi pi-list' });
         }
-      } else if (secondSegment === 'ingredients') {
-        if (thirdSegment === 'new') {
-          items.push({
-            label: 'Ingredients',
-            url: '/inventory/ingredients',
-            icon: 'pi pi-sparkles',
-          });
-          items.push({ label: 'Add Ingredient', icon: 'pi pi-plus-circle' });
-        } else if (segments[3] === 'edit') {
-          items.push({
-            label: 'Ingredients',
-            url: '/inventory/ingredients',
-            icon: 'pi pi-sparkles',
-          });
-          items.push({ label: 'Edit Ingredient', icon: 'pi pi-pencil' });
-        } else {
-          items.push({ label: 'Ingredients', icon: 'pi pi-sparkles' });
-        }
-      } else if (secondSegment === 'groups') {
-        if (thirdSegment === 'new') {
-          items.push({
-            label: 'Ingredient Categories & Groups',
-            url: '/inventory/groups',
-            icon: 'pi pi-tags',
-          });
-          items.push({ label: 'Add Ingredient Group', icon: 'pi pi-plus-circle' });
-        } else if (segments[3] === 'edit') {
-          items.push({
-            label: 'Ingredient Categories & Groups',
-            url: '/inventory/groups',
-            icon: 'pi pi-tags',
-          });
-          items.push({ label: 'Edit Ingredient Group', icon: 'pi pi-pencil' });
-        } else {
-          items.push({ label: 'Ingredient Categories & Groups', icon: 'pi pi-tags' });
-        }
-      } else if (secondSegment === 'nutrients') {
-        items.push({
-          label: 'Ingredient Categories & Groups',
-          url: '/inventory/groups',
-          icon: 'pi pi-tags',
-        });
-      } else if (secondSegment === 'new') {
-        items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
-        items.push({ label: 'Add New Item', icon: 'pi pi-plus-circle' });
-      } else if (thirdSegment === 'edit') {
-        items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
-        items.push({ label: 'Edit Item', icon: 'pi pi-pencil' });
-      } else {
-        items.push({ label: 'Ingredient Items', icon: 'pi pi-list' });
       }
     } else if (firstSegment === 'recipes') {
       items.push({ label: 'Recipes', url: '/recipes', icon: 'pi pi-book' });
