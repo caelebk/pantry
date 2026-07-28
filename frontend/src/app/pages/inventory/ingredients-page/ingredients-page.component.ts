@@ -28,28 +28,6 @@ export interface GroupedIngredients {
   standalone: true,
   imports: [CommonModule, FormsModule, InputTextModule, SelectModule],
   templateUrl: './ingredients-page.component.html',
-  styles: [
-    `
-      :host ::ng-deep .p-select {
-        height: 2.25rem !important;
-      }
-      :host ::ng-deep .p-select .p-select-label {
-        padding: 0.375rem 0.625rem !important;
-        font-size: 0.75rem !important;
-        line-height: 1rem !important;
-        font-weight: 600 !important;
-        display: flex !important;
-        align-items: center !important;
-      }
-      :host ::ng-deep .p-select .p-select-dropdown {
-        width: 1.75rem !important;
-      }
-      :host ::ng-deep .p-select .p-select-dropdown .p-icon {
-        width: 0.75rem !important;
-        height: 0.75rem !important;
-      }
-    `,
-  ],
 })
 export class IngredientsPageComponent implements OnInit {
   private readonly router = inject(Router);
