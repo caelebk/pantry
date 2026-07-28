@@ -28,11 +28,12 @@
         <i
           class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 text-sm"></i>
         <input
+          pInputText
           type="text"
           [ngModel]="searchQuery()"
           (ngModelChange)="onSearchChange($event)"
           placeholder="Search ingredients..."
-          class="w-full pl-10 pr-9" />
+          class="w-full !pl-10 !pr-9" />
         @if (searchQuery()) {
           <button
             (click)="onSearchChange('')"
