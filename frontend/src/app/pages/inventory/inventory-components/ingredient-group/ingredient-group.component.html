@@ -170,7 +170,7 @@
                         <div
                           class="text-center py-3 sub-card rounded-xl border border-dashed border-surface-200 dark:border-surface-700">
                           <p class="text-xs font-medium text-surface-500 dark:text-surface-400">
-                            No physical inventory items currently logged for
+                            No ingredient items currently logged for
                             <b>{{ ingredient.name }}</b
                             >.
                           </p>
@@ -178,7 +178,7 @@
                       } @else {
                         <div
                           class="text-[11px] font-extrabold uppercase tracking-wider card-label mb-1.5 px-1">
-                          Physical Stock Items ({{ ingredient.items.length }})
+                          Ingredient Items ({{ ingredient.items.length }})
                         </div>
                         <div class="grid grid-cols-1 gap-2">
                           @for (item of ingredient.items; track item.id) {

@@ -35,7 +35,7 @@
     "shortcuts": {
       "title": "Quick Launchpad",
       "addItem": "Add Pantry Item",
-      "addItemDesc": "Register new stock items",
+      "addItemDesc": "Register new ingredient items",
       "addRecipe": "Create Recipe",
       "addRecipeDesc": "Add custom recipe to collection",
       "assignIngredients": "Assign Ingredients",
@@ -46,7 +46,7 @@
       "manageInventoryDesc": "Search & filter all ingredients"
     },
     "stats": {
-      "totalItems": "Total Stock",
+      "totalItems": "Total Ingredient Items",
       "expiringSoon": "Expiring Soon",
       "expired": "Expired",
       "canMake": "Ready to Cook",

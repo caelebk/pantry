@@ -6,8 +6,8 @@
         Ingredients
       </h2>
       <p class="text-surface-500 dark:text-surface-400 mt-1.5 text-sm">
-        Definitions of ingredients grouped by category, linked to recipes and physical stock items
-        in your pantry.
+        Definitions of ingredients grouped by ingredient group, linked to recipes and ingredient
+        items in your pantry.
       </p>
     </div>
     <div class="flex items-center gap-3">
@@ -198,7 +198,7 @@
                         <th class="py-3 px-3 w-10 text-center"></th>
                         <th class="py-3 px-4 w-[35%]">Ingredient</th>
                         <th class="py-3 px-4 w-[22%]">Default Unit</th>
-                        <th class="py-3 px-4 w-[33%]">Physical Stock Status</th>
+                        <th class="py-3 px-4 w-[33%]">Stock Status</th>
                         <th class="py-3 px-4 w-24 text-right">Actions</th>
                       </tr>
                     </thead>
@@ -286,7 +286,7 @@
                           </td>
                         </tr>
 
-                        <!-- Expanded Row Content (Physical Stock Items Sub-Table) -->
+                        <!-- Expanded Row Content (Ingredient Items Sub-Table) -->
                         @if (isExpanded(ing.id)) {
                           <tr
                             class="bg-surface-100/40 dark:bg-surface-900/40 border-b border-surface-200/60 dark:border-surface-800">
@@ -297,21 +297,20 @@
                                   <h4
                                     class="text-xs font-bold uppercase tracking-wider text-surface-600 dark:text-surface-300 flex items-center gap-2">
                                     <i class="pi pi-box text-primary-500 text-sm"></i>
-                                    <span>Physical Stock Items for "{{ ing.name }}"</span>
+                                    <span>Ingredient Items for "{{ ing.name }}"</span>
                                   </h4>
                                   <button
                                     (click)="onAddStockItemForIngredient(ing)"
                                     class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1.5 cursor-pointer px-2.5 py-1 rounded-lg hover:bg-primary-500/10 transition-all">
                                     <i class="pi pi-plus text-[10px]"></i>
-                                    <span>Add Physical Stock Item</span>
+                                    <span>Add Ingredient Item</span>
                                   </button>
                                 </div>
 
                                 @if (getConnectedItems(ing.id).length === 0) {
                                   <div class="py-6 text-center space-y-2">
                                     <p class="text-xs text-surface-400">
-                                      No physical stock items currently in pantry for this
-                                      ingredient.
+                                      No ingredient items currently in pantry for this ingredient.
                                     </p>
                                     <button
                                       (click)="onAddStockItemForIngredient(ing)"
@@ -376,13 +375,13 @@
                                               <div class="flex items-center justify-end gap-1">
                                                 <button
                                                   (click)="onEditItem(item)"
-                                                  title="Edit Stock Item"
+                                                  title="Edit Pantry Item"
                                                   class="p-1.5 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer">
                                                   <i class="pi pi-pencil text-xs"></i>
                                                 </button>
                                                 <button
                                                   (click)="onDeleteItem(item)"
-                                                  title="Delete Stock Item"
+                                                  title="Delete Pantry Item"
                                                   class="p-1.5 text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer">
                                                   <i class="pi pi-trash text-xs"></i>
                                                 </button>

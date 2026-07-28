@@ -247,7 +247,7 @@ export class InventoryComponent implements OnInit {
         return;
       }
 
-      const filteredIngredients = ingredients.filter((ing: any) =>
+      const filteredIngredients = ingredients.filter((ing: Ingredient) =>
         ing.name.toLowerCase().includes(normalizedQuery),
       );
 

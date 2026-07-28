@@ -458,6 +458,17 @@
         </div>
       </div>
     }
+  } @else {
+    <!-- Loading Spinner State -->
+    <div
+      class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 p-12 flex items-center justify-center">
+      <div class="flex items-center gap-3 text-surface-500">
+        <i class="pi pi-spin pi-spinner text-xl text-primary-500"></i>
+        <span class="text-sm font-medium text-surface-700 dark:text-surface-300">
+          Loading inventory items...
+        </span>
+      </div>
+    </div>
   }
 
   <!-- Add Item Modal Dialog -->
