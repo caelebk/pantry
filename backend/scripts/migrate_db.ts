@@ -1,8 +1,16 @@
 import { join } from '@std/path';
 import { closeDB, getDB, initDB } from '../src/db/client.ts';
+import { createBackup } from './backup_db.ts';
 
 export function runMigrations() {
   console.log('🚀 Starting migrations...');
+
+  // 1. Create a safety backup before running migrations
+  try {
+    createBackup();
+  } catch (backupErr) {
+    console.warn('⚠️ Safety backup before migration encountered a non-fatal warning:', backupErr);
+  }
 
   initDB();
   const db = getDB();

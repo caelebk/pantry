@@ -4,6 +4,7 @@
     "start": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi main.ts",
     "test": "deno test --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi",
     "db:migrate": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi scripts/migrate_db.ts",
+    "db:backup": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi scripts/backup_db.ts",
     "db:reset": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi scripts/reset_db.ts",
     "db:seed": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi scripts/seed_db.ts"
   },
