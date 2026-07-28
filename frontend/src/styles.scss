@@ -263,8 +263,8 @@ textarea[pTextarea],
 :where(.dark, .dark *) .p-multiselect,
 :where(.dark, .dark *) .p-inputnumber-input,
 :where(.dark, .dark *) .p-datepicker-input {
-  background-color: var(--color-surface-800) !important;
-  border: 1px solid var(--color-surface-700) !important;
+  background-color: rgba(28, 25, 23, 0.55) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   color: #ffffff !important;
 }
 
@@ -307,7 +307,7 @@ textarea[pTextarea]:hover,
 :where(.dark, .dark *) .p-multiselect:hover,
 :where(.dark, .dark *) .p-inputnumber-input:hover,
 :where(.dark, .dark *) .p-datepicker-input:hover {
-  border-color: var(--color-surface-600) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 .p-inputtext:focus,
@@ -329,7 +329,7 @@ textarea[pTextarea]:focus,
 :where(.dark, .dark *) .p-inputnumber-input:focus,
 :where(.dark, .dark *) .p-datepicker-input:focus {
   border-color: var(--color-primary-500) !important;
-  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3) !important;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.35) !important;
 }
 
 /* Placeholder Styling */
@@ -362,7 +362,12 @@ textarea::placeholder,
   padding-left: 0.5rem !important;
 }
 
-/* PrimeNG InputNumber Wrapper */
+/* PrimeNG InputNumber Host Element & Inner Wrapper */
+p-inputnumber {
+  display: inline-flex !important;
+  max-width: 100% !important;
+}
+
 .p-inputnumber {
   display: inline-flex !important;
   width: 100% !important;
