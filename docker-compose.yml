@@ -17,6 +17,9 @@ services:
           echo '📦 Initializing fresh database...'
           deno task db:migrate &&
           deno task db:seed
+        else
+          echo '🔄 Running pending database migrations...'
+          deno task db:migrate
         fi &&
         deno task start
       "
