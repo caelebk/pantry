@@ -13,6 +13,12 @@ import { map } from 'rxjs/operators';
 import { LocationService } from './location.service';
 import { UnitService } from './unit.service';
 
+export interface ItemSimilarityCandidate {
+  item: IngredientItem;
+  score: number;
+  tier: 'exact' | 'similar';
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -21,6 +27,45 @@ export class ItemService {
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly apiUrl = '/api/ingredient-items';
+
+  getSimilarIngredientItems(name: string, minScore = 0.45): Observable<ItemSimilarityCandidate[]> {
+    return forkJoin({
+      candidates: this.http
+        .get<
+          ApiResponse<
+            Array<{
+              item: IngredientItemDTO;
+              score: number;
+              tier: 'exact' | 'similar';
+            }>
+          >
+        >(`${this.apiUrl}/similarity`, {
+          params: { name, minScore: minScore.toString() },
+        })
+        .pipe(
+          mapResponseData<
+            Array<{
+              item: IngredientItemDTO;
+              score: number;
+              tier: 'exact' | 'similar';
+            }>
+          >(),
+        ),
+      units: this.unitService.getUnits(),
+      locations: this.locationService.getLocations(),
+    }).pipe(
+      map(({ candidates, units, locations }) => {
+        const unitMap = new Map(units.map((u) => [u.id, u]));
+        const locationMap = new Map(locations.map((l) => [l.id, l]));
+
+        return candidates.map((c) => ({
+          item: mapItemDTOToItem(c.item, unitMap, locationMap),
+          score: c.score,
+          tier: c.tier,
+        }));
+      }),
+    );
+  }
 
   getIngredientItems(): Observable<IngredientItem[]> {
     return forkJoin({

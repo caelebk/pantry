@@ -248,5 +248,35 @@
   "common": {
     "expired": "Expired",
     "showLess": "Show Less"
+  },
+  "restockReview": {
+    "title": "Restock Review",
+    "subtitle": "Review bought items, match existing pantry stock, set storage locations and expiration dates",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "noItems": "No items ready to restock",
+    "noItemsSub": "Check off items in your shopping list as \"Bought\" to restock them into your pantry.",
+    "returnBtn": "Return to Shopping List",
+    "summaryTotal": "Selected Items",
+    "summaryExact": "Exact Matches",
+    "summarySimilar": "Similar Matches",
+    "summaryCreating": "Will Create New Entries",
+    "exactMatchFound": "Exact Pantry Match",
+    "similarMatchFound": "Similar Pantry Stock ({score}% Match)",
+    "existingStockFound": "Existing Pantry Stock Found",
+    "newEntry": "New Pantry Entry",
+    "updateExisting": "Update Existing Stock",
+    "createNew": "Create New Entry",
+    "mergeIntoSimilar": "Merge into \"{name}\"",
+    "keepSeparate": "Keep as Separate Item",
+    "similarNotice": "Found similar pantry item \"{existingName}\". Would you like to merge stock or keep \"{draftName}\" as a separate entry?",
+    "selectMatchedItem": "Match Existing Item:",
+    "currentQty": "Current Stock:",
+    "restockQty": "Restocking:",
+    "mergedTotal": "New Total Quantity:",
+    "confirmBtn": "Confirm Restock",
+    "restockingBtn": "Restocking...",
+    "cancelBtn": "Cancel",
+    "successToast": "Successfully restocked items! {updated} updated, {created} created."
   }
 }

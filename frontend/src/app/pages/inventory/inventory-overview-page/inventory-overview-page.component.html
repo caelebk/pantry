@@ -79,7 +79,8 @@
             Kitchen Inventory 4-Tier Hierarchy
           </h3>
           <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-            Click any pyramid tier below to expand its detailed taxonomy definition and direct actions.
+            Click any pyramid tier below to expand its detailed taxonomy definition and direct
+            actions.
           </p>
         </div>
         <div class="shrink-0 flex items-center gap-2">
@@ -94,7 +95,6 @@
       <!-- Interactive Collapsible Triangle Pyramid Visual Diagram -->
       <div class="my-6 flex flex-col items-center justify-center">
         <div class="w-full max-w-3xl flex flex-col items-center gap-3 relative">
-
           <!-- Pyramid Tier 1 (Apex - Narrowest: Ingredient Category) -->
           <div class="w-full max-w-[360px] flex flex-col items-center">
             <div
@@ -125,11 +125,16 @@
                 </div>
               </div>
               <div class="flex items-center gap-2 shrink-0">
-                <span class="text-[11px] font-extrabold text-surface-600 dark:text-surface-300 px-2 py-0.5 rounded-full bg-surface-200/60 dark:bg-surface-700/60">
+                <span
+                  class="text-[11px] font-extrabold text-surface-600 dark:text-surface-300 px-2 py-0.5 rounded-full bg-surface-200/60 dark:bg-surface-700/60">
                   {{ categoriesCount() }}
                 </span>
                 <i
-                  [class]="expandedTier() === 1 ? 'pi pi-chevron-down text-primary-500' : 'pi pi-chevron-right text-surface-400'"
+                  [class]="
+                    expandedTier() === 1
+                      ? 'pi pi-chevron-down text-primary-500'
+                      : 'pi pi-chevron-right text-surface-400'
+                  "
                   class="text-xs transition-transform"></i>
               </div>
             </div>
@@ -139,11 +144,15 @@
               <div
                 class="w-full mt-2 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/80 border border-primary-500/30 shadow-inner animate-fadeIn space-y-3">
                 <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
-                  Macro classification encapsulating nutritional & culinary categories. Serves as top-level taxonomy.
+                  Macro classification encapsulating nutritional & culinary categories. Serves as
+                  top-level taxonomy.
                 </p>
-                <div class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-surface-200/60 dark:border-surface-700/60">
+                <div
+                  class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-surface-200/60 dark:border-surface-700/60">
                   <span class="text-surface-500 font-medium">Examples:</span>
-                  <span class="font-semibold text-surface-700 dark:text-surface-200">Protein & Dairy, Fiber & Produce, Carbs & Grains</span>
+                  <span class="font-semibold text-surface-700 dark:text-surface-200"
+                    >Protein & Dairy, Fiber & Produce, Carbs & Grains</span
+                  >
                 </div>
                 <div class="pt-2 flex justify-end">
                   <button
@@ -158,7 +167,8 @@
           </div>
 
           <!-- Down Arrow Connector 1 -->
-          <div class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
+          <div
+            class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
             <i class="pi pi-arrow-down text-xs opacity-75"></i>
           </div>
 
@@ -192,11 +202,16 @@
                 </div>
               </div>
               <div class="flex items-center gap-2 shrink-0">
-                <span class="text-[11px] font-extrabold text-surface-600 dark:text-surface-300 px-2 py-0.5 rounded-full bg-surface-200/60 dark:bg-surface-700/60">
+                <span
+                  class="text-[11px] font-extrabold text-surface-600 dark:text-surface-300 px-2 py-0.5 rounded-full bg-surface-200/60 dark:bg-surface-700/60">
                   {{ groupsCount() }}
                 </span>
                 <i
-                  [class]="expandedTier() === 2 ? 'pi pi-chevron-down text-primary-500' : 'pi pi-chevron-right text-surface-400'"
+                  [class]="
+                    expandedTier() === 2
+                      ? 'pi pi-chevron-down text-primary-500'
+                      : 'pi pi-chevron-right text-surface-400'
+                  "
                   class="text-xs transition-transform"></i>
               </div>
             </div>
@@ -206,11 +221,15 @@
               <div
                 class="w-full mt-2 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/80 border border-primary-500/30 shadow-inner animate-fadeIn space-y-3">
                 <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
-                  Sub-classification organizing related culinary ingredients under a parent Category.
+                  Sub-classification organizing related culinary ingredients under a parent
+                  Category.
                 </p>
-                <div class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-surface-200/60 dark:border-surface-700/60">
+                <div
+                  class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-surface-200/60 dark:border-surface-700/60">
                   <span class="text-surface-500 font-medium">Examples:</span>
-                  <span class="font-semibold text-surface-700 dark:text-surface-200">Meat, Seafood, Beans, Vegetables, Fruits, Grains</span>
+                  <span class="font-semibold text-surface-700 dark:text-surface-200"
+                    >Meat, Seafood, Beans, Vegetables, Fruits, Grains</span
+                  >
                 </div>
                 <div class="pt-2 flex justify-end">
                   <button
@@ -225,7 +244,8 @@
           </div>
 
           <!-- Down Arrow Connector 2 -->
-          <div class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
+          <div
+            class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
             <i class="pi pi-arrow-down text-xs opacity-75"></i>
           </div>
 
@@ -259,11 +279,16 @@
                 </div>
               </div>
               <div class="flex items-center gap-2 shrink-0">
-                <span class="text-[11px] font-extrabold text-surface-600 dark:text-surface-300 px-2 py-0.5 rounded-full bg-surface-200/60 dark:bg-surface-700/60">
+                <span
+                  class="text-[11px] font-extrabold text-surface-600 dark:text-surface-300 px-2 py-0.5 rounded-full bg-surface-200/60 dark:bg-surface-700/60">
                   {{ ingredientsCount() }}
                 </span>
                 <i
-                  [class]="expandedTier() === 3 ? 'pi pi-chevron-down text-primary-500' : 'pi pi-chevron-right text-surface-400'"
+                  [class]="
+                    expandedTier() === 3
+                      ? 'pi pi-chevron-down text-primary-500'
+                      : 'pi pi-chevron-right text-surface-400'
+                  "
                   class="text-xs transition-transform"></i>
               </div>
             </div>
@@ -273,11 +298,15 @@
               <div
                 class="w-full mt-2 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/80 border border-primary-500/30 shadow-inner animate-fadeIn space-y-3">
                 <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
-                  Master catalog culinary definition. Shared across recipe ingredients and physical stock items.
+                  Master catalog culinary definition. Shared across recipe ingredients and physical
+                  stock items.
                 </p>
-                <div class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-surface-200/60 dark:border-surface-700/60">
+                <div
+                  class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-surface-200/60 dark:border-surface-700/60">
                   <span class="text-surface-500 font-medium">Examples:</span>
-                  <span class="font-semibold text-surface-700 dark:text-surface-200">Chicken Breast, Gala Apple, Jasmine Rice, Olive Oil</span>
+                  <span class="font-semibold text-surface-700 dark:text-surface-200"
+                    >Chicken Breast, Gala Apple, Jasmine Rice, Olive Oil</span
+                  >
                 </div>
                 <div class="pt-2 flex justify-end">
                   <button
@@ -292,7 +321,8 @@
           </div>
 
           <!-- Down Arrow Connector 3 -->
-          <div class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
+          <div
+            class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
             <i class="pi pi-arrow-down text-xs opacity-75"></i>
           </div>
 
@@ -326,11 +356,16 @@
                 </div>
               </div>
               <div class="flex items-center gap-2 shrink-0">
-                <span class="text-[11px] font-extrabold text-primary-700 dark:text-primary-300 px-2 py-0.5 rounded-full bg-primary-500/20">
+                <span
+                  class="text-[11px] font-extrabold text-primary-700 dark:text-primary-300 px-2 py-0.5 rounded-full bg-primary-500/20">
                   {{ itemsCount() }} batches
                 </span>
                 <i
-                  [class]="expandedTier() === 4 ? 'pi pi-chevron-down text-primary-600 dark:text-primary-400' : 'pi pi-chevron-right text-primary-500'"
+                  [class]="
+                    expandedTier() === 4
+                      ? 'pi pi-chevron-down text-primary-600 dark:text-primary-400'
+                      : 'pi pi-chevron-right text-primary-500'
+                  "
                   class="text-xs transition-transform"></i>
               </div>
             </div>
@@ -340,17 +375,25 @@
               <div
                 class="w-full mt-2 p-4 rounded-2xl bg-primary-500/5 dark:bg-primary-500/10 border border-primary-500/30 shadow-inner animate-fadeIn space-y-3">
                 <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
-                  Physical stock instance sitting in your fridge/pantry with specific quantity, expiration date, and storage location.
+                  Physical stock instance sitting in your fridge/pantry with specific quantity,
+                  expiration date, and storage location.
                 </p>
-                <div class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-primary-500/20">
+                <div
+                  class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-primary-500/20">
                   <span class="text-surface-500 font-medium">Status Overview:</span>
                   <div class="flex items-center gap-2">
-                    <span class="font-semibold text-emerald-600 dark:text-emerald-400">{{ freshCount() }} fresh</span>
+                    <span class="font-semibold text-emerald-600 dark:text-emerald-400"
+                      >{{ freshCount() }} fresh</span
+                    >
                     @if (expiringCount() > 0) {
-                      <span class="font-semibold text-amber-600 dark:text-amber-400">• {{ expiringCount() }} expiring</span>
+                      <span class="font-semibold text-amber-600 dark:text-amber-400"
+                        >• {{ expiringCount() }} expiring</span
+                      >
                     }
                     @if (expiredCount() > 0) {
-                      <span class="font-semibold text-red-600 dark:text-red-400">• {{ expiredCount() }} expired</span>
+                      <span class="font-semibold text-red-600 dark:text-red-400"
+                        >• {{ expiredCount() }} expired</span
+                      >
                     }
                   </div>
                 </div>
@@ -365,7 +408,6 @@
               </div>
             }
           </div>
-
         </div>
       </div>
     </div>
@@ -392,7 +434,8 @@
               Ingredient Items
             </h4>
             <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5 leading-relaxed">
-              Track physical kitchen batches, stock levels, storage locations (Fridge, Pantry, Freezer), and expiration dates.
+              Track physical kitchen batches, stock levels, storage locations (Fridge, Pantry,
+              Freezer), and expiration dates.
             </p>
           </div>
           <div
@@ -418,7 +461,8 @@
               Master Ingredients
             </h4>
             <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5 leading-relaxed">
-              Define catalog ingredient definitions, default measurement units, and nutritional baselines.
+              Define catalog ingredient definitions, default measurement units, and nutritional
+              baselines.
             </p>
           </div>
           <div
@@ -444,7 +488,8 @@
               Categories & Groups
             </h4>
             <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5 leading-relaxed">
-              Organize taxonomy, manage groups, and assign unclassified ingredients to appropriate tiers.
+              Organize taxonomy, manage groups, and assign unclassified ingredients to appropriate
+              tiers.
             </p>
           </div>
           <div

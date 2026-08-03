@@ -1,11 +1,20 @@
 <div class="max-w-4xl mx-auto space-y-6 pb-16">
   <!-- Back Navigation & Header -->
   <div class="space-y-2">
-    <button (click)="goBack()"
+    <button
+      (click)="goBack()"
       class="inline-flex items-center gap-1.5 text-xs font-semibold text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
         class="w-4 h-4">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h16.5" />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h16.5" />
       </svg>
       Back to Shopping List
     </button>
@@ -16,17 +25,20 @@
           Restock Review
         </h2>
         <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
-          Review bought items, set storage locations and expiration dates before adding to inventory
+          Review bought items, match existing pantry stock, set storage locations and expiration
+          dates
         </p>
       </div>
 
       <div class="flex items-center gap-2">
-        <button (click)="toggleAll(true)"
+        <button
+          (click)="toggleAll(true)"
           class="text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors cursor-pointer">
           Select All
         </button>
         <span class="text-surface-300 dark:text-surface-700">•</span>
-        <button (click)="toggleAll(false)"
+        <button
+          (click)="toggleAll(false)"
           class="text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors cursor-pointer">
           Deselect All
         </button>
@@ -34,130 +46,363 @@
     </div>
   </div>
 
+  <!-- Summary Banner -->
+  @if (draftItems().length > 0) {
+    <div
+      class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-xs">
+      <div
+        class="flex items-center gap-2 text-xs font-semibold text-surface-700 dark:text-surface-300">
+        <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+        <span>Restock Summary:</span>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 text-xs font-bold">
+        <span
+          class="px-3 py-1 rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-700">
+          {{ selectedCount }} Selected
+        </span>
+
+        <span
+          class="px-3 py-1 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          {{ updatingCount }} Updating Stock
+        </span>
+
+        <span
+          class="px-3 py-1 rounded-xl bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+          {{ creatingCount }} New Entries
+        </span>
+      </div>
+    </div>
+  }
+
   <!-- Items Review List -->
   <div class="space-y-4">
     @if (draftItems().length === 0) {
-    <div
-      class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-12 text-center space-y-3">
-      <p class="font-bold text-surface-900 dark:text-white text-sm">No items ready to restock</p>
-      <p class="text-xs text-surface-500">
-        Check off items in your shopping list as "Bought" to restock them into your pantry.
-      </p>
-      <button (click)="goBack()"
-        class="px-4 py-2 bg-primary-600 text-white rounded-xl text-xs font-semibold hover:bg-primary-700 transition-all cursor-pointer">
-        Return to Shopping List
-      </button>
-    </div>
-    } @else {
-    @for (item of draftItems(); track item.shoppingId) {
-    <div [class.border-primary-500/40]="item.included" [class.dark:border-primary-500/40]="item.included"
-      [class.opacity-50]="!item.included"
-      class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-5 shadow-xs transition-all space-y-4">
-      <!-- Item Title & Group -->
-      <div class="flex items-start gap-3">
-        <input type="checkbox" [(ngModel)]="item.included"
-          class="w-5 h-5 rounded text-primary-600 focus:ring-primary-500 cursor-pointer accent-primary-600 shrink-0 mt-1" />
-
-        <div class="flex flex-col gap-1 min-w-0 flex-1">
-          <input type="text" [(ngModel)]="item.name" placeholder="Ingredient Name..."
-            class="font-extrabold text-lg text-surface-900 dark:text-white bg-transparent border-b border-transparent hover:border-surface-300 focus:border-primary-600 focus:outline-none py-0.5 w-full" />
-          <div class="flex items-center gap-2 mt-1">
-            <span
-              class="px-2.5 py-0.5 rounded-md bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 text-[11px] font-semibold text-surface-600 dark:text-surface-300 shrink-0 shadow-xs">
-              Group: {{ item.category }}
-            </span>
-          </div>
-        </div>
+      <div
+        class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-12 text-center space-y-3">
+        <p class="font-bold text-surface-900 dark:text-white text-sm">No items ready to restock</p>
+        <p class="text-xs text-surface-500">
+          Check off items in your shopping list as "Bought" to restock them into your pantry.
+        </p>
+        <button
+          (click)="goBack()"
+          class="px-4 py-2 bg-primary-600 text-white rounded-xl text-xs font-semibold hover:bg-primary-700 transition-all cursor-pointer">
+          Return to Shopping List
+        </button>
       </div>
+    } @else {
+      @for (item of draftItems(); track item.shoppingId) {
+        <div
+          [class.border-emerald-500\/50]="
+            item.included && item.actionMode === 'update' && item.matchTier === 'exact'
+          "
+          [class.dark:border-emerald-500\/40]="
+            item.included && item.actionMode === 'update' && item.matchTier === 'exact'
+          "
+          [class.border-amber-500\/50]="
+            item.included && item.actionMode === 'update' && item.matchTier === 'similar'
+          "
+          [class.dark:border-amber-500\/40]="
+            item.included && item.actionMode === 'update' && item.matchTier === 'similar'
+          "
+          [class.border-indigo-500\/40]="
+            item.included && (item.actionMode === 'create' || item.matchTier === 'none')
+          "
+          [class.dark:border-indigo-500\/40]="
+            item.included && (item.actionMode === 'create' || item.matchTier === 'none')
+          "
+          [class.opacity-50]="!item.included"
+          class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-5 shadow-xs transition-all space-y-4">
+          <!-- Header: Title, Group & Match Status Badge -->
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+            <div class="flex items-start gap-3 flex-1 min-w-0">
+              <input
+                type="checkbox"
+                [(ngModel)]="item.included"
+                class="w-5 h-5 rounded text-primary-600 focus:ring-primary-500 cursor-pointer accent-primary-600 shrink-0 mt-1" />
 
-      <!-- Form Fields Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-surface-100 dark:border-surface-800/60">
-        <!-- Quantity & Unit -->
-        <div class="grid grid-cols-2 gap-4 sm:col-span-2">
-          <div class="space-y-1.5">
-            <label
-              [for]="'qty-' + item.shoppingId"
-              class="block text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Quantity</label>
-            <p-inputnumber
-              [inputId]="'qty-' + item.shoppingId"
-              [(ngModel)]="item.quantity" class="w-full"
-              inputStyleClass="w-full !rounded-xl !bg-white dark:!bg-surface-900/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:text-white !shadow-xs font-semibold"
-              [min]="0" [maxFractionDigits]="2" [showButtons]="true"></p-inputnumber>
-          </div>
-          <div class="space-y-1.5">
-            <label
-              [for]="'unit-' + item.shoppingId"
-              class="block text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Unit</label>
-            <p-select
-              [inputId]="'unit-' + item.shoppingId"
-              [options]="unitsOptions()" [(ngModel)]="item.unit"
-              styleClass="w-full !rounded-xl !bg-white dark:!bg-surface-900/60 !border-surface-200 dark:!border-surface-700 !text-xs !font-semibold text-surface-700 dark:text-surface-300 !shadow-xs"
-              appendTo="body" />
-          </div>
-        </div>
+              <div class="flex flex-col gap-1 min-w-0 flex-1">
+                <input
+                  type="text"
+                  [(ngModel)]="item.name"
+                  (ngModelChange)="onNameChange(item)"
+                  placeholder="Ingredient Name..."
+                  class="font-extrabold text-lg text-surface-900 dark:text-white bg-transparent border-b border-transparent hover:border-surface-300 focus:border-primary-600 focus:outline-none py-0.5 w-full transition-colors" />
 
-        <!-- Storage Location -->
-        <div class="space-y-1.5">
-          <label
-            [for]="'loc-' + item.shoppingId"
-            class="text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Storage
-            Location</label>
-          <p-select
-            [inputId]="'loc-' + item.shoppingId"
-            [options]="locationsOptions()" [(ngModel)]="item.location"
-            styleClass="w-full !rounded-xl !bg-white dark:!bg-surface-900/60 !border-surface-200 dark:!border-surface-700 !text-xs !font-semibold !shadow-xs"
-            appendTo="body" />
-        </div>
+                <div class="flex flex-wrap items-center gap-2 mt-0.5">
+                  <span
+                    class="px-2.5 py-0.5 rounded-md bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 text-[11px] font-semibold text-surface-600 dark:text-surface-300 shrink-0 shadow-xs">
+                    Group: {{ item.category }}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-        <!-- Expiration Date & Presets -->
-        <div class="space-y-1.5">
-          <div class="flex items-center justify-between">
-            <label
-              [for]="'exp-' + item.shoppingId"
-              class="text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Expiration
-              Date</label>
-            <div class="flex items-center gap-1">
-              <button type="button" (click)="setExpirationPreset(item, 7)"
-                class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer shadow-xs">
-                +7d
-              </button>
-              <button type="button" (click)="setExpirationPreset(item, 14)"
-                class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer shadow-xs">
-                +14d
-              </button>
-              <button type="button" (click)="setExpirationPreset(item, 30)"
-                class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer shadow-xs">
-                +30d
-              </button>
+            <!-- Similarity Status Badge -->
+            <div class="shrink-0 flex items-center gap-2">
+              @if (item.matchTier === 'exact' && item.matchedItemId) {
+                <span
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shadow-xs">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Exact Pantry Match
+                </span>
+              } @else if (item.matchCandidates.length > 0 && item.bestMatch) {
+                <span
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 shadow-xs">
+                  <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                  Similar Stock: {{ item.bestMatch.item.name }}
+                </span>
+              } @else {
+                <span
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 shadow-xs">
+                  <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                  New Pantry Entry
+                </span>
+              }
             </div>
           </div>
 
-          <p-datePicker
-            [inputId]="'exp-' + item.shoppingId"
-            [(ngModel)]="item.expirationDate" dateFormat="yy-mm-dd" [showIcon]="true" iconDisplay="input"
-            styleClass="w-full"
-            inputStyleClass="w-full !rounded-xl !bg-white dark:!bg-surface-900/60 !border-surface-200 dark:!border-surface-700 !text-xs !font-semibold text-surface-900 dark:text-white !shadow-xs"
-            appendTo="body" />
+          <!-- Action Mode Selector Segmented Controls -->
+          <div
+            class="flex items-center gap-2 p-1 bg-surface-100/80 dark:bg-surface-800/80 rounded-xl border border-surface-200/60 dark:border-surface-700/60">
+            <button
+              type="button"
+              (click)="setActionMode(item, 'update')"
+              [disabled]="item.matchCandidates.length === 0"
+              [class.bg-white]="item.actionMode === 'update' && item.matchCandidates.length > 0"
+              [class.dark:bg-surface-900]="
+                item.actionMode === 'update' && item.matchCandidates.length > 0
+              "
+              [class.text-emerald-700]="item.actionMode === 'update' && item.matchTier === 'exact'"
+              [class.dark:text-emerald-300]="
+                item.actionMode === 'update' && item.matchTier === 'exact'
+              "
+              [class.text-amber-700]="item.actionMode === 'update' && item.matchTier === 'similar'"
+              [class.dark:text-amber-300]="
+                item.actionMode === 'update' && item.matchTier === 'similar'
+              "
+              [class.shadow-xs]="item.actionMode === 'update' && item.matchCandidates.length > 0"
+              [class.opacity-40]="item.matchCandidates.length === 0"
+              class="flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:cursor-not-allowed text-surface-600 dark:text-surface-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="w-3.5 h-3.5">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
+              Update Existing Stock
+            </button>
+
+            <button
+              type="button"
+              (click)="setActionMode(item, 'create')"
+              [class.bg-white]="item.actionMode === 'create'"
+              [class.dark:bg-surface-900]="item.actionMode === 'create'"
+              [class.text-indigo-700]="item.actionMode === 'create'"
+              [class.dark:text-indigo-300]="item.actionMode === 'create'"
+              [class.shadow-xs]="item.actionMode === 'create'"
+              class="flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-surface-600 dark:text-surface-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="w-3.5 h-3.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Create New Entry
+            </button>
+          </div>
+
+          <!-- Update Mode Quantity Merging Preview Card -->
+          @if (item.actionMode === 'update' && item.matchedItemId) {
+            <div
+              class="bg-emerald-500/10 dark:bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3.5 space-y-2">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <div
+                  class="flex items-center gap-2 text-emerald-800 dark:text-emerald-200 font-bold">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="w-4 h-4">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Matching Pantry Item:
+                </div>
+
+                <!-- Multiple matched items dropdown -->
+                @if (item.matchCandidates.length > 1) {
+                  <div class="flex items-center gap-1">
+                    <label
+                      [for]="'select-match-' + item.shoppingId"
+                      class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300"
+                      >Select Match:</label
+                    >
+                    <select
+                      [id]="'select-match-' + item.shoppingId"
+                      [(ngModel)]="item.matchedItemId"
+                      class="text-xs font-bold bg-white dark:bg-surface-900 border border-emerald-500/40 text-emerald-900 dark:text-emerald-100 rounded-lg px-2 py-1 focus:outline-none">
+                      @for (c of item.matchCandidates; track c.item.id) {
+                        <option [value]="c.item.id">
+                          {{ c.item.name }} ({{ c.item.quantity }} {{ c.item.unit.name }} in
+                          {{ c.item.location.name }}) - {{ Math.round(c.score * 100) }}% match
+                        </option>
+                      }
+                    </select>
+                  </div>
+                }
+              </div>
+
+              <!-- Merged quantity display pill -->
+              @let matched = getMatchedItem(item);
+              @if (matched) {
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
+                  <div class="text-emerald-700 dark:text-emerald-300">
+                    Current:
+                    <span class="font-bold">{{ matched.quantity }} {{ matched.unit.name }}</span>
+                    (in {{ matched.location.name }}) + Restocking:
+                    <span class="font-bold">{{ item.quantity }} {{ item.unit }}</span>
+                  </div>
+
+                  <div
+                    class="px-3 py-1 bg-emerald-600 text-white font-extrabold rounded-lg shadow-xs text-xs">
+                    New Total: {{ getMergedQuantity(item) }} {{ item.unit }}
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Form Fields Grid -->
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-surface-100 dark:border-surface-800/60">
+            <!-- Quantity & Unit -->
+            <div class="grid grid-cols-2 gap-4 sm:col-span-2">
+              <div class="space-y-1.5">
+                <label
+                  [for]="'qty-' + item.shoppingId"
+                  class="block text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+                  Restock Quantity
+                </label>
+                <p-inputnumber
+                  [inputId]="'qty-' + item.shoppingId"
+                  [(ngModel)]="item.quantity"
+                  class="w-full"
+                  inputStyleClass="w-full !rounded-xl !bg-white dark:!bg-surface-900/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:text-white !shadow-xs font-semibold"
+                  [min]="0"
+                  [maxFractionDigits]="2"
+                  [showButtons]="true"></p-inputnumber>
+              </div>
+              <div class="space-y-1.5">
+                <label
+                  [for]="'unit-' + item.shoppingId"
+                  class="block text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider"
+                  >Unit</label
+                >
+                <p-select
+                  [inputId]="'unit-' + item.shoppingId"
+                  [options]="unitsOptions()"
+                  [(ngModel)]="item.unit"
+                  styleClass="w-full !rounded-xl !bg-white dark:!bg-surface-900/60 !border-surface-200 dark:!border-surface-700 !text-xs !font-semibold text-surface-700 dark:text-surface-300 !shadow-xs"
+                  appendTo="body" />
+              </div>
+            </div>
+
+            <!-- Storage Location -->
+            <div class="space-y-1.5">
+              <label
+                [for]="'loc-' + item.shoppingId"
+                class="text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider"
+                >Storage Location</label
+              >
+              <p-select
+                [inputId]="'loc-' + item.shoppingId"
+                [options]="locationsOptions()"
+                [(ngModel)]="item.location"
+                styleClass="w-full !rounded-xl !bg-white dark:!bg-surface-900/60 !border-surface-200 dark:!border-surface-700 !text-xs !font-semibold !shadow-xs"
+                appendTo="body" />
+            </div>
+
+            <!-- Expiration Date & Presets -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <label
+                  [for]="'exp-' + item.shoppingId"
+                  class="text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider"
+                  >Expiration Date</label
+                >
+                <div class="flex items-center gap-1">
+                  <button
+                    type="button"
+                    (click)="setExpirationPreset(item, 7)"
+                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer shadow-xs">
+                    +7d
+                  </button>
+                  <button
+                    type="button"
+                    (click)="setExpirationPreset(item, 14)"
+                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer shadow-xs">
+                    +14d
+                  </button>
+                  <button
+                    type="button"
+                    (click)="setExpirationPreset(item, 30)"
+                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer shadow-xs">
+                    +30d
+                  </button>
+                </div>
+              </div>
+
+              <p-datePicker
+                [inputId]="'exp-' + item.shoppingId"
+                [(ngModel)]="item.expirationDate"
+                dateFormat="yy-mm-dd"
+                [showIcon]="true"
+                iconDisplay="input"
+                styleClass="w-full"
+                inputStyleClass="w-full !rounded-xl !bg-white dark:!bg-surface-900/60 !border-surface-200 dark:!border-surface-700 !text-xs !font-semibold text-surface-900 dark:text-white !shadow-xs"
+                appendTo="body" />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    }
+      }
     }
   </div>
 
   <!-- Bottom Action Bar -->
-  <div class="flex items-center justify-between gap-4 pt-4 border-t border-surface-200/80 dark:border-surface-800/80">
-    <button type="button" (click)="goBack()"
+  <div
+    class="flex items-center justify-between gap-4 pt-4 border-t border-surface-200/80 dark:border-surface-800/80">
+    <button
+      type="button"
+      (click)="goBack()"
       class="px-5 py-2.5 border border-surface-200 dark:border-surface-800 text-surface-700 dark:text-surface-300 text-xs font-semibold rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors cursor-pointer">
       Cancel
     </button>
 
-    <button type="button" (click)="confirmRestock()" [disabled]="selectedCount === 0 || isSubmitting()"
+    <button
+      type="button"
+      (click)="confirmRestock()"
+      [disabled]="selectedCount === 0 || isSubmitting()"
       class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white disabled:opacity-50 text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-xs">
       {{
-      isSubmitting()
-      ? 'Restocking...'
-      : 'Confirm Restock (' + selectedCount + ' Item' + (selectedCount === 1 ? '' : 's') + ')'
+        isSubmitting()
+          ? 'Restocking...'
+          : 'Confirm Restock (' + updatingCount + ' Updated, ' + creatingCount + ' New)'
       }}
     </button>
   </div>
