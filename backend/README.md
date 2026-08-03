@@ -1,6 +1,7 @@
 # Pantry Backend API
 
-A Deno + Hono RESTful backend API for the Pantry inventory management application, backed by an embedded SQLite database.
+A Deno + Hono RESTful backend API for the Pantry inventory management application, backed by an
+embedded SQLite database.
 
 ---
 
@@ -102,9 +103,11 @@ deno lint
 ## 📡 API Endpoints Summary
 
 ### System
+
 - `GET /api/health` - API health check
 
 ### Inventory & Items
+
 - `GET /api/ingredient-items` - List physical inventory items (with optional filters)
 - `GET /api/ingredient-items/expiring-soon` - Get items expiring within specified days
 - `GET /api/ingredient-items/:id` - Get item details by ID
@@ -113,6 +116,7 @@ deno lint
 - `DELETE /api/ingredient-items/:id` - Remove item
 
 ### Taxonomy & Ingredients
+
 - `GET /api/ingredients` - List all master ingredients
 - `GET /api/ingredients/:id` - Get ingredient by ID
 - `POST /api/ingredients` - Create master ingredient
@@ -122,10 +126,12 @@ deno lint
 - `GET /api/nutrient-groups` - List top-level nutrient groups
 
 ### Locations & Units
+
 - `GET /api/locations` - Storage locations (Fridge, Freezer, Pantry, etc.)
 - `GET /api/units` - Measurement units & standard unit conversions
 
 ### Recipes, Meal Planner & Shopping List
+
 - `GET /api/recipes` - List recipes with required ingredients
 - `POST /api/recipes` - Create new recipe
 - `GET /api/meal-plans` - Get scheduled meals

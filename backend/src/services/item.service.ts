@@ -28,6 +28,10 @@ export class ItemService {
   async findExpiringSoon(days?: number) {
     return await ingredientItemService.findExpiringSoon(days);
   }
+
+  async findSimilarItems(queryName: string, minScore?: number) {
+    return await ingredientItemService.findSimilarItems(queryName, minScore);
+  }
 }
 
 export const itemService = new ItemService();

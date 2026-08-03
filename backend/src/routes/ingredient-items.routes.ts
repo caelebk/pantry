@@ -56,6 +56,25 @@ ingredientItems.get('/expiring-soon', async (c: Context) => {
 });
 
 /**
+ * GET /api/ingredient-items/similarity
+ */
+ingredientItems.get('/similarity', async (c: Context) => {
+  try {
+    const name = c.req.query('name') || '';
+    const thresholdStr = c.req.query('threshold') || c.req.query('minScore');
+    const threshold = thresholdStr ? parseFloat(thresholdStr) : 0.45;
+
+    const candidates = await ingredientItemService.findSimilarItems(name, threshold);
+    return c.json(successResponse(candidates), HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    return c.json(
+      errorResponse(ItemMessages.FETCH_ALL_ERROR),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
+
+/**
  * GET /api/ingredient-items/:id
  */
 ingredientItems.get('/:id', async (c: Context) => {

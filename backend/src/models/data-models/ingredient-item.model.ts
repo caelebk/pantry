@@ -37,6 +37,13 @@ export interface CreateIngredientItemDTO {
 // Update DTO - all create fields are optional
 export interface UpdateIngredientItemDTO extends Partial<CreateIngredientItemDTO> {}
 
+// Similarity Candidate DTO
+export interface ItemSimilarityCandidateDTO {
+  item: IngredientItemDTO;
+  score: number;
+  tier: 'exact' | 'similar';
+}
+
 // Legacy Aliases
 export type ItemDTO = IngredientItemDTO;
 export type CreateItemDTO = CreateIngredientItemDTO;

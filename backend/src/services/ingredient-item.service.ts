@@ -7,10 +7,12 @@ import { ItemMessages } from '../messages/item.messages.ts';
 import {
   CreateIngredientItemDTO,
   IngredientItemDTO,
+  ItemSimilarityCandidateDTO,
   UpdateIngredientItemDTO,
 } from '../models/data-models/ingredient-item.model.ts';
 import { IngredientItemRow } from '../models/schema-models/ingredient-item.model.ts';
 import { toDate } from '../utils/dates.ts';
+import { calculateStringSimilarity } from '../utils/similarity.ts';
 import { isValidUUID } from '../utils/validators.ts';
 
 export class IngredientItemService {
@@ -170,6 +172,30 @@ export class IngredientItemService {
       console.error('Error finding expiring soon ingredient items:', error);
       throw new Error(ItemMessages.DB_FIND_EXPIRING_ERROR);
     }
+  }
+
+  /**
+   * Finds ingredient items matching a query name by string similarity.
+   */
+  async findSimilarItems(
+    queryName: string,
+    minScore: number = 0.45,
+  ): Promise<ItemSimilarityCandidateDTO[]> {
+    if (!queryName || !queryName.trim()) {
+      return [];
+    }
+    const allItems = await this.getAllIngredientItems();
+    const candidates: ItemSimilarityCandidateDTO[] = [];
+
+    for (const item of allItems) {
+      const score = calculateStringSimilarity(queryName, item.label);
+      if (score >= minScore) {
+        const tier: 'exact' | 'similar' = score >= 0.99 ? 'exact' : 'similar';
+        candidates.push({ item, score, tier });
+      }
+    }
+
+    return candidates.sort((a, b) => b.score - a.score);
   }
 
   private mapItemRowToItem(row: IngredientItemRow): IngredientItemDTO {

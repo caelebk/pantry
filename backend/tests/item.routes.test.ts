@@ -248,3 +248,47 @@ Deno.test('Items API - DELETE /api/items/:id - not found', async () => {
     ingredientItemService.getIngredientItemById = originalGetItemById;
   }
 });
+
+Deno.test('Items API - GET /api/items/similarity - success with candidates', async () => {
+  const originalFindSimilarItems = ingredientItemService.findSimilarItems;
+  ingredientItemService.findSimilarItems = (name, _threshold) =>
+    Promise.resolve([
+      {
+        item: mockItem,
+        score: name.toLowerCase().includes('test') ? 1.0 : 0.8,
+        tier: 'exact',
+      },
+    ]);
+
+  try {
+    const app = new Hono();
+    app.route('/api/items', items);
+
+    const res = await app.request(
+      createRequest('/api/items/similarity?name=Test&threshold=0.5', 'GET'),
+    );
+    assertEquals(res.status, HttpStatusCode.OK);
+    const body = await res.json();
+    assertEquals(body.data.length, 1);
+    assertEquals(body.data[0].item.id, mockItem.id);
+  } finally {
+    ingredientItemService.findSimilarItems = originalFindSimilarItems;
+  }
+});
+
+Deno.test('Items API - GET /api/items/similarity - empty query returns empty candidates', async () => {
+  const originalFindSimilarItems = ingredientItemService.findSimilarItems;
+  ingredientItemService.findSimilarItems = () => Promise.resolve([]);
+
+  try {
+    const app = new Hono();
+    app.route('/api/items', items);
+
+    const res = await app.request(createRequest('/api/items/similarity?name=', 'GET'));
+    assertEquals(res.status, HttpStatusCode.OK);
+    const body = await res.json();
+    assertEquals(body.data.length, 0);
+  } finally {
+    ingredientItemService.findSimilarItems = originalFindSimilarItems;
+  }
+});

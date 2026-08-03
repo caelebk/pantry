@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertRejects } from '@std/assert';
+import { assert, assertEquals } from '@std/assert';
 import { Database } from '@db/sqlite';
 import { setDB } from '../src/db/client.ts';
 import { CreateItemDTO, UpdateItemDTO } from '../src/models/data-models/item.model.ts';
@@ -144,6 +144,27 @@ Deno.test('ItemService - updateItem - success', async () => {
   db.close();
 });
 
+Deno.test('ItemService - updateItem restock quantity addition - success', async () => {
+  const db = createTestDB();
+  setDB(db);
+  const mockRow = seedMockItem(db);
+
+  const initialQty = mockRow.quantity; // 5
+  const restockQty = 12;
+  const newMergedQty = initialQty + restockQty; // 17
+
+  const updateData: UpdateItemDTO = {
+    quantity: newMergedQty,
+    notes: 'Restocked from shopping list (Protein & Dairy)',
+  };
+
+  const updated = await itemService.updateItem(mockRow.id, updateData);
+  assert(updated !== null);
+  assertEquals(updated?.quantity, 17);
+  assert(updated?.notes?.includes('Restocked'));
+  db.close();
+});
+
 Deno.test('ItemService - updateItem - not found', async () => {
   const db = createTestDB();
   setDB(db);
@@ -203,5 +224,29 @@ Deno.test('ItemService - findExpiringSoon - success', async () => {
   const items = await itemService.findExpiringSoon(7);
   assertEquals(items.length, 1);
   assertEquals(items[0].label, 'Expiring Soon');
+  db.close();
+});
+
+Deno.test('ItemService - findSimilarItems - success', async () => {
+  const db = createTestDB();
+  setDB(db);
+
+  db.prepare(
+    'INSERT INTO ingredient_items (id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+  ).run(
+    '123e4567-e89b-12d3-a456-426614174003',
+    'Olive Oil (Extra Virgin)',
+    1,
+    1,
+    1,
+    mockDate.toISOString(),
+    mockDate.toISOString(),
+  );
+
+  const candidates = await itemService.findSimilarItems('Olive Oil');
+  assertEquals(candidates.length, 1);
+  assertEquals(candidates[0].item.label, 'Olive Oil (Extra Virgin)');
+  assert(candidates[0].score >= 0.75);
+  assertEquals(candidates[0].tier, 'similar');
   db.close();
 });

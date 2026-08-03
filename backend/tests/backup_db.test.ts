@@ -29,7 +29,9 @@ Deno.test('Backup DB - creates valid point-in-time snapshot of SQLite database',
 
     // 4. Verify contents of backup database file
     const backupDb = new Database(backupPath);
-    const rows = backupDb.prepare('SELECT name FROM test_table ORDER BY id').all() as { name: string }[];
+    const rows = backupDb.prepare('SELECT name FROM test_table ORDER BY id').all() as {
+      name: string;
+    }[];
     backupDb.close();
 
     assertEquals(rows.length, 2);
@@ -88,7 +90,11 @@ Deno.test('Backup DB - prunes old backup files when total exceeds max limit', ()
       const mockFilePath = join(backupsDir, mockFileName);
       Deno.writeTextFileSync(mockFilePath, 'mock sqlite file content');
       // Set modification time (older to newer)
-      Deno.utimeSync(mockFilePath, new Date(now - (20 - i) * 60000), new Date(now - (20 - i) * 60000));
+      Deno.utimeSync(
+        mockFilePath,
+        new Date(now - (20 - i) * 60000),
+        new Date(now - (20 - i) * 60000),
+      );
     }
 
     // 3. Trigger backup, which should trigger pruning of old backups (>15)
@@ -96,7 +102,8 @@ Deno.test('Backup DB - prunes old backup files when total exceeds max limit', ()
 
     // 4. Check remaining backup files
     const remainingFiles = Array.from(Deno.readDirSync(backupsDir)).filter(
-      (entry) => entry.isFile && entry.name.startsWith('pantry_backup_') && entry.name.endsWith('.db'),
+      (entry) =>
+        entry.isFile && entry.name.startsWith('pantry_backup_') && entry.name.endsWith('.db'),
     );
 
     // Should retain MAX_BACKUPS (15) files
