@@ -1,108 +1,32 @@
-# GEMINI.md - Local Development & Repository Guidelines
+# GEMINI.md - Repository Guidelines for Gemini AI Models
 
-This document provides essential repository context, architecture guidelines, domain terminology rules, and CLI development commands for AI models and developers working on **Pantry**.
-
----
-
-## 🚀 Quick Start & Local Development
-
-Run both backend and frontend concurrently in development watch mode:
-
-```bash
-./dev.sh
-```
-
-Or run services individually:
-
-- **Backend (Deno + Hono)**: `cd backend && deno task dev` _(Runs on http://localhost:8000)_
-- **Frontend (Angular 20)**: `cd frontend && npm start` _(Runs on http://localhost:4200)_
+> [!IMPORTANT]
+> The single canonical source of truth for all workspace rules, agent guidelines, TDD workflows, domain taxonomy, and modular skills is located in [.agents/AGENTS.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/AGENTS.md).
+> All Gemini models must read and strictly follow [.agents/AGENTS.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/AGENTS.md).
 
 ---
 
-## 🛠️ Key CLI Commands
+## 🚀 Quick Start & Development Commands
 
-### Backend (`/backend`)
-
-| Command                | Description                                    |
-| :--------------------- | :--------------------------------------------- |
-| `deno task dev`        | Start backend in watch mode                    |
-| `deno task start`      | Start backend in production mode               |
-| `deno task test`       | Run backend Deno unit/integration test suite   |
-| `deno task db:migrate` | Execute pending SQL migrations                 |
-| `deno task db:seed`    | Seed database with taxonomy & sample inventory |
-| `deno task db:reset`   | Reset and recreate database from scratch       |
-| `deno fmt`             | Format TypeScript files                        |
-| `deno lint`            | Lint backend code                              |
-
-### Frontend (`/frontend`)
-
-| Command          | Description                           |
-| :--------------- | :------------------------------------ |
-| `npm start`      | Start Angular dev server (`ng serve`) |
-| `npm run build`  | Build production bundle (`ng build`)  |
-| `npm run test`   | Run unit tests with Karma & Jasmine   |
-| `npm run e2e`    | Run E2E tests with Playwright         |
-| `npm run lint`   | Run ESLint static check               |
-| `npm run format` | Prettify code using Prettier          |
+- **Concurrent Watch Mode:** `./dev.sh`
+- **Backend (Deno + Hono):** `cd backend && deno task dev` (Runs on `http://localhost:8000`)
+- **Frontend (Angular 20):** `cd frontend && npm start` (Runs on `http://localhost:4200`)
 
 ---
 
-## 🏗️ Architecture & Stack Overview
+## 🛠️ Mandatory Verification Commands
 
-### 1. Backend Stack & Patterns
-
-- **Runtime:** Deno (v1.37+)
-- **HTTP Framework:** Hono (`jsr:@hono/hono`)
-- **Database:** Embedded SQLite via `@db/sqlite` (`pantry.db`), WAL mode enabled with foreign keys enforced.
-- **Layering Pattern:**
-  - `src/routes/`: Route declarations & Hono request handling.
-  - `src/validators/`: Request payload validation functions.
-  - `src/services/`: Domain business logic & SQL query execution.
-  - `src/models/`: TypeScript interfaces & DTO schemas.
-  - `src/db/client.ts`: Database connection singleton.
-
-### 2. Frontend Stack & Patterns
-
-- **Framework:** Angular 20 (Standalone Components architecture).
-- **Styling:** TailwindCSS v4 + PostCSS, PrimeNG 20 (`@primeng/themes`), and custom SCSS Glassmorphism themes (`glass-card`).
-- **i18n:** Transloco (`@jsverse/transloco`) for internationalization keys located in `frontend/public/i18n/`.
-- **Services:** HTTP services communicating with backend REST endpoints.
+- **Backend Tests:** `cd backend && deno task test`
+- **Backend Lint & Format:** `cd backend && deno lint && deno fmt`
+- **Frontend Tests & Build:** `cd frontend && npm run test && npm run build`
+- **Frontend Lint & Format:** `cd frontend && npm run lint && npm run format`
 
 ---
 
-## 🏷️ Domain Terminology & Hierarchy Rules
-
-Always adhere to the updated 4-tier domain hierarchy and terminology:
+## 🏷️ Domain Hierarchy (Strict 4-Tier)
 
 ```
-[ Ingredient Category ] (Tier 1: Protein & Dairy, Fiber & Produce, Carbs & Grains, etc.)
-       │
-       ▼
-[ Ingredient Group ]    (Tier 2: Meat, Seafood, Beans, Vegetables, Fruits, Grains, etc.)
-       │
-       ▼
-[ Ingredient ]        (Tier 3: Master definition e.g. Chicken Breast, Gala Apple, Jasmine Rice)
-       │
-       ▼
-[ Ingredient Item ]   (Physical stock instance in Fridge/Pantry with qty, exp date, location)
+[ Ingredient Category ] (Tier 1) ──> [ Ingredient Group ] (Tier 2) ──> [ Ingredient ] (Tier 3) ──> [ Ingredient Item ] (Tier 4)
 ```
 
-### Terminology Rules:
-
-- **Use `Ingredient Category`** — _Do NOT use "Nutrient Group" or "Nutrient Type"_.
-- **Use `Ingredient Group`** — _Do NOT use generic "Category"_.
-- **Use `Ingredient`** (catalog entry) — _Do NOT use "Master Ingredient"_.
-- **Use `Ingredient Item`** — _Do NOT use plain "Item" when referring to physical inventory batches_.
-
----
-
-## 🎨 UI & Code Style Guidelines
-
-- **Angular Components:** Use Angular Standalone Components (`standalone: true`). Use PrimeNG components whenever possible. Keep logic modular and concise.
-- **Styling:** Prefer PrimeNG components and TailwindCSS classes combined with `glass-card` styling for consistency across pages.
-- **UI/UX Principles:** Keep UI/UX clean, CONSISTENT, and minimalist. Avoid verboseness, redundant copy, and unnecessary visual or structural complexity. Use design tokens when possible so we don't have to change as much individually.
-- **Type Safety:** Always define explicit interfaces in `models/` for request/response bodies and component state.
-- **Formatting:** Run `deno fmt` for backend code and `npm run format` for frontend code before committing.
-- **Testing** After creating any new feature or fixing any bug, you MUST create a test to ensure that we do not regress to a previous state.
-- **Commits** organize commits whenever you make changes.
-- **Compiler** ensure before you're done that everything is compiling properly.
+For full details, agent roles, and specialized skills, see [.agents/AGENTS.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/AGENTS.md).

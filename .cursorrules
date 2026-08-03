@@ -1,0 +1,10 @@
+# .cursorrules - Cursor IDE Rules Entry Point
+
+# Canonical Source of Truth:
+# All workspace rules, coding standards, domain terminology contracts, and skill mappings are in `.agents/AGENTS.md`.
+
+- Read and adhere to all rules in `.agents/AGENTS.md`.
+- Read specialized skills in `.agents/skills/` when triggered.
+- Always follow Test-Driven Development (TDD): write failing tests first in `backend/tests/` or frontend `.spec.ts` before modifying implementation logic.
+- Always run `cd backend && deno task test` and `cd frontend && npm run test` to verify zero regressions.
+- Enforce the 4-tier domain hierarchy (`Ingredient Category` -> `Ingredient Group` -> `Ingredient` -> `Ingredient Item`).
