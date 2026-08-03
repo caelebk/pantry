@@ -14,12 +14,16 @@
 
 ---
 
-## 🛠️ Mandatory Verification Commands
+## 🛠️ Mandatory Verification Workflow
 
-- **Backend Tests:** `cd backend && deno task test`
-- **Backend Lint & Format:** `cd backend && deno lint && deno fmt`
-- **Frontend Tests & Build:** `cd frontend && npm run test && npm run build`
-- **Frontend Lint & Format:** `cd frontend && npm run lint && npm run format`
+All tasks must pass this strict 3-step verification before completion:
+1. **Bug & Code Audit:** Inspect changed files, component imports, and template bindings for logic bugs or missing dependencies.
+2. **Run Tests:**
+   - Backend: `cd backend && deno task test`
+   - Frontend: `cd frontend && npm run test`
+3. **Ensure Build Compiles:**
+   - Frontend Build: `cd frontend && npm run build`
+   - Formatting & Linting: `cd backend && deno lint && deno fmt` and `cd frontend && npm run format && npm run lint`
 
 ---
 

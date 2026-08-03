@@ -66,8 +66,11 @@ Always strictly enforce the 4-tier domain hierarchy across database schemas, bac
 2. **Frontend Formatting & Linting:** Always run `npm run format` and `npm run lint` before completing tasks.
 3. **Type Safety:** Always define explicit interfaces in `models/` for DTOs and state. Do not use `any`.
 
-### RULE-06: Verification Before Task Completion
-NEVER declare a task resolved, a bug fixed, or a feature complete without running empirical verification commands (`deno task test` and `npm run build` or `npm run test`).
+### RULE-06: Mandatory 3-Step Verification Workflow Before Task Completion
+NEVER declare a task resolved, a bug fixed, or a feature complete without performing and confirming the full 3-step verification workflow:
+1. **Code & Logic Audit (Bug Check):** Inspect all modified files, template bindings, and imports to ensure there are no logic bugs, missing imports/modules, or broken component contracts.
+2. **Automated Test Suite:** Run tests to confirm zero regressions (`cd backend && deno task test` and `cd frontend && npm run test`).
+3. **Build Compilation:** Run production build checks to guarantee full type safety and template compilation (`cd frontend && npm run build`).
 
 ---
 
