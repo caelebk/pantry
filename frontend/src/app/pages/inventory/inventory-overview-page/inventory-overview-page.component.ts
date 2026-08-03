@@ -43,6 +43,13 @@ export class InventoryOverviewPageComponent implements OnInit {
   public readonly locations = signal<Location[]>([]);
   public readonly isLoading = signal<boolean>(true);
 
+  // Active collapsible pyramid tier (defaults to Tier 4 - Physical Stock)
+  public readonly expandedTier = signal<number | null>(4);
+
+  public toggleTier(tier: number): void {
+    this.expandedTier.update((current) => (current === tier ? null : tier));
+  }
+
   // Computed metrics
   public readonly categoriesCount = computed(() => this.categories().length);
   public readonly groupsCount = computed(() => this.groups().length);

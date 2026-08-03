@@ -71,4 +71,21 @@ describe('InventoryOverviewPageComponent', () => {
     expect(component.ingredientsCount()).toBe(0);
     expect(component.itemsCount()).toBe(0);
   });
+
+  it('should toggle expanded tier correctly', () => {
+    // Default expanded tier is 4
+    expect(component.expandedTier()).toBe(4);
+
+    // Toggling tier 4 collapses it (sets to null)
+    component.toggleTier(4);
+    expect(component.expandedTier()).toBeNull();
+
+    // Toggling tier 1 expands tier 1
+    component.toggleTier(1);
+    expect(component.expandedTier()).toBe(1);
+
+    // Toggling tier 2 switches expanded tier to 2
+    component.toggleTier(2);
+    expect(component.expandedTier()).toBe(2);
+  });
 });
