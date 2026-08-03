@@ -1,11 +1,11 @@
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ItemService } from './item.service';
-import { UnitService } from './unit.service';
-import { LocationService } from './location.service';
-import { of } from 'rxjs';
-import { Unit, UnitType } from '@models/unit.model';
+import { TestBed } from '@angular/core/testing';
 import { Location } from '@models/location.model';
+import { Unit, UnitType } from '@models/unit.model';
+import { of } from 'rxjs';
+import { ItemService } from './item.service';
+import { LocationService } from './location.service';
+import { UnitService } from './unit.service';
 
 describe('ItemService', () => {
   let service: ItemService;

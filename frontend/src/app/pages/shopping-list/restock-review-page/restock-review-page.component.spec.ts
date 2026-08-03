@@ -36,6 +36,7 @@ describe('RestockReviewPageComponent', () => {
   const mockPantryItems: IngredientItem[] = [
     {
       id: 'existing-milk-123',
+      ingredientId: 'ing-uuid-milk-123',
       name: 'Whole Milk',
       quantity: 2,
       unit: mockUnits[0],
@@ -46,6 +47,7 @@ describe('RestockReviewPageComponent', () => {
     },
     {
       id: 'existing-eggs-456',
+      ingredientId: 'ing-uuid-eggs-456',
       name: 'Eggs',
       quantity: 6,
       unit: mockUnits[0],
@@ -219,7 +221,7 @@ describe('RestockReviewPageComponent', () => {
     expect(mockItemService.getSimilarIngredientItems).toHaveBeenCalledWith('Eggs', 0.45);
   });
 
-  it('should update existing item quantity on confirmRestock for items in update mode', () => {
+  it('should update existing item quantity and preserve ingredientId on confirmRestock for items in update mode', () => {
     fixture.detectChanges();
 
     component.confirmRestock();
@@ -227,6 +229,7 @@ describe('RestockReviewPageComponent', () => {
     expect(mockItemService.updateItem).toHaveBeenCalledWith(
       jasmine.objectContaining({
         id: 'existing-milk-123',
+        ingredientId: 'ing-uuid-milk-123',
         quantity: 5,
       }),
     );
@@ -246,6 +249,35 @@ describe('RestockReviewPageComponent', () => {
       jasmine.any(String),
     );
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory']);
+  });
+
+  it('should update storage location when onMatchedItemChange is called with a new candidate match', () => {
+    fixture.detectChanges();
+
+    const drafts = component.draftItems();
+    const milkDraft = drafts.find((d) => d.name === 'Whole Milk')!;
+    milkDraft.matchCandidates = [
+      { item: mockPantryItems[0], score: 1.0, tier: 'exact' },
+      {
+        item: {
+          id: 'existing-eggs-456',
+          ingredientId: 'ing-uuid-eggs-456',
+          name: 'Whole Milk Extra',
+          quantity: 1,
+          unit: mockUnits[0],
+          purchaseDate: new Date(),
+          expirationDate: new Date(),
+          location: mockLocations[1],
+          notes: '',
+        },
+        score: 0.9,
+        tier: 'similar',
+      },
+    ];
+    milkDraft.matchedItemId = 'existing-eggs-456';
+
+    component.onMatchedItemChange(milkDraft);
+    expect(milkDraft.location).toBe('Pantry Shelf');
   });
 
   it('should handle similar items returned from backend API like Olive Oil', () => {

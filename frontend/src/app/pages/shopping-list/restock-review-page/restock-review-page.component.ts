@@ -198,6 +198,13 @@ export class RestockReviewPageComponent implements OnInit {
     this.fetchBackendSimilarityForDraft(draft);
   }
 
+  onMatchedItemChange(draft: RestockDraftItem): void {
+    const matched = this.getMatchedItem(draft);
+    if (matched?.location?.name) {
+      draft.location = matched.location.name;
+    }
+  }
+
   setActionMode(draft: RestockDraftItem, mode: 'update' | 'create'): void {
     draft.actionMode = mode;
   }
@@ -297,9 +304,10 @@ export class RestockReviewPageComponent implements OnInit {
         const existingItem = this.getMatchedItem(draft);
         if (existingItem) {
           updatedCount++;
-          const mergedQty = existingItem.quantity + draft.quantity;
+          const mergedQty = existingItem.quantity + (draft.quantity || 0);
           const updatedItem: Item = {
             id: existingItem.id,
+            ingredientId: existingItem.ingredientId,
             name: draft.name,
             quantity: mergedQty,
             unit: matchedUnit,

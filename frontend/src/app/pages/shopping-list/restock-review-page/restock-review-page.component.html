@@ -256,6 +256,7 @@
                     <select
                       [id]="'select-match-' + item.shoppingId"
                       [(ngModel)]="item.matchedItemId"
+                      (ngModelChange)="onMatchedItemChange(item)"
                       class="text-xs font-bold bg-white dark:bg-surface-900 border border-emerald-500/40 text-emerald-900 dark:text-emerald-100 rounded-lg px-2 py-1 focus:outline-none">
                       @for (c of item.matchCandidates; track c.item.id) {
                         <option [value]="c.item.id">

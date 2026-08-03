@@ -33,22 +33,22 @@ export class ItemService {
       candidates: this.http
         .get<
           ApiResponse<
-            Array<{
+            {
               item: IngredientItemDTO;
               score: number;
               tier: 'exact' | 'similar';
-            }>
+            }[]
           >
         >(`${this.apiUrl}/similarity`, {
           params: { name, minScore: minScore.toString() },
         })
         .pipe(
           mapResponseData<
-            Array<{
+            {
               item: IngredientItemDTO;
               score: number;
               tier: 'exact' | 'similar';
-            }>
+            }[]
           >(),
         ),
       units: this.unitService.getUnits(),
