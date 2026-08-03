@@ -216,7 +216,7 @@ export class AddItemPageComponent implements OnInit {
           `"${newItem.name}" has been added to inventory.`,
           'Item Added',
         );
-        this.router.navigate(['/inventory']);
+        this.router.navigate(['/inventory/items']);
       },
       error: (err) => {
         this.isSubmitting.set(false);
@@ -228,6 +228,6 @@ export class AddItemPageComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/inventory']);
+    this.router.navigate(['/inventory/items']);
   }
 }

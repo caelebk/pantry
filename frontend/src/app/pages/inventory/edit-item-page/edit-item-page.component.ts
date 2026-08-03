@@ -106,7 +106,7 @@ export class EditItemPageComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       this.toastService.showError('Invalid item reference');
-      this.router.navigate(['/inventory']);
+      this.router.navigate(['/inventory/items']);
       return;
     }
 
@@ -239,7 +239,7 @@ export class EditItemPageComponent implements OnInit {
     this.itemService.updateItem(updatedItem).subscribe({
       next: () => {
         this.toastService.showSuccess(`"${updatedItem.name}" updated successfully!`);
-        this.router.navigate(['/inventory']);
+        this.router.navigate(['/inventory/items']);
       },
       error: (err) => {
         console.error('Error updating item:', err);
@@ -250,6 +250,6 @@ export class EditItemPageComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/inventory']);
+    this.router.navigate(['/inventory/items']);
   }
 }
