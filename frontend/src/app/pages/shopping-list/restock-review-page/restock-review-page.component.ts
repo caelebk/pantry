@@ -12,6 +12,7 @@ import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
 import { DatePickerModule } from 'primeng/datepicker';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -31,7 +32,7 @@ export interface RestockDraftItem {
 @Component({
   selector: 'pantry-restock-review-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, SelectModule, DatePickerModule],
+  imports: [CommonModule, FormsModule, SelectModule, DatePickerModule, InputNumberModule],
   templateUrl: './restock-review-page.component.html',
   styleUrl: './restock-review-page.component.scss',
 })
@@ -194,7 +195,7 @@ export class RestockReviewPageComponent implements OnInit {
         notes: draft.notes || `Restocked from shopping list (${draft.category})`,
       };
 
-      return this.itemService.addItem(newItem).pipe(catchError((err) => of(null)));
+      return this.itemService.addItem(newItem).pipe(catchError(() => of(null)));
     });
 
     forkJoin(addRequests).subscribe({
