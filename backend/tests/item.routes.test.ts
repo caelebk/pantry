@@ -292,3 +292,41 @@ Deno.test('Items API - GET /api/items/similarity - empty query returns empty can
     ingredientItemService.findSimilarItems = originalFindSimilarItems;
   }
 });
+
+Deno.test('Items API - POST /api/items/bulk-clear-stock - success', async () => {
+  const originalBulkClearStock = ingredientItemService.bulkClearStock;
+  ingredientItemService.bulkClearStock = (ids) => Promise.resolve(ids.length);
+
+  try {
+    const app = new Hono();
+    app.route('/api/items', items);
+
+    const res = await app.request(
+      createRequest('/api/items/bulk-clear-stock', 'POST', { ids: [mockItem.id] }),
+    );
+    assertEquals(res.status, HttpStatusCode.OK);
+    const body = await res.json();
+    assertEquals(body.data.clearedCount, 1);
+  } finally {
+    ingredientItemService.bulkClearStock = originalBulkClearStock;
+  }
+});
+
+Deno.test('Items API - POST /api/items/bulk-delete - success', async () => {
+  const originalBulkDelete = ingredientItemService.bulkDeleteIngredientItems;
+  ingredientItemService.bulkDeleteIngredientItems = (ids) => Promise.resolve(ids.length);
+
+  try {
+    const app = new Hono();
+    app.route('/api/items', items);
+
+    const res = await app.request(
+      createRequest('/api/items/bulk-delete', 'POST', { ids: [mockItem.id] }),
+    );
+    assertEquals(res.status, HttpStatusCode.OK);
+    const body = await res.json();
+    assertEquals(body.data.deletedCount, 1);
+  } finally {
+    ingredientItemService.bulkDeleteIngredientItems = originalBulkDelete;
+  }
+});

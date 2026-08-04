@@ -84,4 +84,40 @@ describe('ItemService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(mockApiResponse);
   });
+
+  it('should call POST /api/ingredient-items/bulk-clear-stock', (done) => {
+    const mockIds = ['item-1', 'item-2'];
+    const mockApiResponse = {
+      success: true,
+      data: { clearedCount: 2 },
+    };
+
+    service.bulkClearStock(mockIds).subscribe((res) => {
+      expect(res.clearedCount).toBe(2);
+      done();
+    });
+
+    const req = httpMock.expectOne('/api/ingredient-items/bulk-clear-stock');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ ids: mockIds });
+    req.flush(mockApiResponse);
+  });
+
+  it('should call POST /api/ingredient-items/bulk-delete', (done) => {
+    const mockIds = ['item-1', 'item-2'];
+    const mockApiResponse = {
+      success: true,
+      data: { deletedCount: 2 },
+    };
+
+    service.bulkDeleteItems(mockIds).subscribe((res) => {
+      expect(res.deletedCount).toBe(2);
+      done();
+    });
+
+    const req = httpMock.expectOne('/api/ingredient-items/bulk-delete');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ ids: mockIds });
+    req.flush(mockApiResponse);
+  });
 });

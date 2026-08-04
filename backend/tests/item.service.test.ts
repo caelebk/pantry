@@ -25,13 +25,14 @@ function createTestDB(): Database {
       quantity REAL NOT NULL,
       unit_id INTEGER NOT NULL,
       location_id INTEGER NOT NULL,
-      expiration_date TEXT NOT NULL,
+      expiration_date TEXT,
       opened_date TEXT,
       purchase_date TEXT NOT NULL,
       notes TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
+
   `);
   return db;
 }
@@ -282,5 +283,32 @@ Deno.test('ItemService - findSimilarItems - success', async () => {
   assertEquals(candidates[0].item.label, 'Olive Oil (Extra Virgin)');
   assert(candidates[0].score >= 0.75);
   assertEquals(candidates[0].tier, 'similar');
+  db.close();
+});
+
+Deno.test('ItemService - bulkClearStock - success', async () => {
+  const db = createTestDB();
+  setDB(db);
+  const mockRow = seedMockItem(db);
+
+  const clearedCount = await itemService.bulkClearStock([mockRow.id]);
+  assertEquals(clearedCount, 1);
+
+  const updatedItem = await itemService.getItemById(mockRow.id);
+  assertEquals(updatedItem?.quantity, 0);
+  assertEquals(updatedItem?.expirationDate, undefined);
+  db.close();
+});
+
+Deno.test('ItemService - bulkDeleteIngredientItems - success', async () => {
+  const db = createTestDB();
+  setDB(db);
+  const mockRow = seedMockItem(db);
+
+  const deletedCount = await itemService.bulkDeleteItems([mockRow.id]);
+  assertEquals(deletedCount, 1);
+
+  const updatedItem = await itemService.getItemById(mockRow.id);
+  assertEquals(updatedItem, null);
   db.close();
 });
