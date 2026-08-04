@@ -4,7 +4,9 @@ import { IngredientItem, IngredientItemDTO } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { ShoppingItem } from '@models/shopping-list.model';
 import { Unit, UnitType } from '@models/unit.model';
+import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService, ItemSimilarityCandidate } from '@services/inventory/item.service';
+
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
@@ -21,7 +23,7 @@ describe('RestockReviewPageComponent', () => {
   let mockItemService: jasmine.SpyObj<ItemService>;
   let mockUnitService: jasmine.SpyObj<UnitService>;
   let mockLocationService: jasmine.SpyObj<LocationService>;
-  let mockToastService: jasmine.SpyObj<ToastService>;
+  let mockIngredientService: jasmine.SpyObj<IngredientService>;
 
   const mockUnits: Unit[] = [
     { id: 1, name: 'pcs', shortName: 'pcs', type: UnitType.Count, toBaseFactor: 1 },
@@ -38,12 +40,12 @@ describe('RestockReviewPageComponent', () => {
       id: 'existing-milk-123',
       ingredientId: 'ing-uuid-milk-123',
       name: 'Whole Milk',
-      quantity: 2,
+      quantity: 0,
       unit: mockUnits[0],
       purchaseDate: new Date('2026-08-01'),
-      expirationDate: new Date('2026-08-10'),
+      expirationDate: undefined,
       location: mockLocations[0],
-      notes: 'Existing stock',
+      notes: 'Out of stock milk',
     },
     {
       id: 'existing-eggs-456',
@@ -85,6 +87,17 @@ describe('RestockReviewPageComponent', () => {
       {
         items: jasmine.createSpy('items').and.returnValue(mockShoppingItems),
       },
+    );
+
+    mockIngredientService = jasmine.createSpyObj('IngredientService', ['getIngredients']);
+    mockIngredientService.getIngredients.and.returnValue(
+      of([
+        {
+          id: 'ing-uuid-milk-123',
+          name: 'Whole Milk',
+          defaultUnit: mockUnits[0],
+        } as any,
+      ]),
     );
 
     mockItemService = jasmine.createSpyObj('ItemService', [
@@ -151,6 +164,7 @@ describe('RestockReviewPageComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: ItemService, useValue: mockItemService },
+        { provide: IngredientService, useValue: mockIngredientService },
         { provide: UnitService, useValue: mockUnitService },
         { provide: LocationService, useValue: mockLocationService },
         { provide: ToastService, useValue: mockToastService },
@@ -230,7 +244,7 @@ describe('RestockReviewPageComponent', () => {
       jasmine.objectContaining({
         id: 'existing-milk-123',
         ingredientId: 'ing-uuid-milk-123',
-        quantity: 5,
+        quantity: 3,
       }),
     );
 
@@ -307,5 +321,15 @@ describe('RestockReviewPageComponent', () => {
 
     component.setActionMode(oilDraft, 'create');
     expect(oilDraft.actionMode).toBe('create');
+  });
+
+  it('should lock unit to ingredient default measurement unit when matched item has linked ingredient', () => {
+    fixture.detectChanges();
+
+    const drafts = component.draftItems();
+    const milkDraft = drafts.find((d) => d.name === 'Whole Milk')!;
+
+    expect(milkDraft.isUnitLocked).toBeTrue();
+    expect(milkDraft.unit).toBe('pcs');
   });
 });

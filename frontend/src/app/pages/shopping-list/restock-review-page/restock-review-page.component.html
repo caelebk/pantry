@@ -312,13 +312,20 @@
               <div class="space-y-1.5">
                 <label
                   [for]="'unit-' + item.shoppingId"
-                  class="block text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider"
-                  >Unit</label
-                >
+                  class="block text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+                  Unit
+                  @if (item.isUnitLocked) {
+                    <span
+                      class="text-[10px] text-amber-600 dark:text-amber-400 font-normal normal-case ml-1">
+                      🔒 (Locked to ingredient unit)
+                    </span>
+                  }
+                </label>
                 <p-select
                   [inputId]="'unit-' + item.shoppingId"
                   [options]="unitsOptions()"
                   [(ngModel)]="item.unit"
+                  [disabled]="!!item.isUnitLocked"
                   styleClass="w-full !rounded-xl !bg-white dark:!bg-surface-900/60 !border-surface-200 dark:!border-surface-700 !text-xs !font-semibold text-surface-700 dark:text-surface-300 !shadow-xs"
                   appendTo="body" />
               </div>

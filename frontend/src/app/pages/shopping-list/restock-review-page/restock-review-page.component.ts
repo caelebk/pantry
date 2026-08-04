@@ -2,10 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Ingredient } from '@models/ingredient.model';
 import { IngredientItem, Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { ShoppingItem } from '@models/shopping-list.model';
 import { Unit, UnitType } from '@models/unit.model';
+import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService, ItemSimilarityCandidate } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
@@ -32,6 +34,7 @@ export interface RestockDraftItem {
   matchCandidates: ItemSimilarityCandidate[];
   bestMatch: ItemSimilarityCandidate | null;
   matchTier: 'exact' | 'similar' | 'none';
+  isUnitLocked?: boolean;
 }
 
 @Component({
@@ -45,6 +48,7 @@ export class RestockReviewPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly shoppingListService = inject(ShoppingListService);
   private readonly itemService = inject(ItemService);
+  private readonly ingredientService = inject(IngredientService);
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly toastService = inject(ToastService);
@@ -53,50 +57,57 @@ export class RestockReviewPageComponent implements OnInit {
 
   readonly defaultLocations = ['Fridge', 'Freezer', 'Pantry Shelf', 'Spice Cabinet', 'Countertop'];
   readonly defaultUnits = [
-    'pcs',
-    'kg',
     'g',
-    'lbs',
-    'oz',
-    'bottle',
-    'can',
-    'pack',
-    'heads',
-    'bunch',
+    'kg',
     'ml',
-    'carton',
-    'wedge',
+    'L',
+    'pcs',
+    'pack',
+    'can',
+    'bottle',
+    'box',
+    'Gram',
+    'Liters',
+    'Pcs',
   ];
 
-  availableUnits = signal<Unit[]>([]);
-  availableLocations = signal<Location[]>([]);
-  pantryItems = signal<IngredientItem[]>([]);
+  readonly draftItems = signal<RestockDraftItem[]>([]);
+  readonly isSubmitting = signal<boolean>(false);
 
-  locationsOptions = signal<string[]>(this.defaultLocations);
-  unitsOptions = signal<string[]>(this.defaultUnits);
+  readonly pantryItems = signal<IngredientItem[]>([]);
+  readonly availableIngredients = signal<Ingredient[]>([]);
+  readonly availableUnits = signal<Unit[]>([]);
+  readonly availableLocations = signal<Location[]>([]);
 
-  draftItems = signal<RestockDraftItem[]>([]);
-  isSubmitting = signal<boolean>(false);
+  readonly unitsOptions = signal<string[]>(this.defaultUnits);
+  readonly locationsOptions = signal<string[]>(this.defaultLocations);
 
   constructor() {
     effect(() => {
-      const items = this.shoppingListService.items();
-      if (this.draftItems().length === 0 && items.length > 0) {
-        this.initDrafts(items);
+      const shoppingItems = this.shoppingListService.items();
+      if (shoppingItems && this.draftItems().length === 0) {
+        this.initDrafts(shoppingItems);
       }
     });
   }
 
   ngOnInit(): void {
-    this.shoppingListService.loadItemsFromBackend();
-
     this.itemService
       .getIngredientItems()
       .pipe(catchError(() => of([])))
       .subscribe((items) => {
-        this.pantryItems.set(items);
-        const existingShoppingItems = this.shoppingListService.items();
-        if (existingShoppingItems.length > 0 && this.draftItems().length > 0) {
+        if (items) {
+          this.pantryItems.set(items);
+          this.reevaluateSimilarityForDrafts();
+        }
+      });
+
+    this.ingredientService
+      .getIngredients()
+      .pipe(catchError(() => of([])))
+      .subscribe((ingredients) => {
+        if (ingredients) {
+          this.availableIngredients.set(ingredients);
           this.reevaluateSimilarityForDrafts();
         }
       });
@@ -107,7 +118,13 @@ export class RestockReviewPageComponent implements OnInit {
       .subscribe((units) => {
         if (units && units.length > 0) {
           this.availableUnits.set(units);
-          const names = Array.from(new Set([...units.map((u) => u.name), ...this.defaultUnits]));
+          const names = Array.from(
+            new Set([
+              ...units.map((u) => u.shortName),
+              ...units.map((u) => u.name),
+              ...this.defaultUnits,
+            ]),
+          );
           this.unitsOptions.set(names);
         }
       });
@@ -151,6 +168,7 @@ export class RestockReviewPageComponent implements OnInit {
         matchCandidates: [],
         bestMatch: null,
         matchTier: 'none',
+        isUnitLocked: false,
       };
 
       this.fetchBackendSimilarityForDraft(draft);
@@ -167,6 +185,7 @@ export class RestockReviewPageComponent implements OnInit {
       draft.matchedItemId = null;
       draft.matchTier = 'none';
       draft.actionMode = 'create';
+      draft.isUnitLocked = false;
       return;
     }
 
@@ -176,18 +195,44 @@ export class RestockReviewPageComponent implements OnInit {
       .subscribe((candidates) => {
         draft.matchCandidates = candidates;
         if (candidates.length > 0) {
-          draft.bestMatch = candidates[0];
-          draft.matchTier = candidates[0].tier;
-          draft.matchedItemId = candidates[0].item.id;
+          const best = candidates[0];
+          draft.bestMatch = best;
+          draft.matchTier = best.tier;
+          draft.matchedItemId = best.item.id;
           draft.actionMode = 'update';
-          draft.location = candidates[0].item.location.name;
+          if (best.item.location?.name) {
+            draft.location = best.item.location.name;
+          }
+          this.updateUnitLockForDraft(draft, best.item);
         } else {
           draft.bestMatch = null;
           draft.matchTier = 'none';
           draft.matchedItemId = null;
           draft.actionMode = 'create';
+          this.updateUnitLockForDraft(draft, null);
         }
       });
+  }
+
+  private updateUnitLockForDraft(draft: RestockDraftItem, item: IngredientItem | null): void {
+    const ingredients = this.availableIngredients();
+    let linkedIng: Ingredient | undefined;
+
+    if (item?.ingredientId) {
+      linkedIng = ingredients.find((i) => i.id === item.ingredientId);
+    } else if (draft.name) {
+      linkedIng = ingredients.find((i) => i.name.toLowerCase() === draft.name.trim().toLowerCase());
+    }
+
+    if (linkedIng?.defaultUnit) {
+      draft.unit = linkedIng.defaultUnit.shortName || linkedIng.defaultUnit.name;
+      draft.isUnitLocked = true;
+    } else if (item?.unit) {
+      draft.unit = item.unit.shortName || item.unit.name;
+      draft.isUnitLocked = false;
+    } else {
+      draft.isUnitLocked = false;
+    }
   }
 
   private reevaluateSimilarityForDrafts(): void {
@@ -200,13 +245,25 @@ export class RestockReviewPageComponent implements OnInit {
 
   onMatchedItemChange(draft: RestockDraftItem): void {
     const matched = this.getMatchedItem(draft);
-    if (matched?.location?.name) {
-      draft.location = matched.location.name;
+    if (matched) {
+      if (matched.location?.name) {
+        draft.location = matched.location.name;
+      }
+      if (matched.unit?.shortName || matched.unit?.name) {
+        draft.unit = matched.unit.shortName || matched.unit.name;
+      }
+      this.updateUnitLockForDraft(draft, matched);
     }
   }
 
   setActionMode(draft: RestockDraftItem, mode: 'update' | 'create'): void {
     draft.actionMode = mode;
+    if (mode === 'create') {
+      this.updateUnitLockForDraft(draft, null);
+    } else if (mode === 'update' && draft.matchedItemId) {
+      const matched = this.getMatchedItem(draft);
+      this.updateUnitLockForDraft(draft, matched || null);
+    }
   }
 
   getMatchedItem(draft: RestockDraftItem): IngredientItem | undefined {
@@ -283,8 +340,8 @@ export class RestockReviewPageComponent implements OnInit {
     const restockRequests = itemsToRestock.map((draft) => {
       const matchedUnit: Unit = unitsList.find(
         (u) =>
-          u.name.toLowerCase() === draft.unit.toLowerCase() ||
-          u.shortName.toLowerCase() === draft.unit.toLowerCase(),
+          u.shortName.toLowerCase() === draft.unit.toLowerCase() ||
+          u.name.toLowerCase() === draft.unit.toLowerCase(),
       ) || {
         id: 1,
         name: draft.unit,

@@ -247,11 +247,24 @@ export class IngredientItemService {
     if (!queryName || !queryName.trim()) {
       return [];
     }
-    const allItems = await this.getAllIngredientItems();
+    const db = getDB();
+    const rows = db.prepare(`
+      SELECT item.*, ing.name as ingredient_name
+      FROM ingredient_items item
+      LEFT JOIN ingredients ing ON item.ingredient_id = ing.id
+      ORDER BY item.created_at DESC
+    `).all() as (IngredientItemRow & { ingredient_name?: string })[];
+
     const candidates: ItemSimilarityCandidateDTO[] = [];
 
-    for (const item of allItems) {
-      const score = calculateStringSimilarity(queryName, item.label);
+    for (const row of rows) {
+      const item = this.mapItemRowToItem(row);
+      const labelScore = calculateStringSimilarity(queryName, item.label);
+      const ingScore = row.ingredient_name
+        ? calculateStringSimilarity(queryName, row.ingredient_name)
+        : 0;
+      const score = Math.max(labelScore, ingScore);
+
       if (score >= minScore) {
         const tier: 'exact' | 'similar' = score >= 0.99 ? 'exact' : 'similar';
         candidates.push({ item, score, tier });
@@ -260,6 +273,7 @@ export class IngredientItemService {
 
     return candidates.sort((a, b) => b.score - a.score);
   }
+
 
   private mapItemRowToItem(row: IngredientItemRow): IngredientItemDTO {
     return {
