@@ -35,7 +35,7 @@ export class AddIngredientPageComponent implements OnInit {
     this.ingredientForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       ingredientGroup: [null],
-      defaultUnit: [null],
+      defaultUnit: [null, [Validators.required]],
     });
 
     this.ingredientGroupService.getIngredientGroups().subscribe({

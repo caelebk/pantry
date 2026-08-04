@@ -85,7 +85,7 @@
       <div>
         <label
           class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider mb-1.5">
-          Default Measurement Unit
+          Default Measurement Unit <span class="text-red-500">*</span>
         </label>
         <p-select
           [options]="units()"
@@ -96,6 +96,11 @@
           class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700"
           appendTo="body">
         </p-select>
+        @if (
+          ingredientForm.get('defaultUnit')?.invalid && ingredientForm.get('defaultUnit')?.touched
+        ) {
+          <p class="mt-1 text-xs text-red-500 font-medium">Default measurement unit is required.</p>
+        }
       </div>
 
       <!-- Action Buttons -->

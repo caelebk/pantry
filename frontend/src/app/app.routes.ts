@@ -20,6 +20,8 @@ import { AddShoppingItemPageComponent } from './pages/shopping-list/add-item-pag
 import { RestockReviewPageComponent } from './pages/shopping-list/restock-review-page/restock-review-page.component';
 import { ShoppingListComponent } from './pages/shopping-list/shopping-list.component';
 
+import { UnitReconciliationPageComponent } from './pages/inventory/unit-reconciliation-page/unit-reconciliation-page.component';
+
 export const routes: Routes = [
   { path: '', redirectTo: Tab.Home, pathMatch: 'full' },
   { path: Tab.Home, component: HomeComponent },
@@ -36,6 +38,10 @@ export const routes: Routes = [
   { path: 'inventory/ingredients', component: IngredientsPageComponent },
   { path: 'inventory/ingredients/new', component: AddIngredientPageComponent },
   { path: 'inventory/ingredients/:id/edit', component: EditIngredientPageComponent },
+  {
+    path: 'inventory/ingredients/:id/unit-reconciliation',
+    component: UnitReconciliationPageComponent,
+  },
 
   { path: 'inventory/groups', component: IngredientGroupsPageComponent },
   { path: 'inventory/groups/new', component: AddIngredientGroupPageComponent },

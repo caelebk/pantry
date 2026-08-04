@@ -23,7 +23,7 @@ export interface IngredientDTO {
 export interface CreateIngredientDTO {
   name: string;
   ingredientGroupId?: number;
-  defaultUnitId?: number;
+  defaultUnitId: number;
 }
 
 export interface UpdateIngredientDTO {

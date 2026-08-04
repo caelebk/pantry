@@ -180,6 +180,7 @@ describe('AddIngredientGroupPageComponent', () => {
     expect(mockIngredientService.createIngredient).toHaveBeenCalledWith({
       name: 'Penne',
       ingredientGroupId: 100,
+      defaultUnitId: 1,
     });
     expect(mockToastService.showSuccess).toHaveBeenCalled();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/groups']);

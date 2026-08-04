@@ -144,6 +144,21 @@
       "message": "Are you sure you want to remove this item?",
       "cancelButton": "Cancel",
       "removeButton": "Remove"
+    },
+    "reconciliation": {
+      "title": "Reconcile Physical Item Measures",
+      "subtitle": "Update quantities for existing in-stock ingredient items to match the new default measurement unit.",
+      "loading": "Loading stock items for reconciliation...",
+      "bannerTitle": "Default Unit Change for \"{{name}}\"",
+      "bannerCurrent": "Current: {{unit}}",
+      "bannerNew": "New: {{unit}}",
+      "bannerDesc": "Review the in-stock items below. Quantities have been automatically converted where possible. Adjust the values if needed so that every physical item accurately reflects the new default unit.",
+      "colLabel": "Item Label",
+      "colLocation": "Location",
+      "colPrevStock": "Previous Stock",
+      "colNewQty": "New Quantity ({{unit}})",
+      "cancelBtn": "Cancel",
+      "confirmBtn": "Confirm & Update Measures"
     }
   },
   "recipes": {

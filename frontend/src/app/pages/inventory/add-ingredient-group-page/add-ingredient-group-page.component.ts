@@ -179,6 +179,7 @@ export class AddIngredientGroupPageComponent implements OnInit {
               return this.ingredientService.createIngredient({
                 name: item.name,
                 ingredientGroupId: createdGroup.id,
+                defaultUnitId: (item as any).defaultUnitId || 1,
               });
             }
           });

@@ -27,6 +27,7 @@ export class EditIngredientPageComponent implements OnInit {
   private readonly toastService = inject(ToastService);
 
   public ingredientId = signal<string | null>(null);
+  public originalDefaultUnitId = signal<number | null>(null);
   public ingredientForm!: FormGroup;
   public ingredientGroups = signal<IngredientGroup[]>([]);
   public units = signal<Unit[]>([]);
@@ -46,7 +47,7 @@ export class EditIngredientPageComponent implements OnInit {
     this.ingredientForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       ingredientGroup: [null],
-      defaultUnit: [null],
+      defaultUnit: [null, [Validators.required]],
     });
 
     this.ingredientGroupService.getIngredientGroups().subscribe({
@@ -59,6 +60,7 @@ export class EditIngredientPageComponent implements OnInit {
 
     this.ingredientService.getIngredientById(id).subscribe({
       next: (ing) => {
+        this.originalDefaultUnitId.set(ing.defaultUnit ? ing.defaultUnit.id : null);
         this.ingredientForm.patchValue({
           name: ing.name,
           ingredientGroup: ing.ingredientGroup || null,
@@ -86,27 +88,80 @@ export class EditIngredientPageComponent implements OnInit {
     }
 
     const val = this.ingredientForm.value;
+    const newUnitId = val.defaultUnit ? val.defaultUnit.id : undefined;
+    const origUnitId = this.originalDefaultUnitId();
+
     this.isSubmitting.set(true);
 
-    this.ingredientService
-      .updateIngredient(id, {
-        name: val.name,
-        ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
-        defaultUnitId: val.defaultUnit ? val.defaultUnit.id : undefined,
-      })
-      .subscribe({
-        next: () => {
-          this.isSubmitting.set(false);
-          this.toastService.showSuccess(`Ingredient "${val.name}" updated successfully.`);
-          this.router.navigate(['/inventory/ingredients']);
+    if (newUnitId && origUnitId !== newUnitId) {
+      this.ingredientService.getItemsByIngredientId(id).subscribe({
+        next: (items) => {
+          if (items && items.length > 0) {
+            this.ingredientService
+              .updateIngredient(id, {
+                name: val.name,
+                ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
+              })
+              .subscribe({
+                next: () => {
+                  this.isSubmitting.set(false);
+                  this.toastService.showInfo(
+                    'Default measurement unit changed. Please reconcile physical stock measures.',
+                    'Unit Changed',
+                  );
+                  this.router.navigate([`/inventory/ingredients/${id}/unit-reconciliation`], {
+                    queryParams: { targetUnitId: newUnitId },
+                  });
+                },
+                error: (err) => {
+                  this.isSubmitting.set(false);
+                  this.submitError.set(err?.message || 'Failed to update ingredient.');
+                },
+              });
+          } else {
+            this.ingredientService
+              .updateIngredient(id, {
+                name: val.name,
+                ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
+                defaultUnitId: newUnitId,
+              })
+              .subscribe({
+                next: () => {
+                  this.isSubmitting.set(false);
+                  this.toastService.showSuccess(`Ingredient "${val.name}" updated successfully.`);
+                  this.router.navigate(['/inventory/ingredients']);
+                },
+                error: (err) => {
+                  this.isSubmitting.set(false);
+                  this.submitError.set(err?.message || 'Failed to update ingredient.');
+                },
+              });
+          }
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          const msg = err?.message || 'Failed to update ingredient.';
-          this.submitError.set(msg);
-          this.toastService.showError(msg);
+          this.submitError.set(err?.message || 'Failed to verify ingredient stock items.');
         },
       });
+    } else {
+      this.ingredientService
+        .updateIngredient(id, {
+          name: val.name,
+          ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
+          defaultUnitId: newUnitId,
+        })
+        .subscribe({
+          next: () => {
+            this.isSubmitting.set(false);
+            this.toastService.showSuccess(`Ingredient "${val.name}" updated successfully.`);
+            this.router.navigate(['/inventory/ingredients']);
+          },
+          error: (err) => {
+            this.isSubmitting.set(false);
+            this.submitError.set(err?.message || 'Failed to update ingredient.');
+          },
+        });
+    }
   }
 
   onCancel(): void {

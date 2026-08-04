@@ -16,6 +16,8 @@ import { map } from 'rxjs/operators';
 import { IngredientGroupService } from './ingredient-group.service';
 import { UnitService } from './unit.service';
 
+import { IngredientItemDTO } from '@models/items.model';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -103,5 +105,24 @@ export class IngredientService {
     return this.http
       .get<ApiResponse<SubstitutionSuggestion[]>>(`${this.apiUrl}/${id}/substitutions`)
       .pipe(mapResponseData<SubstitutionSuggestion[]>());
+  }
+
+  getItemsByIngredientId(id: string): Observable<IngredientItemDTO[]> {
+    return this.http
+      .get<ApiResponse<IngredientItemDTO[]>>(`${this.apiUrl}/${id}/items`)
+      .pipe(mapResponseData<IngredientItemDTO[]>());
+  }
+
+  reconcileIngredientUnit(
+    id: string,
+    newDefaultUnitId: number,
+    items: { id: string; quantity: number }[],
+  ): Observable<IngredientDTO> {
+    return this.http
+      .post<ApiResponse<IngredientDTO>>(`${this.apiUrl}/${id}/reconcile-units`, {
+        newDefaultUnitId,
+        items,
+      })
+      .pipe(mapResponseData<IngredientDTO>());
   }
 }
