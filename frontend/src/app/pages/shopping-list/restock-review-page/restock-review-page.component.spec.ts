@@ -245,6 +245,7 @@ describe('RestockReviewPageComponent', () => {
         id: 'existing-milk-123',
         ingredientId: 'ing-uuid-milk-123',
         quantity: 3,
+        purchaseDate: jasmine.any(Date),
       }),
     );
 

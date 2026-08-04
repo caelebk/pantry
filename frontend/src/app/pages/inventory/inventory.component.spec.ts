@@ -157,7 +157,11 @@ describe('InventoryComponent', () => {
     component.onQuickRestockItem(mockItemEmpty);
 
     expect(mockItemService.updateItem).toHaveBeenCalledWith(
-      jasmine.objectContaining({ id: mockItemEmpty.id, quantity: 1 }),
+      jasmine.objectContaining({
+        id: mockItemEmpty.id,
+        quantity: 1,
+        purchaseDate: jasmine.any(Date),
+      }),
     );
   });
 

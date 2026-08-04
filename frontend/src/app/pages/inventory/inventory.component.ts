@@ -585,7 +585,7 @@ export class InventoryComponent implements OnInit {
       event.stopPropagation();
     }
     const newQty = item.quantity > 0 ? item.quantity + 1 : 1;
-    const updatedItem = { ...item, quantity: newQty };
+    const updatedItem = { ...item, quantity: newQty, purchaseDate: new Date() };
     this.inventoryService.updateItem(updatedItem).subscribe({
       next: () => {
         this.toastService.showSuccess(

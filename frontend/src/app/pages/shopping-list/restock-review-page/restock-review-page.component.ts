@@ -377,7 +377,7 @@ export class RestockReviewPageComponent implements OnInit {
             name: draft.name,
             quantity: mergedQty,
             unit: matchedUnit,
-            purchaseDate: existingItem.purchaseDate || new Date(),
+            purchaseDate: new Date(),
             expirationDate:
               draft.expirationDate instanceof Date
                 ? draft.expirationDate
