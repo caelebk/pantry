@@ -199,6 +199,25 @@ Deno.test('Items API - PUT /api/items/:id - not found', async () => {
   }
 });
 
+Deno.test('Items API - PUT /api/items/:id with quantity 0 (clear stock) - success', async () => {
+  const originalUpdateItem = ingredientItemService.updateIngredientItem;
+  ingredientItemService.updateIngredientItem = () =>
+    Promise.resolve({ ...mockItem, quantity: 0, expirationDate: undefined });
+
+  try {
+    const app = new Hono();
+    app.route('/api/items', items);
+    const res = await app.request(
+      createRequest(`/api/items/${mockItem.id}`, 'PUT', { quantity: 0, expirationDate: null }),
+    );
+    assertEquals(res.status, HttpStatusCode.OK);
+    const body = await res.json();
+    assertEquals(body.data.quantity, 0);
+  } finally {
+    ingredientItemService.updateIngredientItem = originalUpdateItem;
+  }
+});
+
 Deno.test('Items API - PUT /api/items/:id - invalid id', async () => {
   const app = new Hono();
   app.route('/api/items', items);

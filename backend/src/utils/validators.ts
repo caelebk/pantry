@@ -35,6 +35,13 @@ export function isPositiveNumber(value: number): boolean {
 }
 
 /**
+ * Validate non-negative number (0 or positive)
+ */
+export function isNonNegativeNumber(value: number): boolean {
+  return typeof value === 'number' && value >= 0 && !isNaN(value);
+}
+
+/**
  * Validate non-empty string
  */
 export function isNonEmptyString(value: string): boolean {

@@ -162,6 +162,23 @@ Deno.test('ItemService - createItem - derives unit_id from parent ingredient def
   db.close();
 });
 
+Deno.test('ItemService - updateItem quantity to 0 (clear stock) - success', async () => {
+  const db = createTestDB();
+  setDB(db);
+  const mockRow = seedMockItem(db);
+
+  const updateData: UpdateItemDTO = {
+    quantity: 0,
+    expirationDate: null,
+  };
+
+  const item = await itemService.updateItem(mockRow.id, updateData);
+  assert(item !== null);
+  assertEquals(item?.quantity, 0);
+  assertEquals(item?.expirationDate, undefined);
+  db.close();
+});
+
 Deno.test('ItemService - updateItem - success', async () => {
   const db = createTestDB();
   setDB(db);

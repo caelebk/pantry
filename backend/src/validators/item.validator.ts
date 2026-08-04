@@ -1,7 +1,7 @@
 import { CreateItemDTO, UpdateItemDTO } from '../models/data-models/item.model.ts';
 import {
   isNonEmptyString,
-  isPositiveNumber,
+  isNonNegativeNumber,
   isValidDate,
   isValidUUID,
 } from '../utils/validators.ts';
@@ -12,7 +12,7 @@ import {
 export function isValidCreateItemDTO(data: Partial<CreateItemDTO>): boolean {
   if (!data) return false;
   if (!data.label || !isNonEmptyString(data.label)) return false;
-  if (data.quantity === undefined || !isPositiveNumber(data.quantity)) return false;
+  if (data.quantity === undefined || !isNonNegativeNumber(data.quantity)) return false;
   if (data.expirationDate && !isValidDate(data.expirationDate)) return false;
   if (!data.purchaseDate || !isValidDate(data.purchaseDate)) return false;
 
@@ -32,7 +32,7 @@ export function isValidUpdateItemDTO(data: UpdateItemDTO): boolean {
   if (!data) return false;
 
   if (data.label !== undefined && !isNonEmptyString(data.label)) return false;
-  if (data.quantity !== undefined && !isPositiveNumber(data.quantity)) return false;
+  if (data.quantity !== undefined && !isNonNegativeNumber(data.quantity)) return false;
   if (
     data.expirationDate !== undefined && data.expirationDate !== null &&
     !isValidDate(data.expirationDate)

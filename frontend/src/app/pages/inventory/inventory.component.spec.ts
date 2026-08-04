@@ -142,8 +142,9 @@ describe('InventoryComponent', () => {
   });
 
   it('should quick restock item by incrementing quantity', () => {
-    mockItemService.updateItem.and.returnValue(of({} as any));
+    mockItemService.updateItem.and.returnValue(of({} as IngredientItemDTO));
     component.onQuickRestockItem(mockItemEmpty);
+
     expect(mockItemService.updateItem).toHaveBeenCalledWith(
       jasmine.objectContaining({ id: mockItemEmpty.id, quantity: 1 }),
     );
