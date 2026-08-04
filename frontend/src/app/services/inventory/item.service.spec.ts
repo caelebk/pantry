@@ -2,7 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { Location } from '@models/location.model';
 import { Unit, UnitType } from '@models/unit.model';
-import { of } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { ItemService } from './item.service';
 import { LocationService } from './location.service';
 import { UnitService } from './unit.service';
@@ -47,7 +47,7 @@ describe('ItemService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should call GET /api/ingredient-items/similarity and map response data', (done) => {
+  it('should call GET /api/ingredient-items/similarity and map response data', async () => {
     const mockApiResponse = {
       success: true,
       data: [
@@ -67,13 +67,7 @@ describe('ItemService', () => {
       ],
     };
 
-    service.getSimilarIngredientItems('Olive Oil', 0.45).subscribe((candidates) => {
-      expect(candidates.length).toBe(1);
-      expect(candidates[0].item.name).toBe('Olive Oil (Extra Virgin)');
-      expect(candidates[0].score).toBe(0.85);
-      expect(candidates[0].tier).toBe('similar');
-      done();
-    });
+    const promise = firstValueFrom(service.getSimilarIngredientItems('Olive Oil', 0.45));
 
     const req = httpMock.expectOne(
       (request) =>
@@ -83,41 +77,47 @@ describe('ItemService', () => {
     );
     expect(req.request.method).toBe('GET');
     req.flush(mockApiResponse);
+
+    const candidates = await promise;
+    expect(candidates.length).toBe(1);
+    expect(candidates[0].item.name).toBe('Olive Oil (Extra Virgin)');
+    expect(candidates[0].score).toBe(0.85);
+    expect(candidates[0].tier).toBe('similar');
   });
 
-  it('should call POST /api/ingredient-items/bulk-clear-stock', (done) => {
+  it('should call POST /api/ingredient-items/bulk-clear-stock', async () => {
     const mockIds = ['item-1', 'item-2'];
     const mockApiResponse = {
       success: true,
       data: { clearedCount: 2 },
     };
 
-    service.bulkClearStock(mockIds).subscribe((res) => {
-      expect(res.clearedCount).toBe(2);
-      done();
-    });
+    const promise = firstValueFrom(service.bulkClearStock(mockIds));
 
     const req = httpMock.expectOne('/api/ingredient-items/bulk-clear-stock');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ ids: mockIds });
     req.flush(mockApiResponse);
+
+    const res = await promise;
+    expect(res.clearedCount).toBe(2);
   });
 
-  it('should call POST /api/ingredient-items/bulk-delete', (done) => {
+  it('should call POST /api/ingredient-items/bulk-delete', async () => {
     const mockIds = ['item-1', 'item-2'];
     const mockApiResponse = {
       success: true,
       data: { deletedCount: 2 },
     };
 
-    service.bulkDeleteItems(mockIds).subscribe((res) => {
-      expect(res.deletedCount).toBe(2);
-      done();
-    });
+    const promise = firstValueFrom(service.bulkDeleteItems(mockIds));
 
     const req = httpMock.expectOne('/api/ingredient-items/bulk-delete');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ ids: mockIds });
     req.flush(mockApiResponse);
+
+    const res = await promise;
+    expect(res.deletedCount).toBe(2);
   });
 });
