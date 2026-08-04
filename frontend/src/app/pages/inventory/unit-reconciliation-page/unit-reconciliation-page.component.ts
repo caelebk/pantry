@@ -80,9 +80,7 @@ export class UnitReconciliationPageComponent implements OnInit {
         this.ingredient.set(ingredient);
         this.oldUnit.set(ingredient.defaultUnit || null);
 
-        const locMap = new Map<number, string>(
-          locations.map((l: Location) => [l.id, l.name]),
-        );
+        const locMap = new Map<number, string>(locations.map((l: Location) => [l.id, l.name]));
 
         const rows: ReconcileItemRow[] = items.map((item: IngredientItemDTO) => {
           const itemUnit = units.find((u) => u.id === item.unitId);
@@ -95,8 +93,7 @@ export class UnitReconciliationPageComponent implements OnInit {
             foundTarget.toBaseFactor &&
             itemUnit.type === foundTarget.type
           ) {
-            suggestedQty =
-              (item.quantity * itemUnit.toBaseFactor) / foundTarget.toBaseFactor;
+            suggestedQty = (item.quantity * itemUnit.toBaseFactor) / foundTarget.toBaseFactor;
           }
 
           return {
@@ -155,4 +152,3 @@ export class UnitReconciliationPageComponent implements OnInit {
     this.router.navigate(['/inventory/ingredients']);
   }
 }
-
