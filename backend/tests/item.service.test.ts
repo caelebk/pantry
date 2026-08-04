@@ -303,6 +303,40 @@ Deno.test('ItemService - findSimilarItems - success', async () => {
   db.close();
 });
 
+Deno.test('ItemService - findSimilarItems - matches by linked ingredient name', async () => {
+  const db = createTestDB();
+  setDB(db);
+
+  db.prepare('INSERT INTO ingredients (id, name, default_unit_id) VALUES (?, ?, ?)').run(
+    'ing-spinach-1',
+    'Baby Spinach',
+    1,
+  );
+
+
+  db.prepare(
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run(
+    '123e4567-e89b-12d3-a456-426614174099',
+    'ing-spinach-1',
+    'Organic Tub Batch #1',
+    2,
+    1,
+    1,
+    mockDate.toISOString(),
+    mockDate.toISOString(),
+  );
+
+  const candidates = await itemService.findSimilarItems('Baby Spinach');
+  assertEquals(candidates.length, 1);
+  assertEquals(candidates[0].item.id, '123e4567-e89b-12d3-a456-426614174099');
+  assertEquals(candidates[0].item.label, 'Organic Tub Batch #1');
+  assertEquals(candidates[0].score, 1.0);
+  assertEquals(candidates[0].tier, 'exact');
+  db.close();
+});
+
+
 Deno.test('ItemService - bulkClearStock - success', async () => {
   const db = createTestDB();
   setDB(db);

@@ -332,4 +332,16 @@ describe('RestockReviewPageComponent', () => {
     expect(milkDraft.isUnitLocked).toBeTrue();
     expect(milkDraft.unit).toBe('pcs');
   });
+
+  it('should return current candidate and display score percentage for single similarity matches', () => {
+    fixture.detectChanges();
+
+    const drafts = component.draftItems();
+    const milkDraft = drafts.find((d) => d.name === 'Whole Milk')!;
+
+    const candidate = component.getCurrentCandidate(milkDraft);
+    expect(candidate).toBeDefined();
+    expect(candidate?.score).toBe(1.0);
+    expect(candidate?.item.name).toBe('Whole Milk');
+  });
 });
