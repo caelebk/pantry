@@ -1,15 +1,24 @@
 :host ::ng-deep {
+  /* Common height for all form controls */
+  .p-select,
+  .p-inputnumber,
+  .p-datepicker,
+  p-datepicker {
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    width: 100% !important;
+  }
+
+  /* PrimeNG Select control */
   .p-select {
-    height: 38px !important;
-    min-height: 38px !important;
-    max-height: 38px !important;
     display: inline-flex !important;
     align-items: center !important;
 
     .p-select-label {
       padding-top: 0 !important;
       padding-bottom: 0 !important;
-      font-size: 0.75rem !important;
+      font-size: 0.875rem !important;
       font-weight: 600 !important;
       display: flex !important;
       align-items: center !important;
@@ -20,7 +29,33 @@
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      width: 2rem !important;
+      width: 2.25rem !important;
+    }
+  }
+
+  /* PrimeNG InputNumber control */
+  .p-inputnumber {
+    display: flex !important;
+    align-items: center !important;
+
+    .p-inputnumber-input,
+    input {
+      height: 42px !important;
+      min-height: 42px !important;
+      max-height: 42px !important;
+      font-size: 0.875rem !important;
+      font-weight: 700 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      line-height: 1 !important;
+    }
+
+    .p-inputnumber-button-group {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
     }
   }
 
@@ -28,21 +63,20 @@
   p-datepicker,
   .p-datepicker,
   .p-date-picker {
-    width: 100% !important;
+    position: relative !important;
     display: flex !important;
     align-items: center !important;
-    position: relative !important;
 
     .p-inputtext {
       width: 100% !important;
-      height: 38px !important;
-      min-height: 38px !important;
-      max-height: 38px !important;
-      font-size: 0.75rem !important;
+      height: 42px !important;
+      min-height: 42px !important;
+      max-height: 42px !important;
+      font-size: 0.875rem !important;
       font-weight: 600 !important;
       border-radius: 0.75rem !important; /* rounded-xl */
-      padding-left: 0.75rem !important;
-      padding-right: 2.25rem !important;
+      padding-left: 0.875rem !important;
+      padding-right: 2.5rem !important;
       padding-top: 0 !important;
       padding-bottom: 0 !important;
       display: flex !important;
@@ -51,26 +85,28 @@
     }
 
     .p-datepicker-dropdown,
-    .p-datepicker-icon-button,
+    .p-datepicker-input-icon-container,
     .p-datepicker-input-icon,
-    .p-datepicker-icon {
+    .p-datepicker-icon-button,
+    .p-datepicker-icon,
+    p-icon-wrapper {
       position: absolute !important;
       right: 0.75rem !important;
       top: 50% !important;
       transform: translateY(-50%) !important;
-      pointer-events: auto !important;
+      pointer-events: none !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      height: 1rem !important;
-      width: 1rem !important;
+      height: 1.125rem !important;
+      width: 1.125rem !important;
       margin: 0 !important;
       padding: 0 !important;
 
       svg,
       p-icon {
-        width: 1rem !important;
-        height: 1rem !important;
+        width: 1.125rem !important;
+        height: 1.125rem !important;
         display: block !important;
       }
     }
