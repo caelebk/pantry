@@ -122,7 +122,20 @@ export class ItemService {
       .pipe(mapResponseData<IngredientItemDTO>());
   }
 
+  bulkClearStock(ids: string[]): Observable<{ clearedCount: number }> {
+    return this.http
+      .post<ApiResponse<{ clearedCount: number }>>(`${this.apiUrl}/bulk-clear-stock`, { ids })
+      .pipe(mapResponseData<{ clearedCount: number }>());
+  }
+
+  bulkDeleteItems(ids: string[]): Observable<{ deletedCount: number }> {
+    return this.http
+      .post<ApiResponse<{ deletedCount: number }>>(`${this.apiUrl}/bulk-delete`, { ids })
+      .pipe(mapResponseData<{ deletedCount: number }>());
+  }
+
   // Legacy Aliases
+
   getItems(): Observable<IngredientItem[]> {
     return this.getIngredientItems();
   }

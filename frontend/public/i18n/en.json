@@ -123,12 +123,24 @@
     "stats": {
       "totalItems": "Total Items",
       "expiringSoon": "Expiring Soon",
-      "expired": "Expired"
+      "expired": "Expired",
+      "outOfStock": "Out of Stock"
+    },
+    "actions": {
+      "clearStock": "Clear Stock",
+      "restock": "Restock",
+      "addToShoppingList": "Add to Shopping List",
+      "delete": "Delete Item",
+      "bulkClearStock": "Clear Stock",
+      "bulkAddToShoppingList": "Add to Shopping List",
+      "bulkRestock": "Quick Restock (+1)",
+      "bulkDelete": "Delete Selected"
     },
     "filters": {
       "searchPlaceholder": "Search items...",
       "categoryPlaceholder": "Filter by Ingredient Group"
     },
+
     "notificationService": {
       "itemAddedHeader": "Added: ",
       "itemAddedDescription": "Item successfully added.",

@@ -1,10 +1,16 @@
 import { Item, ItemTimeStatus } from '@models/items.model';
 
 export function isExpired(item: Item): boolean {
-  return item.expirationDate <= new Date();
+  if (!item.expirationDate || item.quantity <= 0) return false;
+  return new Date(item.expirationDate) <= new Date();
+}
+
+export function isOutOfStock(item: Item): boolean {
+  return item.quantity <= 0;
 }
 
 export function isExpiringSoon(item: Item, days = 14): boolean {
+  if (!item.expirationDate || item.quantity <= 0) return false;
   const currentDate = new Date();
   const thresholdDate = new Date();
   thresholdDate.setDate(currentDate.getDate() + days);
@@ -14,19 +20,24 @@ export function isExpiringSoon(item: Item, days = 14): boolean {
 }
 
 export function itemProgress(item: Item): number {
+  if (!item.expirationDate) return 0;
   const startDate = new Date(item.purchaseDate);
   const currentDate = new Date();
   const endDate = new Date(item.expirationDate);
+  if (endDate.getTime() <= startDate.getTime()) return 100;
   const progressPercentage =
     ((currentDate.getTime() - startDate.getTime()) / (endDate.getTime() - startDate.getTime())) *
     100;
-  return progressPercentage;
+  return Math.min(100, Math.max(0, progressPercentage));
 }
 
 export function sortItemsByExpirationDate(items: Item[]): Item[] {
-  return items.sort(
-    (a: Item, b: Item) => a.expirationDate?.getTime() - b.expirationDate?.getTime(),
-  );
+  return items.sort((a: Item, b: Item) => {
+    if (!a.expirationDate && !b.expirationDate) return 0;
+    if (!a.expirationDate) return 1;
+    if (!b.expirationDate) return -1;
+    return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
+  });
 }
 
 export function getTimeDifferenceString(date1: Date, date2: Date): string {
@@ -58,6 +69,9 @@ export function getTimeDifferenceString(date1: Date, date2: Date): string {
 }
 
 export function getItemTimeStatus(item: Item): ItemTimeStatus {
+  if (!item.expirationDate) {
+    return { label: 'No Expiration', isExpired: false, isClose: false };
+  }
   const now = new Date();
   const expirationDate = new Date(item.expirationDate);
   const diffMs = expirationDate.getTime() - now.getTime();

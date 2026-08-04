@@ -11,7 +11,11 @@ import {
 import { ingredientItemService } from '../services/ingredient-item.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isPositiveNumber, isValidUUID } from '../utils/validators.ts';
-import { isValidCreateItemDTO, isValidUpdateItemDTO } from '../validators/item.validator.ts';
+import {
+  isValidBulkIdsDTO,
+  isValidCreateItemDTO,
+  isValidUpdateItemDTO,
+} from '../validators/item.validator.ts';
 
 const ingredientItems = new Hono();
 
@@ -155,6 +159,38 @@ ingredientItems.delete('/:id', async (c: Context) => {
     return c.json(successResponse({ message: ItemMessages.DELETE_SUCCESS(id) }), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(errorResponse(ItemMessages.DELETE_ERROR), HttpStatusCode.INTERNAL_SERVER_ERROR);
+  }
+});
+
+/**
+ * POST /api/ingredient-items/bulk-clear-stock
+ */
+ingredientItems.post('/bulk-clear-stock', async (c: Context) => {
+  try {
+    const body = await c.req.json();
+    if (!isValidBulkIdsDTO(body)) {
+      return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+    }
+    const clearedCount = await ingredientItemService.bulkClearStock(body.ids);
+    return c.json(successResponse({ clearedCount }), HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.INTERNAL_SERVER_ERROR);
+  }
+});
+
+/**
+ * POST /api/ingredient-items/bulk-delete
+ */
+ingredientItems.post('/bulk-delete', async (c: Context) => {
+  try {
+    const body = await c.req.json();
+    if (!isValidBulkIdsDTO(body)) {
+      return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+    }
+    const deletedCount = await ingredientItemService.bulkDeleteIngredientItems(body.ids);
+    return c.json(successResponse({ deletedCount }), HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.INTERNAL_SERVER_ERROR);
   }
 });
 

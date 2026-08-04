@@ -9,7 +9,7 @@ export interface IngredientItem {
   unit: Unit;
   purchaseDate: Date;
   openedDate?: Date;
-  expirationDate: Date;
+  expirationDate?: Date;
   location: Location;
   notes: string;
 }
@@ -22,7 +22,7 @@ export interface IngredientItemDTO {
   unitId: number;
   purchaseDate: string;
   openedDate?: string;
-  expirationDate: string;
+  expirationDate?: string | null;
   locationId: number;
   notes?: string;
 }
@@ -34,7 +34,7 @@ export interface UpdateIngredientItemDTO {
   unitId?: number;
   purchaseDate?: string;
   openedDate?: string;
-  expirationDate?: string;
+  expirationDate?: string | null;
   locationId?: number;
   notes?: string;
 }

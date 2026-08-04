@@ -25,6 +25,14 @@ export class ItemService {
     return await ingredientItemService.deleteIngredientItemById(id);
   }
 
+  async bulkClearStock(ids: string[]) {
+    return await ingredientItemService.bulkClearStock(ids);
+  }
+
+  async bulkDeleteItems(ids: string[]) {
+    return await ingredientItemService.bulkDeleteIngredientItems(ids);
+  }
+
   async findExpiringSoon(days?: number) {
     return await ingredientItemService.findExpiringSoon(days);
   }

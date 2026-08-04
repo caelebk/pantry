@@ -8,7 +8,8 @@ export interface IngredientItemRow {
   quantity: number;
   unit_id: number;
   location_id: number;
-  expiration_date: string;
+  expiration_date: string | null;
+
   opened_date: string | null;
   purchase_date: string;
   notes: string | null;

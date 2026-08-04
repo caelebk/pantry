@@ -13,7 +13,7 @@ export function isValidCreateItemDTO(data: Partial<CreateItemDTO>): boolean {
   if (!data) return false;
   if (!data.label || !isNonEmptyString(data.label)) return false;
   if (data.quantity === undefined || !isPositiveNumber(data.quantity)) return false;
-  if (!data.expirationDate || !isValidDate(data.expirationDate)) return false;
+  if (data.expirationDate && !isValidDate(data.expirationDate)) return false;
   if (!data.purchaseDate || !isValidDate(data.purchaseDate)) return false;
 
   if (
@@ -33,7 +33,10 @@ export function isValidUpdateItemDTO(data: UpdateItemDTO): boolean {
 
   if (data.label !== undefined && !isNonEmptyString(data.label)) return false;
   if (data.quantity !== undefined && !isPositiveNumber(data.quantity)) return false;
-  if (data.expirationDate !== undefined && !isValidDate(data.expirationDate)) return false;
+  if (
+    data.expirationDate !== undefined && data.expirationDate !== null &&
+    !isValidDate(data.expirationDate)
+  ) return false;
   if (data.purchaseDate !== undefined && !isValidDate(data.purchaseDate)) return false;
 
   if (
@@ -44,4 +47,14 @@ export function isValidUpdateItemDTO(data: UpdateItemDTO): boolean {
   }
 
   return true;
+}
+
+/**
+ * Validate bulk IDs DTO payload
+ */
+export function isValidBulkIdsDTO(data: unknown): data is { ids: string[] } {
+  if (!data || typeof data !== 'object') return false;
+  const obj = data as { ids?: unknown };
+  if (!Array.isArray(obj.ids) || obj.ids.length === 0) return false;
+  return obj.ids.every((id) => typeof id === 'string' && isValidUUID(id));
 }

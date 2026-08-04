@@ -64,7 +64,9 @@ export class IngredientItemService {
 
       let effectiveUnitId = data.unitId;
       if (data.ingredientId) {
-        const ingRow = db.prepare('SELECT default_unit_id FROM ingredients WHERE id = ?').get(data.ingredientId) as { default_unit_id: number | null } | undefined;
+        const ingRow = db.prepare('SELECT default_unit_id FROM ingredients WHERE id = ?').get(
+          data.ingredientId,
+        ) as { default_unit_id: number | null } | undefined;
         if (ingRow && ingRow.default_unit_id) {
           effectiveUnitId = ingRow.default_unit_id;
         }
@@ -79,7 +81,7 @@ export class IngredientItemService {
         data.quantity,
         effectiveUnitId,
         data.locationId,
-        toDate(data.expirationDate).toISOString(),
+        data.expirationDate ? toDate(data.expirationDate).toISOString() : null,
         data.openedDate ? toDate(data.openedDate).toISOString() : null,
         toDate(data.purchaseDate).toISOString(),
         data.notes ?? null,
@@ -116,8 +118,8 @@ export class IngredientItemService {
           quantity = COALESCE(?, quantity), 
           unit_id = COALESCE(?, unit_id), 
           location_id = COALESCE(?, location_id), 
-          expiration_date = COALESCE(?, expiration_date), 
-          opened_date = COALESCE(?, opened_date), 
+          expiration_date = CASE WHEN ? = 1 THEN ? ELSE expiration_date END, 
+          opened_date = CASE WHEN ? = 1 THEN ? ELSE opened_date END, 
           purchase_date = COALESCE(?, purchase_date), 
           notes = COALESCE(?, notes),
           ingredient_id = CASE WHEN ? = 1 THEN ? ELSE ingredient_id END,
@@ -128,8 +130,10 @@ export class IngredientItemService {
         data.quantity ?? null,
         data.unitId ?? null,
         data.locationId ?? null,
-        data.expirationDate !== undefined ? toDate(data.expirationDate).toISOString() : null,
-        data.openedDate !== undefined ? toDate(data.openedDate).toISOString() : null,
+        data.expirationDate !== undefined ? 1 : 0,
+        data.expirationDate ? toDate(data.expirationDate).toISOString() : null,
+        data.openedDate !== undefined ? 1 : 0,
+        data.openedDate ? toDate(data.openedDate).toISOString() : null,
         data.purchaseDate !== undefined ? toDate(data.purchaseDate).toISOString() : null,
         data.notes ?? null,
         data.ingredientId !== undefined ? 1 : 0,
@@ -166,6 +170,57 @@ export class IngredientItemService {
   }
 
   /**
+   * Bulk clears stock (sets quantity to 0 and clears expiration date) for multiple ingredient items.
+   */
+  async bulkClearStock(ids: string[]): Promise<number> {
+    for (const id of ids) {
+      if (!isValidUUID(id)) {
+        throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
+      }
+    }
+    try {
+      const db = getDB();
+      const now = new Date().toISOString();
+      const stmt = db.prepare(
+        'UPDATE ingredient_items SET quantity = 0, expiration_date = NULL, updated_at = ? WHERE id = ?',
+      );
+      let count = 0;
+      for (const id of ids) {
+        const changes = stmt.run(now, id);
+        if (typeof changes === 'number') count += changes;
+      }
+      return count;
+    } catch (error: unknown) {
+      console.error('Error bulk clearing stock:', error);
+      throw new Error(ItemMessages.DB_UPDATE_ERROR);
+    }
+  }
+
+  /**
+   * Bulk deletes multiple ingredient items by their IDs.
+   */
+  async bulkDeleteIngredientItems(ids: string[]): Promise<number> {
+    for (const id of ids) {
+      if (!isValidUUID(id)) {
+        throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
+      }
+    }
+    try {
+      const db = getDB();
+      const stmt = db.prepare('DELETE FROM ingredient_items WHERE id = ?');
+      let count = 0;
+      for (const id of ids) {
+        const changes = stmt.run(id);
+        if (typeof changes === 'number') count += changes;
+      }
+      return count;
+    } catch (error: unknown) {
+      console.error('Error bulk deleting ingredient items:', error);
+      throw new Error(ItemMessages.DB_DELETE_ERROR);
+    }
+  }
+
+  /**
    * Finds ingredient items that are expiring within a specified number of days.
    */
   async findExpiringSoon(days: number = this.soonExpiryDays): Promise<IngredientItemDTO[]> {
@@ -173,7 +228,7 @@ export class IngredientItemService {
       const db = getDB();
       const futureDate = new Date(Date.now() + days * this.secondsInDay).toISOString();
       const rows = db.prepare(
-        'SELECT * FROM ingredient_items WHERE expiration_date <= ? ORDER BY expiration_date ASC',
+        'SELECT * FROM ingredient_items WHERE quantity > 0 AND expiration_date IS NOT NULL AND expiration_date <= ? ORDER BY expiration_date ASC',
       ).all(futureDate) as IngredientItemRow[];
       return rows.map(this.mapItemRowToItem);
     } catch (error: unknown) {
@@ -214,7 +269,7 @@ export class IngredientItemService {
       quantity: row.quantity,
       unitId: row.unit_id,
       locationId: row.location_id,
-      expirationDate: new Date(row.expiration_date),
+      expirationDate: row.expiration_date ? new Date(row.expiration_date) : undefined,
       openedDate: row.opened_date ? new Date(row.opened_date) : undefined,
       purchaseDate: new Date(row.purchase_date),
       notes: row.notes ? row.notes : undefined,

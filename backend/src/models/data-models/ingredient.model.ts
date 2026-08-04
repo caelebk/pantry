@@ -24,4 +24,3 @@ export interface CreateIngredientDTO {
 
 // Update DTO - all create fields are optional
 export interface UpdateIngredientDTO extends Partial<CreateIngredientDTO> {}
-

@@ -10,7 +10,7 @@ export interface IngredientItemDTO {
   quantity: number;
   unitId: number;
   locationId: number;
-  expirationDate: Date;
+  expirationDate?: Date;
   openedDate?: Date;
   purchaseDate: Date;
   notes?: string;
@@ -25,10 +25,10 @@ export interface CreateIngredientItemDTO {
   quantity: number;
   unitId: number;
   locationId: number;
-  expirationDate: string | Date; // Allow string from JSON
   purchaseDate: string | Date; // Allow string from JSON
 
   // Optional
+  expirationDate?: string | Date | null;
   ingredientId?: string | null;
   openedDate?: string | Date; // Allow string from JSON
   notes?: string;

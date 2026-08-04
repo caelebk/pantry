@@ -12,7 +12,9 @@ export function isValidCreateIngredientDTO(data: Partial<CreateIngredientDTO>): 
   if (!isNonEmptyString(data.name || '')) return false;
 
   if (data.categoryId !== undefined && !isPositiveNumber(data.categoryId)) return false;
-  if (data.ingredientGroupId !== undefined && !isPositiveNumber(data.ingredientGroupId)) return false;
+  if (data.ingredientGroupId !== undefined && !isPositiveNumber(data.ingredientGroupId)) {
+    return false;
+  }
   if (data.defaultUnitId === undefined || !isPositiveNumber(data.defaultUnitId)) return false;
 
   return true;
@@ -54,4 +56,3 @@ export function isValidReconcileUnitsDTO(data: unknown): boolean {
 
   return true;
 }
-

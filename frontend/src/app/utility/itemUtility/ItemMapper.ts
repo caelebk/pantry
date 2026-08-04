@@ -25,7 +25,7 @@ export function mapItemDTOToItem(
     unit: unit,
     purchaseDate: new Date(itemDTO.purchaseDate),
     openedDate: itemDTO.openedDate ? new Date(itemDTO.openedDate) : undefined,
-    expirationDate: new Date(itemDTO.expirationDate),
+    expirationDate: itemDTO.expirationDate ? new Date(itemDTO.expirationDate) : undefined,
     location: location,
     notes: itemDTO.notes || '',
   };
@@ -41,7 +41,7 @@ export function mapItemToItemDTO(item: Item): ItemDTO {
     locationId: item.location.id,
     purchaseDate: item.purchaseDate.toISOString(),
     openedDate: item.openedDate?.toISOString(),
-    expirationDate: item.expirationDate.toISOString(),
+    expirationDate: item.expirationDate ? item.expirationDate.toISOString() : null,
     notes: item.notes,
   };
 }
@@ -54,7 +54,7 @@ export function mapItemToUpdateItemDTO(item: Item): UpdateItemDTO {
     unitId: item.unit.id,
     purchaseDate: item.purchaseDate.toISOString(),
     openedDate: item.openedDate?.toISOString(),
-    expirationDate: item.expirationDate.toISOString(),
+    expirationDate: item.expirationDate ? item.expirationDate.toISOString() : null,
     locationId: item.location.id,
     notes: !item.notes ? undefined : item.notes,
   };
