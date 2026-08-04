@@ -141,6 +141,17 @@ describe('InventoryComponent', () => {
     expect(component.isOutOfStockItem(mockItem1)).toBeFalse();
   });
 
+  it('should naturally sort out of stock items to the bottom of the table', () => {
+    component.setStatusFilter('all');
+    component.toggleSort('name');
+    const items = component.filteredItems;
+
+    expect(items.length).toBe(3);
+    const lastItem = items[items.length - 1];
+    expect(lastItem.id).toBe(mockItemEmpty.id);
+    expect(lastItem.quantity).toBe(0);
+  });
+
   it('should quick restock item by incrementing quantity', () => {
     mockItemService.updateItem.and.returnValue(of({} as IngredientItemDTO));
     component.onQuickRestockItem(mockItemEmpty);

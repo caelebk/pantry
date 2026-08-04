@@ -149,8 +149,23 @@ export class InventoryComponent implements OnInit {
         return matchesSearch && matchesLocation && matchesStatus;
       })
       .sort((a, b) => {
+        const aOutOfStock = isOutOfStock(a);
+        const bOutOfStock = isOutOfStock(b);
+
+        // Out of stock items always sort to the bottom of the table
+        if (aOutOfStock !== bOutOfStock) {
+          return aOutOfStock ? 1 : -1;
+        }
+
         let result = 0;
         if (this.sortBy === 'expiration') {
+          const hasExpA = a.expirationDate !== undefined && a.expirationDate !== null;
+          const hasExpB = b.expirationDate !== undefined && b.expirationDate !== null;
+
+          if (hasExpA !== hasExpB) {
+            return hasExpA ? -1 : 1;
+          }
+
           const dateA = a.expirationDate ? new Date(a.expirationDate).getTime() : 0;
           const dateB = b.expirationDate ? new Date(b.expirationDate).getTime() : 0;
           result = dateA - dateB;
@@ -163,7 +178,6 @@ export class InventoryComponent implements OnInit {
           const dateB = b.purchaseDate ? new Date(b.purchaseDate).getTime() : 0;
           result = dateB - dateA;
         } else if (this.sortBy === 'status') {
-          // Status order score: Fresh (1), Expiring (2), Expired (3), Out of Stock (4)
           const getStatusRank = (item: Item) => {
             if (isOutOfStock(item)) return 4;
             if (isExpired(item)) return 3;
