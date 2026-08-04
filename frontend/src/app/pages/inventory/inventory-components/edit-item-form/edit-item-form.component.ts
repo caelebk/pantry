@@ -13,6 +13,9 @@ import { PanelModule } from 'primeng/panel';
 import { Textarea } from 'primeng/textarea';
 import { Subject } from 'rxjs';
 
+import { Ingredient } from '@models/ingredient.model';
+import { Select } from 'primeng/select';
+
 @Component({
   selector: 'pantry-edit-item-form',
   standalone: true,
@@ -21,6 +24,7 @@ import { Subject } from 'rxjs';
     TranslocoModule,
     ReactiveFormsModule,
     InputText,
+    Select,
     InputNumber,
     DatePicker,
     Textarea,
@@ -33,6 +37,8 @@ export class EditItemFormComponent {
   units: Unit[] = [];
   @Input()
   locations: Location[] = [];
+  @Input()
+  ingredients: Ingredient[] = [];
 
   itemToEdit = input.required<Item>();
 
@@ -55,6 +61,22 @@ export class EditItemFormComponent {
           location: item.location,
           notes: item.notes,
         });
+      }
+    });
+
+    this.editItemForm.controls.ingredient.valueChanges.subscribe((selectedIng) => {
+      if (selectedIng) {
+        if (!this.editItemForm.controls.name.value) {
+          this.editItemForm.controls.name.setValue(selectedIng.name);
+        }
+        if (selectedIng.defaultUnit) {
+          this.editItemForm.controls.unit.setValue(selectedIng.defaultUnit);
+          this.editItemForm.controls.unit.disable();
+        } else {
+          this.editItemForm.controls.unit.enable();
+        }
+      } else {
+        this.editItemForm.controls.unit.enable();
       }
     });
   }

@@ -1,5 +1,54 @@
 <div class="p-4">
   <form [formGroup]="editItemForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Connected Ingredient Panel -->
+    <p-panel
+      [toggleable]="false"
+      styleClass="!bg-primary-50/30 dark:!bg-primary-950/20 !border-primary-200/60 dark:!border-primary-800/40">
+      <ng-template pTemplate="header">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-primary-500"></span>
+          <span class="text-xs font-bold uppercase tracking-wider text-surface-900 dark:text-white"
+            >Connected Ingredient</span
+          >
+        </div>
+      </ng-template>
+      <div class="space-y-3 pt-1">
+        <div>
+          <label
+            class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
+            for="edit-ingredient">
+            Master Ingredient <span class="text-rose-500 ml-0.5">*</span>
+          </label>
+          <p-select
+            inputId="edit-ingredient"
+            [options]="ingredients"
+            formControlName="ingredient"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            placeholder="Search and select ingredient..."
+            class="w-full !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700"
+            appendTo="body"></p-select>
+        </div>
+
+        @if (editItemForm.controls.ingredient.value; as selectedIng) {
+          <div
+            class="p-2.5 rounded-xl bg-white/80 dark:bg-surface-800/80 border border-primary-200/70 dark:border-primary-800/50 flex items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2">
+              <i class="pi pi-tag text-primary-500 text-xs"></i>
+              <span class="font-bold text-surface-900 dark:text-white">{{ selectedIng.name }}</span>
+            </div>
+            @if (selectedIng.defaultUnit) {
+              <span
+                class="px-2 py-0.5 rounded text-[10px] font-semibold bg-primary-50 dark:bg-primary-950/60 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800/40">
+                Unit: {{ selectedIng.defaultUnit.shortName }}
+              </span>
+            }
+          </div>
+        }
+      </div>
+    </p-panel>
+
     <div>
       <label
         class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"

@@ -14,6 +14,8 @@ import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { Subject } from 'rxjs';
 
+import { Ingredient } from '@models/ingredient.model';
+
 @Component({
   selector: 'pantry-add-item-form',
   standalone: true,
@@ -35,11 +37,31 @@ export class AddItemFormComponent {
   units: Unit[] = [];
   @Input()
   locations: Location[] = [];
+  @Input()
+  ingredients: Ingredient[] = [];
 
   @Output()
   addItem$ = new Subject<Item>();
 
   addItemForm: FormGroup<ItemFormControls> = createItemForm();
+
+  constructor() {
+    this.addItemForm.controls.ingredient.valueChanges.subscribe((selectedIng) => {
+      if (selectedIng) {
+        if (!this.addItemForm.controls.name.value) {
+          this.addItemForm.controls.name.setValue(selectedIng.name);
+        }
+        if (selectedIng.defaultUnit) {
+          this.addItemForm.controls.unit.setValue(selectedIng.defaultUnit);
+          this.addItemForm.controls.unit.disable();
+        } else {
+          this.addItemForm.controls.unit.enable();
+        }
+      } else {
+        this.addItemForm.controls.unit.enable();
+      }
+    });
+  }
 
   onSubmit() {
     if (this.addItemForm.valid) {
