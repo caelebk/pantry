@@ -117,6 +117,9 @@
             formControlName="defaultUnit"
             optionLabel="name"
             placeholder="Select Default Unit (e.g. Grams, Pieces, Liters)"
+            [filter]="true"
+            filterBy="name"
+            filterPlaceholder="Search units..."
             [showClear]="true"
             class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700"
             appendTo="body">
