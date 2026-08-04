@@ -80,12 +80,13 @@ Agents operating in this workspace adopt specialized roles mapped to `.agents/sk
 
 | Agent Role | Primary Responsibilities | Skill Reference |
 | :--- | :--- | :--- |
-| **Code Reviewer** | Security audit, taxonomy compliance, test coverage, code quality reviews | [.agents/skills/code-reviewer/SKILL.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/skills/code-reviewer/SKILL.md) |
-| **Refactoring Specialist** | Safe code simplification, decoupling, DRY enforcement, design token adoption | [.agents/skills/refactoring-specialist/SKILL.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/skills/refactoring-specialist/SKILL.md) |
-| **Bug Investigator** | Log inspection, stack trace analysis, TDD bug reproduction, root cause fixes | [.agents/skills/bug-investigator/SKILL.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/skills/bug-investigator/SKILL.md) |
-| **Documentation Architect** | API specs, DB schema docs, README updates, Transloco i18n keys | [.agents/skills/documentation-architect/SKILL.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/skills/documentation-architect/SKILL.md) |
-| **QA Specialist** | Pre-commit verification suites, formatting, linting, regression testing | [.agents/skills/quality-assurance/SKILL.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/skills/quality-assurance/SKILL.md) |
-| **TDD Specialist** | Requirement discovery, red/green testing loops, assertion verification | [.agents/skills/test-driven-development/SKILL.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/skills/test-driven-development/SKILL.md) |
+| **UI/UX Design Specialist** | Consistent themeing, element height & baseline alignment, minimalism, contrast, visual hierarchy | [.agents/skills/ui-ux-design/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/ui-ux-design/SKILL.md) |
+| **Code Reviewer** | Security audit, taxonomy compliance, test coverage, code quality reviews | [.agents/skills/code-reviewer/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/code-reviewer/SKILL.md) |
+| **Refactoring Specialist** | Safe code simplification, decoupling, DRY enforcement, design token adoption | [.agents/skills/refactoring-specialist/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/refactoring-specialist/SKILL.md) |
+| **Bug Investigator** | Log inspection, stack trace analysis, TDD bug reproduction, root cause fixes | [.agents/skills/bug-investigator/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/bug-investigator/SKILL.md) |
+| **Documentation Architect** | API specs, DB schema docs, README updates, Transloco i18n keys | [.agents/skills/documentation-architect/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/documentation-architect/SKILL.md) |
+| **QA Specialist** | Pre-commit verification suites, formatting, linting, regression testing | [.agents/skills/quality-assurance/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/quality-assurance/SKILL.md) |
+| **TDD Specialist** | Requirement discovery, red/green testing loops, assertion verification | [.agents/skills/test-driven-development/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/test-driven-development/SKILL.md) |
 
 ---
 
