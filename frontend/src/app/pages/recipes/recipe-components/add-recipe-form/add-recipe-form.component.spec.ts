@@ -108,7 +108,7 @@ describe('AddRecipeFormComponent', () => {
     expect(component.availableUnits.length).toBe(2);
   });
 
-  it('should lock unit to the default unit of the selected ingredient', () => {
+  it('should lock unit to the default unit of the selected ingredient and auto-append next empty row', () => {
     component.recipeIngredients = [];
     component.addIngredientRow();
     const row = component.recipeIngredients[0];
@@ -116,9 +116,10 @@ describe('AddRecipeFormComponent', () => {
     component.selectIngredient(row, mockIngredient);
     expect(row.ingredientId).toBe('ing-1');
     expect(row.unitId).toBe(mockUnitTbsp.id);
+    expect(component.recipeIngredients.length).toBe(2);
   });
 
-  it('should close ingredient dropdown when clicking outside', () => {
+  it('should close ingredient dropdown when clicking outside or pressing Escape key', () => {
     component.recipeIngredients = [];
     component.addIngredientRow();
     const row = component.recipeIngredients[0];
@@ -126,6 +127,10 @@ describe('AddRecipeFormComponent', () => {
 
     const dummyOutsideElement = document.createElement('div');
     component.onDocumentClick({ target: dummyOutsideElement } as unknown as MouseEvent);
+    expect(row.dropdownOpen).toBeFalse();
+
+    row.dropdownOpen = true;
+    component.onEscapeKey();
     expect(row.dropdownOpen).toBeFalse();
   });
 

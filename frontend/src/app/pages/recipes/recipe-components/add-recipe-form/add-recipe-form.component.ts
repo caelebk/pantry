@@ -78,6 +78,11 @@ export class AddRecipeFormComponent implements OnInit {
     }
   }
 
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    this.recipeIngredients.forEach((row) => (row.dropdownOpen = false));
+  }
+
   onInputBlur(row: FormIngredientRow): void {
     setTimeout(() => {
       row.dropdownOpen = false;
@@ -250,11 +255,16 @@ export class AddRecipeFormComponent implements OnInit {
   }
 
   selectIngredient(row: FormIngredientRow, ing: Ingredient): void {
+    const isLastRow = this.recipeIngredients[this.recipeIngredients.length - 1] === row;
     row.ingredientId = ing.id;
     row.searchFilter = ing.name;
     row.dropdownOpen = false;
     if (ing.defaultUnit) {
       row.unitId = ing.defaultUnit.id;
+    }
+
+    if (isLastRow) {
+      this.addIngredientRow();
     }
   }
 
@@ -305,11 +315,17 @@ export class AddRecipeFormComponent implements OnInit {
               this.activeRowIndexForQuickCreate !== null &&
               this.recipeIngredients[this.activeRowIndexForQuickCreate]
             ) {
+              const isLastRow =
+                this.activeRowIndexForQuickCreate === this.recipeIngredients.length - 1;
               const row = this.recipeIngredients[this.activeRowIndexForQuickCreate];
               row.ingredientId = created.id;
               row.searchFilter = name;
               row.unitId = defaultUnit.id;
               row.dropdownOpen = false;
+
+              if (isLastRow) {
+                this.addIngredientRow();
+              }
             }
           },
         });
