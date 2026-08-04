@@ -19,9 +19,11 @@ Pantry operates on a strict 4-tier inventory domain hierarchy:
 ## Migration Execution Procedure
 
 ### 1. SQL Migration (`backend/migrations/`)
-- Create a new migration file with sequential numeric prefix (e.g., `004_add_item_notes.sql`).
+- **Immutable Log Rule**: Never edit or mutate historical migration files (e.g. `0001_initial_schema.sql`).
+- Always create a new migration file with sequential numeric prefix (e.g., `0006_allow_nullable_expiration_date.sql`).
 - Write idempotent SQL statements or standard DDL alterations.
 - Test execution using `deno task db:migrate`.
+
 
 ### 2. Database Seeding & Reset (`backend/scripts/`)
 - Ensure sample data and category hierarchies in seed files match updated schema contracts.

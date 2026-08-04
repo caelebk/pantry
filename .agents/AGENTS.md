@@ -55,6 +55,8 @@ Always strictly enforce the 4-tier domain hierarchy across database schemas, bac
 1. **Parameterized Queries:** All SQL queries in `backend/src/services/` MUST use prepared parameters (`db.prepare(...)`). Never concatenate raw user input into SQL strings.
 2. **SQLite WAL Mode:** Database access must preserve Write-Ahead Logging (WAL) mode and enforce foreign keys (`PRAGMA foreign_keys = ON;`).
 3. **Input Validation:** All HTTP route parameters and request bodies MUST be validated in `backend/src/validators/` before invoking business logic.
+4. **Immutable Migration Logs:** Never edit past SQL migration files (e.g. `0001_initial_schema.sql`). All database schema alterations must be added as new sequential migration files in `backend/migrations/`.
+
 
 ### RULE-04: Frontend Architecture & UI Aesthetics
 1. **Standalone Components:** All Angular components must use Angular Standalone architecture (`standalone: true`).
