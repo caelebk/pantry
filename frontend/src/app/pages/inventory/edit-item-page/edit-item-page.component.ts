@@ -126,6 +126,20 @@ export class EditItemPageComponent implements OnInit {
 
     this.loadIngredients(id);
 
+    this.editItemForm.controls.ingredient.valueChanges.subscribe((selectedIng) => {
+      if (selectedIng) {
+        if (!this.editItemForm.controls.name.value) {
+          this.editItemForm.controls.name.setValue(selectedIng.name);
+        }
+        if (selectedIng.defaultUnit) {
+          this.editItemForm.controls.unit.setValue(selectedIng.defaultUnit);
+          this.editItemForm.controls.unit.disable();
+        }
+      } else {
+        this.editItemForm.controls.unit.enable();
+      }
+    });
+
     this.editItemForm.valueChanges.subscribe((val) => {
       this.currentFormValue.set(val);
     });
@@ -140,6 +154,10 @@ export class EditItemPageComponent implements OnInit {
           const found = ings.find((i) => i.id === selectNewId);
           if (found) {
             this.editItemForm.controls.ingredient.setValue(found);
+            if (found.defaultUnit) {
+              this.editItemForm.controls.unit.setValue(found.defaultUnit);
+              this.editItemForm.controls.unit.disable();
+            }
           }
         } else if (itemId && this.isLoading()) {
           this.itemService.getItemById(itemId).subscribe({
@@ -150,13 +168,17 @@ export class EditItemPageComponent implements OnInit {
                 name: item.name,
                 ingredient: matchedIngredient,
                 quantity: item.quantity,
-                unit: item.unit,
+                unit: matchedIngredient?.defaultUnit || item.unit,
                 purchaseDate: item.purchaseDate,
                 openedDate: item.openedDate,
                 expirationDate: item.expirationDate,
                 location: item.location,
                 notes: item.notes,
               });
+
+              if (matchedIngredient?.defaultUnit) {
+                this.editItemForm.controls.unit.disable();
+              }
 
               this.currentFormValue.set({
                 ...this.editItemForm.value,
@@ -178,7 +200,7 @@ export class EditItemPageComponent implements OnInit {
   openQuickCreateIngredient(): void {
     this.newIngredientName.set(this.editItemForm.controls.name.value || '');
     this.newIngredientGroup.set(null);
-    this.newIngredientDefaultUnit.set(this.editItemForm.controls.unit.value || null);
+    this.newIngredientDefaultUnit.set(this.units()[0] || null);
     this.displayQuickCreateDialog.set(true);
   }
 
@@ -188,12 +210,17 @@ export class EditItemPageComponent implements OnInit {
       this.toastService.showError('Please enter an ingredient name.');
       return;
     }
+    const defaultUnit = this.newIngredientDefaultUnit();
+    if (!defaultUnit) {
+      this.toastService.showError('Please select a default measurement unit.');
+      return;
+    }
 
     this.isCreatingIngredient.set(true);
     const dto = {
       name,
       ingredientGroupId: this.newIngredientGroup()?.id,
-      defaultUnitId: this.newIngredientDefaultUnit()?.id,
+      defaultUnitId: defaultUnit.id,
     };
 
     this.ingredientService.createIngredient(dto).subscribe({

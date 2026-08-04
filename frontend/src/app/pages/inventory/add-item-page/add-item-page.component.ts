@@ -93,10 +93,18 @@ export class AddItemPageComponent implements OnInit {
       },
     });
 
-    // Auto fill Item Name when selecting an Ingredient if Name is empty
+    // Auto fill Item Name & Unit when selecting an Ingredient
     this.addItemForm.controls.ingredient.valueChanges.subscribe((selectedIng) => {
-      if (selectedIng && !this.addItemForm.controls.name.value) {
-        this.addItemForm.controls.name.setValue(selectedIng.name);
+      if (selectedIng) {
+        if (!this.addItemForm.controls.name.value) {
+          this.addItemForm.controls.name.setValue(selectedIng.name);
+        }
+        if (selectedIng.defaultUnit) {
+          this.addItemForm.controls.unit.setValue(selectedIng.defaultUnit);
+          this.addItemForm.controls.unit.disable();
+        }
+      } else {
+        this.addItemForm.controls.unit.enable();
       }
     });
   }
@@ -112,6 +120,10 @@ export class AddItemPageComponent implements OnInit {
             if (!this.addItemForm.controls.name.value) {
               this.addItemForm.controls.name.setValue(found.name);
             }
+            if (found.defaultUnit) {
+              this.addItemForm.controls.unit.setValue(found.defaultUnit);
+              this.addItemForm.controls.unit.disable();
+            }
           }
         }
       },
@@ -121,7 +133,7 @@ export class AddItemPageComponent implements OnInit {
   openQuickCreateIngredient(): void {
     this.newIngredientName.set(this.addItemForm.controls.name.value || '');
     this.newIngredientGroup.set(null);
-    this.newIngredientDefaultUnit.set(this.addItemForm.controls.unit.value || null);
+    this.newIngredientDefaultUnit.set(this.units()[0] || null);
     this.displayQuickCreateDialog.set(true);
   }
 
@@ -131,12 +143,17 @@ export class AddItemPageComponent implements OnInit {
       this.toastService.showError('Please enter an ingredient name.');
       return;
     }
+    const defaultUnit = this.newIngredientDefaultUnit();
+    if (!defaultUnit) {
+      this.toastService.showError('Please select a default measurement unit.');
+      return;
+    }
 
     this.isCreatingIngredient.set(true);
     const dto = {
       name,
       ingredientGroupId: this.newIngredientGroup()?.id,
-      defaultUnitId: this.newIngredientDefaultUnit()?.id,
+      defaultUnitId: defaultUnit.id,
     };
 
     this.ingredientService.createIngredient(dto).subscribe({

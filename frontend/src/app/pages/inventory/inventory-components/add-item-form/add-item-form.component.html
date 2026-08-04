@@ -37,33 +37,52 @@
 
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label
-          class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
-          for="add-quantity">
-          {{ 'addItemForm.quantity' | transloco }}
-          <span class="text-red-500 ml-0.5">*</span>
-        </label>
+        <div class="flex items-center justify-between h-6 mb-1.5">
+          <label
+            class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider"
+            for="add-quantity">
+            {{ 'addItemForm.quantity' | transloco }}
+            <span class="text-red-500 ml-0.5">*</span>
+          </label>
+        </div>
         <p-inputnumber
           inputId="add-quantity"
           formControlName="quantity"
           class="w-full"
-          inputStyleClass="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl"
+          styleClass="w-full !h-[42px]"
+          inputStyleClass="w-full !h-[42px] !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl"
           [min]="1"
           [showButtons]="true"></p-inputnumber>
       </div>
       <div>
-        <label
-          class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
-          for="add-unit"
-          >{{ 'addItemForm.unit' | transloco }}<span class="text-red-500 ml-0.5">*</span></label
-        >
-        <p-select
-          inputId="add-unit"
-          [options]="units"
-          formControlName="unit"
-          optionLabel="name"
-          class="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700"
-          appendTo="body"></p-select>
+        <div class="flex items-center justify-between h-6 mb-1.5">
+          <span
+            class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+            {{ 'addItemForm.unit' | transloco }}
+          </span>
+          <span
+            class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20">
+            <i class="pi pi-lock text-[9px]"></i> Inherited
+          </span>
+        </div>
+        @if (addItemForm.controls.unit.value) {
+          <div
+            class="w-full h-[42px] flex items-center justify-between px-3 rounded-xl bg-white/60 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white shadow-inner cursor-not-allowed">
+            <span class="font-semibold text-sm">
+              {{ addItemForm.controls.unit.value.name }}
+            </span>
+            <span
+              class="px-2 py-0.5 text-xs font-bold rounded-lg bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-300 uppercase tracking-wider">
+              {{ addItemForm.controls.unit.value.shortName }}
+            </span>
+          </div>
+        } @else {
+          <div
+            class="w-full h-[42px] flex items-center gap-2 px-3 rounded-xl bg-white/40 dark:bg-surface-800/40 border border-dashed border-surface-300 dark:border-surface-700 text-surface-400 dark:text-surface-500 text-xs italic cursor-not-allowed">
+            <i class="pi pi-info-circle text-xs"></i>
+            <span>Select ingredient first</span>
+          </div>
+        }
       </div>
     </div>
 

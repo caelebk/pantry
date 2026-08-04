@@ -10,7 +10,6 @@ import { DatePicker } from 'primeng/datepicker';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { PanelModule } from 'primeng/panel';
-import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { Subject } from 'rxjs';
 
@@ -22,7 +21,6 @@ import { Subject } from 'rxjs';
     TranslocoModule,
     ReactiveFormsModule,
     InputText,
-    Select,
     InputNumber,
     DatePicker,
     Textarea,
