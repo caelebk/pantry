@@ -15,7 +15,21 @@ function createTestDB(): Database {
       default_unit_id INTEGER,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
-    )
+    );
+    CREATE TABLE ingredient_items (
+      id TEXT PRIMARY KEY,
+      ingredient_id TEXT,
+      label TEXT NOT NULL,
+      quantity REAL NOT NULL,
+      unit_id INTEGER NOT NULL,
+      location_id INTEGER NOT NULL,
+      expiration_date TEXT NOT NULL,
+      opened_date TEXT,
+      purchase_date TEXT NOT NULL,
+      notes TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
   `);
   return db;
 }
@@ -161,3 +175,38 @@ Deno.test('IngredientsService - getIngredientsByGroup - empty', async () => {
   assertEquals(ingredients.length, 0);
   db.close();
 });
+
+Deno.test('IngredientsService - reconcileIngredientUnit - success and updates all linked items', async () => {
+  const db = createTestDB();
+  setDB(db);
+  seedMockIngredient(db);
+
+  const itemId1 = 'item-123';
+  const itemId2 = 'item-456';
+  db.prepare(
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run(itemId1, mockId, 'Test Stock 1', 5, 1, 1, '2026-08-10', '2026-08-01');
+  db.prepare(
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run(itemId2, mockId, 'Test Stock 2', 3, 1, 1, '2026-08-12', '2026-08-01');
+
+  // Reconcile passing explicit quantity update for item-123 only
+  const updated = await ingredientService.reconcileIngredientUnit(mockId, 2, [
+    { id: itemId1, quantity: 5000 },
+  ]);
+
+  assertEquals(updated?.defaultUnitId, 2);
+  const items = await ingredientService.getItemsByIngredientId(mockId);
+  assertEquals(items.length, 2);
+
+  const item1 = items.find((i) => i.id === itemId1);
+  const item2 = items.find((i) => i.id === itemId2);
+
+  assertEquals(item1?.unit_id, 2);
+  assertEquals(item1?.quantity, 5000);
+  assertEquals(item2?.unit_id, 2); // Also updated to unit 2
+  assertEquals(item2?.quantity, 3); // Quantity unchanged
+
+  db.close();
+});
+

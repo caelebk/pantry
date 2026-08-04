@@ -6,6 +6,7 @@ import {
   UpdateIngredientDTO,
 } from '../models/data-models/ingredient.model.ts';
 import { IngredientRow } from '../models/schema-models/ingredient.model.ts';
+import { IngredientItemRow } from '../models/schema-models/ingredient-item.model.ts';
 
 export class IngredientsService {
   /**
@@ -129,6 +130,59 @@ export class IngredientsService {
     } catch (error: unknown) {
       console.error('Error finding ingredients by group:', error);
       throw new Error(IngredientMessages.DB_RETRIEVE_ITEMS_ERROR);
+    }
+  }
+
+  /**
+   * Retrieves all ingredient items associated with a specific ingredient ID.
+   */
+  async getItemsByIngredientId(ingredientId: string): Promise<IngredientItemRow[]> {
+    try {
+      const db = getDB();
+      const rows = db.prepare(
+        'SELECT * FROM ingredient_items WHERE ingredient_id = ? ORDER BY created_at DESC',
+      ).all(ingredientId) as IngredientItemRow[];
+      return rows;
+    } catch (error: unknown) {
+      console.error('Error finding items by ingredient ID:', error);
+      throw new Error(IngredientMessages.DB_RETRIEVE_ITEMS_ERROR);
+    }
+  }
+
+  /**
+   * Reconciles the default unit of an ingredient and updates all specified tied ingredient items with new quantities and unit.
+   */
+  async reconcileIngredientUnit(
+    id: string,
+    newDefaultUnitId: number,
+    itemUpdates: Array<{ id: string; quantity: number }>,
+  ): Promise<IngredientDTO | null> {
+    try {
+      const db = getDB();
+      const now = new Date().toISOString();
+      db.transaction(() => {
+        db.prepare(
+          'UPDATE ingredients SET default_unit_id = ?, updated_at = ? WHERE id = ?',
+        ).run(newDefaultUnitId, now, id);
+
+        // First update all linked items to ensure their unit_id is synchronized to the new default unit
+        db.prepare(
+          'UPDATE ingredient_items SET unit_id = ?, updated_at = ? WHERE ingredient_id = ?',
+        ).run(newDefaultUnitId, now, id);
+
+        // Apply specific quantity adjustments for reconciled items
+        const updateItemStmt = db.prepare(
+          'UPDATE ingredient_items SET quantity = ?, updated_at = ? WHERE id = ? AND ingredient_id = ?',
+        );
+        for (const item of itemUpdates) {
+          updateItemStmt.run(item.quantity, now, item.id, id);
+        }
+      })();
+
+      return await this.getIngredientById(id);
+    } catch (error: unknown) {
+      console.error('Error reconciling ingredient unit:', error);
+      throw new Error(IngredientMessages.DB_UPDATE_ITEM_ERROR);
     }
   }
 

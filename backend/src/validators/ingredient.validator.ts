@@ -2,7 +2,7 @@ import {
   CreateIngredientDTO,
   UpdateIngredientDTO,
 } from '../models/data-models/ingredient.model.ts';
-import { isNonEmptyString, isPositiveNumber } from '../utils/validators.ts';
+import { isNonEmptyString, isPositiveNumber, isValidUUID } from '../utils/validators.ts';
 
 /**
  * Validate Create Ingredient (using IngredientDTO for now)
@@ -12,7 +12,8 @@ export function isValidCreateIngredientDTO(data: Partial<CreateIngredientDTO>): 
   if (!isNonEmptyString(data.name || '')) return false;
 
   if (data.categoryId !== undefined && !isPositiveNumber(data.categoryId)) return false;
-  if (data.defaultUnitId !== undefined && !isPositiveNumber(data.defaultUnitId)) return false;
+  if (data.ingredientGroupId !== undefined && !isPositiveNumber(data.ingredientGroupId)) return false;
+  if (data.defaultUnitId === undefined || !isPositiveNumber(data.defaultUnitId)) return false;
 
   return true;
 }
@@ -31,3 +32,26 @@ export function isValidUpdateIngredientDTO(data: Partial<UpdateIngredientDTO>): 
 
   return true;
 }
+
+/**
+ * Validate Reconcile Units DTO
+ */
+export function isValidReconcileUnitsDTO(data: unknown): boolean {
+  if (!data || typeof data !== 'object') return false;
+  const body = data as { newDefaultUnitId?: unknown; items?: unknown };
+
+  if (typeof body.newDefaultUnitId !== 'number' || !isPositiveNumber(body.newDefaultUnitId)) {
+    return false;
+  }
+  if (!Array.isArray(body.items)) return false;
+
+  for (const item of body.items) {
+    if (!item || typeof item !== 'object') return false;
+    const { id, quantity } = item as { id?: unknown; quantity?: unknown };
+    if (typeof id !== 'string' || !isValidUUID(id)) return false;
+    if (typeof quantity !== 'number' || isNaN(quantity) || quantity <= 0) return false;
+  }
+
+  return true;
+}
+

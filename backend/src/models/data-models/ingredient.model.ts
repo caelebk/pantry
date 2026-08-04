@@ -19,8 +19,9 @@ export interface CreateIngredientDTO {
   name: string;
   ingredientGroupId?: number;
   categoryId?: number; // Legacy alias fallback
-  defaultUnitId?: number;
+  defaultUnitId: number;
 }
 
 // Update DTO - all create fields are optional
 export interface UpdateIngredientDTO extends Partial<CreateIngredientDTO> {}
+

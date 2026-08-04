@@ -10,6 +10,14 @@ function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec('PRAGMA foreign_keys = OFF');
   db.exec(`
+    CREATE TABLE ingredients (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      ingredient_group_id INTEGER,
+      default_unit_id INTEGER NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
     CREATE TABLE ingredient_items (
       id TEXT PRIMARY KEY,
       ingredient_id TEXT,
@@ -23,7 +31,7 @@ function createTestDB(): Database {
       notes TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
-    )
+    );
   `);
   return db;
 }
@@ -124,6 +132,32 @@ Deno.test('ItemService - createItem - success', async () => {
   const item = await itemService.createItem(newItem);
   assertEquals(item.label, newItem.label);
   assert(item.id.length > 0);
+  db.close();
+});
+
+Deno.test('ItemService - createItem - derives unit_id from parent ingredient default_unit_id', async () => {
+  const db = createTestDB();
+  setDB(db);
+
+  const ingId = 'ing-parent-1';
+  db.prepare('INSERT INTO ingredients (id, name, default_unit_id) VALUES (?, ?, ?)').run(
+    ingId,
+    'Jasmine Rice',
+    3,
+  );
+
+  const newItem: CreateItemDTO = {
+    ingredientId: ingId,
+    label: 'Jasmine Rice Bag',
+    quantity: 5,
+    unitId: 1, // Passed unit 1, but parent ingredient default_unit_id is 3
+    locationId: 1,
+    expirationDate: mockDate.toISOString(),
+    purchaseDate: mockDate.toISOString(),
+  };
+
+  const item = await itemService.createItem(newItem);
+  assertEquals(item.unitId, 3); // Derived from ingredient default_unit_id
   db.close();
 });
 

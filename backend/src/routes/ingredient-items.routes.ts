@@ -97,7 +97,7 @@ ingredientItems.get('/:id', async (c: Context) => {
 ingredientItems.post('/', async (c: Context) => {
   try {
     const body = await c.req.json<CreateIngredientItemDTO>();
-    if (!isValidCreateItemDTO(body as unknown as Record<string, unknown>)) {
+    if (!isValidCreateItemDTO(body)) {
       return c.json(errorResponse(ItemMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
     }
     const item: IngredientItemDTO = await ingredientItemService.createIngredientItem(body);

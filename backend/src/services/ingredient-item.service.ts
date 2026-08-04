@@ -62,6 +62,14 @@ export class IngredientItemService {
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
 
+      let effectiveUnitId = data.unitId;
+      if (data.ingredientId) {
+        const ingRow = db.prepare('SELECT default_unit_id FROM ingredients WHERE id = ?').get(data.ingredientId) as { default_unit_id: number | null } | undefined;
+        if (ingRow && ingRow.default_unit_id) {
+          effectiveUnitId = ingRow.default_unit_id;
+        }
+      }
+
       db.prepare(
         'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       ).run(
@@ -69,7 +77,7 @@ export class IngredientItemService {
         data.ingredientId ?? null,
         data.label,
         data.quantity,
-        data.unitId,
+        effectiveUnitId,
         data.locationId,
         toDate(data.expirationDate).toISOString(),
         data.openedDate ? toDate(data.openedDate).toISOString() : null,

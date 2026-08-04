@@ -9,12 +9,12 @@ import {
 /**
  * Validate CreateItemDTO
  */
-export function isValidCreateItemDTO(data: CreateItemDTO): boolean {
+export function isValidCreateItemDTO(data: Partial<CreateItemDTO>): boolean {
   if (!data) return false;
-  if (!isNonEmptyString(data.label)) return false;
-  if (!isPositiveNumber(data.quantity)) return false;
-  if (!isValidDate(data.expirationDate)) return false;
-  if (!isValidDate(data.purchaseDate)) return false;
+  if (!data.label || !isNonEmptyString(data.label)) return false;
+  if (data.quantity === undefined || !isPositiveNumber(data.quantity)) return false;
+  if (!data.expirationDate || !isValidDate(data.expirationDate)) return false;
+  if (!data.purchaseDate || !isValidDate(data.purchaseDate)) return false;
 
   if (
     data.ingredientId !== undefined && data.ingredientId !== null && !isValidUUID(data.ingredientId)

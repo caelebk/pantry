@@ -10,6 +10,7 @@ import { errorResponse, HttpStatusCode, successResponse } from '../utils/respons
 import { isValidUUID } from '../utils/validators.ts';
 import {
   isValidCreateIngredientDTO,
+  isValidReconcileUnitsDTO,
   isValidUpdateIngredientDTO,
 } from '../validators/ingredient.validator.ts';
 
@@ -203,4 +204,61 @@ ingredients.get('/:id/substitutions', async (c: Context) => {
   }
 });
 
+/**
+ * GET /api/ingredients/:id/items
+ * @summary Get all ingredient items tied to an ingredient
+ */
+ingredients.get('/:id/items', async (c: Context) => {
+  try {
+    const id = c.req.param('id')!;
+    if (!isValidUUID(id)) {
+      return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+    }
+    const items = await ingredientService.getItemsByIngredientId(id);
+    return c.json(successResponse(items), HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    return c.json(
+      errorResponse('Failed to retrieve items for ingredient.'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
+
+/**
+ * POST /api/ingredients/:id/reconcile-units
+ * @summary Reconcile ingredient default unit and associated ingredient item measures
+ */
+ingredients.post('/:id/reconcile-units', async (c: Context) => {
+  try {
+    const id = c.req.param('id')!;
+    if (!isValidUUID(id)) {
+      return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
+    }
+    const body = await c.req.json<{
+      newDefaultUnitId: number;
+      items: Array<{ id: string; quantity: number }>;
+    }>();
+
+    if (!isValidReconcileUnitsDTO(body)) {
+      return c.json(errorResponse(IngredientMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
+    }
+
+    const updated = await ingredientService.reconcileIngredientUnit(
+      id,
+      body.newDefaultUnitId,
+      body.items,
+    );
+    if (!updated) {
+      return c.json(errorResponse(IngredientMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
+    }
+    return c.json(successResponse(updated), HttpStatusCode.OK);
+  } catch (_error: unknown) {
+    return c.json(
+      errorResponse('Failed to reconcile ingredient units.'),
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
+
 export default ingredients;
+

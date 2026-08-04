@@ -222,3 +222,38 @@ Deno.test('Ingredients API - PUT /api/ingredients/:id - not found', async () => 
     ingredientService.updateIngredient = originalUpdate;
   }
 });
+
+Deno.test('Ingredients API - POST /api/ingredients/:id/reconcile-units - success', async () => {
+  const originalReconcile = ingredientService.reconcileIngredientUnit;
+  ingredientService.reconcileIngredientUnit = (_id, unitId, _items) =>
+    Promise.resolve({ ...mockIngredient, defaultUnitId: unitId });
+
+  try {
+    const app = new Hono();
+    app.route('/api/ingredients', ingredients);
+    const res = await app.request(
+      createRequest(`/api/ingredients/${mockIngredient.id}/reconcile-units`, 'POST', {
+        newDefaultUnitId: 2,
+        items: [{ id: '123e4567-e89b-12d3-a456-426614174001', quantity: 100 }],
+      }),
+    );
+    assertEquals(res.status, HttpStatusCode.OK);
+    const body = await res.json();
+    assertEquals(body.data.defaultUnitId, 2);
+  } finally {
+    ingredientService.reconcileIngredientUnit = originalReconcile;
+  }
+});
+
+Deno.test('Ingredients API - POST /api/ingredients/:id/reconcile-units - invalid body', async () => {
+  const app = new Hono();
+  app.route('/api/ingredients', ingredients);
+  const res = await app.request(
+    createRequest(`/api/ingredients/${mockIngredient.id}/reconcile-units`, 'POST', {
+      newDefaultUnitId: -1,
+      items: [{ id: 'invalid-uuid', quantity: -5 }],
+    }),
+  );
+  assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
+});
+
