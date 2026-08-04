@@ -97,6 +97,9 @@
             formControlName="ingredientGroup"
             optionLabel="name"
             placeholder="Select Ingredient Group (e.g. Pasta, Bakery, Grains)"
+            [filter]="true"
+            filterBy="name"
+            filterPlaceholder="Search ingredient groups..."
             [showClear]="true"
             class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700"
             appendTo="body">
