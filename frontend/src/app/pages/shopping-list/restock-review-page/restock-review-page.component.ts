@@ -273,6 +273,15 @@ export class RestockReviewPageComponent implements OnInit {
     return this.pantryItems().find((p) => p.id === draft.matchedItemId);
   }
 
+  getCurrentCandidate(draft: RestockDraftItem): ItemSimilarityCandidate | undefined {
+    if (!draft.matchedItemId) return draft.bestMatch || undefined;
+    return (
+      draft.matchCandidates.find((c) => c.item.id === draft.matchedItemId) ||
+      draft.bestMatch ||
+      undefined
+    );
+  }
+
   getMergedQuantity(draft: RestockDraftItem): number {
     if (draft.actionMode === 'update') {
       const matched = this.getMatchedItem(draft);

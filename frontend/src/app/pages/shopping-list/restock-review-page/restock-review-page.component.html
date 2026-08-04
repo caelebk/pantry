@@ -227,6 +227,9 @@
           @if (item.actionMode === 'update' && item.matchedItemId) {
             <div
               class="bg-emerald-500/10 dark:bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3.5 space-y-2">
+              @let matched = getMatchedItem(item);
+              @let candidate = getCurrentCandidate(item);
+
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                 <div
                   class="flex items-center gap-2 text-emerald-800 dark:text-emerald-200 font-bold">
@@ -236,13 +239,25 @@
                     viewBox="0 0 24 24"
                     stroke-width="2"
                     stroke="currentColor"
-                    class="w-4 h-4">
+                    class="w-4 h-4 shrink-0">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  Matching Pantry Item:
+                  <span>Matching Pantry Item:</span>
+
+                  @if (matched && item.matchCandidates.length <= 1) {
+                    <span class="text-xs font-extrabold text-emerald-900 dark:text-emerald-100">
+                      {{ matched.name }}
+                    </span>
+                    @if (candidate) {
+                      <span
+                        class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 text-[11px] font-extrabold border border-emerald-500/30">
+                        {{ Math.round(candidate.score * 100) }}% match
+                      </span>
+                    }
+                  }
                 </div>
 
                 <!-- Multiple matched items dropdown -->
@@ -270,7 +285,6 @@
               </div>
 
               <!-- Merged quantity display pill -->
-              @let matched = getMatchedItem(item);
               @if (matched) {
                 <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
                   <div class="text-emerald-700 dark:text-emerald-300">
