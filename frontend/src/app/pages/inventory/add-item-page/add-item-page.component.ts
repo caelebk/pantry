@@ -211,7 +211,9 @@ export class AddItemPageComponent implements OnInit {
   get previewRemainingText(): string {
     const item = this.previewItem;
     if (!item || !item.expirationDate) return '7 days remaining';
-    return getTimeDifferenceString(new Date(), item.expirationDate);
+    return item.expirationDate
+      ? getTimeDifferenceString(new Date(), item.expirationDate)
+      : 'No Expiration';
   }
 
   onSubmit(): void {

@@ -15,6 +15,7 @@ import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
+import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
 import {
   fadeInOut,
@@ -24,8 +25,10 @@ import {
 import {
   isExpired,
   isExpiringSoon,
+  isOutOfStock,
   sortItemsByExpirationDate,
 } from '@utility/itemUtility/ItemUtility';
+
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
@@ -36,7 +39,7 @@ import { AddItemFormComponent } from './inventory-components/add-item-form/add-i
 import { ActivatedRoute, Router } from '@angular/router';
 import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
 
-export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh';
+export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh' | 'out_of_stock';
 export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'status';
 
 @Component({
@@ -66,6 +69,7 @@ export class InventoryComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
+  private readonly shoppingListService = inject(ShoppingListService);
 
   readonly staggerDelayPerItemMs = STAGGER_DELAY_PER_ITEM_MS;
 
@@ -75,6 +79,9 @@ export class InventoryComponent implements OnInit {
   public expiringSoonItemsCount = 0;
   public expiredItemsCount = 0;
   public freshItemsCount = 0;
+  public outOfStockItemsCount = 0;
+
+  public selectedItemIds = signal<Set<string>>(new Set<string>());
 
   public items: Item[] = [];
   public units: Unit[] = [];
@@ -130,11 +137,13 @@ export class InventoryComponent implements OnInit {
         // 3. Status Filter
         let matchesStatus = true;
         if (this.selectedStatusFilter === 'expiring') {
-          matchesStatus = isExpiringSoon(item);
+          matchesStatus = isExpiringSoon(item) && !isOutOfStock(item);
         } else if (this.selectedStatusFilter === 'expired') {
-          matchesStatus = isExpired(item);
+          matchesStatus = isExpired(item) && !isOutOfStock(item);
         } else if (this.selectedStatusFilter === 'fresh') {
-          matchesStatus = !isExpired(item) && !isExpiringSoon(item);
+          matchesStatus = !isExpired(item) && !isExpiringSoon(item) && !isOutOfStock(item);
+        } else if (this.selectedStatusFilter === 'out_of_stock') {
+          matchesStatus = isOutOfStock(item);
         }
 
         return matchesSearch && matchesLocation && matchesStatus;
@@ -154,8 +163,9 @@ export class InventoryComponent implements OnInit {
           const dateB = b.purchaseDate ? new Date(b.purchaseDate).getTime() : 0;
           result = dateB - dateA;
         } else if (this.sortBy === 'status') {
-          // Status order score: Fresh (1), Expiring (2), Expired (3)
+          // Status order score: Fresh (1), Expiring (2), Expired (3), Out of Stock (4)
           const getStatusRank = (item: Item) => {
+            if (isOutOfStock(item)) return 4;
             if (isExpired(item)) return 3;
             if (isExpiringSoon(item)) return 2;
             return 1;
@@ -376,10 +386,16 @@ export class InventoryComponent implements OnInit {
       next: (items) => {
         this.items = sortItemsByExpirationDate(items);
         this.totalItemsCount = this.items.length;
-        this.expiringSoonItemsCount = this.items.filter((item) => isExpiringSoon(item)).length;
-        this.expiredItemsCount = this.items.filter((item) => isExpired(item)).length;
-        this.freshItemsCount =
-          this.totalItemsCount - this.expiringSoonItemsCount - this.expiredItemsCount;
+        this.expiringSoonItemsCount = this.items.filter(
+          (item) => isExpiringSoon(item) && item.quantity > 0,
+        ).length;
+        this.expiredItemsCount = this.items.filter(
+          (item) => isExpired(item) && item.quantity > 0,
+        ).length;
+        this.outOfStockItemsCount = this.items.filter((item) => isOutOfStock(item)).length;
+        this.freshItemsCount = this.items.filter(
+          (item) => !isExpired(item) && !isExpiringSoon(item) && item.quantity > 0,
+        ).length;
 
         setTimeout(() => {
           this.isLoading.set(false);
@@ -437,7 +453,7 @@ export class InventoryComponent implements OnInit {
     }
     this.confirmationService.confirm({
       header: 'Remove Item',
-      message: `Are you sure you want to remove "${item.name}" from inventory?`,
+      message: `Are you sure you want to permanently delete "${item.name}" from inventory?`,
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.inventoryService.removeItem(item).subscribe({
@@ -465,6 +481,10 @@ export class InventoryComponent implements OnInit {
     return isExpiringSoon(item);
   }
 
+  public isOutOfStockItem(item: Item): boolean {
+    return isOutOfStock(item);
+  }
+
   public onUpdateItem(updatedItem: Item): void {
     this.inventoryService.updateItem(updatedItem).subscribe({
       next: () => {
@@ -473,6 +493,202 @@ export class InventoryComponent implements OnInit {
       },
       error: () => {
         this.toastService.showError(`Failed to update "${updatedItem.name}".`, 'Error');
+      },
+    });
+  }
+
+  // Selection Methods
+  public toggleSelectItem(id: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const current = new Set(this.selectedItemIds());
+    if (current.has(id)) {
+      current.delete(id);
+    } else {
+      current.add(id);
+    }
+    this.selectedItemIds.set(current);
+  }
+
+  public toggleSelectAllVisible(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const current = new Set(this.selectedItemIds());
+    const visibleIds = this.displayedItems.map((item) => item.id);
+    const allSelected = visibleIds.length > 0 && visibleIds.every((id) => current.has(id));
+
+    if (allSelected) {
+      visibleIds.forEach((id) => current.delete(id));
+    } else {
+      visibleIds.forEach((id) => current.add(id));
+    }
+    this.selectedItemIds.set(current);
+  }
+
+  public isAllVisibleSelected(): boolean {
+    if (this.displayedItems.length === 0) return false;
+    const current = this.selectedItemIds();
+    return this.displayedItems.every((item) => current.has(item.id));
+  }
+
+  public isItemSelected(id: string): boolean {
+    return this.selectedItemIds().has(id);
+  }
+
+  public clearSelection(): void {
+    this.selectedItemIds.set(new Set<string>());
+  }
+
+  // Stock Action Handlers
+  public onClearStockItem(item: Item, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.confirmationService.confirm({
+      header: 'Clear Stock',
+      message: `Clear stock for "${item.name}"? This will set quantity to 0 so you can restock it later.`,
+      icon: 'pi pi-box',
+      accept: () => {
+        const updatedItem = { ...item, quantity: 0, expirationDate: undefined };
+
+        this.inventoryService.updateItem(updatedItem).subscribe({
+          next: () => {
+            this.toastService.showSuccess(`Cleared stock for "${item.name}".`, 'Stock Cleared');
+            this.initParameters();
+          },
+          error: () => {
+            this.toastService.showError(`Failed to clear stock for "${item.name}".`, 'Error');
+          },
+        });
+      },
+    });
+  }
+
+  public onQuickRestockItem(item: Item, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    const newQty = item.quantity > 0 ? item.quantity + 1 : 1;
+    const updatedItem = { ...item, quantity: newQty };
+    this.inventoryService.updateItem(updatedItem).subscribe({
+      next: () => {
+        this.toastService.showSuccess(
+          `Restocked "${item.name}" (${newQty} ${item.unit.shortName}).`,
+          'Item Restocked',
+        );
+        this.initParameters();
+      },
+      error: () => {
+        this.toastService.showError(`Failed to restock "${item.name}".`, 'Error');
+      },
+    });
+  }
+
+  public onAddToShoppingList(item: Item, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.shoppingListService.addItem({
+      name: item.name,
+      category: 'Pantry Restock',
+      quantity: 1,
+      unit: item.unit.shortName,
+      source: 'low_stock',
+    });
+  }
+
+  // Bulk Action Handlers
+  public onBulkClearStock(): void {
+    const ids = Array.from(this.selectedItemIds());
+    if (ids.length === 0) return;
+
+    this.confirmationService.confirm({
+      header: 'Bulk Clear Stock',
+      message: `Are you sure you want to clear stock (set quantity to 0) for ${ids.length} selected item(s)?`,
+      icon: 'pi pi-box',
+      accept: () => {
+        this.inventoryService.bulkClearStock(ids).subscribe({
+          next: (res) => {
+            this.toastService.showSuccess(
+              `Cleared stock for ${res.clearedCount} item(s).`,
+              'Bulk Action Complete',
+            );
+            this.clearSelection();
+            this.initParameters();
+          },
+          error: () => {
+            this.toastService.showError('Failed to bulk clear stock.', 'Error');
+          },
+        });
+      },
+    });
+  }
+
+  public onBulkAddToShoppingList(): void {
+    const ids = Array.from(this.selectedItemIds());
+    if (ids.length === 0) return;
+
+    const selectedItems = this.items.filter((item) => ids.includes(item.id));
+    const dtos = selectedItems.map((item) => ({
+      name: item.name,
+      category: 'Pantry Restock',
+      quantity: 1,
+      unit: item.unit.shortName,
+      source: 'low_stock' as const,
+    }));
+
+    this.shoppingListService.addMultipleItems(dtos);
+    this.clearSelection();
+  }
+
+  public onBulkRestock(): void {
+    const ids = Array.from(this.selectedItemIds());
+    if (ids.length === 0) return;
+
+    const selectedItems = this.items.filter((item) => ids.includes(item.id));
+    let completed = 0;
+    selectedItems.forEach((item) => {
+      const updatedItem = { ...item, quantity: item.quantity > 0 ? item.quantity + 1 : 1 };
+      this.inventoryService.updateItem(updatedItem).subscribe({
+        next: () => {
+          completed++;
+          if (completed === selectedItems.length) {
+            this.toastService.showSuccess(
+              `Restocked ${completed} item(s).`,
+              'Bulk Action Complete',
+            );
+            this.clearSelection();
+            this.initParameters();
+          }
+        },
+      });
+    });
+  }
+
+  public onBulkDelete(): void {
+    const ids = Array.from(this.selectedItemIds());
+    if (ids.length === 0) return;
+
+    this.confirmationService.confirm({
+      header: 'Bulk Delete Items',
+      message: `Are you sure you want to permanently delete ${ids.length} selected item(s)?`,
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.inventoryService.bulkDeleteItems(ids).subscribe({
+          next: (res) => {
+            this.toastService.showSuccess(
+              `Permanently deleted ${res.deletedCount} item(s).`,
+              'Items Deleted',
+            );
+            this.clearSelection();
+            this.initParameters();
+          },
+          error: () => {
+            this.toastService.showError('Failed to bulk delete items.', 'Error');
+          },
+        });
       },
     });
   }

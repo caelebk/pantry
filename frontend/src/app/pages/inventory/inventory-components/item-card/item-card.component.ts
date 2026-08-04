@@ -37,9 +37,10 @@ export class ItemCardComponent {
   public expired = computed(() => isExpired(this.item()));
   public expiringSoon = computed(() => isExpiringSoon(this.item()));
   public itemProgress = computed(() => itemProgress(this.item()));
-  public timeRemaining = computed(() =>
-    getTimeDifferenceString(new Date(), this.item().expirationDate),
-  );
+  public timeRemaining = computed(() => {
+    const exp = this.item().expirationDate;
+    return exp ? getTimeDifferenceString(new Date(), exp) : 'No Expiration';
+  });
 
   public ingredientName = computed(() => {
     const ingId = this.item().ingredientId;

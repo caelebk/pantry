@@ -284,6 +284,8 @@ export class IngredientsPageComponent implements OnInit {
 
   getItemRemainingText(item: Item): string {
     if (!item.expirationDate) return 'No expiry';
-    return getTimeDifferenceString(new Date(), item.expirationDate);
+    return item.expirationDate
+      ? getTimeDifferenceString(new Date(), item.expirationDate)
+      : 'No Expiration';
   }
 }

@@ -112,7 +112,9 @@
                 : 'text-surface-900 dark:text-white font-bold'
           "
           class="truncate block text-xs">
-          {{ item().expirationDate.toLocaleDateString() }}
+          {{
+            item().expirationDate ? item().expirationDate?.toLocaleDateString() : 'No Expiration'
+          }}
         </span>
       </div>
       <div>

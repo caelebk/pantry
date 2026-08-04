@@ -101,6 +101,20 @@
             <span>Expired</span>
             <span class="w-2 h-2 rounded-full bg-rose-500"></span>
           </button>
+          <button
+            (click)="setStatusFilter('out_of_stock')"
+            [class.bg-white]="selectedStatusFilter === 'out_of_stock'"
+            [class.dark:bg-surface-700]="selectedStatusFilter === 'out_of_stock'"
+            [class.shadow-xs]="selectedStatusFilter === 'out_of_stock'"
+            [class.text-slate-600]="selectedStatusFilter === 'out_of_stock'"
+            [class.dark:text-slate-300]="selectedStatusFilter === 'out_of_stock'"
+            [class.font-bold]="selectedStatusFilter === 'out_of_stock'"
+            [class.text-surface-600]="selectedStatusFilter !== 'out_of_stock'"
+            [class.dark:text-surface-400]="selectedStatusFilter !== 'out_of_stock'"
+            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1">
+            <span>Out of Stock</span>
+            <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+          </button>
         </div>
 
         <!-- Location Filter Styled Dropdown (PrimeNG p-select) -->
@@ -194,6 +208,16 @@
               <thead>
                 <tr
                   class="bg-surface-200/60 dark:bg-surface-800/80 border-b border-surface-300/60 dark:border-surface-700/60 text-[11px] font-extrabold uppercase tracking-wider text-surface-600 dark:text-surface-400 select-none">
+                  <!-- Checkbox Select All Header -->
+                  <th class="py-3.5 px-3 w-10 text-center select-none">
+                    <input
+                      type="checkbox"
+                      [checked]="isAllVisibleSelected()"
+                      (change)="toggleSelectAllVisible($event)"
+                      class="w-4 h-4 text-primary-600 rounded border-surface-300 dark:border-surface-600 focus:ring-primary-500 cursor-pointer"
+                      title="Select / Deselect All Visible" />
+                  </th>
+
                   <!-- Item Name Column Header -->
                   <th
                     (click)="toggleSort('name')"
@@ -271,11 +295,6 @@
                       }
                     </div>
                   </th>
-
-                  <!-- Actions Header -->
-                  <th class="py-3.5 px-4 text-right">
-                    <span>Actions</span>
-                  </th>
                 </tr>
               </thead>
               <tbody
@@ -287,15 +306,32 @@
                       value: '',
                       params: { delay: i * (staggerDelayPerItemMs / 2) },
                     }"
+                    [class.opacity-60]="isOutOfStockItem(item)"
+                    [class.bg-primary-50\/20]="isItemSelected(item.id)"
                     class="odd:bg-surface-50/50 dark:odd:bg-surface-800/20 hover:bg-primary-50/50 dark:hover:bg-surface-800/60 transition-colors group cursor-pointer">
-                    <!-- Item Name & Freshness Badge -->
+                    <!-- Checkbox Row Select -->
+                    <td class="py-3.5 px-3 text-center" (click)="$event.stopPropagation()">
+                      <input
+                        type="checkbox"
+                        [checked]="isItemSelected(item.id)"
+                        (change)="toggleSelectItem(item.id, $event)"
+                        class="w-4 h-4 text-primary-600 rounded border-surface-300 dark:border-surface-600 focus:ring-primary-500 cursor-pointer" />
+                    </td>
+
+                    <!-- Item Name & Freshness / Stock Badge -->
                     <td class="py-3.5 px-4 font-bold text-surface-900 dark:text-white">
                       <div class="flex items-center gap-2">
                         <span
                           class="truncate max-w-[200px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"
+                          [class.line-through]="isOutOfStockItem(item)"
                           >{{ item.name }}</span
                         >
-                        @if (isExpiredItem(item)) {
+                        @if (isOutOfStockItem(item)) {
+                          <span
+                            class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20 shrink-0">
+                            🫙 Out of Stock
+                          </span>
+                        } @else if (isExpiredItem(item)) {
                           <span
                             class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
                             🚨 Expired
@@ -348,7 +384,11 @@
 
                     <!-- Quantity (View-Only) -->
                     <td class="py-3.5 px-4">
-                      <span class="font-extrabold text-surface-900 dark:text-white">
+                      <span
+                        class="font-extrabold"
+                        [class.text-slate-400]="isOutOfStockItem(item)"
+                        [class.text-surface-900]="!isOutOfStockItem(item)"
+                        [class.dark:text-white]="!isOutOfStockItem(item)">
                         {{ item.quantity }}
                         <span class="text-xs font-normal text-surface-500">{{
                           item.unit.shortName
@@ -358,34 +398,36 @@
 
                     <!-- Expiration Date -->
                     <td class="py-3.5 px-4">
-                      <span
-                        [class.text-rose-600]="isExpiredItem(item)"
-                        [class.dark:text-rose-400]="isExpiredItem(item)"
-                        [class.text-amber-600]="isExpiringSoonItem(item)"
-                        [class.dark:text-amber-400]="isExpiringSoonItem(item)"
-                        [class.font-bold]="isExpiredItem(item) || isExpiringSoonItem(item)"
-                        class="text-surface-700 dark:text-surface-300">
-                        {{ item.expirationDate | date: 'mediumDate' }}
-                      </span>
+                      @if (item.expirationDate) {
+                        <span
+                          [class.text-rose-600]="isExpiredItem(item) && !isOutOfStockItem(item)"
+                          [class.dark:text-rose-400]="
+                            isExpiredItem(item) && !isOutOfStockItem(item)
+                          "
+                          [class.text-amber-600]="
+                            isExpiringSoonItem(item) && !isOutOfStockItem(item)
+                          "
+                          [class.dark:text-amber-400]="
+                            isExpiringSoonItem(item) && !isOutOfStockItem(item)
+                          "
+                          [class.font-bold]="
+                            (isExpiredItem(item) || isExpiringSoonItem(item)) &&
+                            !isOutOfStockItem(item)
+                          "
+                          class="text-surface-700 dark:text-surface-300">
+                          {{ item.expirationDate | date: 'mediumDate' }}
+                        </span>
+                      } @else {
+                        <span class="text-surface-400 dark:text-surface-500 italic text-[11px]"
+                          >No Expiration</span
+                        >
+                      }
                     </td>
 
                     <!-- Purchased Date -->
                     <td
                       class="py-3.5 px-4 text-surface-500 dark:text-surface-400 hidden md:table-cell">
                       {{ item.purchaseDate | date: 'mediumDate' }}
-                    </td>
-
-                    <!-- Actions Column -->
-                    <td class="py-3.5 px-4 text-right">
-                      <div class="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          (click)="onDeleteItem(item, $event)"
-                          class="p-2 rounded-lg text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
-                          title="Delete Item">
-                          <i class="pi pi-trash text-xs"></i>
-                        </button>
-                      </div>
                     </td>
                   </tr>
                 }
@@ -523,6 +565,65 @@
     </ng-template>
   </p-confirmDialog>
 </div>
+
+<!-- Floating Glassmorphic Bulk Actions Bar -->
+@if (selectedItemIds().size > 0) {
+  <div
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl bg-surface-900/90 dark:bg-surface-800/95 text-white shadow-2xl backdrop-blur-md border border-white/10">
+    <div class="flex items-center gap-2 text-xs font-bold border-r border-surface-700 pr-3">
+      <span class="px-2 py-0.5 rounded-full bg-primary-600 text-white text-[11px]">
+        {{ selectedItemIds().size }}
+      </span>
+      <span>selected</span>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <!-- Bulk Clear Stock -->
+      <button
+        (click)="onBulkClearStock()"
+        class="px-3 py-1.5 rounded-xl bg-surface-800 hover:bg-surface-700 text-amber-300 font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+        title="Set quantity to 0 for selected items">
+        <i class="pi pi-box text-xs"></i>
+        <span>Clear Stock</span>
+      </button>
+
+      <!-- Bulk Add to Shopping List -->
+      <button
+        (click)="onBulkAddToShoppingList()"
+        class="px-3 py-1.5 rounded-xl bg-surface-800 hover:bg-surface-700 text-primary-300 font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+        title="Add selected items to shopping list">
+        <i class="pi pi-shopping-cart text-xs"></i>
+        <span>Shopping List</span>
+      </button>
+
+      <!-- Bulk Restock -->
+      <button
+        (click)="onBulkRestock()"
+        class="px-3 py-1.5 rounded-xl bg-surface-800 hover:bg-surface-700 text-emerald-300 font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+        title="Increment quantity (+1) for selected items">
+        <i class="pi pi-plus-circle text-xs"></i>
+        <span>Quick Restock</span>
+      </button>
+
+      <!-- Bulk Delete -->
+      <button
+        (click)="onBulkDelete()"
+        class="px-3 py-1.5 rounded-xl bg-rose-600/30 hover:bg-rose-600/50 text-rose-300 font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+        title="Permanently delete selected items">
+        <i class="pi pi-trash text-xs"></i>
+        <span>Delete</span>
+      </button>
+    </div>
+
+    <!-- Deselect / Clear selection -->
+    <button
+      (click)="clearSelection()"
+      class="ml-2 text-surface-400 hover:text-white transition-colors cursor-pointer p-1"
+      title="Deselect All">
+      <i class="pi pi-times text-xs"></i>
+    </button>
+  </div>
+}
 
 <!-- Scroll to Top Button -->
 @if (showScrollTopButton) {
