@@ -274,7 +274,6 @@ export class IngredientItemService {
     return candidates.sort((a, b) => b.score - a.score);
   }
 
-
   private mapItemRowToItem(row: IngredientItemRow): IngredientItemDTO {
     return {
       id: row.id,

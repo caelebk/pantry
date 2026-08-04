@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
+import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import { CreateRecipeDTO } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
+import { IngredientGroupService } from '../../../../services/inventory/ingredient-group.service';
 import { IngredientService } from '../../../../services/inventory/ingredient.service';
 import { UnitService } from '../../../../services/inventory/unit.service';
 import { RecipeService } from '../../../../services/recipe.service';
@@ -24,6 +26,8 @@ interface FormStepRow {
   timerSeconds?: number | null;
 }
 
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -40,6 +44,8 @@ import { TextareaModule } from 'primeng/textarea';
     TextareaModule,
     SelectModule,
     InputNumberModule,
+    DialogModule,
+    ButtonModule,
   ],
   templateUrl: './add-recipe-form.component.html',
 })
@@ -48,6 +54,7 @@ export class AddRecipeFormComponent implements OnInit {
 
   private readonly recipeService = inject(RecipeService);
   private readonly ingredientService = inject(IngredientService);
+  private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly unitService = inject(UnitService);
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
@@ -56,6 +63,15 @@ export class AddRecipeFormComponent implements OnInit {
   availableIngredients: Ingredient[] = [];
   availableUnits: Unit[] = [];
   ingredientMap = new Map<string, Ingredient>();
+
+  // Quick Create Ingredient Dialog state
+  displayQuickCreateDialog = signal<boolean>(false);
+  newIngredientName = signal<string>('');
+  newIngredientGroup = signal<IngredientGroup | null>(null);
+  newIngredientDefaultUnit = signal<Unit | null>(null);
+  isCreatingIngredient = signal<boolean>(false);
+  ingredientGroups = signal<IngredientGroup[]>([]);
+  activeRowIndexForQuickCreate: number | null = null;
 
   isEditMode = false;
   editingRecipeId: string | null = null;
@@ -83,6 +99,10 @@ export class AddRecipeFormComponent implements OnInit {
       this.isEditMode = true;
       this.editingRecipeId = id;
     }
+
+    this.ingredientGroupService.getIngredientGroups().subscribe({
+      next: (groups) => this.ingredientGroups.set(groups),
+    });
 
     this.unitService.getUnits().subscribe({
       next: (u) => (this.availableUnits = u),
@@ -199,6 +219,12 @@ export class AddRecipeFormComponent implements OnInit {
     return this.availableIngredients.filter((ing) => ing.name.toLowerCase().includes(term));
   }
 
+  getUnitShortName(unitId: number | null): string {
+    if (!unitId) return '';
+    const unit = this.availableUnits.find((u) => u.id === Number(unitId));
+    return unit ? unit.shortName || unit.name : '';
+  }
+
   selectIngredient(row: FormIngredientRow, ing: Ingredient): void {
     row.ingredientId = ing.id;
     row.searchFilter = ing.name;
@@ -206,6 +232,70 @@ export class AddRecipeFormComponent implements OnInit {
     if (ing.defaultUnit) {
       row.unitId = ing.defaultUnit.id;
     }
+  }
+
+  // --- Quick Create Ingredient Handlers ---
+  openQuickCreateIngredient(rowIndex?: number): void {
+    this.activeRowIndexForQuickCreate = rowIndex !== undefined ? rowIndex : null;
+    let initialName = '';
+    if (rowIndex !== undefined && this.recipeIngredients[rowIndex]) {
+      initialName = this.recipeIngredients[rowIndex].searchFilter.trim();
+    }
+    this.newIngredientName.set(initialName);
+    this.newIngredientGroup.set(null);
+    this.newIngredientDefaultUnit.set(this.availableUnits[0] || null);
+    this.displayQuickCreateDialog.set(true);
+  }
+
+  submitQuickCreateIngredient(): void {
+    const name = this.newIngredientName().trim();
+    if (!name) {
+      this.toastService.showError('Please enter an ingredient name.');
+      return;
+    }
+    const defaultUnit = this.newIngredientDefaultUnit();
+    if (!defaultUnit) {
+      this.toastService.showError('Please select a default measurement unit.');
+      return;
+    }
+
+    this.isCreatingIngredient.set(true);
+    const dto = {
+      name,
+      ingredientGroupId: this.newIngredientGroup()?.id,
+      defaultUnitId: defaultUnit.id,
+    };
+
+    this.ingredientService.createIngredient(dto).subscribe({
+      next: (created) => {
+        this.isCreatingIngredient.set(false);
+        this.displayQuickCreateDialog.set(false);
+        this.toastService.showSuccess(`Ingredient "${name}" created!`, 'Ingredient Created');
+
+        this.ingredientService.getIngredients().subscribe({
+          next: (ingredients) => {
+            this.availableIngredients = ingredients;
+            ingredients.forEach((i) => this.ingredientMap.set(i.id, i));
+
+            if (
+              this.activeRowIndexForQuickCreate !== null &&
+              this.recipeIngredients[this.activeRowIndexForQuickCreate]
+            ) {
+              const row = this.recipeIngredients[this.activeRowIndexForQuickCreate];
+              row.ingredientId = created.id;
+              row.searchFilter = name;
+              row.unitId = defaultUnit.id;
+              row.dropdownOpen = false;
+            }
+          },
+        });
+      },
+      error: (err) => {
+        this.isCreatingIngredient.set(false);
+        console.error('Failed to create ingredient:', err);
+        this.toastService.showError('Failed to create ingredient.');
+      },
+    });
   }
 
   // --- Step Row Handlers ---

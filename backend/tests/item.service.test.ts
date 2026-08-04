@@ -313,7 +313,6 @@ Deno.test('ItemService - findSimilarItems - matches by linked ingredient name', 
     1,
   );
 
-
   db.prepare(
     'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
   ).run(
@@ -335,7 +334,6 @@ Deno.test('ItemService - findSimilarItems - matches by linked ingredient name', 
   assertEquals(candidates[0].tier, 'exact');
   db.close();
 });
-
 
 Deno.test('ItemService - bulkClearStock - success', async () => {
   const db = createTestDB();
