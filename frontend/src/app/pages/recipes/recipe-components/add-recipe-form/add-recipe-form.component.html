@@ -341,13 +341,14 @@
                 class="flex gap-3 items-center relative sub-card p-3 rounded-xl transition-all"
                 [style.z-index]="row.dropdownOpen ? 40 - i : 1">
                 <!-- Searchable Ingredient Input -->
-                <div class="flex-1 min-w-0 relative">
+                <div class="flex-1 min-w-0 relative ingredient-search-container">
                   <input
                     pInputText
                     type="text"
                     [(ngModel)]="row.searchFilter"
                     [name]="'ingSearch_' + i"
                     (focus)="row.dropdownOpen = true"
+                    (blur)="onInputBlur(row)"
                     (input)="row.dropdownOpen = true; row.ingredientId = ''"
                     placeholder="Search ingredient..."
                     class="w-full" />

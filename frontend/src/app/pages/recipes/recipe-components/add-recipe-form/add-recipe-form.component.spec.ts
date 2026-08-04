@@ -118,6 +118,17 @@ describe('AddRecipeFormComponent', () => {
     expect(row.unitId).toBe(mockUnitTbsp.id);
   });
 
+  it('should close ingredient dropdown when clicking outside', () => {
+    component.recipeIngredients = [];
+    component.addIngredientRow();
+    const row = component.recipeIngredients[0];
+    row.dropdownOpen = true;
+
+    const dummyOutsideElement = document.createElement('div');
+    component.onDocumentClick({ target: dummyOutsideElement } as unknown as MouseEvent);
+    expect(row.dropdownOpen).toBeFalse();
+  });
+
   it('should open quick create ingredient dialog and create a new ingredient with customizable default unit', () => {
     component.recipeIngredients = [];
     component.addIngredientRow();

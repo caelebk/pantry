@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, OnInit, Output, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  inject,
+  OnInit,
+  Output,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -59,6 +68,21 @@ export class AddRecipeFormComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly elementRef = inject(ElementRef);
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (target && !target.closest('.ingredient-search-container')) {
+      this.recipeIngredients.forEach((row) => (row.dropdownOpen = false));
+    }
+  }
+
+  onInputBlur(row: FormIngredientRow): void {
+    setTimeout(() => {
+      row.dropdownOpen = false;
+    }, 200);
+  }
 
   availableIngredients: Ingredient[] = [];
   availableUnits: Unit[] = [];
