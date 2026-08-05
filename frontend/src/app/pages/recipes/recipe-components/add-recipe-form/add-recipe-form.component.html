@@ -339,23 +339,25 @@
           <div class="space-y-3">
             @for (row of recipeIngredients; track $index; let i = $index) {
               <div
-                class="flex gap-2.5 items-center relative sub-card p-3 rounded-xl transition-all duration-200"
-                [style.z-index]="row.dropdownOpen ? 40 - i : 1"
-                [class.opacity-40]="draggedIngredientIndex === i"
-                [class.scale-[0.99]]="draggedIngredientIndex === i"
-                [class.border-dashed]="draggedIngredientIndex === i"
-                [class.border-primary-500]="dragOverIngredientIndex === i && draggedIngredientIndex !== i"
-                [class.ring-2]="dragOverIngredientIndex === i && draggedIngredientIndex !== i"
-                [class.ring-primary-500/30]="dragOverIngredientIndex === i && draggedIngredientIndex !== i"
+                draggable="true"
+                (dragstart)="onIngredientDragStart($event, i)"
                 (dragover)="onIngredientDragOver($event, i)"
-                (drop)="onIngredientDrop($event, i)">
+                (drop)="onIngredientDrop($event, i)"
+                (dragend)="onIngredientDragEnd()"
+                class="flex gap-2.5 items-center relative sub-card p-3 rounded-xl transition-all duration-200 ingredient-row-card cursor-grab active:cursor-grabbing"
+                [style.z-index]="row.dropdownOpen ? 40 - i : 1"
+                [class.opacity-50]="draggedIngredientIndex === i"
+                [class.scale-[0.98]]="draggedIngredientIndex === i"
+                [class.border-2]="draggedIngredientIndex === i"
+                [class.border-dashed]="draggedIngredientIndex === i"
+                [class.border-primary-500/60]="draggedIngredientIndex === i"
+                [class.bg-primary-500/10]="draggedIngredientIndex === i"
+                [class.dark:bg-primary-950/30]="draggedIngredientIndex === i"
+                [class.shadow-inner]="draggedIngredientIndex === i">
                 <!-- Left Drag Handle Marker -->
                 <div
-                  draggable="true"
-                  (dragstart)="onIngredientDragStart($event, i)"
-                  (dragend)="onIngredientDragEnd()"
-                  class="cursor-grab active:cursor-grabbing p-1.5 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors shrink-0 flex items-center justify-center"
-                  title="Drag to reorder ingredient">
+                  class="p-1.5 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors shrink-0 flex items-center justify-center pointer-events-none"
+                  title="Drag row to reorder">
                   <i class="pi pi-bars text-xs"></i>
                 </div>
 
@@ -499,22 +501,24 @@
           <div class="space-y-3">
             @for (step of recipeSteps; track $index; let i = $index) {
               <div
-                class="flex gap-2.5 items-start sub-card p-4 rounded-xl transition-all duration-200"
-                [class.opacity-40]="draggedStepIndex === i"
-                [class.scale-[0.99]]="draggedStepIndex === i"
-                [class.border-dashed]="draggedStepIndex === i"
-                [class.border-primary-500]="dragOverStepIndex === i && draggedStepIndex !== i"
-                [class.ring-2]="dragOverStepIndex === i && draggedStepIndex !== i"
-                [class.ring-primary-500/30]="dragOverStepIndex === i && draggedStepIndex !== i"
+                draggable="true"
+                (dragstart)="onStepDragStart($event, i)"
                 (dragover)="onStepDragOver($event, i)"
-                (drop)="onStepDrop($event, i)">
+                (drop)="onStepDrop($event, i)"
+                (dragend)="onStepDragEnd()"
+                class="flex gap-2.5 items-start sub-card p-4 rounded-xl transition-all duration-200 step-row-card cursor-grab active:cursor-grabbing"
+                [class.opacity-50]="draggedStepIndex === i"
+                [class.scale-[0.98]]="draggedStepIndex === i"
+                [class.border-2]="draggedStepIndex === i"
+                [class.border-dashed]="draggedStepIndex === i"
+                [class.border-primary-500/60]="draggedStepIndex === i"
+                [class.bg-primary-500/10]="draggedStepIndex === i"
+                [class.dark:bg-primary-950/30]="draggedStepIndex === i"
+                [class.shadow-inner]="draggedStepIndex === i">
                 <!-- Left Drag Handle Marker -->
                 <div
-                  draggable="true"
-                  (dragstart)="onStepDragStart($event, i)"
-                  (dragend)="onStepDragEnd()"
-                  class="cursor-grab active:cursor-grabbing p-1.5 mt-0.5 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors shrink-0 flex items-center justify-center"
-                  title="Drag to reorder step">
+                  class="p-1.5 mt-0.5 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors shrink-0 flex items-center justify-center pointer-events-none"
+                  title="Drag step to reorder">
                   <i class="pi pi-bars text-xs"></i>
                 </div>
 

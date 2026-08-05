@@ -244,36 +244,38 @@ export class AddRecipeFormComponent implements OnInit {
 
   // --- Ingredient Drag & Drop ---
   draggedIngredientIndex: number | null = null;
-  dragOverIngredientIndex: number | null = null;
 
   onIngredientDragStart(event: DragEvent, index: number): void {
     this.draggedIngredientIndex = index;
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('text/plain', index.toString());
+      const rowEl = (event.currentTarget as HTMLElement).closest('.ingredient-row-card') as HTMLElement;
+      if (rowEl) {
+        event.dataTransfer.setDragImage(rowEl, 30, 20);
+      }
     }
   }
 
-  onIngredientDragOver(event: DragEvent, index: number): void {
+  onIngredientDragOver(event: DragEvent, targetIndex: number): void {
     event.preventDefault();
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = 'move';
     }
-    this.dragOverIngredientIndex = index;
+    if (this.draggedIngredientIndex !== null && this.draggedIngredientIndex !== targetIndex) {
+      const movedItem = this.recipeIngredients.splice(this.draggedIngredientIndex, 1)[0];
+      this.recipeIngredients.splice(targetIndex, 0, movedItem);
+      this.draggedIngredientIndex = targetIndex;
+    }
   }
 
-  onIngredientDrop(event: DragEvent, dropIndex: number): void {
+  onIngredientDrop(event: DragEvent, _dropIndex: number): void {
     event.preventDefault();
-    if (this.draggedIngredientIndex !== null && this.draggedIngredientIndex !== dropIndex) {
-      const movedItem = this.recipeIngredients.splice(this.draggedIngredientIndex, 1)[0];
-      this.recipeIngredients.splice(dropIndex, 0, movedItem);
-    }
     this.onIngredientDragEnd();
   }
 
   onIngredientDragEnd(): void {
     this.draggedIngredientIndex = null;
-    this.dragOverIngredientIndex = null;
   }
 
   moveIngredientUp(index: number): void {
@@ -397,36 +399,38 @@ export class AddRecipeFormComponent implements OnInit {
 
   // --- Step Drag & Drop ---
   draggedStepIndex: number | null = null;
-  dragOverStepIndex: number | null = null;
 
   onStepDragStart(event: DragEvent, index: number): void {
     this.draggedStepIndex = index;
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('text/plain', index.toString());
+      const rowEl = (event.currentTarget as HTMLElement).closest('.step-row-card') as HTMLElement;
+      if (rowEl) {
+        event.dataTransfer.setDragImage(rowEl, 30, 20);
+      }
     }
   }
 
-  onStepDragOver(event: DragEvent, index: number): void {
+  onStepDragOver(event: DragEvent, targetIndex: number): void {
     event.preventDefault();
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = 'move';
     }
-    this.dragOverStepIndex = index;
+    if (this.draggedStepIndex !== null && this.draggedStepIndex !== targetIndex) {
+      const movedItem = this.recipeSteps.splice(this.draggedStepIndex, 1)[0];
+      this.recipeSteps.splice(targetIndex, 0, movedItem);
+      this.draggedStepIndex = targetIndex;
+    }
   }
 
-  onStepDrop(event: DragEvent, dropIndex: number): void {
+  onStepDrop(event: DragEvent, _dropIndex: number): void {
     event.preventDefault();
-    if (this.draggedStepIndex !== null && this.draggedStepIndex !== dropIndex) {
-      const movedItem = this.recipeSteps.splice(this.draggedStepIndex, 1)[0];
-      this.recipeSteps.splice(dropIndex, 0, movedItem);
-    }
     this.onStepDragEnd();
   }
 
   onStepDragEnd(): void {
     this.draggedStepIndex = null;
-    this.dragOverStepIndex = null;
   }
 
   moveStepUp(index: number): void {
