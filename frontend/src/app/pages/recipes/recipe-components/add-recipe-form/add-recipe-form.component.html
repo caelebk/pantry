@@ -530,6 +530,7 @@
                 <div class="flex-1 min-w-0 space-y-2">
                   <textarea
                     pTextarea
+                    [autoResize]="true"
                     rows="2"
                     [(ngModel)]="step.instructionText"
                     [name]="'step_' + step.id"
@@ -538,7 +539,7 @@
                     (pointerup)="onTextareaResize($event, step)"
                     (input)="onTextareaResize($event, step)"
                     placeholder="Describe this step..."
-                    class="w-full"></textarea>
+                    class="w-full resize-y rounded-xl transition-all duration-150 focus:ring-2 focus:ring-primary-500/30"></textarea>
                 </div>
 
                 @if (recipeSteps.length > 1) {
