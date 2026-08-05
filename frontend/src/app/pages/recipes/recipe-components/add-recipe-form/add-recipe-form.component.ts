@@ -23,6 +23,7 @@ import { RecipeService } from '../../../../services/recipe.service';
 import { ToastService } from '../../../../services/toast.service';
 
 interface FormIngredientRow {
+  id: string;
   ingredientId: string;
   quantity: number;
   unitId: number | null;
@@ -31,6 +32,7 @@ interface FormIngredientRow {
 }
 
 interface FormStepRow {
+  id: string;
   instructionText: string;
   timerSeconds?: number | null;
 }
@@ -116,7 +118,7 @@ export class AddRecipeFormComponent implements OnInit {
   tags: string[] = [];
 
   recipeIngredients: FormIngredientRow[] = [];
-  recipeSteps: FormStepRow[] = [{ instructionText: '', timerSeconds: null }];
+  recipeSteps: FormStepRow[] = [{ id: crypto.randomUUID(), instructionText: '', timerSeconds: null }];
 
   isSubmitting = false;
   validationErrors: string[] = [];
@@ -172,6 +174,7 @@ export class AddRecipeFormComponent implements OnInit {
 
         if (recipe.ingredients && recipe.ingredients.length > 0) {
           this.recipeIngredients = recipe.ingredients.map((ing) => ({
+            id: crypto.randomUUID(),
             ingredientId: ing.ingredientId,
             quantity: ing.quantity,
             unitId: ing.unitId || null,
@@ -184,11 +187,12 @@ export class AddRecipeFormComponent implements OnInit {
 
         if (recipe.steps && recipe.steps.length > 0) {
           this.recipeSteps = recipe.steps.map((st) => ({
+            id: st.id || crypto.randomUUID(),
             instructionText: st.instructionText,
             timerSeconds: st.timerSeconds || null,
           }));
         } else {
-          this.recipeSteps = [{ instructionText: '', timerSeconds: null }];
+          this.recipeSteps = [{ id: crypto.randomUUID(), instructionText: '', timerSeconds: null }];
         }
       },
       error: (err) => {
@@ -230,6 +234,7 @@ export class AddRecipeFormComponent implements OnInit {
   // --- Ingredient Row Handlers ---
   addIngredientRow(): void {
     this.recipeIngredients.push({
+      id: crypto.randomUUID(),
       ingredientId: '',
       quantity: 1,
       unitId: null,
@@ -390,7 +395,7 @@ export class AddRecipeFormComponent implements OnInit {
 
   // --- Step Row Handlers ---
   addStepRow(): void {
-    this.recipeSteps.push({ instructionText: '', timerSeconds: null });
+    this.recipeSteps.push({ id: crypto.randomUUID(), instructionText: '', timerSeconds: null });
   }
 
   removeStepRow(index: number): void {

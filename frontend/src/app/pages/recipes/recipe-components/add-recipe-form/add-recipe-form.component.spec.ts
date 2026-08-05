@@ -151,8 +151,8 @@ describe('AddRecipeFormComponent', () => {
 
   it('should support drag and drop reordering for ingredients and steps', () => {
     component.recipeIngredients = [
-      { ingredientId: 'ing-1', quantity: 1, unitId: 1, searchFilter: 'Salt', dropdownOpen: false },
-      { ingredientId: 'ing-2', quantity: 2, unitId: 2, searchFilter: 'Pepper', dropdownOpen: false },
+      { id: '1', ingredientId: 'ing-1', quantity: 1, unitId: 1, searchFilter: 'Salt', dropdownOpen: false },
+      { id: '2', ingredientId: 'ing-2', quantity: 2, unitId: 2, searchFilter: 'Pepper', dropdownOpen: false },
     ];
 
     const mockDragEvent = { preventDefault: () => {}, dataTransfer: { setData: () => {}, effectAllowed: '', dropEffect: '' } } as unknown as DragEvent;
@@ -166,8 +166,8 @@ describe('AddRecipeFormComponent', () => {
     expect(component.draggedIngredientIndex).toBeNull();
 
     component.recipeSteps = [
-      { instructionText: 'Step 1: Chop onions', timerSeconds: null },
-      { instructionText: 'Step 2: Saute in oil', timerSeconds: 300 },
+      { id: 'step-1', instructionText: 'Step 1: Chop onions', timerSeconds: null },
+      { id: 'step-2', instructionText: 'Step 2: Saute in oil', timerSeconds: 300 },
     ];
 
     component.onStepDragStart(mockDragEvent, 0);

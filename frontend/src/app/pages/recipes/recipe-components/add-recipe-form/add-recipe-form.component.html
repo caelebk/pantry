@@ -337,7 +337,7 @@
           </div>
 
           <div class="space-y-3">
-            @for (row of recipeIngredients; track $index; let i = $index) {
+            @for (row of recipeIngredients; track row.id; let i = $index) {
               <div
                 draggable="true"
                 (dragstart)="onIngredientDragStart($event, i)"
@@ -499,7 +499,7 @@
           </div>
 
           <div class="space-y-3">
-            @for (step of recipeSteps; track $index; let i = $index) {
+            @for (step of recipeSteps; track step.id; let i = $index) {
               <div
                 draggable="true"
                 (dragstart)="onStepDragStart($event, i)"
