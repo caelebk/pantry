@@ -367,7 +367,7 @@
                     pInputText
                     type="text"
                     [(ngModel)]="row.searchFilter"
-                    [name]="'ingSearch_' + i"
+                    [name]="'ingSearch_' + row.id"
                     (focus)="row.dropdownOpen = true"
                     (blur)="onInputBlur(row)"
                     (input)="row.dropdownOpen = true; row.ingredientId = ''"
@@ -421,7 +421,7 @@
                 <div class="w-24 shrink-0">
                   <p-inputnumber
                     [(ngModel)]="row.quantity"
-                    [name]="'ingQty_' + i"
+                    [name]="'ingQty_' + row.id"
                     [min]="0.1"
                     [step]="0.1"
                     placeholder="Qty"
@@ -532,7 +532,7 @@
                     pTextarea
                     rows="2"
                     [(ngModel)]="step.instructionText"
-                    [name]="'step_' + i"
+                    [name]="'step_' + step.id"
                     placeholder="Describe this step..."
                     class="w-full"></textarea>
                 </div>
