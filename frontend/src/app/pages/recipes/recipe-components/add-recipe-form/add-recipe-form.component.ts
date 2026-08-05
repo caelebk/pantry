@@ -242,6 +242,40 @@ export class AddRecipeFormComponent implements OnInit {
     this.recipeIngredients.splice(index, 1);
   }
 
+  // --- Ingredient Drag & Drop ---
+  draggedIngredientIndex: number | null = null;
+  dragOverIngredientIndex: number | null = null;
+
+  onIngredientDragStart(event: DragEvent, index: number): void {
+    this.draggedIngredientIndex = index;
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', index.toString());
+    }
+  }
+
+  onIngredientDragOver(event: DragEvent, index: number): void {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    this.dragOverIngredientIndex = index;
+  }
+
+  onIngredientDrop(event: DragEvent, dropIndex: number): void {
+    event.preventDefault();
+    if (this.draggedIngredientIndex !== null && this.draggedIngredientIndex !== dropIndex) {
+      const movedItem = this.recipeIngredients.splice(this.draggedIngredientIndex, 1)[0];
+      this.recipeIngredients.splice(dropIndex, 0, movedItem);
+    }
+    this.onIngredientDragEnd();
+  }
+
+  onIngredientDragEnd(): void {
+    this.draggedIngredientIndex = null;
+    this.dragOverIngredientIndex = null;
+  }
+
   moveIngredientUp(index: number): void {
     if (index <= 0) return;
     const temp = this.recipeIngredients[index];
@@ -359,6 +393,40 @@ export class AddRecipeFormComponent implements OnInit {
 
   removeStepRow(index: number): void {
     this.recipeSteps.splice(index, 1);
+  }
+
+  // --- Step Drag & Drop ---
+  draggedStepIndex: number | null = null;
+  dragOverStepIndex: number | null = null;
+
+  onStepDragStart(event: DragEvent, index: number): void {
+    this.draggedStepIndex = index;
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', index.toString());
+    }
+  }
+
+  onStepDragOver(event: DragEvent, index: number): void {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    this.dragOverStepIndex = index;
+  }
+
+  onStepDrop(event: DragEvent, dropIndex: number): void {
+    event.preventDefault();
+    if (this.draggedStepIndex !== null && this.draggedStepIndex !== dropIndex) {
+      const movedItem = this.recipeSteps.splice(this.draggedStepIndex, 1)[0];
+      this.recipeSteps.splice(dropIndex, 0, movedItem);
+    }
+    this.onStepDragEnd();
+  }
+
+  onStepDragEnd(): void {
+    this.draggedStepIndex = null;
+    this.dragOverStepIndex = null;
   }
 
   moveStepUp(index: number): void {

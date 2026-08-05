@@ -339,8 +339,26 @@
           <div class="space-y-3">
             @for (row of recipeIngredients; track $index; let i = $index) {
               <div
-                class="flex gap-3 items-center relative sub-card p-3 rounded-xl transition-all"
-                [style.z-index]="row.dropdownOpen ? 40 - i : 1">
+                class="flex gap-2.5 items-center relative sub-card p-3 rounded-xl transition-all duration-200"
+                [style.z-index]="row.dropdownOpen ? 40 - i : 1"
+                [class.opacity-40]="draggedIngredientIndex === i"
+                [class.scale-[0.99]]="draggedIngredientIndex === i"
+                [class.border-dashed]="draggedIngredientIndex === i"
+                [class.border-primary-500]="dragOverIngredientIndex === i && draggedIngredientIndex !== i"
+                [class.ring-2]="dragOverIngredientIndex === i && draggedIngredientIndex !== i"
+                [class.ring-primary-500/30]="dragOverIngredientIndex === i && draggedIngredientIndex !== i"
+                (dragover)="onIngredientDragOver($event, i)"
+                (drop)="onIngredientDrop($event, i)">
+                <!-- Left Drag Handle Marker -->
+                <div
+                  draggable="true"
+                  (dragstart)="onIngredientDragStart($event, i)"
+                  (dragend)="onIngredientDragEnd()"
+                  class="cursor-grab active:cursor-grabbing p-1.5 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors shrink-0 flex items-center justify-center"
+                  title="Drag to reorder ingredient">
+                  <i class="pi pi-bars text-xs"></i>
+                </div>
+
                 <!-- Searchable Ingredient Input -->
                 <div class="flex-1 min-w-0 relative ingredient-search-container">
                   <input
@@ -397,7 +415,7 @@
                   }
                 </div>
 
-                <!-- Quantity Container -->
+                <!-- Quantity Input -->
                 <div class="w-24 shrink-0">
                   <p-inputnumber
                     [(ngModel)]="row.quantity"
@@ -429,45 +447,27 @@
                   }
                 </div>
 
-                <!-- Row Actions (Move Up / Down / Remove) -->
-                <div class="flex items-center gap-0.5 shrink-0">
+                <!-- Remove Row Button -->
+                @if (recipeIngredients.length > 1) {
                   <button
                     type="button"
-                    (click)="moveIngredientUp(i)"
-                    [disabled]="i === 0"
-                    class="p-1.5 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 disabled:opacity-20 transition-colors cursor-pointer disabled:cursor-not-allowed"
-                    title="Move ingredient up">
-                    <i class="pi pi-chevron-up text-xs"></i>
+                    (click)="removeIngredientRow(i)"
+                    class="p-1.5 text-surface-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer shrink-0"
+                    title="Remove ingredient">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      class="w-4 h-4">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                   </button>
-                  <button
-                    type="button"
-                    (click)="moveIngredientDown(i)"
-                    [disabled]="i === recipeIngredients.length - 1"
-                    class="p-1.5 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 disabled:opacity-20 transition-colors cursor-pointer disabled:cursor-not-allowed"
-                    title="Move ingredient down">
-                    <i class="pi pi-chevron-down text-xs"></i>
-                  </button>
-                  @if (recipeIngredients.length > 1) {
-                    <button
-                      type="button"
-                      (click)="removeIngredientRow(i)"
-                      class="p-1.5 text-surface-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer"
-                      title="Remove ingredient">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        class="w-4 h-4">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  }
-                </div>
+                }
               </div>
             }
           </div>
@@ -498,9 +498,28 @@
 
           <div class="space-y-3">
             @for (step of recipeSteps; track $index; let i = $index) {
-              <div class="flex gap-3 items-start sub-card p-4 rounded-xl">
+              <div
+                class="flex gap-2.5 items-start sub-card p-4 rounded-xl transition-all duration-200"
+                [class.opacity-40]="draggedStepIndex === i"
+                [class.scale-[0.99]]="draggedStepIndex === i"
+                [class.border-dashed]="draggedStepIndex === i"
+                [class.border-primary-500]="dragOverStepIndex === i && draggedStepIndex !== i"
+                [class.ring-2]="dragOverStepIndex === i && draggedStepIndex !== i"
+                [class.ring-primary-500/30]="dragOverStepIndex === i && draggedStepIndex !== i"
+                (dragover)="onStepDragOver($event, i)"
+                (drop)="onStepDrop($event, i)">
+                <!-- Left Drag Handle Marker -->
+                <div
+                  draggable="true"
+                  (dragstart)="onStepDragStart($event, i)"
+                  (dragend)="onStepDragEnd()"
+                  class="cursor-grab active:cursor-grabbing p-1.5 mt-0.5 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors shrink-0 flex items-center justify-center"
+                  title="Drag to reorder step">
+                  <i class="pi pi-bars text-xs"></i>
+                </div>
+
                 <span
-                  class="w-7 h-7 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-1 shadow-xs">
+                  class="w-7 h-7 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                   {{ i + 1 }}
                 </span>
 
@@ -514,44 +533,26 @@
                     class="w-full"></textarea>
                 </div>
 
-                <div class="flex items-center gap-0.5 shrink-0 mt-1">
+                @if (recipeSteps.length > 1) {
                   <button
                     type="button"
-                    (click)="moveStepUp(i)"
-                    [disabled]="i === 0"
-                    class="p-1.5 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 disabled:opacity-20 transition-colors cursor-pointer disabled:cursor-not-allowed"
-                    title="Move step up">
-                    <i class="pi pi-chevron-up text-xs"></i>
+                    (click)="removeStepRow(i)"
+                    class="p-1.5 mt-0.5 text-surface-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer shrink-0"
+                    title="Remove step">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      class="w-4 h-4">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                   </button>
-                  <button
-                    type="button"
-                    (click)="moveStepDown(i)"
-                    [disabled]="i === recipeSteps.length - 1"
-                    class="p-1.5 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 disabled:opacity-20 transition-colors cursor-pointer disabled:cursor-not-allowed"
-                    title="Move step down">
-                    <i class="pi pi-chevron-down text-xs"></i>
-                  </button>
-                  @if (recipeSteps.length > 1) {
-                    <button
-                      type="button"
-                      (click)="removeStepRow(i)"
-                      class="p-1.5 text-surface-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer"
-                      title="Remove step">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        class="w-4 h-4">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  }
-                </div>
+                }
               </div>
             }
           </div>

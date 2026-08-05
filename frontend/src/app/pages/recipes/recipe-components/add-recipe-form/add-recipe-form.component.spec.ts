@@ -149,19 +149,34 @@ describe('AddRecipeFormComponent', () => {
     expect(component.recipeIngredients[1].searchFilter).toBe('Pepper');
   });
 
-  it('should reorder steps up and down correctly', () => {
+  it('should support drag and drop reordering for ingredients and steps', () => {
+    component.recipeIngredients = [
+      { ingredientId: 'ing-1', quantity: 1, unitId: 1, searchFilter: 'Salt', dropdownOpen: false },
+      { ingredientId: 'ing-2', quantity: 2, unitId: 2, searchFilter: 'Pepper', dropdownOpen: false },
+    ];
+
+    const mockDragEvent = { preventDefault: () => {}, dataTransfer: { setData: () => {}, effectAllowed: '', dropEffect: '' } } as unknown as DragEvent;
+
+    component.onIngredientDragStart(mockDragEvent, 0);
+    expect(component.draggedIngredientIndex).toBe(0);
+
+    component.onIngredientDrop(mockDragEvent, 1);
+    expect(component.recipeIngredients[0].searchFilter).toBe('Pepper');
+    expect(component.recipeIngredients[1].searchFilter).toBe('Salt');
+    expect(component.draggedIngredientIndex).toBeNull();
+
     component.recipeSteps = [
       { instructionText: 'Step 1: Chop onions', timerSeconds: null },
       { instructionText: 'Step 2: Saute in oil', timerSeconds: 300 },
     ];
 
-    component.moveStepDown(0);
+    component.onStepDragStart(mockDragEvent, 0);
+    expect(component.draggedStepIndex).toBe(0);
+
+    component.onStepDrop(mockDragEvent, 1);
     expect(component.recipeSteps[0].instructionText).toBe('Step 2: Saute in oil');
     expect(component.recipeSteps[1].instructionText).toBe('Step 1: Chop onions');
-
-    component.moveStepUp(1);
-    expect(component.recipeSteps[0].instructionText).toBe('Step 1: Chop onions');
-    expect(component.recipeSteps[1].instructionText).toBe('Step 2: Saute in oil');
+    expect(component.draggedStepIndex).toBeNull();
   });
 
   it('should open quick create ingredient dialog and create a new ingredient with customizable default unit', () => {
