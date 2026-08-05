@@ -210,7 +210,15 @@ export class RecipeService {
         `);
         data.ingredients.forEach((ing, index) => {
           const order = ing.ingredientOrder ?? (ing as any).ingredient_order ?? (index + 1);
-          insertIngredient.run(id, ing.ingredientId, ing.quantity, ing.unitId ?? null, order, now, now);
+          insertIngredient.run(
+            id,
+            ing.ingredientId,
+            ing.quantity,
+            ing.unitId ?? null,
+            order,
+            now,
+            now,
+          );
         });
       }
 

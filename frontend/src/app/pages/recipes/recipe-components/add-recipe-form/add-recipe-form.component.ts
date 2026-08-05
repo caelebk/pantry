@@ -119,7 +119,9 @@ export class AddRecipeFormComponent implements OnInit {
   tags: string[] = [];
 
   recipeIngredients: FormIngredientRow[] = [];
-  recipeSteps: FormStepRow[] = [{ id: crypto.randomUUID(), instructionText: '', timerSeconds: null }];
+  recipeSteps: FormStepRow[] = [
+    { id: crypto.randomUUID(), instructionText: '', timerSeconds: null },
+  ];
 
   isSubmitting = false;
   validationErrors: string[] = [];
@@ -257,7 +259,9 @@ export class AddRecipeFormComponent implements OnInit {
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('text/plain', index.toString());
-      const rowEl = (event.currentTarget as HTMLElement).closest('.ingredient-row-card') as HTMLElement;
+      const rowEl = (event.currentTarget as HTMLElement | null)?.closest?.(
+        '.ingredient-row-card',
+      ) as HTMLElement | null;
       if (rowEl) {
         event.dataTransfer.setDragImage(rowEl, 30, 20);
       }
@@ -412,7 +416,9 @@ export class AddRecipeFormComponent implements OnInit {
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('text/plain', index.toString());
-      const rowEl = (event.currentTarget as HTMLElement).closest('.step-row-card') as HTMLElement;
+      const rowEl = (event.currentTarget as HTMLElement | null)?.closest?.(
+        '.step-row-card',
+      ) as HTMLElement | null;
       if (rowEl) {
         event.dataTransfer.setDragImage(rowEl, 30, 20);
       }
@@ -511,9 +517,12 @@ export class AddRecipeFormComponent implements OnInit {
 
     // Capture live rendered heights directly from step textareas in DOM
     this.recipeSteps.forEach((step) => {
-      const textareaEl = document.querySelector<HTMLTextAreaElement>(`textarea[name="step_${step.id}"]`);
+      const textareaEl = document.querySelector<HTMLTextAreaElement>(
+        `textarea[name="step_${step.id}"]`,
+      );
       if (textareaEl) {
-        const currentHeight = textareaEl.offsetHeight || Math.round(textareaEl.getBoundingClientRect().height);
+        const currentHeight =
+          textareaEl.offsetHeight || Math.round(textareaEl.getBoundingClientRect().height);
         if (currentHeight > 0) {
           step.textareaHeight = currentHeight;
         }

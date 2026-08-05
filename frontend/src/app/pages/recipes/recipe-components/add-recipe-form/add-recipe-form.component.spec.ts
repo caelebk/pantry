@@ -137,7 +137,13 @@ describe('AddRecipeFormComponent', () => {
   it('should reorder ingredients up and down correctly', () => {
     component.recipeIngredients = [
       { ingredientId: 'ing-1', quantity: 1, unitId: 1, searchFilter: 'Salt', dropdownOpen: false },
-      { ingredientId: 'ing-2', quantity: 2, unitId: 2, searchFilter: 'Pepper', dropdownOpen: false },
+      {
+        ingredientId: 'ing-2',
+        quantity: 2,
+        unitId: 2,
+        searchFilter: 'Pepper',
+        dropdownOpen: false,
+      },
     ];
 
     component.moveIngredientDown(0);
@@ -151,15 +157,33 @@ describe('AddRecipeFormComponent', () => {
 
   it('should support drag and drop reordering for ingredients and steps', () => {
     component.recipeIngredients = [
-      { id: '1', ingredientId: 'ing-1', quantity: 1, unitId: 1, searchFilter: 'Salt', dropdownOpen: false },
-      { id: '2', ingredientId: 'ing-2', quantity: 2, unitId: 2, searchFilter: 'Pepper', dropdownOpen: false },
+      {
+        id: '1',
+        ingredientId: 'ing-1',
+        quantity: 1,
+        unitId: 1,
+        searchFilter: 'Salt',
+        dropdownOpen: false,
+      },
+      {
+        id: '2',
+        ingredientId: 'ing-2',
+        quantity: 2,
+        unitId: 2,
+        searchFilter: 'Pepper',
+        dropdownOpen: false,
+      },
     ];
 
-    const mockDragEvent = { preventDefault: () => {}, dataTransfer: { setData: () => {}, effectAllowed: '', dropEffect: '' } } as unknown as DragEvent;
+    const mockDragEvent = {
+      preventDefault: () => {},
+      dataTransfer: { setData: () => {}, effectAllowed: '', dropEffect: '' },
+    } as unknown as DragEvent;
 
     component.onIngredientDragStart(mockDragEvent, 0);
     expect(component.draggedIngredientIndex).toBe(0);
 
+    component.onIngredientDragOver(mockDragEvent, 1);
     component.onIngredientDrop(mockDragEvent, 1);
     expect(component.recipeIngredients[0].searchFilter).toBe('Pepper');
     expect(component.recipeIngredients[1].searchFilter).toBe('Salt');
@@ -173,6 +197,7 @@ describe('AddRecipeFormComponent', () => {
     component.onStepDragStart(mockDragEvent, 0);
     expect(component.draggedStepIndex).toBe(0);
 
+    component.onStepDragOver(mockDragEvent, 1);
     component.onStepDrop(mockDragEvent, 1);
     expect(component.recipeSteps[0].instructionText).toBe('Step 2: Saute in oil');
     expect(component.recipeSteps[1].instructionText).toBe('Step 1: Chop onions');
@@ -229,6 +254,7 @@ describe('AddRecipeFormComponent', () => {
           ingredientId: 'ing-1',
           quantity: 2,
           unitId: mockUnitTbsp.id,
+          ingredientOrder: 1,
         },
       ],
       steps: [
