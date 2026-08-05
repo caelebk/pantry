@@ -533,6 +533,10 @@
                     rows="2"
                     [(ngModel)]="step.instructionText"
                     [name]="'step_' + step.id"
+                    [style.height.px]="step.textareaHeight || null"
+                    (mouseup)="onTextareaResize($event, step)"
+                    (pointerup)="onTextareaResize($event, step)"
+                    (input)="onTextareaResize($event, step)"
                     placeholder="Describe this step..."
                     class="w-full"></textarea>
                 </div>

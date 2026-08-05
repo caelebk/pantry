@@ -19,6 +19,7 @@ export interface RecipeStepDTO {
   instructionText: string;
   imageUrl?: string;
   timerSeconds?: number;
+  textareaHeight?: number | null;
 }
 
 export interface RecipeDTO {
@@ -63,6 +64,8 @@ export interface CreateRecipeDTO {
     instruction_text?: string;
     timerSeconds?: number;
     imageUrl?: string;
+    textareaHeight?: number;
+    textarea_height?: number;
   }[];
 }
 
@@ -88,5 +91,7 @@ export interface UpdateRecipeDTO {
     instruction_text?: string;
     timerSeconds?: number;
     imageUrl?: string;
+    textareaHeight?: number;
+    textarea_height?: number;
   }[];
 }

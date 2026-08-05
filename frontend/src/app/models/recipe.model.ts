@@ -13,6 +13,7 @@ export interface RecipeStepDTO {
   instructionText: string;
   imageUrl?: string;
   timerSeconds?: number;
+  textareaHeight?: number;
 }
 
 export interface Recipe {

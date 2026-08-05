@@ -133,13 +133,14 @@ export class RecipeService {
 
       if (data.steps && data.steps.length > 0) {
         const insertStep = db.prepare(`
-          INSERT INTO recipe_steps (id, recipe_id, step_number, instruction_text, image_url, timer_seconds)
-          VALUES (?, ?, ?, ?, ?, ?)
+          INSERT INTO recipe_steps (id, recipe_id, step_number, instruction_text, image_url, timer_seconds, textarea_height)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
         `);
         data.steps.forEach((step, index) => {
           const stepId = crypto.randomUUID();
           const stepNumber = step.stepNumber ?? step.step_number ?? (index + 1);
           const instructionText = step.instructionText ?? step.instruction_text ?? '';
+          const textareaHeight = step.textareaHeight ?? step.textarea_height ?? null;
           insertStep.run(
             stepId,
             recipeId,
@@ -147,6 +148,7 @@ export class RecipeService {
             instructionText,
             step.imageUrl ?? null,
             step.timerSeconds ?? null,
+            textareaHeight,
           );
         });
       }
@@ -215,13 +217,14 @@ export class RecipeService {
       if (data.steps) {
         db.prepare('DELETE FROM recipe_steps WHERE recipe_id = ?').run(id);
         const insertStep = db.prepare(`
-          INSERT INTO recipe_steps (id, recipe_id, step_number, instruction_text, image_url, timer_seconds)
-          VALUES (?, ?, ?, ?, ?, ?)
+          INSERT INTO recipe_steps (id, recipe_id, step_number, instruction_text, image_url, timer_seconds, textarea_height)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
         `);
         data.steps.forEach((step, index) => {
           const stepId = crypto.randomUUID();
           const stepNumber = step.stepNumber ?? step.step_number ?? (index + 1);
           const instructionText = step.instructionText ?? step.instruction_text ?? '';
+          const textareaHeight = step.textareaHeight ?? step.textarea_height ?? null;
           insertStep.run(
             stepId,
             id,
@@ -229,6 +232,7 @@ export class RecipeService {
             instructionText,
             step.imageUrl ?? null,
             step.timerSeconds ?? null,
+            textareaHeight,
           );
         });
       }
@@ -362,6 +366,7 @@ export class RecipeService {
       instructionText: s.instruction_text,
       imageUrl: s.image_url ? s.image_url : undefined,
       timerSeconds: s.timer_seconds ? s.timer_seconds : undefined,
+      textareaHeight: s.textarea_height ? s.textarea_height : undefined,
     }));
   }
 

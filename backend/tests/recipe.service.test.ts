@@ -74,7 +74,8 @@ function createTestDB(): Database {
       step_number INTEGER NOT NULL,
       instruction_text TEXT NOT NULL,
       image_url TEXT,
-      timer_seconds INTEGER
+      timer_seconds INTEGER,
+      textarea_height INTEGER
     );
   `);
   return db;

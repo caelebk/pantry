@@ -33,4 +33,5 @@ export interface RecipeStepRow {
   instruction_text: string;
   image_url: string | null;
   timer_seconds: number | null;
+  textarea_height?: number | null;
 }

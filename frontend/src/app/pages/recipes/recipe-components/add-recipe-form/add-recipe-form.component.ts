@@ -35,6 +35,7 @@ interface FormStepRow {
   id: string;
   instructionText: string;
   timerSeconds?: number | null;
+  textareaHeight?: number | null;
 }
 
 import { ButtonModule } from 'primeng/button';
@@ -190,6 +191,7 @@ export class AddRecipeFormComponent implements OnInit {
             id: st.id || crypto.randomUUID(),
             instructionText: st.instructionText,
             timerSeconds: st.timerSeconds || null,
+            textareaHeight: st.textareaHeight || null,
           }));
         } else {
           this.recipeSteps = [{ id: crypto.randomUUID(), instructionText: '', timerSeconds: null }];
@@ -438,6 +440,13 @@ export class AddRecipeFormComponent implements OnInit {
     this.draggedStepIndex = null;
   }
 
+  onTextareaResize(event: Event, step: FormStepRow): void {
+    const target = event.target as HTMLTextAreaElement;
+    if (target && target.offsetHeight) {
+      step.textareaHeight = target.offsetHeight;
+    }
+  }
+
   moveStepUp(index: number): void {
     if (index <= 0) return;
     const temp = this.recipeSteps[index];
@@ -515,6 +524,7 @@ export class AddRecipeFormComponent implements OnInit {
         stepNumber: index + 1,
         instructionText: row.instructionText.trim(),
         timerSeconds: row.timerSeconds ? Number(row.timerSeconds) : undefined,
+        textareaHeight: row.textareaHeight ? Number(row.textareaHeight) : undefined,
       }));
 
     const dto: CreateRecipeDTO = {
