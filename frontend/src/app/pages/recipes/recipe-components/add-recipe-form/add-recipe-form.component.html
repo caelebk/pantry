@@ -429,27 +429,45 @@
                   }
                 </div>
 
-                <!-- Remove Row Button -->
-                @if (recipeIngredients.length > 1) {
+                <!-- Row Actions (Move Up / Down / Remove) -->
+                <div class="flex items-center gap-0.5 shrink-0">
                   <button
                     type="button"
-                    (click)="removeIngredientRow(i)"
-                    class="p-2 text-surface-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer shrink-0"
-                    title="Remove ingredient">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      class="w-4 h-4">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    (click)="moveIngredientUp(i)"
+                    [disabled]="i === 0"
+                    class="p-1.5 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 disabled:opacity-20 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                    title="Move ingredient up">
+                    <i class="pi pi-chevron-up text-xs"></i>
                   </button>
-                }
+                  <button
+                    type="button"
+                    (click)="moveIngredientDown(i)"
+                    [disabled]="i === recipeIngredients.length - 1"
+                    class="p-1.5 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 disabled:opacity-20 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                    title="Move ingredient down">
+                    <i class="pi pi-chevron-down text-xs"></i>
+                  </button>
+                  @if (recipeIngredients.length > 1) {
+                    <button
+                      type="button"
+                      (click)="removeIngredientRow(i)"
+                      class="p-1.5 text-surface-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer"
+                      title="Remove ingredient">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="w-4 h-4">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  }
+                </div>
               </div>
             }
           </div>
@@ -496,26 +514,44 @@
                     class="w-full"></textarea>
                 </div>
 
-                @if (recipeSteps.length > 1) {
+                <div class="flex items-center gap-0.5 shrink-0 mt-1">
                   <button
                     type="button"
-                    (click)="removeStepRow(i)"
-                    class="p-2 text-surface-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer shrink-0 mt-1"
-                    title="Remove step">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      class="w-4 h-4">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    (click)="moveStepUp(i)"
+                    [disabled]="i === 0"
+                    class="p-1.5 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 disabled:opacity-20 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                    title="Move step up">
+                    <i class="pi pi-chevron-up text-xs"></i>
                   </button>
-                }
+                  <button
+                    type="button"
+                    (click)="moveStepDown(i)"
+                    [disabled]="i === recipeSteps.length - 1"
+                    class="p-1.5 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 disabled:opacity-20 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                    title="Move step down">
+                    <i class="pi pi-chevron-down text-xs"></i>
+                  </button>
+                  @if (recipeSteps.length > 1) {
+                    <button
+                      type="button"
+                      (click)="removeStepRow(i)"
+                      class="p-1.5 text-surface-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer"
+                      title="Remove step">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="w-4 h-4">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  }
+                </div>
               </div>
             }
           </div>

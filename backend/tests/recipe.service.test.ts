@@ -62,6 +62,7 @@ function createTestDB(): Database {
       ingredient_id TEXT,
       quantity REAL NOT NULL,
       unit_id INTEGER,
+      ingredient_order INTEGER DEFAULT 0,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now')),
       PRIMARY KEY (recipe_id, ingredient_id)
@@ -275,6 +276,39 @@ Deno.test('RecipeService - getAvailableRecipes - sums multiple pantry items for 
   const available = await recipeService.getAvailableRecipes();
   assertEquals(available.length, 1);
   assertEquals(available[0].name, 'Omelette');
+
+  db.close();
+});
+
+Deno.test('RecipeService - preserves custom ordering for ingredients and steps', async () => {
+  const db = createTestDB();
+  setDB(db);
+
+  const created = await recipeService.create({
+    name: 'Layered Parfait',
+    ingredients: [
+      { ingredientId: 'ing-granola', quantity: 100, unitId: 1, ingredientOrder: 1 },
+      { ingredientId: 'ing-yogurt', quantity: 200, unitId: 1, ingredientOrder: 2 },
+      { ingredientId: 'ing-berries', quantity: 50, unitId: 1, ingredientOrder: 3 },
+    ],
+    steps: [
+      { stepNumber: 1, instructionText: 'Layer yogurt in glass' },
+      { stepNumber: 2, instructionText: 'Top with granola' },
+      { stepNumber: 3, instructionText: 'Garnish with berries' },
+    ],
+  });
+
+  const fetched = await recipeService.findById(created.id);
+  assertEquals(fetched?.ingredients?.map((i: { ingredientId: string }) => i.ingredientId), [
+    'ing-granola',
+    'ing-yogurt',
+    'ing-berries',
+  ]);
+  assertEquals(fetched?.steps?.map((s: { instructionText: string }) => s.instructionText), [
+    'Layer yogurt in glass',
+    'Top with granola',
+    'Garnish with berries',
+  ]);
 
   db.close();
 });

@@ -242,6 +242,20 @@ export class AddRecipeFormComponent implements OnInit {
     this.recipeIngredients.splice(index, 1);
   }
 
+  moveIngredientUp(index: number): void {
+    if (index <= 0) return;
+    const temp = this.recipeIngredients[index];
+    this.recipeIngredients[index] = this.recipeIngredients[index - 1];
+    this.recipeIngredients[index - 1] = temp;
+  }
+
+  moveIngredientDown(index: number): void {
+    if (index >= this.recipeIngredients.length - 1) return;
+    const temp = this.recipeIngredients[index];
+    this.recipeIngredients[index] = this.recipeIngredients[index + 1];
+    this.recipeIngredients[index + 1] = temp;
+  }
+
   getFilteredIngredients(search: string): Ingredient[] {
     const term = search.toLowerCase().trim();
     if (!term) return this.availableIngredients;
@@ -347,6 +361,20 @@ export class AddRecipeFormComponent implements OnInit {
     this.recipeSteps.splice(index, 1);
   }
 
+  moveStepUp(index: number): void {
+    if (index <= 0) return;
+    const temp = this.recipeSteps[index];
+    this.recipeSteps[index] = this.recipeSteps[index - 1];
+    this.recipeSteps[index - 1] = temp;
+  }
+
+  moveStepDown(index: number): void {
+    if (index >= this.recipeSteps.length - 1) return;
+    const temp = this.recipeSteps[index];
+    this.recipeSteps[index] = this.recipeSteps[index + 1];
+    this.recipeSteps[index + 1] = temp;
+  }
+
   validateForm(): boolean {
     this.validationErrors = [];
     this.serverErrorBanner = null;
@@ -397,10 +425,11 @@ export class AddRecipeFormComponent implements OnInit {
 
     const ingredientsPayload = this.recipeIngredients
       .filter((row) => row.ingredientId !== '')
-      .map((row) => ({
+      .map((row, index) => ({
         ingredientId: row.ingredientId,
         quantity: Number(row.quantity) || 1,
         unitId: row.unitId ? Number(row.unitId) : undefined,
+        ingredientOrder: index + 1,
       }));
 
     const stepsPayload = this.recipeSteps

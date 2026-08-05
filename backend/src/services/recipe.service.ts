@@ -114,19 +114,21 @@ export class RecipeService {
 
       if (data.ingredients && data.ingredients.length > 0) {
         const insertIngredient = db.prepare(`
-          INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?)
+          INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, ingredient_order, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
         `);
-        for (const ing of data.ingredients) {
+        data.ingredients.forEach((ing, index) => {
+          const order = ing.ingredientOrder ?? (ing as any).ingredient_order ?? (index + 1);
           insertIngredient.run(
             recipeId,
             ing.ingredientId,
             ing.quantity,
             ing.unitId ?? null,
+            order,
             now,
             now,
           );
-        }
+        });
       }
 
       if (data.steps && data.steps.length > 0) {
@@ -134,9 +136,9 @@ export class RecipeService {
           INSERT INTO recipe_steps (id, recipe_id, step_number, instruction_text, image_url, timer_seconds)
           VALUES (?, ?, ?, ?, ?, ?)
         `);
-        for (const step of data.steps) {
+        data.steps.forEach((step, index) => {
           const stepId = crypto.randomUUID();
-          const stepNumber = step.stepNumber ?? step.step_number ?? 1;
+          const stepNumber = step.stepNumber ?? step.step_number ?? (index + 1);
           const instructionText = step.instructionText ?? step.instruction_text ?? '';
           insertStep.run(
             stepId,
@@ -146,7 +148,7 @@ export class RecipeService {
             step.imageUrl ?? null,
             step.timerSeconds ?? null,
           );
-        }
+        });
       }
 
       db.exec('COMMIT');
@@ -201,12 +203,13 @@ export class RecipeService {
         db.prepare('DELETE FROM recipe_ingredients WHERE recipe_id = ?').run(id);
         const now = new Date().toISOString();
         const insertIngredient = db.prepare(`
-          INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?)
+          INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id, ingredient_order, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
         `);
-        for (const ing of data.ingredients) {
-          insertIngredient.run(id, ing.ingredientId, ing.quantity, ing.unitId ?? null, now, now);
-        }
+        data.ingredients.forEach((ing, index) => {
+          const order = ing.ingredientOrder ?? (ing as any).ingredient_order ?? (index + 1);
+          insertIngredient.run(id, ing.ingredientId, ing.quantity, ing.unitId ?? null, order, now, now);
+        });
       }
 
       if (data.steps) {
@@ -215,9 +218,9 @@ export class RecipeService {
           INSERT INTO recipe_steps (id, recipe_id, step_number, instruction_text, image_url, timer_seconds)
           VALUES (?, ?, ?, ?, ?, ?)
         `);
-        for (const step of data.steps) {
+        data.steps.forEach((step, index) => {
           const stepId = crypto.randomUUID();
-          const stepNumber = step.stepNumber ?? step.step_number ?? 1;
+          const stepNumber = step.stepNumber ?? step.step_number ?? (index + 1);
           const instructionText = step.instructionText ?? step.instruction_text ?? '';
           insertStep.run(
             stepId,
@@ -227,7 +230,7 @@ export class RecipeService {
             step.imageUrl ?? null,
             step.timerSeconds ?? null,
           );
-        }
+        });
       }
 
       db.exec('COMMIT');
@@ -332,7 +335,7 @@ export class RecipeService {
   private getRecipeIngredients(recipeId: string): RecipeIngredientDTO[] {
     const db = getDB();
     const rows = db.prepare(`
-      SELECT * FROM recipe_ingredients WHERE recipe_id = ?
+      SELECT * FROM recipe_ingredients WHERE recipe_id = ? ORDER BY ingredient_order ASC, created_at ASC
     `).all(recipeId) as RecipeIngredientRow[];
 
     return rows.map((r) => ({
@@ -340,6 +343,7 @@ export class RecipeService {
       ingredientId: r.ingredient_id,
       quantity: r.quantity,
       unitId: r.unit_id,
+      ingredientOrder: r.ingredient_order ?? 0,
       createdAt: new Date(r.created_at),
       updatedAt: new Date(r.updated_at),
     }));

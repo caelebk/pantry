@@ -3,6 +3,7 @@ export interface RecipeIngredientDTO {
   ingredientId: string;
   quantity: number;
   unitId?: number | null;
+  ingredientOrder?: number;
 }
 
 export interface RecipeStepDTO {

@@ -21,6 +21,7 @@ export interface RecipeIngredientRow {
   ingredient_id: string;
   quantity: number;
   unit_id: number | null;
+  ingredient_order?: number;
   created_at: string;
   updated_at: string;
 }

@@ -7,6 +7,7 @@ export interface RecipeIngredientDTO {
   ingredientId: string;
   quantity: number;
   unitId: number | null;
+  ingredientOrder?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -52,6 +53,8 @@ export interface CreateRecipeDTO {
     ingredientId: string;
     quantity: number;
     unitId?: number;
+    ingredientOrder?: number;
+    ingredient_order?: number;
   }[];
   steps?: {
     stepNumber?: number;
@@ -75,6 +78,8 @@ export interface UpdateRecipeDTO {
     ingredientId: string;
     quantity: number;
     unitId?: number;
+    ingredientOrder?: number;
+    ingredient_order?: number;
   }[];
   steps?: {
     stepNumber?: number;
