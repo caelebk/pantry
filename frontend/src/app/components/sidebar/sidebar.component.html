@@ -375,12 +375,37 @@
     </button>
   </nav>
 
+  <!-- Desktop Collapse Toggle Button (Middle Edge) -->
+  <button
+    (click)="toggleCollapse()"
+    [attr.title]="isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'"
+    class="hidden md:flex absolute top-1/2 -right-3.5 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-md items-center justify-center text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:scale-110 active:scale-95 transition-all cursor-pointer shrink-0">
+    @if (isCollapsed) {
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2.5"
+        stroke="currentColor"
+        class="w-3.5 h-3.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+      </svg>
+    } @else {
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2.5"
+        stroke="currentColor"
+        class="w-3.5 h-3.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+      </svg>
+    }
+  </button>
+
   <!-- Sidebar Footer Options -->
   <div class="p-3 border-t border-surface-200/40 dark:border-surface-800/40">
-    <div
-      [class.flex-col]="isCollapsed"
-      [class.flex-row]="!isCollapsed"
-      class="flex items-center justify-between gap-2 w-full">
+    <div class="flex items-center justify-between gap-2 w-full">
       <!-- Dark Mode Toggle Button -->
       <button
         (click)="onToggleTheme()"
@@ -388,7 +413,7 @@
         [class.justify-center]="isCollapsed"
         [class.px-2.5]="isCollapsed"
         [class.px-3.5]="!isCollapsed"
-        class="flex-1 flex items-center justify-between py-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800/60 text-surface-600 dark:text-surface-400 transition-all duration-200 text-sm cursor-pointer min-h-[40px]">
+        class="w-full flex items-center justify-between py-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800/60 text-surface-600 dark:text-surface-400 transition-all duration-200 text-sm cursor-pointer min-h-[40px]">
         <div class="flex items-center gap-2.5">
           @if (darkMode) {
             <svg
@@ -443,34 +468,6 @@
             class="text-xs px-2 py-0.5 rounded-md bg-surface-200/60 dark:bg-surface-800 text-surface-500 dark:text-surface-400 font-mono hidden md:inline">
             {{ darkMode ? 'DARK' : 'LIGHT' }}
           </span>
-        }
-      </button>
-
-      <!-- Desktop Collapse Toggle Button -->
-      <button
-        (click)="toggleCollapse()"
-        [attr.title]="isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'"
-        class="hidden md:flex w-7 h-7 rounded-full bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-md items-center justify-center text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:scale-110 active:scale-95 transition-all cursor-pointer shrink-0">
-        @if (isCollapsed) {
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2.5"
-            stroke="currentColor"
-            class="w-3.5 h-3.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-        } @else {
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2.5"
-            stroke="currentColor"
-            class="w-3.5 h-3.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
         }
       </button>
     </div>
