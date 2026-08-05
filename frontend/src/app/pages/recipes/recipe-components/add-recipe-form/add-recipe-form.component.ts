@@ -191,7 +191,7 @@ export class AddRecipeFormComponent implements OnInit {
             id: st.id || crypto.randomUUID(),
             instructionText: st.instructionText,
             timerSeconds: st.timerSeconds || null,
-            textareaHeight: st.textareaHeight || null,
+            textareaHeight: st.textareaHeight || (st as any).textarea_height || null,
           }));
         } else {
           this.recipeSteps = [{ id: crypto.randomUUID(), instructionText: '', timerSeconds: null }];
@@ -508,6 +508,17 @@ export class AddRecipeFormComponent implements OnInit {
     if (!this.validateForm()) {
       return;
     }
+
+    // Capture live rendered heights directly from step textareas in DOM
+    this.recipeSteps.forEach((step) => {
+      const textareaEl = document.querySelector<HTMLTextAreaElement>(`textarea[name="step_${step.id}"]`);
+      if (textareaEl) {
+        const currentHeight = textareaEl.offsetHeight || Math.round(textareaEl.getBoundingClientRect().height);
+        if (currentHeight > 0) {
+          step.textareaHeight = currentHeight;
+        }
+      }
+    });
 
     const ingredientsPayload = this.recipeIngredients
       .filter((row) => row.ingredientId !== '')

@@ -366,7 +366,7 @@ export class RecipeService {
       instructionText: s.instruction_text,
       imageUrl: s.image_url ? s.image_url : undefined,
       timerSeconds: s.timer_seconds ? s.timer_seconds : undefined,
-      textareaHeight: s.textarea_height ? s.textarea_height : undefined,
+      textareaHeight: s.textarea_height != null ? Number(s.textarea_height) : undefined,
     }));
   }
 
