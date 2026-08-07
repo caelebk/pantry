@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
+import { filter, map } from 'rxjs/operators';
 import { Tab } from '../tabs/tabs.model';
 
 @Component({
@@ -9,85 +11,94 @@ import { Tab } from '../tabs/tabs.model';
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './sidebar.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
   private readonly router = inject(Router);
 
-  @Input() darkMode = true;
-  @Input() activeTab: Tab = Tab.Home;
-  @Output() themeToggled = new EventEmitter<void>();
-  @Output() tabSelected = new EventEmitter<Tab>();
+  darkMode = input(true);
+  activeTab = input<Tab>(Tab.Home);
+  themeToggled = output<void>();
+  tabSelected = output<Tab>();
 
   tabs = Tab;
-  mobileMenuOpen = false;
-  isCollapsed = false;
-  inventoryExpanded = true;
+  mobileMenuOpen = signal(false);
+  isCollapsed = signal(false);
+  inventoryExpanded = signal(true);
+
+  // Reactive URL signal driven by Router events for OnPush change detection
+  readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map((e) => e.urlAfterRedirects || e.url),
+    ),
+    { initialValue: this.router.url },
+  );
 
   toggleCollapse(): void {
-    this.isCollapsed = !this.isCollapsed;
+    this.isCollapsed.update((v) => !v);
   }
 
   toggleMobileMenu(): void {
-    this.mobileMenuOpen = !this.mobileMenuOpen;
+    this.mobileMenuOpen.update((v) => !v);
   }
 
   toggleInventoryExpanded(event?: Event): void {
     if (event) event.stopPropagation();
-    this.inventoryExpanded = !this.inventoryExpanded;
-  }
-
-  selectTab(tab: Tab): void {
-    this.tabSelected.emit(tab);
-    this.mobileMenuOpen = false;
-  }
-
-  navigateTo(path: string): void {
-    this.router.navigate([path]);
-    this.mobileMenuOpen = false;
+    this.inventoryExpanded.update((v) => !v);
   }
 
   onToggleTheme(): void {
     this.themeToggled.emit();
   }
 
+  navigateTo(path: string): void {
+    this.mobileMenuOpen.set(false);
+    this.router.navigate([path]);
+  }
+
+  private get url(): string {
+    return this.currentUrl() || this.router.url || '';
+  }
+
   isHomeActive(): boolean {
-    return (
-      this.router.url === '/home' || this.router.url === '/dashboard' || this.router.url === '/'
-    );
+    const url = this.url;
+    return url === '/' || url.startsWith('/home') || url.startsWith('/dashboard');
   }
 
   isInventoryActive(): boolean {
-    return this.router.url.startsWith('/inventory');
-  }
-
-  isInventoryItemsActive(): boolean {
-    return this.router.url.startsWith('/inventory/items');
+    return this.url.startsWith('/inventory');
   }
 
   isIngredientsActive(): boolean {
-    return this.router.url.startsWith('/inventory/ingredients');
+    const url = this.url;
+    return url === '/inventory/ingredients' || url.startsWith('/inventory/ingredients/');
+  }
+
+  isInventoryItemsActive(): boolean {
+    const url = this.url;
+    return url === '/inventory/items' || url.startsWith('/inventory/items/');
   }
 
   isIngredientGroupsActive(): boolean {
-    return this.router.url.startsWith('/inventory/groups');
-  }
-
-  isIngredientCategoriesActive(): boolean {
+    const url = this.url;
     return (
-      this.router.url.startsWith('/inventory/nutrients') ||
-      this.router.url.startsWith('/inventory/categories')
+      url === '/inventory/groups' ||
+      url.startsWith('/inventory/groups/') ||
+      url.startsWith('/inventory/categories') ||
+      url.startsWith('/inventory/nutrients')
     );
   }
 
   isRecipesActive(): boolean {
-    return this.router.url.startsWith('/recipes');
+    return this.url.startsWith('/recipes');
   }
 
   isShoppingListActive(): boolean {
-    return this.router.url.startsWith('/shopping-list');
+    return this.url.startsWith('/shopping-list');
   }
 
   isMealPlannerActive(): boolean {
-    return this.router.url.startsWith('/meal-planner');
+    return this.url.startsWith('/meal-planner');
   }
 }
