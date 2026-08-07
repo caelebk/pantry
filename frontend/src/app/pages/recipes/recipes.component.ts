@@ -28,11 +28,23 @@ export type RecipeSortOption =
 export type AvailabilityFilterOption = 'all' | 'makeable' | 'partial';
 export type DifficultyFilterOption = 'all' | 'easy' | 'medium' | 'hard';
 
+import { ChangeDetectionStrategy } from '@angular/core';
+
+import { SkeletonModule } from 'primeng/skeleton';
+
 @Component({
   selector: 'pantry-recipes',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, FormsModule, RecipeCardComponent, SelectModule],
+  imports: [
+    CommonModule,
+    TranslocoModule,
+    FormsModule,
+    RecipeCardComponent,
+    SelectModule,
+    SkeletonModule,
+  ],
   templateUrl: './recipes.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipesComponent implements OnInit {
   private readonly recipeService = inject(RecipeService);

@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -18,6 +25,7 @@ export type PlannerSubTab = 'calendar' | 'daily';
   imports: [CommonModule, FormsModule, TranslocoModule, WeeklyViewComponent, DailyFocusComponent],
   templateUrl: './meal-planner.component.html',
   styleUrl: './meal-planner.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MealPlannerComponent implements OnInit {
   private readonly router = inject(Router);

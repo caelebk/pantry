@@ -16,6 +16,8 @@ import { ItemsContainerComponent } from './home-components/items-container/items
 import { LocationOverviewContainerComponent } from './home-components/location-overview-container/location-overview-container.component';
 import { QuickActionsContainerComponent } from './home-components/quick-actions-container/quick-actions-container.component';
 
+import { ChangeDetectionStrategy } from '@angular/core';
+
 @Component({
   selector: 'pantry-home',
   standalone: true,
@@ -29,6 +31,7 @@ import { QuickActionsContainerComponent } from './home-components/quick-actions-
     CookableRecipesContainerComponent,
   ],
   templateUrl: './home.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent {
   protected readonly Theme = ItemsContainerTheme;

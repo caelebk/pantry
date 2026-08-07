@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
@@ -42,6 +49,8 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
 export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh' | 'out_of_stock';
 export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'status';
 
+import { SkeletonModule } from 'primeng/skeleton';
+
 @Component({
   selector: 'pantry-inventory',
   standalone: true,
@@ -55,10 +64,12 @@ export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'stat
     FormsModule,
     SelectModule,
     DialogModule,
+    SkeletonModule,
   ],
   providers: [ConfirmationService],
   templateUrl: './inventory.component.html',
   animations: [fadeInOut, staggeredFadeIn],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InventoryComponent implements OnInit {
   private readonly inventoryService = inject(ItemService);

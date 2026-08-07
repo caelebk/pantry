@@ -149,7 +149,7 @@
           Ingredients
         </h5>
         <ul class="space-y-1 text-xs">
-          @for (ing of sortedIngredients; track $index) {
+          @for (ing of sortedIngredients; track ing.ingredientId) {
             @let avail = getIngredientAvailability(ing);
             @let expInfo = getIngredientExpirationInfo(ing);
             <li

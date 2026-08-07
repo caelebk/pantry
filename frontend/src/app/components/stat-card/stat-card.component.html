@@ -10,11 +10,16 @@
       <div class="w-1.5 h-1.5 rounded-full bg-primary-500"></div>
     </div>
   </div>
-  <div class="text-2xl font-extrabold tracking-tight" [ngClass]="valueColor()">
-    {{ displayValue() }}
+  <div class="flex items-baseline justify-between gap-2">
+    <div class="text-2xl font-extrabold tracking-tight" [ngClass]="valueColor()">
+      {{ displayValue() }}
+    </div>
+    @if (trend()) {
+      <span [class]="trendClass()">{{ trend() }}</span>
+    }
   </div>
   @if (subtitle()) {
-    <p class="text-[11px] text-surface-400 dark:text-surface-500 mt-1 font-medium">
+    <p class="text-[11px] text-surface-500 dark:text-surface-400 mt-1 font-medium">
       {{ subtitle() }}
     </p>
   }

@@ -53,9 +53,9 @@
           type="text"
           formControlName="name"
           placeholder="e.g. Spaghetti, Fuji Apples, Chicken Breast"
-          class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white" />
+          class="w-full !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white" />
         @if (ingredientForm.get('name')?.invalid && ingredientForm.get('name')?.touched) {
-          <p class="mt-1 text-xs text-red-500 font-medium">
+          <p class="mt-1 text-xs text-rose-500 font-medium">
             Ingredient name is required (min 2 characters).
           </p>
         }

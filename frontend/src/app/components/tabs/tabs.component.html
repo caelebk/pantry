@@ -50,4 +50,38 @@
     class="px-4 py-1.5 cursor-pointer text-sm font-medium rounded-lg transition-all duration-200">
     {{ 'nav.recipes' | transloco }}
   </button>
+  <button
+    (click)="selectTab(tabs.ShoppingList)"
+    [class.bg-white]="isShoppingListActive()"
+    [class.dark:bg-surface-700]="isShoppingListActive()"
+    [class.shadow-sm]="isShoppingListActive()"
+    [class.text-primary-600]="isShoppingListActive()"
+    [class.dark:text-primary-400]="isShoppingListActive()"
+    [class.font-semibold]="isShoppingListActive()"
+    [class.text-surface-500]="!isShoppingListActive()"
+    [class.dark:text-surface-400]="!isShoppingListActive()"
+    [class.hover:text-surface-700]="!isShoppingListActive()"
+    [class.dark:hover:text-surface-300]="!isShoppingListActive()"
+    [class.hover:bg-white/50]="!isShoppingListActive()"
+    [class.dark:hover:bg-surface-700/50]="!isShoppingListActive()"
+    class="px-4 py-1.5 cursor-pointer text-sm font-medium rounded-lg transition-all duration-200">
+    {{ 'nav.shoppingList' | transloco }}
+  </button>
+  <button
+    (click)="selectTab(tabs.MealPlanner)"
+    [class.bg-white]="isMealPlannerActive()"
+    [class.dark:bg-surface-700]="isMealPlannerActive()"
+    [class.shadow-sm]="isMealPlannerActive()"
+    [class.text-primary-600]="isMealPlannerActive()"
+    [class.dark:text-primary-400]="isMealPlannerActive()"
+    [class.font-semibold]="isMealPlannerActive()"
+    [class.text-surface-500]="!isMealPlannerActive()"
+    [class.dark:text-surface-400]="!isMealPlannerActive()"
+    [class.hover:text-surface-700]="!isMealPlannerActive()"
+    [class.dark:hover:text-surface-300]="!isMealPlannerActive()"
+    [class.hover:bg-white/50]="!isMealPlannerActive()"
+    [class.dark:hover:bg-surface-700/50]="!isMealPlannerActive()"
+    class="px-4 py-1.5 cursor-pointer text-sm font-medium rounded-lg transition-all duration-200">
+    {{ 'nav.mealPlanner' | transloco }}
+  </button>
 </div>

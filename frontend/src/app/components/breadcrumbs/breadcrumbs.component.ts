@@ -1,6 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { filter } from 'rxjs/operators';
 
 export interface BreadcrumbItem {
@@ -13,18 +22,23 @@ export interface BreadcrumbItem {
 @Component({
   selector: 'pantry-breadcrumbs',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslocoModule],
   templateUrl: './breadcrumbs.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbsComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   public breadcrumbs = signal<BreadcrumbItem[]>([]);
 
   ngOnInit(): void {
     this.buildBreadcrumbs(this.router.url);
 
     this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((event: NavigationEnd) => {
         this.buildBreadcrumbs(event.urlAfterRedirects || event.url);
       });

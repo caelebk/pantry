@@ -3,9 +3,6 @@
     <div class="flex items-center gap-3">
       <div
         class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary-500/20 transition-all duration-200 hover:shadow-lg hover:shadow-primary-500/30 hover:scale-105">
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=skillet" />
         <span class="material-symbols-outlined text-[20px]">skillet</span>
       </div>
       <h1 class="text-xl font-bold tracking-tight text-surface-900 dark:text-white">
@@ -20,7 +17,10 @@
     <div class="flex items-center gap-1">
       <button
         (click)="onToggle()"
-        class="p-2 cursor-pointer rounded-xl hover:bg-surface-200/60 dark:hover:bg-surface-800/60 text-surface-500 dark:text-surface-400 transition-all duration-200 hover:scale-105 active:scale-95">
+        [attr.aria-label]="
+          darkMode ? ('sidebar.switchToLight' | transloco) : ('sidebar.switchToDark' | transloco)
+        "
+        class="p-2 cursor-pointer rounded-xl hover:bg-surface-200/60 dark:hover:bg-surface-800/60 text-surface-500 dark:text-surface-400 transition-all duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
         <!-- Sun icon for dark mode -->
         @if (darkMode) {
           <svg

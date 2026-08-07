@@ -70,7 +70,8 @@ export class EditItemPageComponent implements OnInit {
   public isCreatingIngredient = signal<boolean>(false);
 
   public previewItem = computed<Item | null>(() => {
-    const val = this.currentFormValue() as Record<string, unknown>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const val = (this.currentFormValue() || {}) as any;
     const defaultUnit: Unit = {
       id: 1,
       name: 'piece',

@@ -1,7 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
@@ -16,6 +24,7 @@ import {
 } from '@utility/itemUtility/ItemUtility';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
+import { SkeletonModule } from 'primeng/skeleton';
 
 export interface GroupedIngredients {
   groupName: string;
@@ -26,8 +35,16 @@ export interface GroupedIngredients {
 @Component({
   selector: 'pantry-ingredients-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, SelectModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InputTextModule,
+    SelectModule,
+    SkeletonModule,
+    TranslocoModule,
+  ],
   templateUrl: './ingredients-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientsPageComponent implements OnInit {
   private readonly router = inject(Router);

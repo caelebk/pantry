@@ -11,12 +11,15 @@ import { UnitService } from '../../../../services/inventory/unit.service';
 
 import { Item } from '@models/items.model';
 
+import { ChangeDetectionStrategy } from '@angular/core';
+
 @Component({
   selector: 'pantry-recipe-card',
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './recipe-card.component.html',
   styles: [':host { display: block; }'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipeCardComponent implements OnInit {
   @Input() recipe: Recipe = {} as Recipe;
