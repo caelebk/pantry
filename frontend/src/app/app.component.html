@@ -1,5 +1,5 @@
 <div
-  class="relative min-h-screen font-sans text-surface-900 dark:text-surface-100 transition-colors duration-300 overflow-x-hidden animated-gradient-bg">
+  class="relative h-screen font-sans text-surface-900 dark:text-surface-100 transition-colors duration-300 overflow-hidden animated-gradient-bg">
   <!-- Kitchen-Themed Ambient Backdrop Layer -->
   <div class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
     <!-- Warm Ambient Mesh Gradient Orbs -->
@@ -23,14 +23,14 @@
   </div>
 
   <!-- Main App Content Container Layer -->
-  <div class="relative z-10 flex flex-col md:flex-row min-h-screen">
+  <div class="relative z-10 flex flex-col md:flex-row h-full">
     <pantry-sidebar
       [darkMode]="darkMode()"
       (themeToggled)="toggleTheme()"
       [activeTab]="currentTab()"
       (tabSelected)="onTabSelected($event)"></pantry-sidebar>
 
-    <div class="flex-1 min-w-0 flex flex-col min-h-screen">
+    <div class="flex-1 min-w-0 flex flex-col overflow-y-auto">
       <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <pantry-breadcrumbs></pantry-breadcrumbs>
         <router-outlet></router-outlet>
