@@ -176,8 +176,16 @@ describe('AddRecipeFormComponent', () => {
     ];
 
     const mockDragEvent = {
-      preventDefault: () => {},
-      dataTransfer: { setData: () => {}, effectAllowed: '', dropEffect: '' },
+      preventDefault: () => {
+        /* mock */
+      },
+      dataTransfer: {
+        setData: () => {
+          /* mock */
+        },
+        effectAllowed: '',
+        dropEffect: '',
+      },
     } as unknown as DragEvent;
 
     component.onIngredientDragStart(mockDragEvent, 0);

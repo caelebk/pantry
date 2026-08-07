@@ -12,11 +12,11 @@ import { AddIngredientGroupPageComponent } from './add-ingredient-group-page.com
 describe('AddIngredientGroupPageComponent', () => {
   let component: AddIngredientGroupPageComponent;
   let fixture: ComponentFixture<AddIngredientGroupPageComponent>;
-  let mockRouter: any;
-  let mockIngredientGroupService: any;
-  let mockIngredientCategoryService: any;
-  let mockIngredientService: any;
-  let mockToastService: any;
+  let mockRouter: unknown;
+  let mockIngredientGroupService: unknown;
+  let mockIngredientCategoryService: unknown;
+  let mockIngredientService: unknown;
+  let mockToastService: unknown;
 
   const mockCategories = [
     { id: 1, name: 'Fiber & Produce' },

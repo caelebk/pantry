@@ -58,12 +58,12 @@ describe('EditItemPageComponent', () => {
     mockToastService = jasmine.createSpyObj('ToastService', ['showSuccess', 'showError']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
-    mockItemService.getItemById.and.returnValue(of(mockItemDTO as any));
+    mockItemService.getItemById.and.returnValue(of(mockItemDTO as unknown as ItemDTO));
     mockIngredientService.getIngredients.and.returnValue(of([mockIngredient1, mockIngredient2]));
     mockIngredientGroupService.getIngredientGroups.and.returnValue(of([]));
     mockLocationService.getLocations.and.returnValue(of([{ id: 1, name: 'Pantry' }]));
     mockUnitService.getUnits.and.returnValue(of([mockUnit1, mockUnit2]));
-    mockItemService.updateItem.and.returnValue(of(mockItemDTO as any));
+    mockItemService.updateItem.and.returnValue(of(mockItemDTO as unknown as ItemDTO));
 
     await TestBed.configureTestingModule({
       imports: [EditItemPageComponent],

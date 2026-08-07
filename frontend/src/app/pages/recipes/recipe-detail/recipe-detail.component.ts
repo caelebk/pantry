@@ -10,6 +10,7 @@ import { ItemService } from '../../../services/inventory/item.service';
 import { UnitService } from '../../../services/inventory/unit.service';
 import { RecipeService } from '../../../services/recipe.service';
 
+import { SubstitutionSuggestion } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 
 @Component({
@@ -35,7 +36,7 @@ export class RecipeDetailComponent implements OnInit {
   pantryItems: Item[] = [];
 
   activeSubstitutionIngredient: { ingredientId: string; name: string } | null = null;
-  activeSubstitutionSuggestions: any[] = [];
+  activeSubstitutionSuggestions: SubstitutionSuggestion[] = [];
   isLoadingSubstitutions = false;
 
   openSubstitutionModal(event: Event, ing: { ingredientId: string }): void {

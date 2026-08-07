@@ -12,12 +12,12 @@ import { RecipesComponent } from './recipes.component';
 
 describe('RecipesComponent', () => {
   let component: RecipesComponent;
-  let mockRecipeService: any;
-  let mockItemService: any;
-  let mockUnitService: any;
-  let mockIngredientService: any;
-  let mockToastService: any;
-  let mockRouter: any;
+  let mockRecipeService: unknown;
+  let mockItemService: unknown;
+  let mockUnitService: unknown;
+  let mockIngredientService: unknown;
+  let mockToastService: unknown;
+  let mockRouter: unknown;
 
   const mockRecipe: Recipe = {
     id: 'rec-1',

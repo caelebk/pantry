@@ -146,8 +146,8 @@ export class ShoppingListService {
   removeItem(id: string): void {
     const item = this.itemsSignal().find((i) => i.id === id);
     this.http
-      .delete<ApiResponse<any>>(`${this.apiUrl}/${id}`)
-      .pipe(mapResponseData<any>())
+      .delete<ApiResponse<unknown>>(`${this.apiUrl}/${id}`)
+      .pipe(mapResponseData<unknown>())
       .subscribe({
         next: () => {
           this.itemsSignal.update((curr) => curr.filter((i) => i.id !== id));
@@ -166,8 +166,8 @@ export class ShoppingListService {
     if (count === 0) return;
 
     this.http
-      .delete<ApiResponse<any>>(`${this.apiUrl}/checked`)
-      .pipe(mapResponseData<any>())
+      .delete<ApiResponse<unknown>>(`${this.apiUrl}/checked`)
+      .pipe(mapResponseData<unknown>())
       .subscribe({
         next: () => {
           this.itemsSignal.update((curr) => curr.filter((i) => !i.checked));
@@ -187,8 +187,8 @@ export class ShoppingListService {
     }
 
     this.http
-      .delete<ApiResponse<any>>(`${this.apiUrl}/checked`)
-      .pipe(mapResponseData<any>())
+      .delete<ApiResponse<unknown>>(`${this.apiUrl}/checked`)
+      .pipe(mapResponseData<unknown>())
       .subscribe({
         next: () => {
           this.itemsSignal.update((curr) => curr.filter((i) => !i.checked));

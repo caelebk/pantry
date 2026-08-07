@@ -9,9 +9,9 @@ import { ShoppingListComponent } from './shopping-list.component';
 
 describe('ShoppingListComponent', () => {
   let component: ShoppingListComponent;
-  let mockShoppingListService: any;
-  let mockMealPlannerService: any;
-  let mockRouter: any;
+  let mockShoppingListService: unknown;
+  let mockMealPlannerService: unknown;
+  let mockRouter: unknown;
 
   const mockItem: ShoppingItem = {
     id: 'sl-1',

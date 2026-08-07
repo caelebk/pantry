@@ -96,7 +96,7 @@ describe('RestockReviewPageComponent', () => {
           id: 'ing-uuid-milk-123',
           name: 'Whole Milk',
           defaultUnit: mockUnits[0],
-        } as any,
+        } as unknown as Ingredient,
       ]),
     );
 

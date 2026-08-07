@@ -240,7 +240,7 @@ export class IngredientsPageComponent implements OnInit {
     }
   }
 
-  onAddStockItemForIngredient(ing: Ingredient): void {
+  onAddStockItemForIngredient(): void {
     this.router.navigate(['/inventory/items/new']);
   }
 
@@ -255,7 +255,7 @@ export class IngredientsPageComponent implements OnInit {
           this.toastService.showSuccess(`Item "${item.name}" removed from inventory.`);
           this.loadData();
         },
-        error: (err: any) => {
+        error: (err: unknown) => {
           console.error('Failed to delete item:', err);
           this.toastService.showError('Failed to remove item.');
         },

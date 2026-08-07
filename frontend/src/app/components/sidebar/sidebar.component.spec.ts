@@ -5,7 +5,7 @@ import { SidebarComponent } from './sidebar.component';
 
 describe('SidebarComponent', () => {
   let component: SidebarComponent;
-  let mockRouter: any;
+  let mockRouter: { navigate: unknown; url: string };
 
   beforeEach(() => {
     mockRouter = { navigate: vi.fn(), url: '/inventory/items' };

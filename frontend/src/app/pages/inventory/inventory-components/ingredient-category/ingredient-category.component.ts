@@ -18,10 +18,10 @@ export class IngredientCategoryComponent {
   isExpanded!: boolean;
 
   @Input()
-  expandedCategories: Set<number> = new Set();
+  expandedCategories = new Set<number>();
 
   @Input()
-  expandedIngredients: Set<string> = new Set();
+  expandedIngredients = new Set<string>();
 
   @Output()
   toggleNutrientGroup = new EventEmitter<number>();
@@ -56,35 +56,45 @@ export class IngredientCategoryComponent {
     return this.categoryClusters;
   }
 
-  getGroupCategoryId(group: any): number {
+  getGroupCategoryId(group: { group?: { id: number }; category?: { id: number } }): number {
     return group?.group?.id ?? group?.category?.id ?? -1;
   }
 
   get totalItemsCount(): number {
     if (!this.categoryClusters) return 0;
-    return this.categoryClusters.reduce((acc: number, catGroup: any) => {
-      return (
-        acc +
-        (catGroup.ingredients?.reduce(
-          (ingAcc: number, ing: any) => ingAcc + (ing.itemCount || 0),
-          0,
-        ) || 0)
-      );
-    }, 0);
+    return this.categoryClusters.reduce(
+      (acc: number, catGroup: { ingredients?: { itemCount?: number }[] }) => {
+        return (
+          acc +
+          (catGroup.ingredients?.reduce(
+            (ingAcc: number, ing: { itemCount?: number }) => ingAcc + (ing.itemCount || 0),
+            0,
+          ) || 0)
+        );
+      },
+      0,
+    );
   }
 
   get totalIngredientsCount(): number {
     if (!this.categoryClusters) return 0;
-    return this.categoryClusters.reduce((acc: number, catGroup: any) => {
+    return this.categoryClusters.reduce((acc: number, catGroup: { ingredients?: unknown[] }) => {
       return acc + (catGroup.ingredients?.length || 0);
     }, 0);
   }
 
   get inStockIngredientsCount(): number {
     if (!this.categoryClusters) return 0;
-    return this.categoryClusters.reduce((acc: number, catGroup: any) => {
-      return acc + (catGroup.ingredients?.filter((ing: any) => ing.itemCount > 0).length || 0);
-    }, 0);
+    return this.categoryClusters.reduce(
+      (acc: number, catGroup: { ingredients?: { itemCount: number }[] }) => {
+        return (
+          acc +
+          (catGroup.ingredients?.filter((ing: { itemCount: number }) => ing.itemCount > 0).length ||
+            0)
+        );
+      },
+      0,
+    );
   }
 
   isCategoryExpanded(categoryId: number): boolean {

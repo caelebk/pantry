@@ -38,19 +38,19 @@ export class ToastService {
     }
   }
 
-  showSuccess(message: string, title: string = 'Success'): void {
+  showSuccess(message: string, title = 'Success'): void {
     this.show({ type: 'success', title, message });
   }
 
-  showError(message: string, title: string = 'Error'): void {
+  showError(message: string, title = 'Error'): void {
     this.show({ type: 'error', title, message, duration: 6000 });
   }
 
-  showWarning(message: string, title: string = 'Warning'): void {
+  showWarning(message: string, title = 'Warning'): void {
     this.show({ type: 'warning', title, message });
   }
 
-  showInfo(message: string, title: string = 'Info'): void {
+  showInfo(message: string, title = 'Info'): void {
     this.show({ type: 'info', title, message });
   }
 

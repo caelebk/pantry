@@ -43,7 +43,7 @@ export class LocationOverviewContainerComponent {
     locMap.forEach((val) => {
       const percentage = Math.round((val.count / totalCount) * 100);
       const icon = this.getLocationIcon(val.location.name);
-      const colorClass = this.getLocationColor(val.location.name);
+      const colorClass = this.getLocationColor();
       stats.push({
         location: val.location,
         count: val.count,
@@ -65,7 +65,7 @@ export class LocationOverviewContainerComponent {
     return 'pi pi-building';
   }
 
-  private getLocationColor(name: string): string {
+  private getLocationColor(): string {
     return 'bg-primary-500';
   }
 }

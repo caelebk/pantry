@@ -9,9 +9,9 @@ import { MealPlannerComponent } from './meal-planner.component';
 
 describe('MealPlannerComponent', () => {
   let component: MealPlannerComponent;
-  let mockMealPlannerService: any;
-  let mockRecipeService: any;
-  let mockRouter: any;
+  let mockMealPlannerService: unknown;
+  let mockRecipeService: unknown;
+  let mockRouter: unknown;
 
   const mockMeal: PlannedMeal = {
     id: 'mp-1',

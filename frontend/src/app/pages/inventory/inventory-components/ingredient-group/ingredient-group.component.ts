@@ -19,10 +19,10 @@ export class IngredientGroupComponent {
   @Input({ required: true })
   isExpanded!: boolean;
   @Input()
-  expandedIngredients: Set<string> = new Set();
+  expandedIngredients = new Set<string>();
 
   @Output()
-  toggle = new EventEmitter<number>();
+  toggleGroup = new EventEmitter<number>();
   @Output()
   toggleIngredient = new EventEmitter<string>();
   @Output()
@@ -33,7 +33,7 @@ export class IngredientGroupComponent {
   }
 
   onToggle() {
-    this.toggle.emit(this.category.id);
+    this.toggleGroup.emit(this.category.id);
   }
 
   onUnassign(item: Item, event: Event) {
@@ -74,7 +74,7 @@ export class IngredientGroupComponent {
     return exp >= now && exp.getTime() - now.getTime() <= threeDays;
   }
 
-  getIngredientQuantitySummary(ingredient: any): string {
+  getIngredientQuantitySummary(ingredient: { items?: Item[] }): string {
     if (!ingredient || !ingredient.items || ingredient.items.length === 0) return '—';
     return ingredient.items.map((i: Item) => `${i.quantity} ${i.unit?.shortName || ''}`).join(', ');
   }

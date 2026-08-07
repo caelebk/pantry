@@ -53,7 +53,9 @@ describe('AddItemPageComponent', () => {
     mockIngredientGroupService.getIngredientGroups.and.returnValue(of([]));
     mockLocationService.getLocations.and.returnValue(of([{ id: 1, name: 'Pantry' }]));
     mockUnitService.getUnits.and.returnValue(of([mockUnit]));
-    mockItemService.addItem.and.returnValue(of({ id: 'item-1', label: 'Basmati Rice' } as any));
+    mockItemService.addItem.and.returnValue(
+      of({ id: 'item-1', label: 'Basmati Rice' } as unknown as Item),
+    );
 
     await TestBed.configureTestingModule({
       imports: [AddItemPageComponent],
