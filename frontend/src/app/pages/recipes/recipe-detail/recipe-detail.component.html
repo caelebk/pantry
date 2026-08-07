@@ -161,6 +161,10 @@
               @let avail = getIngredientAvailability(ing);
               <li
                 (click)="onIngredientClick($event, ing)"
+                (keyup.enter)="onIngredientClick($event, ing)"
+                (keyup.space)="onIngredientClick($event, ing)"
+                tabindex="0"
+                role="button"
                 class="flex items-center justify-between p-3 rounded-xl transition-colors border cursor-pointer hover:border-primary-500/40 hover:shadow-sm"
                 [class.bg-rose-500/10]="!avail.isAvailable"
                 [class.border-rose-500/30]="!avail.isAvailable"
@@ -317,6 +321,16 @@
                   closeSubstitutionModal();
                   onIngredientClick($event, { ingredientId: sub.ingredient.id })
                 "
+                (keyup.enter)="
+                  closeSubstitutionModal();
+                  onIngredientClick($event, { ingredientId: sub.ingredient.id })
+                "
+                (keyup.space)="
+                  closeSubstitutionModal();
+                  onIngredientClick($event, { ingredientId: sub.ingredient.id })
+                "
+                tabindex="0"
+                role="button"
                 class="p-3.5 rounded-xl border border-surface-200/80 dark:border-surface-800/80 hover:border-primary-500/50 bg-white/80 dark:bg-surface-800/60 transition-all cursor-pointer flex items-center justify-between gap-3 group">
                 <div class="space-y-1">
                   <div class="flex items-center gap-2">
@@ -338,7 +352,7 @@
                       }}
                     </span>
                   </div>
-                  <p class="text-xs text-surface-400">Category: {{ sub.categoryName }}</p>
+                  <p class="text-xs text-surface-400">Group: {{ sub.groupName }}</p>
                 </div>
 
                 <div class="text-right shrink-0">

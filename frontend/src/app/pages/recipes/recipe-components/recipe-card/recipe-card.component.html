@@ -1,5 +1,9 @@
 <div
   (click)="viewDetails()"
+  (keyup.enter)="viewDetails()"
+  (keyup.space)="viewDetails()"
+  tabindex="0"
+  role="button"
   class="glass-card rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-sm hover:shadow-md hover:border-primary-500/30 dark:hover:border-primary-500/30 transition-all duration-200 flex flex-col justify-between h-[480px] relative overflow-hidden cursor-pointer group">
   <!-- Main Scrollable/Clippable Content Area -->
   <div class="p-6 overflow-hidden relative flex-1">
@@ -150,6 +154,10 @@
             @let expInfo = getIngredientExpirationInfo(ing);
             <li
               (click)="onIngredientClick($event, ing)"
+              (keyup.enter)="onIngredientClick($event, ing)"
+              (keyup.space)="onIngredientClick($event, ing)"
+              tabindex="0"
+              role="button"
               class="flex items-center justify-between gap-1.5 p-1 rounded-md transition-colors cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-800/60"
               [class.bg-rose-500/5]="!avail.isAvailable"
               [class.bg-amber-500/10]="avail.isAvailable && expInfo.expiringSoon"

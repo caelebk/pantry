@@ -82,7 +82,7 @@
           [group]="group"
           [isExpanded]="isCategoryExpanded(getGroupCategoryId(group))"
           [expandedIngredients]="expandedIngredients"
-          (toggle)="onToggleCategory($event)"
+          (toggleGroup)="onToggleCategory($event)"
           (toggleIngredient)="onToggleIngredient($event)"
           (unassignItem)="unassignItem.emit($event)">
         </pantry-ingredient-group>

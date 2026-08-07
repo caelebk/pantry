@@ -180,6 +180,10 @@
             } @empty {
               <div
                 (click)="onRequestAdd(day, 'Dinner')"
+                (keyup.enter)="onRequestAdd(day, 'Dinner')"
+                (keyup.space)="onRequestAdd(day, 'Dinner')"
+                tabindex="0"
+                role="button"
                 class="p-6 rounded-xl border border-dashed border-surface-200/80 dark:border-surface-800/80 text-center space-y-2 hover:border-primary-500 hover:bg-primary-50/10 cursor-pointer transition-all">
                 <div class="text-surface-400 text-sm font-medium">No meals scheduled</div>
                 <div class="text-xs text-primary-600 dark:text-primary-400 font-semibold">
