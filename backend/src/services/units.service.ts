@@ -8,11 +8,11 @@ export class UnitService {
    * Retrieves all units from the database.
    * @returns {Promise<UnitDTO[]>}
    */
-  async getAllUnits(): Promise<UnitDTO[]> {
+  getAllUnits(): Promise<UnitDTO[]> {
     try {
       const db = getDB();
       const rows = db.prepare('SELECT * FROM units').all() as UnitRow[];
-      return rows.map(this.mapRowToDTO);
+      return Promise.resolve(rows.map(this.mapRowToDTO));
     } catch (error: unknown) {
       console.error('Error finding units:', error);
       throw new Error(UnitMessages.DB_RETRIEVE_UNITS_ERROR);
@@ -24,11 +24,11 @@ export class UnitService {
    * @param {number} id
    * @returns {Promise<UnitDTO | null>}
    */
-  async getUnitById(id: number): Promise<UnitDTO | null> {
+  getUnitById(id: number): Promise<UnitDTO | null> {
     try {
       const db = getDB();
       const row = db.prepare('SELECT * FROM units WHERE id = ?').get(id) as UnitRow | undefined;
-      return row ? this.mapRowToDTO(row) : null;
+      return Promise.resolve(row ? this.mapRowToDTO(row) : null);
     } catch (error: unknown) {
       console.error('Error finding unit by ID:', error);
       throw new Error(UnitMessages.DB_RETRIEVE_UNIT_ERROR);

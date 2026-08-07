@@ -20,22 +20,22 @@ export interface ShoppingListItemRow {
 }
 
 export class ShoppingListBackendService {
-  async getAllItems(): Promise<ShoppingListItemDTO[]> {
+  getAllItems(): Promise<ShoppingListItemDTO[]> {
     const db = getDB();
     const rows = db.prepare('SELECT * FROM shopping_list_items ORDER BY created_at DESC')
       .all() as ShoppingListItemRow[];
-    return rows.map(this.mapRowToDTO);
+    return Promise.resolve(rows.map(this.mapRowToDTO));
   }
 
-  async getItemById(id: string): Promise<ShoppingListItemDTO | null> {
+  getItemById(id: string): Promise<ShoppingListItemDTO | null> {
     const db = getDB();
     const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(id) as
       | ShoppingListItemRow
       | undefined;
-    return row ? this.mapRowToDTO(row) : null;
+    return Promise.resolve(row ? this.mapRowToDTO(row) : null);
   }
 
-  async createItem(data: CreateShoppingListItemDTO): Promise<ShoppingListItemDTO> {
+  createItem(data: CreateShoppingListItemDTO): Promise<ShoppingListItemDTO> {
     const db = getDB();
     const id = crypto.randomUUID();
 
@@ -58,7 +58,7 @@ export class ShoppingListBackendService {
     const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(
       id,
     ) as ShoppingListItemRow;
-    return this.mapRowToDTO(row);
+    return Promise.resolve(this.mapRowToDTO(row));
   }
 
   async createMultipleItems(items: CreateShoppingListItemDTO[]): Promise<ShoppingListItemDTO[]> {
@@ -115,16 +115,16 @@ export class ShoppingListBackendService {
     return this.mapRowToDTO(row);
   }
 
-  async deleteItem(id: string): Promise<boolean> {
+  deleteItem(id: string): Promise<boolean> {
     const db = getDB();
     db.prepare('DELETE FROM shopping_list_items WHERE id = ?').run(id);
-    return true;
+    return Promise.resolve(true);
   }
 
-  async deleteCheckedItems(): Promise<number> {
+  deleteCheckedItems(): Promise<number> {
     const db = getDB();
     const result = db.prepare('DELETE FROM shopping_list_items WHERE checked = 1').run();
-    return typeof result === 'number' ? result : 0;
+    return Promise.resolve(typeof result === 'number' ? result : 0);
   }
 
   private mapRowToDTO(row: ShoppingListItemRow): ShoppingListItemDTO {
@@ -137,7 +137,7 @@ export class ShoppingListBackendService {
       checked: Boolean(row.checked),
       estimatedPrice: row.estimated_price,
       storeName: row.store_name,
-      source: (row.source as any) || 'manual',
+      source: (row.source as 'low_stock' | 'recipe_plan' | 'manual') || 'manual',
       recipeName: row.recipe_name || undefined,
       createdAt: row.created_at,
     };

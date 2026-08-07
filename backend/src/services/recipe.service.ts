@@ -12,7 +12,6 @@ import type {
   UpdateRecipeDTO,
 } from '../models/data-models/recipe.model.ts';
 import type {
-  DifficultyRow,
   RecipeIngredientRow,
   RecipeRow,
   RecipeStepRow,
@@ -27,7 +26,7 @@ export class RecipeService {
     return await this.findAll();
   }
 
-  async findAll(): Promise<RecipeDTO[]> {
+  findAll(): Promise<RecipeDTO[]> {
     try {
       const db = getDB();
       const rows = db.prepare(`
@@ -43,7 +42,7 @@ export class RecipeService {
         const steps = this.getRecipeSteps(row.id);
         recipes.push(this.mapRowToDTO(row, ingredients, steps));
       }
-      return recipes;
+      return Promise.resolve(recipes);
     } catch (error: unknown) {
       console.error('Error fetching all recipes:', error);
       throw new Error(RecipeMessages.DB_RETRIEVE_RECIPES_ERROR);
@@ -57,7 +56,7 @@ export class RecipeService {
     return await this.findById(id);
   }
 
-  async findById(id: string): Promise<RecipeDTO | null> {
+  findById(id: string): Promise<RecipeDTO | null> {
     if (!isValidUUID(id)) {
       throw new Error(RecipeMessages.INVALID_ID_FORMAT_LOG(id));
     }
@@ -70,11 +69,11 @@ export class RecipeService {
         WHERE r.id = ?
       `).get(id) as (RecipeRow & { difficulty_name: string | null }) | undefined;
 
-      if (!row) return null;
+      if (!row) return Promise.resolve(null);
 
       const ingredients = this.getRecipeIngredients(row.id);
       const steps = this.getRecipeSteps(row.id);
-      return this.mapRowToDTO(row, ingredients, steps);
+      return Promise.resolve(this.mapRowToDTO(row, ingredients, steps));
     } catch (error: unknown) {
       console.error('Error fetching recipe by ID:', error);
       throw new Error(RecipeMessages.DB_RETRIEVE_RECIPE_ERROR);
@@ -118,7 +117,9 @@ export class RecipeService {
           VALUES (?, ?, ?, ?, ?, ?, ?)
         `);
         data.ingredients.forEach((ing, index) => {
-          const order = ing.ingredientOrder ?? (ing as any).ingredient_order ?? (index + 1);
+          const order = ing.ingredientOrder ??
+            (ing as RecipeIngredientDTO & { ingredient_order?: number }).ingredient_order ??
+            (index + 1);
           insertIngredient.run(
             recipeId,
             ing.ingredientId,
@@ -209,7 +210,9 @@ export class RecipeService {
           VALUES (?, ?, ?, ?, ?, ?, ?)
         `);
         data.ingredients.forEach((ing, index) => {
-          const order = ing.ingredientOrder ?? (ing as any).ingredient_order ?? (index + 1);
+          const order = ing.ingredientOrder ??
+            (ing as RecipeIngredientDTO & { ingredient_order?: number }).ingredient_order ??
+            (index + 1);
           insertIngredient.run(
             id,
             ing.ingredientId,
@@ -261,14 +264,14 @@ export class RecipeService {
     return await this.delete(id);
   }
 
-  async delete(id: string): Promise<boolean> {
+  delete(id: string): Promise<boolean> {
     if (!isValidUUID(id)) {
       throw new Error(RecipeMessages.INVALID_ID_FORMAT_LOG(id));
     }
     try {
       const db = getDB();
       db.prepare('DELETE FROM recipes WHERE id = ?').run(id);
-      return true;
+      return Promise.resolve(true);
     } catch (error: unknown) {
       console.error('Error deleting recipe:', error);
       throw new Error(RecipeMessages.DB_DELETE_ERROR);

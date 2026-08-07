@@ -231,7 +231,12 @@ export function seedBareNecessities(db: ReturnType<typeof getDB>) {
     'INSERT INTO ingredient_categories (name, icon, color, description) VALUES (?, ?, ?, ?)',
   );
   for (const nt of seedData.ingredient_categories) {
-    insertCategory.run(nt.name, nt.icon, nt.color, (nt as any).description || null);
+    insertCategory.run(
+      nt.name,
+      nt.icon,
+      nt.color,
+      (nt as { description?: string }).description || null,
+    );
     const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
     ingredientCategoryIds.set(nt.name, row.id);
   }

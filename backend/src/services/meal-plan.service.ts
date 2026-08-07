@@ -21,22 +21,22 @@ export interface MealPlanRow {
 }
 
 export class MealPlanService {
-  async getAllMealPlans(): Promise<MealPlanDTO[]> {
+  getAllMealPlans(): Promise<MealPlanDTO[]> {
     const db = getDB();
     const rows = db.prepare('SELECT * FROM meal_plans ORDER BY created_at ASC')
       .all() as MealPlanRow[];
-    return rows.map(this.mapRowToDTO);
+    return Promise.resolve(rows.map(this.mapRowToDTO));
   }
 
-  async getMealPlanById(id: string): Promise<MealPlanDTO | null> {
+  getMealPlanById(id: string): Promise<MealPlanDTO | null> {
     const db = getDB();
     const row = db.prepare('SELECT * FROM meal_plans WHERE id = ?').get(id) as
       | MealPlanRow
       | undefined;
-    return row ? this.mapRowToDTO(row) : null;
+    return Promise.resolve(row ? this.mapRowToDTO(row) : null);
   }
 
-  async createMealPlan(data: CreateMealPlanDTO): Promise<MealPlanDTO> {
+  createMealPlan(data: CreateMealPlanDTO): Promise<MealPlanDTO> {
     const db = getDB();
     const id = crypto.randomUUID();
     const missingJson = JSON.stringify(data.missingIngredients || []);
@@ -60,7 +60,7 @@ export class MealPlanService {
     );
 
     const row = db.prepare('SELECT * FROM meal_plans WHERE id = ?').get(id) as MealPlanRow;
-    return this.mapRowToDTO(row);
+    return Promise.resolve(this.mapRowToDTO(row));
   }
 
   async updateMealPlan(id: string, data: UpdateMealPlanDTO): Promise<MealPlanDTO | null> {
@@ -107,10 +107,10 @@ export class MealPlanService {
     return this.mapRowToDTO(row);
   }
 
-  async deleteMealPlan(id: string): Promise<boolean> {
+  deleteMealPlan(id: string): Promise<boolean> {
     const db = getDB();
     db.prepare('DELETE FROM meal_plans WHERE id = ?').run(id);
-    return true;
+    return Promise.resolve(true);
   }
 
   private mapRowToDTO(row: MealPlanRow): MealPlanDTO {
@@ -118,10 +118,14 @@ export class MealPlanService {
     let tags: string[] = [];
     try {
       if (row.missing_ingredients) missing = JSON.parse(row.missing_ingredients);
-    } catch (_) {}
+    } catch (_err) {
+      missing = [];
+    }
     try {
       if (row.tags) tags = JSON.parse(row.tags);
-    } catch (_) {}
+    } catch (_err) {
+      tags = [];
+    }
 
     return {
       id: row.id,

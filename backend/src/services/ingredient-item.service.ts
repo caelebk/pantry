@@ -22,12 +22,12 @@ export class IngredientItemService {
   /**
    * Retrieves all ingredient items from the database.
    */
-  async getAllIngredientItems(): Promise<IngredientItemDTO[]> {
+  getAllIngredientItems(): Promise<IngredientItemDTO[]> {
     try {
       const db = getDB();
       const rows = db.prepare('SELECT * FROM ingredient_items ORDER BY created_at DESC')
         .all() as IngredientItemRow[];
-      return rows.map(this.mapItemRowToItem);
+      return Promise.resolve(rows.map(this.mapItemRowToItem));
     } catch (error: unknown) {
       console.error('Error fetching all ingredient items:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEMS_ERROR);
@@ -37,7 +37,7 @@ export class IngredientItemService {
   /**
    * Retrieves a single ingredient item by its ID.
    */
-  async getIngredientItemById(id: string): Promise<IngredientItemDTO | null> {
+  getIngredientItemById(id: string): Promise<IngredientItemDTO | null> {
     if (!isValidUUID(id)) {
       throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
     }
@@ -46,7 +46,7 @@ export class IngredientItemService {
       const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(id) as
         | IngredientItemRow
         | undefined;
-      return row ? this.mapItemRowToItem(row) : null;
+      return Promise.resolve(row ? this.mapItemRowToItem(row) : null);
     } catch (error: unknown) {
       console.error('Error fetching ingredient item by ID:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEM_ERROR);
@@ -56,7 +56,7 @@ export class IngredientItemService {
   /**
    * Creates a new ingredient item in the database.
    */
-  async createIngredientItem(data: CreateIngredientItemDTO): Promise<IngredientItemDTO> {
+  createIngredientItem(data: CreateIngredientItemDTO): Promise<IngredientItemDTO> {
     try {
       const db = getDB();
       const id = crypto.randomUUID();
@@ -92,7 +92,7 @@ export class IngredientItemService {
       const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(
         id,
       ) as IngredientItemRow;
-      return this.mapItemRowToItem(row);
+      return Promise.resolve(this.mapItemRowToItem(row));
     } catch (error: unknown) {
       console.error('Error creating ingredient item:', error);
       throw new Error(ItemMessages.DB_CREATE_ERROR);
@@ -102,7 +102,7 @@ export class IngredientItemService {
   /**
    * Updates an existing ingredient item in the database.
    */
-  async updateIngredientItem(
+  updateIngredientItem(
     id: string,
     data: UpdateIngredientItemDTO,
   ): Promise<IngredientItemDTO | null> {
@@ -145,7 +145,7 @@ export class IngredientItemService {
       const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(id) as
         | IngredientItemRow
         | undefined;
-      return row ? this.mapItemRowToItem(row) : null;
+      return Promise.resolve(row ? this.mapItemRowToItem(row) : null);
     } catch (error: unknown) {
       console.error('Error updating ingredient item:', error);
       throw new Error(ItemMessages.DB_UPDATE_ERROR);
@@ -155,14 +155,14 @@ export class IngredientItemService {
   /**
    * Deletes an ingredient item from the database by its ID.
    */
-  async deleteIngredientItemById(id: string): Promise<boolean> {
+  deleteIngredientItemById(id: string): Promise<boolean> {
     if (!isValidUUID(id)) {
       throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
     }
     try {
       const db = getDB();
       db.prepare('DELETE FROM ingredient_items WHERE id = ?').run(id);
-      return true;
+      return Promise.resolve(true);
     } catch (error: unknown) {
       console.error('Error deleting ingredient item:', error);
       throw new Error(ItemMessages.DB_DELETE_ERROR);
@@ -172,7 +172,7 @@ export class IngredientItemService {
   /**
    * Bulk clears stock (sets quantity to 0 and clears expiration date) for multiple ingredient items.
    */
-  async bulkClearStock(ids: string[]): Promise<number> {
+  bulkClearStock(ids: string[]): Promise<number> {
     for (const id of ids) {
       if (!isValidUUID(id)) {
         throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
@@ -189,7 +189,7 @@ export class IngredientItemService {
         const changes = stmt.run(now, id);
         if (typeof changes === 'number') count += changes;
       }
-      return count;
+      return Promise.resolve(count);
     } catch (error: unknown) {
       console.error('Error bulk clearing stock:', error);
       throw new Error(ItemMessages.DB_UPDATE_ERROR);
@@ -199,7 +199,7 @@ export class IngredientItemService {
   /**
    * Bulk deletes multiple ingredient items by their IDs.
    */
-  async bulkDeleteIngredientItems(ids: string[]): Promise<number> {
+  bulkDeleteIngredientItems(ids: string[]): Promise<number> {
     for (const id of ids) {
       if (!isValidUUID(id)) {
         throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
@@ -213,7 +213,7 @@ export class IngredientItemService {
         const changes = stmt.run(id);
         if (typeof changes === 'number') count += changes;
       }
-      return count;
+      return Promise.resolve(count);
     } catch (error: unknown) {
       console.error('Error bulk deleting ingredient items:', error);
       throw new Error(ItemMessages.DB_DELETE_ERROR);
@@ -223,14 +223,14 @@ export class IngredientItemService {
   /**
    * Finds ingredient items that are expiring within a specified number of days.
    */
-  async findExpiringSoon(days: number = this.soonExpiryDays): Promise<IngredientItemDTO[]> {
+  findExpiringSoon(days: number = this.soonExpiryDays): Promise<IngredientItemDTO[]> {
     try {
       const db = getDB();
       const futureDate = new Date(Date.now() + days * this.secondsInDay).toISOString();
       const rows = db.prepare(
         'SELECT * FROM ingredient_items WHERE quantity > 0 AND expiration_date IS NOT NULL AND expiration_date <= ? ORDER BY expiration_date ASC',
       ).all(futureDate) as IngredientItemRow[];
-      return rows.map(this.mapItemRowToItem);
+      return Promise.resolve(rows.map(this.mapItemRowToItem));
     } catch (error: unknown) {
       console.error('Error finding expiring soon ingredient items:', error);
       throw new Error(ItemMessages.DB_FIND_EXPIRING_ERROR);
@@ -240,12 +240,12 @@ export class IngredientItemService {
   /**
    * Finds ingredient items matching a query name by string similarity.
    */
-  async findSimilarItems(
+  findSimilarItems(
     queryName: string,
     minScore: number = 0.45,
   ): Promise<ItemSimilarityCandidateDTO[]> {
     if (!queryName || !queryName.trim()) {
-      return [];
+      return Promise.resolve([]);
     }
     const db = getDB();
     const rows = db.prepare(`
@@ -271,7 +271,7 @@ export class IngredientItemService {
       }
     }
 
-    return candidates.sort((a, b) => b.score - a.score);
+    return Promise.resolve(candidates.sort((a, b) => b.score - a.score));
   }
 
   private mapItemRowToItem(row: IngredientItemRow): IngredientItemDTO {

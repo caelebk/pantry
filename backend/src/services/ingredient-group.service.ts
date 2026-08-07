@@ -17,7 +17,7 @@ export class IngredientGroupService {
   /**
    * Retrieves all ingredient groups from the database, including ingredient category info.
    */
-  async getAllIngredientGroups(): Promise<IngredientGroupDTO[]> {
+  getAllIngredientGroups(): Promise<IngredientGroupDTO[]> {
     try {
       const db = getDB();
       const rows = db.prepare(`
@@ -26,7 +26,7 @@ export class IngredientGroupService {
         LEFT JOIN ingredient_categories ic ON ig.ingredient_category_id = ic.id
         ORDER BY ig.name
       `).all() as IngredientGroupJoinRow[];
-      return rows.map(this.mapRowToDTO);
+      return Promise.resolve(rows.map(this.mapRowToDTO));
     } catch (error: unknown) {
       console.error('Error finding ingredient groups:', error);
       throw new Error(IngredientGroupMessages.DB_RETRIEVE_CATEGORIES_ERROR);
@@ -36,7 +36,7 @@ export class IngredientGroupService {
   /**
    * Retrieves an ingredient group by its ID.
    */
-  async getIngredientGroupById(id: number): Promise<IngredientGroupDTO | null> {
+  getIngredientGroupById(id: number): Promise<IngredientGroupDTO | null> {
     try {
       const db = getDB();
       const row = db.prepare(`
@@ -45,7 +45,7 @@ export class IngredientGroupService {
         LEFT JOIN ingredient_categories ic ON ig.ingredient_category_id = ic.id
         WHERE ig.id = ?
       `).get(id) as IngredientGroupJoinRow | undefined;
-      return row ? this.mapRowToDTO(row) : null;
+      return Promise.resolve(row ? this.mapRowToDTO(row) : null);
     } catch (error: unknown) {
       console.error('Error finding ingredient group by ID:', error);
       throw new Error(IngredientGroupMessages.DB_RETRIEVE_CATEGORY_ERROR);
