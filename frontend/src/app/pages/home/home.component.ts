@@ -16,7 +16,8 @@ import { ItemsContainerComponent } from './home-components/items-container/items
 import { LocationOverviewContainerComponent } from './home-components/location-overview-container/location-overview-container.component';
 import { QuickActionsContainerComponent } from './home-components/quick-actions-container/quick-actions-container.component';
 
-import { ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'pantry-home',
@@ -40,6 +41,7 @@ export class HomeComponent {
   private readonly locationService = inject(LocationService);
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   items = signal<Item[]>([]);
   recipes = signal<Recipe[]>([]);
@@ -81,45 +83,57 @@ export class HomeComponent {
   }
 
   fetchData(): void {
-    this.itemService.getItems().subscribe({
-      next: (items: Item[]) => {
-        this.items.set(items);
-        this.expiredItems.set(this.items().filter((item) => isExpired(item)));
-        this.soonToExpireItems.set(this.items().filter((item) => isExpiringSoon(item)));
-        this.availableItems.set(
-          this.items().filter((item) => !isExpired(item) && !isExpiringSoon(item)),
-        );
-      },
-      error: (err) => console.error('Failed to load items:', err),
-    });
+    this.itemService
+      .getItems()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (items: Item[]) => {
+          this.items.set(items);
+          this.expiredItems.set(this.items().filter((item) => isExpired(item)));
+          this.soonToExpireItems.set(this.items().filter((item) => isExpiringSoon(item)));
+          this.availableItems.set(
+            this.items().filter((item) => !isExpired(item) && !isExpiringSoon(item)),
+          );
+        },
+        error: (err) => console.error('Failed to load items:', err),
+      });
 
-    this.recipeService.getAvailableRecipes().subscribe({
-      next: (recipes: Recipe[]) => {
-        this.recipes.set(recipes);
-      },
-      error: (err) => console.error('Failed to load recipes:', err),
-    });
+    this.recipeService
+      .getAvailableRecipes()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (recipes: Recipe[]) => {
+          this.recipes.set(recipes);
+        },
+        error: (err) => console.error('Failed to load recipes:', err),
+      });
 
-    this.locationService.getLocations().subscribe({
-      next: (locations: Location[]) => {
-        this.locations.set(locations);
-      },
-      error: (err) => console.error('Failed to load locations:', err),
-    });
+    this.locationService
+      .getLocations()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (locations: Location[]) => {
+          this.locations.set(locations);
+        },
+        error: (err) => console.error('Failed to load locations:', err),
+      });
   }
 
   onRemoveItem(item: Item): void {
     if (confirm(`Remove "${item.name}" from inventory?`)) {
-      this.itemService.removeItem(item).subscribe({
-        next: () => {
-          this.toastService.showSuccess(`Removed "${item.name}"`, 'Item successfully removed.');
-          this.fetchData();
-        },
-        error: (err) => {
-          console.error('Failed to remove item:', err);
-          this.toastService.showError('Error', 'Failed to remove item.');
-        },
-      });
+      this.itemService
+        .removeItem(item)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.toastService.showSuccess(`Removed "${item.name}"`, 'Item successfully removed.');
+            this.fetchData();
+          },
+          error: (err) => {
+            console.error('Failed to remove item:', err);
+            this.toastService.showError('Error', 'Failed to remove item.');
+          },
+        });
     }
   }
 

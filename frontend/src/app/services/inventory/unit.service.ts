@@ -5,7 +5,7 @@ import { Unit, UnitDTO } from '@models/unit.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { mapUnitDTOToUnit } from '@utility/itemUtility/UnitMapper';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -13,12 +13,17 @@ import { map } from 'rxjs/operators';
 export class UnitService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = '/api/units';
+  private unitsCache$?: Observable<Unit[]>;
 
   getUnits(): Observable<Unit[]> {
-    return this.http.get<ApiResponse<UnitDTO[]>>(this.apiUrl).pipe(
-      mapResponseData(),
-      map((dtos) => dtos.map(mapUnitDTOToUnit)),
-    );
+    if (!this.unitsCache$) {
+      this.unitsCache$ = this.http.get<ApiResponse<UnitDTO[]>>(this.apiUrl).pipe(
+        mapResponseData(),
+        map((dtos) => dtos.map(mapUnitDTOToUnit)),
+        shareReplay(1),
+      );
+    }
+    return this.unitsCache$;
   }
 
   getUnitsById(id: number): Observable<Unit> {

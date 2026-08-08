@@ -31,18 +31,18 @@
   --color-amber-900: #78350f;
   --color-amber-950: #451a03;
 
-  /* Refined Warm Stone surface palette for Light Mode - Soft off-whites & warm sand tones */
-  --color-surface-50: #fcfbf9;
-  --color-surface-100: #f7f5f0;
-  --color-surface-200: #ede9e1;
-  --color-surface-300: #ded8cb;
-  --color-surface-400: #b5ac9a;
-  --color-surface-500: #877d6c;
-  --color-surface-600: #665d50;
-  --color-surface-700: #4a4339;
-  --color-surface-800: #292520;
-  --color-surface-900: #1c1916;
-  --color-surface-950: #0d0c0a;
+  /* Crisp Modern Slate/Zinc Surface Palette for Light Mode */
+  --color-surface-50: #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e2e8f0;
+  --color-surface-300: #cbd5e1;
+  --color-surface-400: #94a3b8;
+  --color-surface-500: #64748b;
+  --color-surface-600: #475569;
+  --color-surface-700: #334155;
+  --color-surface-800: #1e293b;
+  --color-surface-900: #0f172a;
+  --color-surface-950: #020617;
 }
 
 /* ── Smooth scrolling & Base body background ─────────────────── */
@@ -51,28 +51,28 @@ html {
 }
 
 body {
-  background-color: #f7f5f0;
+  background-color: var(--color-surface-50);
   color: var(--color-surface-900);
 }
 
 :where(.dark, .dark *) body {
-  background-color: #1c1916;
+  background-color: var(--color-surface-950);
   color: var(--color-surface-100);
 }
 
 /* ── Refined Light & Dark Glass Card Surfaces ───────────────── */
 .glass-card {
-  background: rgba(252, 251, 249, 0.88);
+  background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid rgba(222, 216, 203, 0.7);
+  border: 1px solid rgba(226, 232, 240, 0.85); /* Slate 200 */
   box-shadow:
-    0 10px 30px -10px rgba(135, 125, 108, 0.08),
-    0 2px 6px -1px rgba(135, 125, 108, 0.04);
+    0 10px 30px -10px rgba(15, 23, 42, 0.06),
+    0 2px 6px -1px rgba(15, 23, 42, 0.03);
 }
 
 :where(.dark, .dark *) .glass-card {
-  background: rgba(41, 37, 32, 0.78);
+  background: rgba(30, 41, 59, 0.78); /* Slate 800 */
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -84,16 +84,16 @@ body {
 /* ── Centralized High-Contrast Sub-Card & Sub-Panel Utility System ──── */
 .sub-card,
 .sub-card-inset {
-  background-color: rgba(247, 245, 240, 0.95) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
   border: 1px solid var(--color-surface-200) !important;
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.8),
-    0 1px 3px rgba(135, 125, 108, 0.06) !important;
+    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    0 1px 3px rgba(15, 23, 42, 0.04) !important;
 }
 
 :where(.dark, .dark *) .sub-card,
 :where(.dark, .dark *) .sub-card-inset {
-  background-color: rgba(74, 67, 57, 0.45) !important;
+  background-color: rgba(30, 41, 59, 0.45) !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.05),
@@ -105,19 +105,20 @@ body {
 }
 
 .sub-card-hover:hover {
-  background-color: #fcfbf9 !important;
+  background-color: #ffffff !important;
   border-color: var(--color-primary-500) !important;
+  box-shadow: 0 4px 12px -2px rgba(249, 115, 22, 0.15) !important;
 }
 
 :where(.dark, .dark *) .sub-card-hover:hover {
-  background-color: rgba(74, 67, 57, 0.65) !important;
+  background-color: rgba(30, 41, 59, 0.65) !important;
   border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 /* Centralized Location & Status Badge Utility */
 .location-badge {
-  background-color: var(--color-surface-200) !important;
-  border: 1px solid var(--color-surface-300) !important;
+  background-color: var(--color-surface-100) !important;
+  border: 1px solid var(--color-surface-200) !important;
   color: var(--color-surface-800) !important;
   font-weight: 600 !important;
   display: inline-flex !important;
@@ -125,7 +126,7 @@ body {
 }
 
 :where(.dark, .dark *) .location-badge {
-  background-color: rgba(68, 64, 60, 0.5) !important;
+  background-color: rgba(30, 41, 59, 0.5) !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
   color: var(--color-surface-200) !important;
 }
@@ -143,14 +144,14 @@ body {
 
 /* ── Glass header ───────────────────────────────────────────── */
 .glass-header {
-  background: rgba(252, 251, 249, 0.92);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-bottom: 1px solid rgba(222, 216, 203, 0.7);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 :where(.dark, .dark *) .glass-header {
-  background: rgba(28, 25, 22, 0.92);
+  background: rgba(15, 23, 42, 0.92);
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
@@ -164,12 +165,12 @@ body {
 
 /* ── Warm Stone background ───────────────────────────────────── */
 .animated-gradient-bg {
-  background-color: #f7f5f0;
+  background-color: var(--color-surface-50);
   transition: background-color 0.3s ease;
 }
 
 :where(.dark, .dark *) .animated-gradient-bg {
-  background-color: #1c1916;
+  background-color: var(--color-surface-950);
 }
 
 /* ── Kitchen-Themed Ambient Backdrop System ───────────────────── */
@@ -251,81 +252,119 @@ body {
   }
 }
 
-/* Culinary SVG Grain & Utensil Pattern Overlay */
-.culinary-pattern-overlay {
+/* Elegant Precision Dot-Grid Overlay */
+.dot-grid-pattern-overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.04;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='none' stroke='%2378716c' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3C!-- Chef Hat --%3E%3Cg transform='translate(15, 15) scale(0.7)'%3E%3Cpath d='M6 18h24v3H6zM9 18V12a6 6 0 0 1 12 0 6 6 0 0 1 12 0v6'/%3E%3C/g%3E%3C!-- Fork & Knife --%3E%3Cg transform='translate(75, 15) scale(0.7)'%3E%3Cpath d='M10 2v8a3 3 0 0 0 6 0V2M13 10v12M22 2v20'/%3E%3C/g%3E%3C!-- Whisk --%3E%3Cg transform='translate(15, 75) scale(0.7)'%3E%3Cpath d='M12 2a6 10 0 0 0-6 10c0 4 6 10 6 10s6-6 6-10a6 10 0 0 0-6-10zM12 22v6'/%3E%3C/g%3E%3C!-- Grain / Wheat --%3E%3Cg transform='translate(75, 75) scale(0.7)'%3E%3Cpath d='M6 26L22 10M12 14c-2-2-2-5 0-7s5 0 7 0M16 18c0-3 2-6 5-6s3 3 0 6'/%3E%3C/g%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 120px 120px;
+  opacity: 0.35;
+  background-image: radial-gradient(rgba(135, 125, 108, 0.28) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: 0 0;
+  mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 90%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 90%);
 }
 
-:where(.dark, .dark *) .culinary-pattern-overlay {
-  opacity: 0.035;
-  mix-blend-mode: screen;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='none' stroke='%23f5f5f4' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3C!-- Chef Hat --%3E%3Cg transform='translate(15, 15) scale(0.7)'%3E%3Cpath d='M6 18h24v3H6zM9 18V12a6 6 0 0 1 12 0 6 6 0 0 1 12 0v6'/%3E%3C/g%3E%3C!-- Fork & Knife --%3E%3Cg transform='translate(75, 15) scale(0.7)'%3E%3Cpath d='M10 2v8a3 3 0 0 0 6 0V2M13 10v12M22 2v20'/%3E%3C/g%3E%3C!-- Whisk --%3E%3Cg transform='translate(15, 75) scale(0.7)'%3E%3Cpath d='M12 2a6 10 0 0 0-6 10c0 4 6 10 6 10s6-6 6-10a6 10 0 0 0-6-10zM12 22v6'/%3E%3C/g%3E%3C!-- Grain / Wheat --%3E%3Cg transform='translate(75, 75) scale(0.7)'%3E%3Cpath d='M6 26L22 10M12 14c-2-2-2-5 0-7s5 0 7 0M16 18c0-3 2-6 5-6s3 3 0 6'/%3E%3C/g%3E%3C/svg%3E");
+:where(.dark, .dark *) .dot-grid-pattern-overlay {
+  opacity: 0.25;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px);
 }
 
-/* Subtle Culinary Glass Floaters */
-.culinary-floater {
+/* Fine Topographic Ambient Wave Accents */
+.topo-wave-accent {
   position: absolute;
-  display: flex;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  pointer-events: none;
+  filter: blur(40px);
+  opacity: 0.12;
+  will-change: transform;
+  animation: topoMorph 24s ease-in-out infinite alternate;
+}
+
+:where(.dark, .dark *) .topo-wave-accent {
+  opacity: 0.08;
+}
+
+.wave-1 {
+  top: 15%;
+  right: 10%;
+  width: 500px;
+  height: 350px;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.3), rgba(245, 158, 11, 0.2));
+  animation-duration: 20s;
+}
+
+.wave-2 {
+  bottom: 12%;
+  left: 8%;
+  width: 550px;
+  height: 400px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(249, 115, 22, 0.15));
+  animation-duration: 26s;
+  animation-delay: -8s;
+}
+
+@keyframes topoMorph {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  }
+  50% {
+    transform: translate(30px, -25px) rotate(90deg) scale(1.06);
+    border-radius: 60% 40% 30% 70% / 50% 30% 70% 50%;
+  }
+  100% {
+    transform: translate(-20px, 35px) rotate(180deg) scale(0.96);
+    border-radius: 30% 70% 50% 50% / 30% 60% 40% 70%;
+  }
+}
+
+/* Subtle Glass Ambient Pill Badges */
+.ambient-glass-pill {
+  position: absolute;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 9999px;
-  background: rgba(252, 251, 249, 0.45);
+  background: rgba(252, 251, 249, 0.55);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 24px -6px rgba(135, 125, 108, 0.08);
+  border: 1px solid rgba(222, 216, 203, 0.7);
+  box-shadow: 0 4px 16px -4px rgba(135, 125, 108, 0.08);
   pointer-events: none;
   animation: floatDrift 18s ease-in-out infinite alternate;
 }
 
-:where(.dark, .dark *) .culinary-floater {
-  background: rgba(41, 37, 32, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.3);
+:where(.dark, .dark *) .ambient-glass-pill {
+  background: rgba(41, 37, 32, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.3);
 }
 
-.floater-1 {
-  top: 18%;
+.pill-1 {
+  top: 14%;
   left: 3%;
-  width: 56px;
-  height: 56px;
-  animation-duration: 16s;
+  animation-duration: 18s;
 }
 
-.floater-2 {
-  bottom: 22%;
-  right: 4%;
-  width: 68px;
-  height: 68px;
-  animation-duration: 20s;
-  animation-delay: -5s;
-}
-
-.floater-3 {
-  top: 65%;
-  left: 6%;
-  width: 48px;
-  height: 48px;
-  animation-duration: 24s;
-  animation-delay: -10s;
+.pill-2 {
+  bottom: 18%;
+  right: 3%;
+  padding: 0.5rem;
+  animation-duration: 22s;
+  animation-delay: -6s;
 }
 
 @keyframes floatDrift {
   0% {
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-18px) rotate(6deg);
+    transform: translateY(-12px) rotate(1.5deg);
   }
   100% {
-    transform: translateY(12px) rotate(-4deg);
+    transform: translateY(8px) rotate(-1deg);
   }
 }
 

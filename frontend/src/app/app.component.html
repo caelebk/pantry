@@ -1,25 +1,14 @@
 <div
   class="relative h-screen font-sans text-surface-900 dark:text-surface-100 transition-colors duration-300 overflow-hidden animated-gradient-bg">
-  <!-- Kitchen-Themed Ambient Backdrop Layer -->
+  <!-- Interactive Canvas Particle Web Background Layer -->
   <div class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
     <!-- Warm Ambient Mesh Gradient Orbs -->
     <div class="ambient-orb ambient-orb-1"></div>
     <div class="ambient-orb ambient-orb-2"></div>
     <div class="ambient-orb ambient-orb-3"></div>
 
-    <!-- Culinary SVG Grain & Utensil Pattern Overlay -->
-    <div class="culinary-pattern-overlay"></div>
-
-    <!-- Subtle Culinary Glass Floaters -->
-    <div class="culinary-floater floater-1">
-      <i class="pi pi-sparkles text-amber-600/35 dark:text-amber-400/25 text-xl"></i>
-    </div>
-    <div class="culinary-floater floater-2">
-      <i class="pi pi-heart-fill text-primary-500/30 dark:text-primary-400/20 text-2xl"></i>
-    </div>
-    <div class="culinary-floater floater-3">
-      <i class="pi pi-sun text-amber-700/30 dark:text-amber-300/20 text-xl"></i>
-    </div>
+    <!-- HTML5 Canvas Particle Web -->
+    <canvas #particleCanvas class="absolute inset-0 w-full h-full pointer-events-auto"></canvas>
   </div>
 
   <!-- Main App Content Container Layer -->
