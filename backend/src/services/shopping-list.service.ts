@@ -62,12 +62,21 @@ export class ShoppingListBackendService {
   }
 
   async createMultipleItems(items: CreateShoppingListItemDTO[]): Promise<ShoppingListItemDTO[]> {
-    const created: ShoppingListItemDTO[] = [];
-    for (const item of items) {
-      const dto = await this.createItem(item);
-      created.push(dto);
+    const db = getDB();
+    try {
+      db.exec('BEGIN');
+      const created: ShoppingListItemDTO[] = [];
+      for (const item of items) {
+        const dto = await this.createItem(item);
+        created.push(dto);
+      }
+      db.exec('COMMIT');
+      return created;
+    } catch (error) {
+      db.exec('ROLLBACK');
+      console.error('Error creating multiple shopping list items:', error);
+      throw error;
     }
-    return created;
   }
 
   async updateItem(

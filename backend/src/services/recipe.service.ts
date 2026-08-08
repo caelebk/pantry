@@ -36,12 +36,59 @@ export class RecipeService {
         ORDER BY r.created_at DESC
       `).all() as (RecipeRow & { difficulty_name: string | null })[];
 
-      const recipes: RecipeDTO[] = [];
-      for (const row of rows) {
-        const ingredients = this.getRecipeIngredients(row.id);
-        const steps = this.getRecipeSteps(row.id);
-        recipes.push(this.mapRowToDTO(row, ingredients, steps));
+      if (rows.length === 0) {
+        return Promise.resolve([]);
       }
+
+      // Batch fetch all ingredients for all recipes
+      const allIngredients = db.prepare(`
+        SELECT * FROM recipe_ingredients ORDER BY ingredient_order ASC, created_at ASC
+      `).all() as RecipeIngredientRow[];
+
+      const ingredientsMap = new Map<string, RecipeIngredientDTO[]>();
+      for (const r of allIngredients) {
+        const dto: RecipeIngredientDTO = {
+          recipeId: r.recipe_id,
+          ingredientId: r.ingredient_id,
+          quantity: r.quantity,
+          unitId: r.unit_id,
+          ingredientOrder: r.ingredient_order ?? 0,
+          createdAt: new Date(r.created_at),
+          updatedAt: new Date(r.updated_at),
+        };
+        const list = ingredientsMap.get(r.recipe_id) || [];
+        list.push(dto);
+        ingredientsMap.set(r.recipe_id, list);
+      }
+
+      // Batch fetch all steps for all recipes
+      const allSteps = db.prepare(`
+        SELECT * FROM recipe_steps ORDER BY step_number ASC
+      `).all() as RecipeStepRow[];
+
+      const stepsMap = new Map<string, RecipeStepDTO[]>();
+      for (const s of allSteps) {
+        const dto: RecipeStepDTO = {
+          id: s.id,
+          recipeId: s.recipe_id,
+          stepNumber: s.step_number,
+          instructionText: s.instruction_text,
+          imageUrl: s.image_url ? s.image_url : undefined,
+          timerSeconds: s.timer_seconds ? s.timer_seconds : undefined,
+          textareaHeight: s.textarea_height != null ? Number(s.textarea_height) : undefined,
+        };
+        const list = stepsMap.get(s.recipe_id) || [];
+        list.push(dto);
+        stepsMap.set(s.recipe_id, list);
+      }
+
+      const recipes: RecipeDTO[] = rows.map((row) =>
+        this.mapRowToDTO(
+          row,
+          ingredientsMap.get(row.id) || [],
+          stepsMap.get(row.id) || [],
+        )
+      );
       return Promise.resolve(recipes);
     } catch (error: unknown) {
       console.error('Error fetching all recipes:', error);
@@ -305,8 +352,15 @@ export class RecipeService {
         availableMap.set(row.ingredient_id, (availableMap.get(row.ingredient_id) || 0) + baseQty);
       }
 
-      // 2. Fetch all recipes
+      // 2. Fetch all recipes & unit factors
       const allRecipes = await this.findAll();
+      const unitRows = db.prepare(
+        'SELECT id, COALESCE(to_base_factor, 1.0) as to_base_factor FROM units',
+      ).all() as { id: number; to_base_factor: number }[];
+      const unitFactorMap = new Map<number, number>();
+      for (const u of unitRows) {
+        unitFactorMap.set(u.id, u.to_base_factor);
+      }
 
       // 3. Filter recipes where available quantity >= required quantity for all ingredients
       const makeableRecipes = allRecipes.filter((recipe) => {
@@ -315,16 +369,7 @@ export class RecipeService {
         }
 
         for (const reqIng of recipe.ingredients) {
-          // Get unit base factor for required ingredient
-          let factor = 1.0;
-          if (reqIng.unitId) {
-            const unitRow = db.prepare('SELECT to_base_factor FROM units WHERE id = ?').get(
-              reqIng.unitId,
-            ) as { to_base_factor: number } | undefined;
-            if (unitRow) {
-              factor = unitRow.to_base_factor;
-            }
-          }
+          const factor = reqIng.unitId ? (unitFactorMap.get(reqIng.unitId) ?? 1.0) : 1.0;
           const requiredBaseQty = reqIng.quantity * factor;
           const availableBaseQty = availableMap.get(reqIng.ingredientId) || 0;
 

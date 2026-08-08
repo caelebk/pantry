@@ -9,6 +9,8 @@ import { recipeService } from '../services/recipe.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isValidUUID } from '../utils/validators.ts';
 
+import { isValidCreateRecipeDTO, isValidUpdateRecipeDTO } from '../validators/recipe.validator.ts';
+
 const recipes = new Hono();
 
 // GET /api/recipes - Get all recipes
@@ -66,9 +68,9 @@ recipes.post('/', async (c: Context) => {
   try {
     const body: CreateRecipeDTO = await c.req.json();
 
-    if (!body || !body.name || typeof body.name !== 'string' || body.name.trim() === '') {
+    if (!isValidCreateRecipeDTO(body)) {
       return c.json(
-        errorResponse('Recipe name is required'),
+        errorResponse('Invalid recipe data or payload schema'),
         HttpStatusCode.BAD_REQUEST,
       );
     }
@@ -93,6 +95,13 @@ recipes.put('/:id', async (c: Context) => {
     }
 
     const body: UpdateRecipeDTO = await c.req.json();
+    if (!isValidUpdateRecipeDTO(body)) {
+      return c.json(
+        errorResponse('Invalid recipe update payload schema'),
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
     const recipe = await recipeService.updateRecipe(id, body);
 
     if (recipe) {

@@ -68,3 +68,32 @@ Deno.test('Item Validator - isValidBulkIdsDTO', () => {
   assertEquals(isValidBulkIdsDTO({ ids: ['invalid-uuid'] }), false);
   assertEquals(isValidBulkIdsDTO(null), false);
 });
+
+import {
+  isValidCreateRecipeDTO,
+  isValidUpdateRecipeDTO,
+} from '../src/validators/recipe.validator.ts';
+
+Deno.test('Recipe Validator - isValidCreateRecipeDTO', () => {
+  const validRecipe = {
+    name: 'Spaghetti Bolognese',
+    servings: 4,
+    prepTime: 15,
+    cookTime: 30,
+    ingredients: [
+      { ingredientId: '123e4567-e89b-12d3-a456-426614174000', quantity: 200, unitId: 1 },
+    ],
+    steps: [
+      { stepNumber: 1, instructionText: 'Boil water and cook pasta.' },
+    ],
+  };
+  assertEquals(isValidCreateRecipeDTO(validRecipe), true);
+  assertEquals(isValidCreateRecipeDTO({ ...validRecipe, name: '' }), false);
+  assertEquals(isValidCreateRecipeDTO({ ...validRecipe, servings: -1 }), false);
+});
+
+Deno.test('Recipe Validator - isValidUpdateRecipeDTO', () => {
+  assertEquals(isValidUpdateRecipeDTO({ name: 'Updated Recipe Name' }), true);
+  assertEquals(isValidUpdateRecipeDTO({ name: '' }), false);
+  assertEquals(isValidUpdateRecipeDTO({ cookTime: -10 }), false);
+});

@@ -178,8 +178,9 @@ export class IngredientItemService {
         throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
       }
     }
+    const db = getDB();
     try {
-      const db = getDB();
+      db.exec('BEGIN');
       const now = new Date().toISOString();
       const stmt = db.prepare(
         'UPDATE ingredient_items SET quantity = 0, expiration_date = NULL, updated_at = ? WHERE id = ?',
@@ -189,8 +190,10 @@ export class IngredientItemService {
         const changes = stmt.run(now, id);
         if (typeof changes === 'number') count += changes;
       }
+      db.exec('COMMIT');
       return Promise.resolve(count);
     } catch (error: unknown) {
+      db.exec('ROLLBACK');
       console.error('Error bulk clearing stock:', error);
       throw new Error(ItemMessages.DB_UPDATE_ERROR);
     }
@@ -205,16 +208,19 @@ export class IngredientItemService {
         throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
       }
     }
+    const db = getDB();
     try {
-      const db = getDB();
+      db.exec('BEGIN');
       const stmt = db.prepare('DELETE FROM ingredient_items WHERE id = ?');
       let count = 0;
       for (const id of ids) {
         const changes = stmt.run(id);
         if (typeof changes === 'number') count += changes;
       }
+      db.exec('COMMIT');
       return Promise.resolve(count);
     } catch (error: unknown) {
+      db.exec('ROLLBACK');
       console.error('Error bulk deleting ingredient items:', error);
       throw new Error(ItemMessages.DB_DELETE_ERROR);
     }
