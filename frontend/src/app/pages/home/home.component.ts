@@ -16,8 +16,9 @@ import { ItemsContainerComponent } from './home-components/items-container/items
 import { LocationOverviewContainerComponent } from './home-components/location-overview-container/location-overview-container.component';
 import { QuickActionsContainerComponent } from './home-components/quick-actions-container/quick-actions-container.component';
 
-import { ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, DestroyRef, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'pantry-home',
@@ -42,6 +43,7 @@ export class HomeComponent {
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
 
   items = signal<Item[]>([]);
   recipes = signal<Recipe[]>([]);
@@ -79,7 +81,12 @@ export class HomeComponent {
   });
 
   constructor() {
-    this.fetchData();
+    effect(() => {
+      const activeKitchen = this.authService.activeKitchen();
+      if (activeKitchen) {
+        this.fetchData();
+      }
+    });
   }
 
   fetchData(): void {

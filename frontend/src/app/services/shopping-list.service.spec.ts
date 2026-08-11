@@ -1,6 +1,8 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ShoppingItem } from '@models/shopping-list.model';
+import { AuthService } from '../core/services/auth.service';
 import { ShoppingListService } from './shopping-list.service';
 import { ToastService } from './toast.service';
 
@@ -8,6 +10,7 @@ describe('ShoppingListService', () => {
   let service: ShoppingListService;
   let httpMock: HttpTestingController;
   let mockToastService: jasmine.SpyObj<ToastService>;
+  let mockAuthService: jasmine.SpyObj<AuthService>;
 
   const mockShoppingItem: ShoppingItem = {
     id: 'sl-1',
@@ -29,15 +32,24 @@ describe('ShoppingListService', () => {
       'showWarning',
     ]);
 
+    mockAuthService = jasmine.createSpyObj('AuthService', ['activeKitchen']);
+    mockAuthService.activeKitchen.and.returnValue('kitchen-1');
+
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [ShoppingListService, { provide: ToastService, useValue: mockToastService }],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        ShoppingListService,
+        { provide: ToastService, useValue: mockToastService },
+        { provide: AuthService, useValue: mockAuthService },
+      ],
     });
 
     service = TestBed.inject(ShoppingListService);
     httpMock = TestBed.inject(HttpTestingController);
 
-    // Constructor HTTP load
+    // Constructor HTTP load (since effect will run)
+    TestBed.flushEffects();
     const initReq = httpMock.expectOne('/api/shopping-list');
     initReq.flush({ status: 'success', data: [mockShoppingItem] });
   });

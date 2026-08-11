@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { PlannedMeal } from '@models/meal-planner.model';
@@ -47,6 +49,8 @@ describe('MealPlannerComponent', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: MealPlannerService, useValue: mockMealPlannerService },
         { provide: RecipeService, useValue: mockRecipeService },
         { provide: Router, useValue: mockRouter },
@@ -54,7 +58,6 @@ describe('MealPlannerComponent', () => {
     });
 
     component = TestBed.runInInjectionContext(() => new MealPlannerComponent());
-    component.ngOnInit();
   });
 
   it('should create meal planner component', () => {

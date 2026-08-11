@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
@@ -46,6 +46,7 @@ import { TextareaModule } from 'primeng/textarea';
 })
 export class AddItemPageComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly itemService = inject(ItemService);
   private readonly ingredientService = inject(IngredientService);
   private readonly ingredientGroupService = inject(IngredientGroupService);
@@ -113,8 +114,9 @@ export class AddItemPageComponent implements OnInit {
     this.ingredientService.getIngredients().subscribe({
       next: (ingredients) => {
         this.ingredients.set(ingredients);
-        if (selectNewId) {
-          const found = ingredients.find((i) => i.id === selectNewId);
+        const targetId = selectNewId || this.route.snapshot.queryParams['ingredientId'];
+        if (targetId) {
+          const found = ingredients.find((i) => i.id === targetId);
           if (found) {
             this.addItemForm.controls.ingredient.setValue(found);
             if (!this.addItemForm.controls.name.value) {
@@ -214,6 +216,14 @@ export class AddItemPageComponent implements OnInit {
     return item.expirationDate
       ? getTimeDifferenceString(new Date(), item.expirationDate)
       : 'No Expiration';
+  }
+
+  setExpirationDaysOffset(days: number): void {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + days);
+    this.addItemForm.controls.expirationDate.setValue(targetDate);
+    this.addItemForm.controls.expirationDate.markAsTouched();
+    this.addItemForm.controls.expirationDate.markAsDirty();
   }
 
   onSubmit(): void {

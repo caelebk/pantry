@@ -3,11 +3,10 @@
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
     <div>
       <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
-        Ingredients
+        Ingredients Catalog
       </h2>
       <p class="text-surface-500 dark:text-surface-400 mt-1.5 text-sm">
-        Definitions of ingredients grouped by ingredient group, linked to recipes and ingredient
-        items in your pantry.
+        Master definitions of ingredients linked to recipes and Ingredient Items across your pantry.
       </p>
     </div>
     <div class="flex items-center gap-3">
@@ -20,8 +19,8 @@
     </div>
   </div>
 
-  <!-- Filter & Control Bar (Clean & Borderless) -->
-  <div class="mb-6 relative z-20">
+  <!-- Filter & Control Bar (Clean & Borderless - Aligned with Inventory Page) -->
+  <div class="mb-8 relative z-20">
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <!-- Search Input -->
       <div class="relative flex-1 min-w-[240px]">
@@ -31,12 +30,12 @@
           type="text"
           [ngModel]="searchQuery()"
           (ngModelChange)="onSearchChange($event)"
-          placeholder="Search ingredients..."
+          placeholder="Search ingredients by name or group..."
           class="w-full pl-10 pr-9 h-[42px] bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all placeholder:text-surface-400" />
         @if (searchQuery()) {
           <button
             (click)="onSearchChange('')"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200">
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 cursor-pointer">
             <i class="pi pi-times text-xs"></i>
           </button>
         }
@@ -44,6 +43,84 @@
 
       <!-- Controls Group -->
       <div class="flex flex-wrap items-center gap-3">
+        <!-- Status Filter Segment Pills Container -->
+        <div
+          class="flex items-center h-[42px] bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-xs border border-surface-200 dark:border-surface-700 shadow-xs">
+          <button
+            type="button"
+            (click)="setStatusFilter('all')"
+            [class.bg-white]="selectedStatusFilter() === 'all'"
+            [class.dark:bg-surface-700]="selectedStatusFilter() === 'all'"
+            [class.shadow-xs]="selectedStatusFilter() === 'all'"
+            [class.text-primary-600]="selectedStatusFilter() === 'all'"
+            [class.dark:text-primary-400]="selectedStatusFilter() === 'all'"
+            [class.font-bold]="selectedStatusFilter() === 'all'"
+            [class.text-surface-600]="selectedStatusFilter() !== 'all'"
+            [class.dark:text-surface-400]="selectedStatusFilter() !== 'all'"
+            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1.5">
+            <span>All</span>
+            <span
+              class="px-1.5 py-0.5 rounded-full text-[10px]"
+              [class.bg-primary-500/10]="selectedStatusFilter() === 'all'"
+              [class.text-primary-600]="selectedStatusFilter() === 'all'"
+              [class.dark:text-primary-400]="selectedStatusFilter() === 'all'"
+              [class.bg-surface-200/60]="selectedStatusFilter() !== 'all'"
+              [class.dark:bg-surface-700/60]="selectedStatusFilter() !== 'all'"
+              >{{ totalCount() }}</span
+            >
+          </button>
+
+          <button
+            type="button"
+            (click)="setStatusFilter('in-stock')"
+            [class.bg-white]="selectedStatusFilter() === 'in-stock'"
+            [class.dark:bg-surface-700]="selectedStatusFilter() === 'in-stock'"
+            [class.shadow-xs]="selectedStatusFilter() === 'in-stock'"
+            [class.text-emerald-600]="selectedStatusFilter() === 'in-stock'"
+            [class.dark:text-emerald-400]="selectedStatusFilter() === 'in-stock'"
+            [class.font-bold]="selectedStatusFilter() === 'in-stock'"
+            [class.text-surface-600]="selectedStatusFilter() !== 'in-stock'"
+            [class.dark:text-surface-400]="selectedStatusFilter() !== 'in-stock'"
+            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1.5">
+            <span>In Stock</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span
+              class="px-1.5 py-0.5 rounded-full text-[10px]"
+              [class.bg-emerald-500/10]="selectedStatusFilter() === 'in-stock'"
+              [class.text-emerald-600]="selectedStatusFilter() === 'in-stock'"
+              [class.dark:text-emerald-400]="selectedStatusFilter() === 'in-stock'"
+              [class.bg-surface-200/60]="selectedStatusFilter() !== 'in-stock'"
+              [class.dark:bg-surface-700/60]="selectedStatusFilter() !== 'in-stock'"
+              >{{ inStockCount() }}</span
+            >
+          </button>
+
+          <button
+            type="button"
+            (click)="setStatusFilter('out-of-stock')"
+            [class.bg-white]="selectedStatusFilter() === 'out-of-stock'"
+            [class.dark:bg-surface-700]="selectedStatusFilter() === 'out-of-stock'"
+            [class.shadow-xs]="selectedStatusFilter() === 'out-of-stock'"
+            [class.text-rose-600]="selectedStatusFilter() === 'out-of-stock'"
+            [class.dark:text-rose-400]="selectedStatusFilter() === 'out-of-stock'"
+            [class.font-bold]="selectedStatusFilter() === 'out-of-stock'"
+            [class.text-surface-600]="selectedStatusFilter() !== 'out-of-stock'"
+            [class.dark:text-surface-400]="selectedStatusFilter() !== 'out-of-stock'"
+            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1.5">
+            <span>Out of Stock</span>
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            <span
+              class="px-1.5 py-0.5 rounded-full text-[10px]"
+              [class.bg-rose-500/10]="selectedStatusFilter() === 'out-of-stock'"
+              [class.text-rose-600]="selectedStatusFilter() === 'out-of-stock'"
+              [class.dark:text-rose-400]="selectedStatusFilter() === 'out-of-stock'"
+              [class.bg-surface-200/60]="selectedStatusFilter() !== 'out-of-stock'"
+              [class.dark:bg-surface-700/60]="selectedStatusFilter() !== 'out-of-stock'"
+              >{{ outOfStockCount() }}</span
+            >
+          </button>
+        </div>
+
         <!-- Ingredient Group Dropdown Filter -->
         <div class="flex items-center gap-1">
           <p-select
@@ -62,7 +139,7 @@
               <div
                 class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-surface-200">
                 <span>🏷️</span>
-                <span class="truncate max-w-[120px]">{{
+                <span class="truncate max-w-[130px]">{{
                   selected ? selected.name : 'All Groups'
                 }}</span>
               </div>
@@ -86,22 +163,22 @@
           }
         </div>
 
-        <!-- Expand / Collapse Pill Buttons -->
+        <!-- Expand / Collapse All Buttons Container -->
         <div
           class="flex items-center h-[42px] bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-xs border border-surface-200 dark:border-surface-700 shadow-xs shrink-0">
           <button
             type="button"
             (click)="expandAll()"
-            class="px-3 py-1.5 rounded-lg text-xs font-bold text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
-            title="Expand All Ingredients">
+            class="px-3 h-full rounded-lg text-xs font-bold text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+            title="Expand All Row Details">
             <i class="pi pi-arrows-alt text-xs"></i>
-            <span>Expand All</span>
+            <span>Expand</span>
           </button>
           <button
             type="button"
             (click)="collapseAll()"
-            class="px-3 py-1.5 rounded-lg text-xs font-bold text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
-            title="Collapse All Ingredients">
+            class="px-3 h-full rounded-lg text-xs font-bold text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+            title="Collapse All Row Details">
             <i class="pi pi-minus text-xs"></i>
             <span>Collapse</span>
           </button>
@@ -110,24 +187,24 @@
     </div>
   </div>
 
-  <!-- Content Loading / Empty State -->
+  <!-- Content Loading / Empty State / Unified Data Table -->
   @if (isLoading()) {
     <div
       class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 p-6 space-y-4">
       <div
         class="flex items-center justify-between pb-3 border-b border-surface-200/40 dark:border-surface-800/40">
-        <p-skeleton width="10rem" height="1.5rem" borderRadius="0.5rem"></p-skeleton>
-        <p-skeleton width="6rem" height="2rem" borderRadius="0.75rem"></p-skeleton>
+        <p-skeleton width="12rem" height="1.5rem" borderRadius="0.5rem"></p-skeleton>
+        <p-skeleton width="8rem" height="2rem" borderRadius="0.75rem"></p-skeleton>
       </div>
       <div class="space-y-3">
-        @for (i of [1, 2, 3, 4]; track i) {
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
           <div
             class="flex items-center justify-between py-2 border-b border-surface-100 dark:border-surface-800/50">
             <div class="space-y-1.5 flex-1 max-w-sm">
               <p-skeleton width="60%" height="1rem" borderRadius="0.375rem"></p-skeleton>
               <p-skeleton width="35%" height="0.75rem" borderRadius="0.375rem"></p-skeleton>
             </div>
-            <p-skeleton width="5rem" height="1.5rem" borderRadius="9999px"></p-skeleton>
+            <p-skeleton width="6rem" height="1.5rem" borderRadius="9999px"></p-skeleton>
           </div>
         }
       </div>
@@ -144,13 +221,13 @@
           No ingredients found
         </h3>
         <p class="text-sm text-surface-500 max-w-md mx-auto">
-          No ingredients match your search or filter criteria. Create a new ingredient to populate
-          your catalog.
+          No master ingredient definitions match your search or filter criteria. Create a new
+          ingredient to populate your catalog.
         </p>
         <div class="pt-2 flex items-center justify-center gap-3">
-          @if (searchQuery() || selectedGroup()) {
+          @if (searchQuery() || selectedGroup() || selectedStatusFilter() !== 'all') {
             <button
-              (click)="onSearchChange(''); onGroupChange(null)"
+              (click)="onSearchChange(''); onGroupChange(null); setStatusFilter('all')"
               class="px-4 py-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 font-semibold text-xs rounded-xl transition-all cursor-pointer">
               Reset Filters
             </button>
@@ -164,283 +241,387 @@
         </div>
       </div>
     } @else {
-      <!-- Subtables Grouped by Ingredient Group (With Lazy Viewport Rendering) -->
-      <div class="space-y-6">
-        @for (groupSection of visibleGroupedIngredients(); track groupSection.groupName) {
-          @defer (on viewport) {
-            <div
-              class="glass-card rounded-2xl overflow-hidden border border-surface-200/70 dark:border-surface-800/80 shadow-xs">
-              <!-- Group Header Bar -->
-              <div
-                (click)="toggleGroup(groupSection.groupName)"
-                class="bg-surface-100/70 dark:bg-surface-800/40 hover:bg-surface-200/50 dark:hover:bg-surface-800/70 px-5 py-3.5 flex items-center justify-between cursor-pointer select-none transition-all duration-200"
-                [class.border-b]="isGroupExpanded(groupSection.groupName)"
-                [class.border-surface-200/80]="isGroupExpanded(groupSection.groupName)"
-                [class.dark:border-surface-800]="isGroupExpanded(groupSection.groupName)">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-8 h-8 rounded-xl bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20 flex items-center justify-center font-bold shrink-0 shadow-2xs">
-                    <i class="pi pi-folder-open text-primary-500 text-sm"></i>
+      <!-- Native High-Density Interactive Data Table (Identical to Inventory Page) -->
+      <div
+        class="glass-card rounded-2xl overflow-hidden border border-surface-200/70 dark:border-surface-800/80 shadow-xs">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr
+                class="bg-surface-200/60 dark:bg-surface-800/80 border-b border-surface-300/60 dark:border-surface-700/60 text-[11px] font-extrabold uppercase tracking-wider text-surface-600 dark:text-surface-400 select-none">
+                <th class="py-3.5 px-3 w-12 text-center select-none"></th>
+                <th
+                  (click)="toggleSort('name')"
+                  class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  <div class="flex items-center gap-1.5">
+                    <span>Ingredient Name</span>
+                    @if (sortBy() === 'name') {
+                      <i
+                        class="pi text-[10px]"
+                        [class.pi-sort-up-fill]="sortDirection() === 'asc'"
+                        [class.pi-sort-down-fill]="sortDirection() === 'desc'"></i>
+                    } @else {
+                      <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+                    }
                   </div>
-                  <h3
-                    class="text-xs sm:text-sm font-bold uppercase tracking-wider text-surface-800 dark:text-surface-200 flex items-center gap-2">
-                    <span>{{ groupSection.groupName }}</span>
-                  </h3>
-                </div>
-                <div class="flex items-center gap-3">
-                  <span
-                    class="text-xs font-bold px-2.5 py-1 rounded-xl bg-surface-200/60 dark:bg-surface-800 text-surface-600 dark:text-surface-300 border border-surface-300/40 dark:border-surface-700/60 hidden sm:inline-block shadow-2xs">
-                    {{ groupSection.ingredients.length }}
-                    {{ groupSection.ingredients.length === 1 ? 'ingredient' : 'ingredients' }}
-                  </span>
-                  <div
-                    class="w-7 h-7 rounded-lg bg-surface-200/50 dark:bg-surface-800 border border-surface-300/40 dark:border-surface-700/50 flex items-center justify-center text-surface-500 transition-transform duration-200"
-                    [class.rotate-180]="isGroupExpanded(groupSection.groupName)">
-                    <i class="pi pi-chevron-down text-xs font-bold"></i>
+                </th>
+                <th
+                  (click)="toggleSort('group')"
+                  class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  <div class="flex items-center gap-1.5">
+                    <span>Ingredient Group</span>
+                    @if (sortBy() === 'group') {
+                      <i
+                        class="pi text-[10px]"
+                        [class.pi-sort-up-fill]="sortDirection() === 'asc'"
+                        [class.pi-sort-down-fill]="sortDirection() === 'desc'"></i>
+                    } @else {
+                      <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+                    }
                   </div>
-                </div>
-              </div>
+                </th>
+                <th
+                  (click)="toggleSort('unit')"
+                  class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  <div class="flex items-center gap-1.5">
+                    <span>Default Unit</span>
+                    @if (sortBy() === 'unit') {
+                      <i
+                        class="pi text-[10px]"
+                        [class.pi-sort-up-fill]="sortDirection() === 'asc'"
+                        [class.pi-sort-down-fill]="sortDirection() === 'desc'"></i>
+                    } @else {
+                      <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+                    }
+                  </div>
+                </th>
+                <th
+                  (click)="toggleSort('status')"
+                  class="py-3.5 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  <div class="flex items-center gap-1.5">
+                    <span>Pantry Stock Status</span>
+                    @if (sortBy() === 'status') {
+                      <i
+                        class="pi text-[10px]"
+                        [class.pi-sort-up-fill]="sortDirection() === 'asc'"
+                        [class.pi-sort-down-fill]="sortDirection() === 'desc'"></i>
+                    } @else {
+                      <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
+                    }
+                  </div>
+                </th>
+                <th class="py-3.5 px-4 w-24 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody
+              class="divide-y divide-surface-200/60 dark:divide-surface-800/60 text-xs font-medium">
+              @for (ing of displayedIngredients(); track ing.id) {
+                <tr
+                  (click)="toggleRowExpansion(ing.id)"
+                  class="odd:bg-surface-50/50 dark:odd:bg-surface-800/20 hover:bg-primary-50/50 dark:hover:bg-surface-800/60 transition-colors group cursor-pointer"
+                  [class.bg-primary-50\/20]="isRowExpanded(ing.id)">
+                  <!-- Expander Chevron Button -->
+                  <td
+                    class="py-3.5 px-3 text-center align-middle"
+                    (click)="$event.stopPropagation()">
+                    <button
+                      type="button"
+                      (click)="toggleRowExpansion(ing.id)"
+                      class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-400 group-hover:bg-primary-500/10 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all inline-flex items-center justify-center text-xs cursor-pointer border border-surface-200/50 dark:border-surface-700/50">
+                      <i
+                        class="pi"
+                        [class.pi-chevron-right]="!isRowExpanded(ing.id)"
+                        [class.pi-chevron-down]="isRowExpanded(ing.id)"
+                        [class.rotate-90]="isRowExpanded(ing.id)"></i>
+                    </button>
+                  </td>
 
-              <!-- Subtable for this Group -->
-              @if (isGroupExpanded(groupSection.groupName)) {
-                <div class="overflow-x-auto">
-                  <table class="w-full text-left border-collapse table-fixed min-w-[650px]">
-                    <thead>
-                      <tr
-                        class="bg-surface-100/90 dark:bg-surface-800/70 border-b border-surface-200 dark:border-surface-700/80 text-[11px] font-extrabold uppercase tracking-wider text-surface-500 dark:text-surface-400 select-none">
-                        <th class="py-3 px-3 w-10 text-center"></th>
-                        <th class="py-3 px-4 w-[35%]">Ingredient</th>
-                        <th class="py-3 px-4 w-[22%]">Default Unit</th>
-                        <th class="py-3 px-4 w-[33%]">Stock Status</th>
-                        <th class="py-3 px-4 w-24 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody class="text-xs font-medium">
-                      @for (ing of groupSection.ingredients; track ing.id) {
-                        <!-- Ingredient Row -->
-                        <tr
-                          class="hover:bg-primary-500/[0.04] dark:hover:bg-primary-500/[0.08] transition-colors group cursor-pointer border-b border-surface-100 dark:border-surface-800/50 last:border-b-0"
-                          [class.bg-primary-500/[0.02]]="isExpanded(ing.id)"
-                          (click)="toggleRow(ing.id)">
-                          <!-- Expand Chevron -->
-                          <td class="py-3 px-3 text-center align-middle">
-                            <div
-                              class="w-6 h-6 rounded-md bg-surface-100 dark:bg-surface-800 text-surface-400 group-hover:bg-primary-500/10 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all inline-flex items-center justify-center text-xs"
-                              [class.rotate-180]="isExpanded(ing.id)">
-                              <i class="pi pi-chevron-down text-[10px] font-bold"></i>
-                            </div>
-                          </td>
+                  <!-- Ingredient Name -->
+                  <td class="py-3.5 px-4 align-middle font-bold text-surface-900 dark:text-white">
+                    <span
+                      class="truncate max-w-[200px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                      {{ ing.name }}
+                    </span>
+                  </td>
 
-                          <!-- Ingredient Name -->
-                          <td class="py-3 px-4 align-middle">
-                            <span
-                              class="font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors text-xs sm:text-sm"
-                              >{{ ing.name }}</span
-                            >
-                          </td>
+                  <!-- Ingredient Group Badge Tag -->
+                  <td class="py-3.5 px-4 align-middle">
+                    @if (ing.ingredientGroup?.name) {
+                      <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-500/20 shadow-2xs">
+                        <span>🏷️</span>
+                        <span>{{ ing.ingredientGroup?.name }}</span>
+                      </span>
+                    } @else {
+                      <span class="text-surface-400 italic text-xs">Unassigned</span>
+                    }
+                  </td>
 
-                          <!-- Default Unit -->
-                          <td class="py-3 px-4 align-middle">
-                            @if (ing.defaultUnit?.name) {
-                              <span
-                                class="text-xs text-surface-600 dark:text-surface-300 font-semibold px-2 py-0.5 rounded-md bg-surface-100/80 dark:bg-surface-800/60 border border-surface-200/50 dark:border-surface-700/50 inline-block">
-                                {{ ing.defaultUnit?.name }}
-                                <span class="text-surface-400 font-normal"
-                                  >({{ ing.defaultUnit?.shortName }})</span
-                                >
-                              </span>
-                            } @else {
-                              <span class="text-surface-400 italic text-xs">—</span>
-                            }
-                          </td>
+                  <!-- Default Unit -->
+                  <td class="py-3.5 px-4 align-middle">
+                    @if (ing.defaultUnit?.name) {
+                      <span
+                        class="text-xs text-surface-700 dark:text-surface-200 font-semibold px-2.5 py-1 rounded-lg bg-surface-100/90 dark:bg-surface-800/70 border border-surface-200/60 dark:border-surface-700/60 inline-block shadow-2xs">
+                        {{ ing.defaultUnit?.name }}
+                        <span class="text-surface-400 font-normal ml-0.5"
+                          >({{ ing.defaultUnit?.shortName }})</span
+                        >
+                      </span>
+                    } @else {
+                      <span class="text-surface-400 italic text-xs">—</span>
+                    }
+                  </td>
 
-                          <!-- Physical Stock Status -->
-                          <td class="py-3 px-4 align-middle">
-                            @if (getConnectedItems(ing.id).length > 0) {
-                              <div class="flex items-center gap-2 flex-wrap">
-                                <span
-                                  class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 inline-flex items-center gap-1.5 shadow-2xs">
-                                  <span
-                                    class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                  <span>In Stock ({{ getConnectedItems(ing.id).length }})</span>
-                                </span>
-                                <span
-                                  class="text-xs text-surface-500 dark:text-surface-400 font-medium">
-                                  {{ getTotalQuantityText(ing.id) }}
-                                </span>
-                              </div>
-                            } @else {
-                              <span
-                                class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20 inline-flex items-center gap-1.5 shadow-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                                <span>Out of Stock</span>
-                              </span>
-                            }
-                          </td>
+                  <!-- Physical Stock Status -->
+                  <td class="py-3.5 px-4 align-middle">
+                    @if (getConnectedItems(ing.id).length > 0) {
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <span
+                          class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 inline-flex items-center gap-1.5 shadow-2xs">
+                          <span
+                            class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                          <span>In Stock ({{ getConnectedItems(ing.id).length }})</span>
+                        </span>
+                        <span class="text-xs text-surface-500 dark:text-surface-400 font-medium">
+                          {{ getTotalQuantityText(ing.id) }}
+                        </span>
+                      </div>
+                    } @else {
+                      <span
+                        class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20 inline-flex items-center gap-1.5 shadow-2xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                        <span>Out of Stock</span>
+                      </span>
+                    }
+                  </td>
 
-                          <!-- Actions -->
-                          <td
-                            class="py-3 px-4 text-right align-middle"
-                            (click)="$event.stopPropagation()">
-                            <div class="flex items-center justify-end gap-1">
-                              <button
-                                (click)="onEditIngredient(ing)"
-                                title="Edit Ingredient"
-                                class="p-1.5 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-primary-500/10 transition-all cursor-pointer">
-                                <i class="pi pi-pencil text-xs"></i>
-                              </button>
-                              <button
-                                (click)="onDeleteIngredient(ing)"
-                                title="Delete Ingredient"
-                                class="p-1.5 text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-all cursor-pointer">
-                                <i class="pi pi-trash text-xs"></i>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                  <!-- Row Action Buttons -->
+                  <td
+                    class="py-3.5 px-4 text-right align-middle"
+                    (click)="$event.stopPropagation()">
+                    <div class="flex items-center justify-end gap-1">
+                      <button
+                        (click)="onEditIngredient(ing)"
+                        title="Edit Master Ingredient"
+                        class="p-1.5 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-primary-500/10 transition-all cursor-pointer">
+                        <i class="pi pi-pencil text-xs"></i>
+                      </button>
+                      <button
+                        (click)="onDeleteIngredient(ing)"
+                        title="Delete Master Ingredient"
+                        class="p-1.5 text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-all cursor-pointer">
+                        <i class="pi pi-trash text-xs"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
 
-                        <!-- Expanded Row Content (Ingredient Items Sub-Table) -->
-                        @if (isExpanded(ing.id)) {
-                          <tr
-                            class="bg-surface-100/40 dark:bg-surface-900/40 border-b border-surface-200/60 dark:border-surface-800">
-                            <td colspan="5" class="p-3 sm:p-4">
-                              <div class="sub-card rounded-xl p-4 space-y-3">
-                                <div
-                                  class="flex items-center justify-between pb-2 border-b border-surface-200/60 dark:border-surface-700/60">
-                                  <h4
-                                    class="text-xs font-bold uppercase tracking-wider text-surface-600 dark:text-surface-300 flex items-center gap-2">
-                                    <i class="pi pi-box text-primary-500 text-sm"></i>
-                                    <span>Ingredient Items for "{{ ing.name }}"</span>
-                                  </h4>
-                                  <button
-                                    (click)="onAddStockItemForIngredient()"
-                                    class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1.5 cursor-pointer px-2.5 py-1 rounded-lg hover:bg-primary-500/10 transition-all">
-                                    <i class="pi pi-plus text-[10px]"></i>
-                                    <span>Add Ingredient Item</span>
-                                  </button>
-                                </div>
+                <!-- Expanded Drawer Row -->
+                @if (isRowExpanded(ing.id)) {
+                  <tr
+                    class="bg-surface-100/50 dark:bg-surface-900/50 border-b border-surface-200/80 dark:border-surface-800">
+                    <td colspan="6" class="p-3 sm:p-5">
+                      <div class="sub-card rounded-xl p-4 sm:p-5 space-y-4 shadow-inner">
+                        <div
+                          class="flex items-center justify-between pb-3 border-b border-surface-200/60 dark:border-surface-700/60">
+                          <h4
+                            class="text-xs font-bold uppercase tracking-wider text-surface-700 dark:text-surface-200 flex items-center gap-2">
+                            <i class="pi pi-box text-primary-500 text-sm"></i>
+                            <span>Ingredient Items for "{{ ing.name }}"</span>
+                          </h4>
+                          <button
+                            (click)="onAddStockItemForIngredient(ing); $event.stopPropagation()"
+                            class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-xl bg-primary-500/10 hover:bg-primary-500/20 transition-all border border-primary-500/20">
+                            <i class="pi pi-plus text-xs"></i>
+                            <span>Add Ingredient Item</span>
+                          </button>
+                        </div>
 
-                                @if (getConnectedItems(ing.id).length === 0) {
-                                  <div class="py-6 text-center space-y-2">
-                                    <p class="text-xs text-surface-400">
-                                      No ingredient items currently in pantry for this ingredient.
-                                    </p>
-                                    <button
-                                      (click)="onAddStockItemForIngredient()"
-                                      class="px-3.5 py-1.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-xs">
-                                      <i class="pi pi-plus text-xs"></i>
-                                      <span>Add Stock Now</span>
-                                    </button>
-                                  </div>
-                                } @else {
-                                  <div class="overflow-x-auto">
-                                    <table
-                                      class="w-full text-left border-collapse table-fixed min-w-[550px]">
-                                      <thead>
-                                        <tr
-                                          class="text-[10px] uppercase font-extrabold tracking-wider text-surface-500 dark:text-surface-400 bg-surface-200/40 dark:bg-surface-800/40 border-b border-surface-200 dark:border-surface-700/60">
-                                          <th class="py-2.5 px-3 w-1/4">Item Name</th>
-                                          <th class="py-2.5 px-3 w-1/5">Storage Location</th>
-                                          <th class="py-2.5 px-3 w-1/6">Quantity</th>
-                                          <th class="py-2.5 px-3 w-1/5">Status</th>
-                                          <th class="py-2.5 px-3 w-1/5">Expiration Date</th>
-                                          <th class="py-2.5 px-3 w-20 text-right">Actions</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody class="text-xs font-medium">
-                                        @for (item of getConnectedItems(ing.id); track item.id) {
-                                          <tr
-                                            class="hover:bg-surface-200/40 dark:hover:bg-surface-800/40 transition-colors border-b border-surface-200/40 dark:border-surface-800/40 last:border-b-0">
-                                            <td
-                                              class="py-2.5 px-3 font-semibold text-surface-900 dark:text-white align-middle">
-                                              {{ item.name }}
-                                            </td>
-                                            <td class="py-2.5 px-3 align-middle">
-                                              <span
-                                                class="location-badge px-2 py-0.5 rounded-md text-[11px]">
-                                                {{ item.location.name }}
-                                              </span>
-                                            </td>
-                                            <td
-                                              class="py-2.5 px-3 font-bold text-surface-800 dark:text-surface-200 align-middle">
-                                              {{ item.quantity }}
-                                              {{ item.unit.shortName || item.unit.name }}
-                                            </td>
-                                            <td class="py-2.5 px-3 align-middle">
-                                              <span
-                                                class="px-2 py-0.5 rounded-full text-[10px] font-bold border"
-                                                [ngClass]="getItemStatus(item).colorClass">
-                                                {{ getItemStatus(item).text }}
-                                              </span>
-                                            </td>
-                                            <td
-                                              class="py-2.5 px-3 text-surface-600 dark:text-surface-300 align-middle">
-                                              {{
-                                                item.expirationDate
-                                                  ? (item.expirationDate | date: 'mediumDate')
-                                                  : '—'
-                                              }}
-                                              <span class="text-[10px] text-surface-400 block"
-                                                >({{ getItemRemainingText(item) }})</span
-                                              >
-                                            </td>
-                                            <td class="py-2.5 px-3 text-right align-middle">
-                                              <div class="flex items-center justify-end gap-1">
-                                                <button
-                                                  (click)="onEditItem(item)"
-                                                  title="Edit Pantry Item"
-                                                  class="p-1.5 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                                                  <i class="pi pi-pencil text-xs"></i>
-                                                </button>
-                                                <button
-                                                  (click)="onDeleteItem(item)"
-                                                  title="Delete Pantry Item"
-                                                  class="p-1.5 text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                                                  <i class="pi pi-trash text-xs"></i>
-                                                </button>
-                                              </div>
-                                            </td>
-                                          </tr>
-                                        }
-                                      </tbody>
-                                    </table>
-                                  </div>
+                        @if (getConnectedItems(ing.id).length === 0) {
+                          <div class="py-6 text-center space-y-2">
+                            <p class="text-xs text-surface-400">
+                              No Ingredient Items currently recorded in pantry for {{ ing.name }}.
+                            </p>
+                            <button
+                              (click)="onAddStockItemForIngredient(ing); $event.stopPropagation()"
+                              class="px-4 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-xs">
+                              <i class="pi pi-plus text-xs"></i>
+                              <span>Add Ingredient Item Now</span>
+                            </button>
+                          </div>
+                        } @else {
+                          <div class="overflow-x-auto">
+                            <table
+                              class="w-full text-left border-collapse table-fixed min-w-[600px]">
+                              <thead>
+                                <tr
+                                  class="text-[10px] uppercase font-extrabold tracking-wider text-surface-500 dark:text-surface-400 bg-surface-200/40 dark:bg-surface-800/40 border-b border-surface-200 dark:border-surface-700/60">
+                                  <th class="py-2.5 px-3 w-1/4">Item Name</th>
+                                  <th class="py-2.5 px-3 w-1/5">Storage Location</th>
+                                  <th class="py-2.5 px-3 w-1/6">Quantity</th>
+                                  <th class="py-2.5 px-3 w-1/5">Status</th>
+                                  <th class="py-2.5 px-3 w-1/5">Expiration Date</th>
+                                  <th class="py-2.5 px-3 w-20 text-right">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody class="text-xs font-medium">
+                                @for (item of getConnectedItems(ing.id); track item.id) {
+                                  <tr
+                                    class="hover:bg-surface-200/40 dark:hover:bg-surface-800/40 transition-colors border-b border-surface-200/40 dark:border-surface-800/40 last:border-b-0">
+                                    <td
+                                      class="py-2.5 px-3 font-semibold text-surface-900 dark:text-white align-middle">
+                                      {{ item.name }}
+                                    </td>
+                                    <td class="py-2.5 px-3 align-middle">
+                                      <span
+                                        class="location-badge px-2 py-0.5 rounded-md text-[11px]">
+                                        {{ item.location.name }}
+                                      </span>
+                                    </td>
+                                    <td
+                                      class="py-2.5 px-3 font-bold text-surface-800 dark:text-surface-200 align-middle">
+                                      {{ item.quantity }}
+                                      {{ item.unit.shortName || item.unit.name }}
+                                    </td>
+                                    <td class="py-2.5 px-3 align-middle">
+                                      <span
+                                        class="px-2 py-0.5 rounded-full text-[10px] font-bold border"
+                                        [ngClass]="getItemStatus(item).colorClass">
+                                        {{ getItemStatus(item).text }}
+                                      </span>
+                                    </td>
+                                    <td
+                                      class="py-2.5 px-3 text-surface-600 dark:text-surface-300 align-middle">
+                                      {{
+                                        item.expirationDate
+                                          ? (item.expirationDate | date: 'mediumDate')
+                                          : '—'
+                                      }}
+                                      <span class="text-[10px] text-surface-400 block"
+                                        >({{ getItemRemainingText(item) }})</span
+                                      >
+                                    </td>
+                                    <td class="py-2.5 px-3 text-right align-middle">
+                                      <div class="flex items-center justify-end gap-1">
+                                        <button
+                                          (click)="onEditItem(item)"
+                                          title="Edit Pantry Item"
+                                          class="p-1.5 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                                          <i class="pi pi-pencil text-xs"></i>
+                                        </button>
+                                        <button
+                                          (click)="onDeleteItem(item)"
+                                          title="Delete Pantry Item"
+                                          class="p-1.5 text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                                          <i class="pi pi-trash text-xs"></i>
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
                                 }
-                              </div>
-                            </td>
-                          </tr>
+                              </tbody>
+                            </table>
+                          </div>
                         }
-                      }
-                    </tbody>
-                  </table>
-                </div>
+                      </div>
+                    </td>
+                  </tr>
+                }
               }
-            </div>
-          } @placeholder {
-            <div
-              class="glass-card rounded-2xl p-6 border border-surface-200/60 dark:border-surface-800/60 animate-pulse flex items-center justify-between">
-              <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-1/4"></div>
-              <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-16"></div>
-            </div>
-          }
-        }
+            </tbody>
+          </table>
+        </div>
 
-        <!-- Load More Groups Lazy Trigger Button -->
-        @if (hasMoreGroups()) {
-          <div class="pt-4 text-center">
-            <button
-              (click)="loadMoreGroups()"
-              class="px-6 py-2.5 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 text-xs font-bold transition-all shadow-xs inline-flex items-center gap-2 cursor-pointer">
-              <i class="pi pi-arrow-down text-xs"></i>
-              <span
-                >Load More Groups ({{
-                  groupedIngredients().length - displayLimit()
-                }}
-                remaining)</span
-              >
-            </button>
+        <!-- Glassmorphic Pagination Controls Bar -->
+        <div
+          class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-50 dark:bg-surface-800/40 border-t border-surface-200/80 dark:border-surface-700/60 text-xs font-semibold text-surface-600 dark:text-surface-300 select-none">
+          <!-- Showing Count Summary -->
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>
+              Showing {{ filteredIngredients().length === 0 ? 0 : startIndex() + 1 }} to
+              {{ endIndex() }} of {{ filteredIngredients().length }} ingredients
+            </span>
           </div>
-        }
+
+          <!-- Page Navigation Controls -->
+          <div class="flex flex-wrap items-center gap-3">
+            <!-- Rows Per Page Selector -->
+            <div class="flex items-center gap-1.5 text-xs">
+              <span class="text-surface-500 font-medium hidden md:inline">Per page:</span>
+              <select
+                [ngModel]="pageSize()"
+                (ngModelChange)="onPageSizeChange($event)"
+                class="h-8 px-2 bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-lg text-xs font-bold text-surface-800 dark:text-surface-200 focus:outline-none focus:ring-1 focus:ring-primary-500 cursor-pointer">
+                <option [value]="10">10</option>
+                <option [value]="15">15</option>
+                <option [value]="25">25</option>
+                <option [value]="50">50</option>
+              </select>
+            </div>
+
+            <!-- Page Number Navigation Buttons -->
+            <div class="flex items-center gap-1">
+              <!-- First Page -->
+              <button
+                type="button"
+                (click)="goToPage(1)"
+                [disabled]="currentPage() === 1"
+                class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                title="First Page">
+                <i class="pi pi-angle-double-left text-xs"></i>
+              </button>
+
+              <!-- Prev Page -->
+              <button
+                type="button"
+                (click)="goToPage(currentPage() - 1)"
+                [disabled]="currentPage() === 1"
+                class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                title="Previous Page">
+                <i class="pi pi-angle-left text-xs"></i>
+              </button>
+
+              <!-- Page Numbers -->
+              @for (page of visiblePages(); track page) {
+                <button
+                  type="button"
+                  (click)="goToPage(page)"
+                  [class.bg-primary-600]="currentPage() === page"
+                  [class.text-white]="currentPage() === page"
+                  [class.font-bold]="currentPage() === page"
+                  [class.shadow-xs]="currentPage() === page"
+                  [class.bg-surface-100]="currentPage() !== page"
+                  [class.dark:bg-surface-800]="currentPage() !== page"
+                  [class.text-surface-700]="currentPage() !== page"
+                  [class.dark:text-surface-300]="currentPage() !== page"
+                  class="w-8 h-8 rounded-lg flex items-center justify-center text-xs border border-surface-200/60 dark:border-surface-700/60 hover:border-primary-500/50 transition-all cursor-pointer">
+                  {{ page }}
+                </button>
+              }
+
+              <!-- Next Page -->
+              <button
+                type="button"
+                (click)="goToPage(currentPage() + 1)"
+                [disabled]="currentPage() >= totalPages()"
+                class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                title="Next Page">
+                <i class="pi pi-angle-right text-xs"></i>
+              </button>
+
+              <!-- Last Page -->
+              <button
+                type="button"
+                (click)="goToPage(totalPages())"
+                [disabled]="currentPage() >= totalPages()"
+                class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                title="Last Page">
+                <i class="pi pi-angle-double-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     }
   }

@@ -163,126 +163,160 @@ body {
   background-clip: text;
 }
 
-/* ── Warm Stone background ───────────────────────────────────── */
+/* ── World-Class Blue Silk Mesh & Micro-Vignette Grid System ────── */
 .animated-gradient-bg {
   background-color: var(--color-surface-50);
-  transition: background-color 0.3s ease;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56, 189, 248, 0.08), transparent 100%),
+    radial-gradient(circle at 85% 15%, rgba(59, 130, 246, 0.05), transparent 50%),
+    radial-gradient(circle at 15% 85%, rgba(14, 165, 233, 0.04), transparent 50%);
+  transition:
+    background-color 0.4s ease,
+    background-image 0.4s ease;
 }
 
 :where(.dark, .dark *) .animated-gradient-bg {
-  background-color: var(--color-surface-950);
+  background-color: var(--color-surface-900);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56, 189, 248, 0.12), transparent 100%),
+    radial-gradient(circle at 85% 15%, rgba(30, 58, 138, 0.25), transparent 50%),
+    radial-gradient(circle at 15% 85%, rgba(15, 23, 42, 0.5), transparent 50%);
 }
 
-/* ── Kitchen-Themed Ambient Backdrop System ───────────────────── */
-.ambient-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.65;
-  pointer-events: none;
-  animation: orbFloat 25s ease-in-out infinite alternate;
+/* ── Elegant Sine & Vector Line Waves (Flowing Fluid Motion) ────── */
+.line-wave-1,
+.line-wave-2,
+.line-wave-3 {
+  vector-effect: non-scaling-stroke;
+  transform-origin: center;
+  will-change: transform;
 }
 
-:where(.dark, .dark *) .ambient-orb {
-  opacity: 0.35;
+.line-wave-1 {
+  animation: waveFlow1 18s ease-in-out infinite alternate;
 }
 
-.ambient-orb-1 {
-  top: -10%;
-  left: -5%;
-  width: 45vw;
-  height: 45vw;
-  max-width: 600px;
-  max-height: 600px;
-  background: radial-gradient(
-    circle,
-    rgba(249, 115, 22, 0.18) 0%,
-    rgba(253, 186, 116, 0.08) 60%,
-    transparent 100%
-  );
-  animation-duration: 22s;
+.line-wave-2 {
+  animation: waveFlow2 22s ease-in-out infinite alternate;
 }
 
-.ambient-orb-2 {
-  bottom: -10%;
-  right: -5%;
-  width: 50vw;
-  height: 50vw;
-  max-width: 650px;
-  max-height: 650px;
-  background: radial-gradient(
-    circle,
-    rgba(245, 158, 11, 0.15) 0%,
-    rgba(254, 215, 170, 0.06) 65%,
-    transparent 100%
-  );
-  animation-duration: 28s;
-  animation-delay: -7s;
+.line-wave-3 {
+  animation: waveFlow3 26s ease-in-out infinite alternate;
 }
 
-.ambient-orb-3 {
-  top: 40%;
-  right: 25%;
-  width: 35vw;
-  height: 35vw;
-  max-width: 450px;
-  max-height: 450px;
-  background: radial-gradient(
-    circle,
-    rgba(234, 88, 12, 0.12) 0%,
-    rgba(249, 115, 22, 0.04) 70%,
-    transparent 100%
-  );
-  animation-duration: 32s;
-  animation-delay: -14s;
-}
-
-@keyframes orbFloat {
+@keyframes waveFlow1 {
   0% {
-    transform: translate(0, 0) scale(1);
+    transform: translate3d(-30px, 0px, 0) scaleY(1) rotate(0deg);
   }
-  33% {
-    transform: translate(40px, -30px) scale(1.08);
-  }
-  66% {
-    transform: translate(-20px, 40px) scale(0.95);
+  50% {
+    transform: translate3d(25px, -18px, 0) scaleY(1.12) rotate(0.5deg);
   }
   100% {
-    transform: translate(30px, 20px) scale(1.04);
+    transform: translate3d(60px, 15px, 0) scaleY(0.92) rotate(-0.5deg);
   }
 }
 
-/* Elegant Precision Dot-Grid Overlay */
+@keyframes waveFlow2 {
+  0% {
+    transform: translate3d(40px, 0px, 0) scaleY(1) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-20px, 22px, 0) scaleY(0.88) rotate(-0.75deg);
+  }
+  100% {
+    transform: translate3d(-50px, -14px, 0) scaleY(1.08) rotate(0.75deg);
+  }
+}
+
+@keyframes waveFlow3 {
+  0% {
+    transform: translate3d(-20px, 0px, 0) scaleY(0.95);
+  }
+  50% {
+    transform: translate3d(35px, 20px, 0) scaleY(1.15);
+  }
+  100% {
+    transform: translate3d(10px, -25px, 0) scaleY(0.9);
+  }
+}
+
+/* ── Ocean & Sapphire Soft Radial Glow System ─────────────── */
+.spotlight-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(120px);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.spotlight-top {
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 500px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(14, 165, 233, 0.1) 0%,
+    rgba(59, 130, 246, 0.03) 50%,
+    transparent 80%
+  );
+}
+
+:where(.dark, .dark *) .spotlight-top {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(56, 189, 248, 0.14) 0%,
+    rgba(30, 58, 138, 0.2) 55%,
+    transparent 80%
+  );
+}
+
+.spotlight-bottom-right {
+  bottom: -150px;
+  right: -100px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+}
+
+:where(.dark, .dark *) .spotlight-bottom-right {
+  background: radial-gradient(circle at center, rgba(30, 58, 138, 0.25) 0%, transparent 70%);
+}
+
+/* Precision Micro Dot Grid Overlay - Harmonized Slate Blue Tone */
 .dot-grid-pattern-overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.35;
-  background-image: radial-gradient(rgba(135, 125, 108, 0.28) 1px, transparent 1px);
+  opacity: 0.22;
+  background-image: radial-gradient(rgba(71, 85, 105, 0.3) 1px, transparent 1px);
   background-size: 28px 28px;
   background-position: 0 0;
-  mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 90%);
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 90%);
+  mask-image: radial-gradient(ellipse 85% 80% at 50% 40%, black 35%, transparent 95%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 80% at 50% 40%, black 35%, transparent 95%);
 }
 
 :where(.dark, .dark *) .dot-grid-pattern-overlay {
-  opacity: 0.25;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+  opacity: 0.14;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.3) 1px, transparent 1px);
 }
 
-/* Fine Topographic Ambient Wave Accents */
+/* Precision Subtle Ambient Wave Accents */
 .topo-wave-accent {
   position: absolute;
-  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  border-radius: 45% 55% 65% 35% / 45% 50% 55% 45%;
   pointer-events: none;
-  filter: blur(40px);
-  opacity: 0.12;
+  filter: blur(60px);
+  opacity: 0.1;
+  transform: translateZ(0);
   will-change: transform;
   animation: topoMorph 24s ease-in-out infinite alternate;
 }
 
 :where(.dark, .dark *) .topo-wave-accent {
-  opacity: 0.08;
+  opacity: 0.06;
 }
 
 .wave-1 {
@@ -290,7 +324,7 @@ body {
   right: 10%;
   width: 500px;
   height: 350px;
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.3), rgba(245, 158, 11, 0.2));
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.25), rgba(245, 158, 11, 0.15));
   animation-duration: 20s;
 }
 
@@ -299,23 +333,23 @@ body {
   left: 8%;
   width: 550px;
   height: 400px;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(249, 115, 22, 0.15));
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(249, 115, 22, 0.12));
   animation-duration: 26s;
   animation-delay: -8s;
 }
 
 @keyframes topoMorph {
   0% {
-    transform: translate(0, 0) rotate(0deg) scale(1);
-    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    border-radius: 45% 55% 65% 35% / 45% 50% 55% 45%;
   }
   50% {
-    transform: translate(30px, -25px) rotate(90deg) scale(1.06);
-    border-radius: 60% 40% 30% 70% / 50% 30% 70% 50%;
+    transform: translate3d(25px, -20px, 0) rotate(90deg) scale(1.05);
+    border-radius: 55% 45% 35% 65% / 50% 35% 65% 50%;
   }
   100% {
-    transform: translate(-20px, 35px) rotate(180deg) scale(0.96);
-    border-radius: 30% 70% 50% 50% / 30% 60% 40% 70%;
+    transform: translate3d(-15px, 25px, 0) rotate(180deg) scale(0.97);
+    border-radius: 35% 65% 50% 50% / 35% 55% 45% 65%;
   }
 }
 
@@ -449,6 +483,54 @@ body {
 }
 
 /* ── PrimeNG Override & Unified Form Control System ──────────── */
+/* Force transparent backgrounds on PrimeNG tables to allow glass-cards to work */
+.p-datatable,
+.p-datatable .p-datatable-wrapper,
+.p-datatable table {
+  background: transparent !important;
+}
+
+/* PrimeNG Paginator Global Alignment & Themeing */
+.p-paginator {
+  background: transparent !important;
+  border: none !important;
+  border-top: 1px solid var(--color-surface-200) !important;
+  padding: 0.75rem 1rem !important;
+}
+
+:where(.dark, .dark *) .p-paginator {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.p-paginator .p-paginator-page,
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last {
+  min-width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: 0.75rem !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  color: var(--color-surface-600) !important;
+  transition: all 0.2s ease !important;
+}
+
+:where(.dark, .dark *) .p-paginator .p-paginator-page,
+:where(.dark, .dark *) .p-paginator .p-paginator-first,
+:where(.dark, .dark *) .p-paginator .p-paginator-prev,
+:where(.dark, .dark *) .p-paginator .p-paginator-next,
+:where(.dark, .dark *) .p-paginator .p-paginator-last {
+  color: var(--color-surface-300) !important;
+}
+
+.p-paginator .p-paginator-page.p-paginator-page-selected,
+.p-paginator .p-paginator-page.p-highlight {
+  background-color: var(--color-primary-600) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
 .p-dialog .p-dialog-header {
   font-family: 'Inter', sans-serif !important;
 }

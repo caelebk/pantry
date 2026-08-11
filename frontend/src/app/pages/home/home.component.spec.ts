@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { ItemService } from '@services/inventory/item.service';
@@ -20,6 +22,8 @@ describe('HomeComponent', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: ItemService, useValue: mockItemService },
         { provide: RecipeService, useValue: mockRecipeService },
         { provide: LocationService, useValue: mockLocationService },

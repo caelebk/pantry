@@ -6,6 +6,8 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { filter, map } from 'rxjs/operators';
 import { Tab } from '../tabs/tabs.model';
 
+import { AuthService } from '../../core/services/auth.service';
+
 @Component({
   selector: 'pantry-sidebar',
   standalone: true,
@@ -15,16 +17,29 @@ import { Tab } from '../tabs/tabs.model';
 })
 export class SidebarComponent {
   private readonly router = inject(Router);
+  readonly authService = inject(AuthService);
 
   darkMode = input(true);
   activeTab = input<Tab>(Tab.Home);
   themeToggled = output<void>();
+  logoutClicked = output<void>();
   tabSelected = output<Tab>();
 
   tabs = Tab;
   mobileMenuOpen = signal(false);
   isCollapsed = signal(false);
   inventoryExpanded = signal(true);
+  kitchenMenuOpen = signal(false);
+
+  toggleKitchenMenu(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.kitchenMenuOpen.update((v) => !v);
+  }
+
+  selectKitchen(kitchen: import('../../core/models/auth.model').Kitchen): void {
+    this.authService.setActiveKitchen(kitchen);
+    this.kitchenMenuOpen.set(false);
+  }
 
   // Reactive URL signal driven by Router events for OnPush change detection
   readonly currentUrl = toSignal(
@@ -50,6 +65,10 @@ export class SidebarComponent {
 
   onToggleTheme(): void {
     this.themeToggled.emit();
+  }
+
+  onLogout(): void {
+    this.logoutClicked.emit();
   }
 
   navigateTo(path: string): void {
@@ -100,5 +119,9 @@ export class SidebarComponent {
 
   isMealPlannerActive(): boolean {
     return this.url.startsWith('/meal-planner');
+  }
+
+  isProfileActive(): boolean {
+    return this.url.startsWith('/profile');
   }
 }

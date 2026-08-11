@@ -1,31 +1,96 @@
 <div
   class="relative h-screen font-sans text-surface-900 dark:text-surface-100 transition-colors duration-300 overflow-hidden animated-gradient-bg">
-  <!-- Interactive Canvas Particle Web Background Layer -->
+  <!-- World-Class Atmospheric Blue Silk Mesh, Thin Line Waves & Precision Micro Grid Layer -->
   <div class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
-    <!-- Warm Ambient Mesh Gradient Orbs -->
-    <div class="ambient-orb ambient-orb-1"></div>
-    <div class="ambient-orb ambient-orb-2"></div>
-    <div class="ambient-orb ambient-orb-3"></div>
+    <!-- Tech Digital Vector Frequency Lines & Node Waves -->
+    <svg
+      class="absolute inset-0 w-full h-full opacity-35 dark:opacity-25 pointer-events-none"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="none"
+      viewBox="0 0 1440 800">
+      <!-- Primary Tech Signal Line with Dashed Pulse -->
+      <path
+        d="M-100,180 L200,180 L350,110 L500,250 L680,140 L850,220 L1050,120 L1250,210 L1600,170"
+        fill="none"
+        stroke="url(#techBlueGrad1)"
+        stroke-width="1.5"
+        stroke-dasharray="8 4 2 4"
+        class="line-wave-1" />
+      <!-- Secondary Stepped Digital Waveform -->
+      <path
+        d="M-100,360 L150,360 L280,280 L420,420 L600,310 L780,390 L980,270 L1180,380 L1600,330"
+        fill="none"
+        stroke="url(#techBlueGrad2)"
+        stroke-width="1"
+        stroke-dasharray="12 6"
+        class="line-wave-2" />
+      <!-- High Frequency Data Line -->
+      <path
+        d="M-100,580 L220,580 L380,500 L540,640 L720,520 L920,600 L1120,490 L1320,590 L1600,540"
+        fill="none"
+        stroke="url(#techBlueGrad1)"
+        stroke-width="1.25"
+        stroke-dasharray="4 4"
+        class="line-wave-3" />
+
+      <!-- Tech Node Junction Pins -->
+      <circle cx="350" cy="110" r="3" fill="#38bdf8" class="line-wave-1" />
+      <circle cx="680" cy="140" r="3.5" fill="#60a5fa" class="line-wave-1" />
+      <circle cx="1050" cy="120" r="3" fill="#38bdf8" class="line-wave-1" />
+      <circle cx="280" cy="280" r="2.5" fill="#0ea5e9" class="line-wave-2" />
+      <circle cx="780" cy="390" r="3" fill="#3b82f6" class="line-wave-2" />
+      <circle cx="540" cy="640" r="3" fill="#38bdf8" class="line-wave-3" />
+      <circle cx="1120" cy="490" r="3.5" fill="#60a5fa" class="line-wave-3" />
+
+      <defs>
+        <linearGradient id="techBlueGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.05" />
+          <stop offset="35%" stop-color="#38bdf8" stop-opacity="0.8" />
+          <stop offset="70%" stop-color="#3b82f6" stop-opacity="0.7" />
+          <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.05" />
+        </linearGradient>
+        <linearGradient id="techBlueGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.05" />
+          <stop offset="50%" stop-color="#60a5fa" stop-opacity="0.75" />
+          <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.1" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <!-- Soft Top Spotlight Aura & Subtle Ambient Diffuse Orbs -->
+    <div class="spotlight-glow spotlight-top"></div>
+    <div class="spotlight-glow spotlight-bottom-right"></div>
+
+    <!-- Precision Dot Grid Overlay -->
+    <div class="dot-grid-pattern-overlay"></div>
 
     <!-- HTML5 Canvas Particle Web -->
     <canvas #particleCanvas class="absolute inset-0 w-full h-full pointer-events-auto"></canvas>
   </div>
 
-  <!-- Main App Content Container Layer -->
-  <div class="relative z-10 flex flex-col md:flex-row h-full">
-    <pantry-sidebar
-      [darkMode]="darkMode()"
-      (themeToggled)="toggleTheme()"
-      [activeTab]="currentTab()"
-      (tabSelected)="onTabSelected($event)"></pantry-sidebar>
-
-    <div class="flex-1 min-w-0 flex flex-col overflow-y-auto">
-      <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <pantry-breadcrumbs></pantry-breadcrumbs>
-        <router-outlet></router-outlet>
-      </main>
+  <!-- Auth Layout Split: Full-screen Auth Pages vs Main App Shell -->
+  @if (isAuthRoute()) {
+    <div class="relative z-10 h-full w-full">
+      <router-outlet></router-outlet>
+      <pantry-toast-container></pantry-toast-container>
     </div>
+  } @else {
+    <div class="relative z-10 flex flex-col md:flex-row h-full">
+      <pantry-sidebar
+        [darkMode]="darkMode()"
+        (themeToggled)="toggleTheme()"
+        (logoutClicked)="handleLogout()"
+        [activeTab]="currentTab()"
+        (tabSelected)="onTabSelected($event)"></pantry-sidebar>
 
-    <pantry-toast-container></pantry-toast-container>
-  </div>
+      <div class="flex-1 min-w-0 flex flex-col overflow-y-auto">
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <pantry-breadcrumbs></pantry-breadcrumbs>
+          <router-outlet></router-outlet>
+        </main>
+      </div>
+
+      <pantry-toast-container></pantry-toast-container>
+    </div>
+  }
 </div>

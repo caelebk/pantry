@@ -205,6 +205,14 @@ export class EditItemPageComponent implements OnInit {
     });
   }
 
+  setExpirationDaysOffset(days: number): void {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + days);
+    this.editItemForm.controls.expirationDate.setValue(targetDate);
+    this.editItemForm.controls.expirationDate.markAsTouched();
+    this.editItemForm.controls.expirationDate.markAsDirty();
+  }
+
   openQuickCreateIngredient(): void {
     this.newIngredientName.set(this.editItemForm.controls.name.value || '');
     this.newIngredientGroup.set(null);

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -9,6 +9,7 @@ import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
 import { SelectModule } from 'primeng/select';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
 import { IngredientService } from '../../services/inventory/ingredient.service';
 import { ItemService } from '../../services/inventory/item.service';
 import { UnitService } from '../../services/inventory/unit.service';
@@ -46,13 +47,24 @@ import { SkeletonModule } from 'primeng/skeleton';
   templateUrl: './recipes.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RecipesComponent implements OnInit {
+export class RecipesComponent {
   private readonly recipeService = inject(RecipeService);
   private readonly itemService = inject(ItemService);
   private readonly unitService = inject(UnitService);
   private readonly ingredientService = inject(IngredientService);
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  constructor() {
+    effect(() => {
+      const activeKitchen = this.authService.activeKitchen();
+      if (activeKitchen) {
+        this.loadData();
+      }
+    });
+  }
 
   recipes: Recipe[] = [];
   pantryItems: Item[] = [];
@@ -96,10 +108,6 @@ export class RecipesComponent implements OnInit {
     { label: '< 60m', value: 60 },
   ];
 
-  ngOnInit(): void {
-    this.loadData();
-  }
-
   loadData(): void {
     this.isLoading = true;
     forkJoin({
@@ -118,10 +126,12 @@ export class RecipesComponent implements OnInit {
         this.ingredientMap = new Map(ingredients.map((ing) => [ing.id, ing]));
         this.buildAvailableBaseMap();
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load recipe data', err);
         this.isLoading = false;
+        this.cdr.markForCheck();
         this.toastService.showError('Unable to load recipe data.', 'Network Error');
       },
     });

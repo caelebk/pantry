@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { ApiResponse } from '@models/http.model';
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
 import { Recipe, RecipeIngredientDTO } from '@models/recipe.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
+import { AuthService } from '../core/services/auth.service';
 import { ShoppingListService } from './shopping-list.service';
 import { ToastService } from './toast.service';
 
@@ -14,6 +15,7 @@ export class MealPlannerService {
   private readonly http = inject(HttpClient);
   private readonly shoppingListService = inject(ShoppingListService);
   private readonly toastService = inject(ToastService);
+  private readonly authService = inject(AuthService);
   private readonly apiUrl = '/api/meal-plans';
 
   readonly days: DayOfWeek[] = [
@@ -30,7 +32,12 @@ export class MealPlannerService {
   readonly meals = this.mealsSignal.asReadonly();
 
   constructor() {
-    this.loadMealsFromBackend();
+    effect(() => {
+      const activeKitchen = this.authService.activeKitchen();
+      if (activeKitchen) {
+        this.loadMealsFromBackend();
+      }
+    });
   }
 
   public loadMealsFromBackend(): void {

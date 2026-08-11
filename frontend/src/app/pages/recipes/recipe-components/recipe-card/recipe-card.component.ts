@@ -1,10 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
+import { forkJoin } from 'rxjs';
 import { IngredientService } from '../../../../services/inventory/ingredient.service';
 import { ItemService } from '../../../../services/inventory/item.service';
 import { UnitService } from '../../../../services/inventory/unit.service';
@@ -29,6 +38,7 @@ export class RecipeCardComponent implements OnInit {
   private readonly unitService = inject(UnitService);
   private readonly itemService = inject(ItemService);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   ingredientMap = new Map<string, Ingredient>();
   unitMap = new Map<number, Unit>();
@@ -36,25 +46,16 @@ export class RecipeCardComponent implements OnInit {
   pantryItems: Item[] = [];
 
   ngOnInit(): void {
-    this.ingredientService.getIngredients().subscribe({
-      next: (ingredients) => {
-        ingredients.forEach((ing) => this.ingredientMap.set(ing.id, ing));
-      },
-    });
-
-    this.unitService.getUnits().subscribe({
-      next: (units) => {
-        units.forEach((u) => this.unitMap.set(u.id, u));
-      },
-    });
-
-    this.loadPantryItems();
-  }
-
-  private loadPantryItems(): void {
-    this.itemService.getItems().subscribe({
-      next: (items) => {
+    forkJoin({
+      ingredients: this.ingredientService.getIngredients(),
+      units: this.unitService.getUnits(),
+      items: this.itemService.getItems(),
+    }).subscribe({
+      next: ({ ingredients, units, items }) => {
+        this.ingredientMap = new Map(ingredients.map((ing) => [ing.id, ing]));
+        this.unitMap = new Map(units.map((u) => [u.id, u]));
         this.pantryItems = items;
+
         const map = new Map<string, number>();
         const now = new Date();
         for (const item of items) {
@@ -68,6 +69,7 @@ export class RecipeCardComponent implements OnInit {
           }
         }
         this.availableBaseMap = map;
+        this.cdr.markForCheck();
       },
     });
   }

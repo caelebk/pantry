@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router, Event as RouterEvent } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -14,7 +16,11 @@ describe('SidebarComponent', () => {
     mockRouter = { navigate: vi.fn(), url: '/inventory/items', events: eventsSubject };
 
     TestBed.configureTestingModule({
-      providers: [{ provide: Router, useValue: mockRouter }],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: Router, useValue: mockRouter },
+      ],
     });
 
     component = TestBed.runInInjectionContext(() => new SidebarComponent());

@@ -451,25 +451,95 @@
         </div>
       }
 
-      <!-- Lazy Loading Progress Bar & Controls -->
+      <!-- Glassmorphic Pagination Controls Bar -->
       <div
-        class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-50 dark:bg-surface-800/40 rounded-2xl border border-surface-200/80 dark:border-surface-700/60 text-xs font-semibold text-surface-600 dark:text-surface-300">
+        class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-50 dark:bg-surface-800/40 rounded-2xl border border-surface-200/80 dark:border-surface-700/60 text-xs font-semibold text-surface-600 dark:text-surface-300 select-none">
+        <!-- Showing Count Summary -->
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Showing {{ displayedItems.length }} of {{ filteredItems.length }} items</span>
+          <span>
+            Showing {{ filteredItems.length === 0 ? 0 : startIndex + 1 }} to {{ endIndex }} of
+            {{ filteredItems.length }} items
+          </span>
         </div>
 
-        @if (displayLimit < filteredItems.length) {
-          <button
-            (click)="loadMoreItems()"
-            type="button"
-            class="px-4 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs transition-all shadow-xs cursor-pointer flex items-center gap-2">
-            <span>Load More Items (+15)</span>
-            <i class="pi pi-angle-down text-xs"></i>
-          </button>
-        } @else {
-          <span class="text-surface-400 font-normal">All items loaded</span>
-        }
+        <!-- Page Navigation Controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Rows Per Page Selector -->
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="text-surface-500 font-medium hidden md:inline">Per page:</span>
+            <select
+              [ngModel]="pageSize"
+              (ngModelChange)="onPageSizeChange($event)"
+              class="h-8 px-2 bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-lg text-xs font-bold text-surface-800 dark:text-surface-200 focus:outline-none focus:ring-1 focus:ring-primary-500 cursor-pointer">
+              <option [value]="10">10</option>
+              <option [value]="15">15</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+            </select>
+          </div>
+
+          <!-- Page Number Navigation Buttons -->
+          <div class="flex items-center gap-1">
+            <!-- First Page -->
+            <button
+              type="button"
+              (click)="goToPage(1)"
+              [disabled]="currentPage === 1"
+              class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              title="First Page">
+              <i class="pi pi-angle-double-left text-xs"></i>
+            </button>
+
+            <!-- Prev Page -->
+            <button
+              type="button"
+              (click)="goToPage(currentPage - 1)"
+              [disabled]="currentPage === 1"
+              class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              title="Previous Page">
+              <i class="pi pi-angle-left text-xs"></i>
+            </button>
+
+            <!-- Page Numbers -->
+            @for (page of visiblePages; track page) {
+              <button
+                type="button"
+                (click)="goToPage(page)"
+                [class.bg-primary-600]="currentPage === page"
+                [class.text-white]="currentPage === page"
+                [class.font-bold]="currentPage === page"
+                [class.shadow-xs]="currentPage === page"
+                [class.bg-surface-100]="currentPage !== page"
+                [class.dark:bg-surface-800]="currentPage !== page"
+                [class.text-surface-700]="currentPage !== page"
+                [class.dark:text-surface-300]="currentPage !== page"
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-xs border border-surface-200/60 dark:border-surface-700/60 hover:border-primary-500/50 transition-all cursor-pointer">
+                {{ page }}
+              </button>
+            }
+
+            <!-- Next Page -->
+            <button
+              type="button"
+              (click)="goToPage(currentPage + 1)"
+              [disabled]="currentPage >= totalPages"
+              class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              title="Next Page">
+              <i class="pi pi-angle-right text-xs"></i>
+            </button>
+
+            <!-- Last Page -->
+            <button
+              type="button"
+              (click)="goToPage(totalPages)"
+              [disabled]="currentPage >= totalPages"
+              class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              title="Last Page">
+              <i class="pi pi-angle-double-right text-xs"></i>
+            </button>
+          </div>
+        </div>
       </div>
     } @else {
       <!-- Empty Filter State -->

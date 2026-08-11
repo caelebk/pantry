@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { ApiResponse } from '@models/http.model';
 import { AddShoppingItemDTO, ShoppingItem } from '@models/shopping-list.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
+import { AuthService } from '../core/services/auth.service';
 import { ToastService } from './toast.service';
 
 @Injectable({
@@ -11,13 +12,19 @@ import { ToastService } from './toast.service';
 export class ShoppingListService {
   private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
+  private readonly authService = inject(AuthService);
   private readonly apiUrl = '/api/shopping-list';
 
   private readonly itemsSignal = signal<ShoppingItem[]>([]);
   readonly items = this.itemsSignal.asReadonly();
 
   constructor() {
-    this.loadItemsFromBackend();
+    effect(() => {
+      const activeKitchen = this.authService.activeKitchen();
+      if (activeKitchen) {
+        this.loadItemsFromBackend();
+      }
+    });
   }
 
   public loadItemsFromBackend(): void {

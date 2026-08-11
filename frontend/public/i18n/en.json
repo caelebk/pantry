@@ -8,7 +8,8 @@
     "inventory": "Inventory",
     "recipes": "Recipes",
     "shoppingList": "Shopping List",
-    "mealPlanner": "Meal Planner"
+    "mealPlanner": "Meal Planner",
+    "profile": "Profile"
   },
   "home": {
     "title": "Kitchen Command Center",
@@ -318,7 +319,8 @@
     "switchToDark": "Switch to Dark Mode",
     "expandSidebar": "Expand Sidebar",
     "collapseSidebar": "Collapse Sidebar",
-    "toggleMobileMenu": "Toggle Navigation Menu"
+    "toggleMobileMenu": "Toggle Navigation Menu",
+    "logout": "Log Out"
   },
   "inventoryTable": {
     "addNewItem": "Add New Item",
@@ -384,5 +386,55 @@
     "sortBy": "Sort by {{field}}",
     "scrollTop": "Scroll to top of page",
     "breadcrumb": "Breadcrumb navigation"
+  },
+  "auth": {
+    "login": "Sign In",
+    "signup": "Create Account",
+    "logout": "Log Out",
+    "email": "Email Address",
+    "password": "Password",
+    "fullName": "Full Name",
+    "rememberMe": "Keep me logged in",
+    "forgotPassword": "Forgot password?",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "signUpNow": "Sign Up",
+    "signInNow": "Sign In",
+    "welcomeBack": "Welcome Back to Pantry",
+    "welcomeSubtitle": "Sign in to manage your smart kitchen & shared pantries",
+    "createAccountTitle": "Join Pantry Today",
+    "createAccountSubtitle": "Start managing zero-waste inventory with shared kitchen workspaces"
+  },
+  "profile": {
+    "title": "Chef Profile & Account Settings",
+    "subtitle": "Manage your personal details, theme preferences, and active device sessions",
+    "personalInfo": "Personal Information",
+    "themePreferences": "Theme & Language",
+    "activeSessions": "Active Security Sessions",
+    "changePassword": "Security & Password",
+    "kitchens": "Kitchen Workspaces",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "updateProfileBtn": "Save Profile",
+    "updatePasswordBtn": "Update Password",
+    "revokeAllSessionsBtn": "Log Out All Other Devices",
+    "currentDevice": "This Device",
+    "activeStatus": "Active Now"
+  },
+  "kitchens": {
+    "title": "Shared Kitchen Workspaces",
+    "subtitle": "Collaborate with family, housemates, or restaurant staff",
+    "createNew": "Create New Kitchen",
+    "kitchenName": "Kitchen Name",
+    "description": "Description",
+    "members": "Workspace Members",
+    "inviteMember": "Invite Member",
+    "memberRole": "Role",
+    "roleOwner": "Owner",
+    "roleEditor": "Editor",
+    "roleViewer": "Viewer",
+    "switchKitchen": "Switch Kitchen",
+    "currentKitchen": "Active Kitchen"
   }
 }

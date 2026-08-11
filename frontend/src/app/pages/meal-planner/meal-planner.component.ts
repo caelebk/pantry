@@ -3,8 +3,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +14,7 @@ import { DayOfWeek, MealType } from '@models/meal-planner.model';
 import { Recipe } from '@models/recipe.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
+import { AuthService } from '../../core/services/auth.service';
 import { DailyFocusComponent } from './daily-focus/daily-focus.component';
 import { WeeklyViewComponent } from './weekly-view/weekly-view.component';
 
@@ -27,10 +28,21 @@ export type PlannerSubTab = 'calendar' | 'daily';
   styleUrl: './meal-planner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MealPlannerComponent implements OnInit {
+export class MealPlannerComponent {
   private readonly router = inject(Router);
   readonly mealPlannerService = inject(MealPlannerService);
   readonly recipeService = inject(RecipeService);
+  private readonly authService = inject(AuthService);
+
+  constructor() {
+    effect(() => {
+      const activeKitchen = this.authService.activeKitchen();
+      if (activeKitchen) {
+        this.loadRecipes();
+        this.mealPlannerService.loadMealsFromBackend();
+      }
+    });
+  }
 
   readonly days = this.mealPlannerService.days;
   readonly mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
@@ -56,10 +68,6 @@ export class MealPlannerComponent implements OnInit {
       0,
     ),
   );
-
-  ngOnInit(): void {
-    this.loadRecipes();
-  }
 
   setSubTab(tab: PlannerSubTab): void {
     this.activeSubTab.set(tab);

@@ -79,7 +79,7 @@
   [class.-translate-x-full]="!mobileMenuOpen()"
   [class.md:w-20]="isCollapsed()"
   [class.md:w-64]="!isCollapsed()"
-  class="fixed md:static top-0 left-0 z-50 md:z-auto h-screen md:h-full w-64 md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col backdrop-blur-xl bg-white/80 dark:bg-surface-900/90 border-r border-surface-200/60 dark:border-surface-800/80 shadow-xl md:shadow-none shrink-0 group">
+  class="fixed md:static top-0 left-0 z-50 md:z-auto h-screen md:h-full w-64 md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col backdrop-blur-xl bg-surface-50/95 dark:bg-surface-900/90 border-r border-surface-200/60 dark:border-surface-800/60 shadow-xl md:shadow-none shrink-0 group">
   <!-- Sidebar Header / Logo -->
   <div
     [class.justify-center]="isCollapsed()"
@@ -103,6 +103,55 @@
       }
     </div>
   </div>
+
+  <!-- Kitchen Workspace Switcher Bar -->
+  @if (!isCollapsed() && authService.userKitchens().length > 0) {
+    <div class="px-3 pt-3 pb-1 relative z-20">
+      <button
+        type="button"
+        (click)="toggleKitchenMenu($event)"
+        class="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-100/70 dark:bg-surface-800/50 hover:bg-surface-200/80 dark:hover:bg-surface-800 border border-surface-200/80 dark:border-surface-700/80 transition-all text-left group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div
+            class="w-7 h-7 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <i class="pi pi-building text-xs"></i>
+          </div>
+          <div class="truncate">
+            <div class="text-xs font-semibold text-surface-900 dark:text-surface-100 truncate">
+              {{ authService.activeKitchen()?.name || 'Main Kitchen' }}
+            </div>
+            <div class="text-[10px] text-surface-500 dark:text-surface-400 truncate">
+              {{ authService.activeKitchen()?.role || 'member' }}
+            </div>
+          </div>
+        </div>
+        <i
+          [class.rotate-180]="kitchenMenuOpen()"
+          class="pi pi-chevron-down text-xs text-surface-400 group-hover:text-surface-600 dark:group-hover:text-surface-200 transition-transform duration-200 shrink-0"></i>
+      </button>
+
+      <!-- Dropdown Kitchen Menu -->
+      @if (kitchenMenuOpen()) {
+        <div
+          class="absolute top-full left-3 right-3 mt-1 py-1 bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-700 shadow-xl z-50 max-h-48 overflow-y-auto space-y-0.5">
+          @for (k of authService.userKitchens(); track k.id) {
+            <button
+              type="button"
+              (click)="selectKitchen(k)"
+              [class.bg-primary-500/10]="authService.activeKitchen()?.id === k.id"
+              [class.text-primary-600]="authService.activeKitchen()?.id === k.id"
+              [class.dark:text-primary-400]="authService.activeKitchen()?.id === k.id"
+              class="w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-surface-100 dark:hover:bg-surface-800/80 transition-colors cursor-pointer">
+              <span class="font-medium truncate">{{ k.name }}</span>
+              @if (authService.activeKitchen()?.id === k.id) {
+                <i class="pi pi-check text-xs text-primary-500"></i>
+              }
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
 
   <!-- Sidebar Navigation Menu -->
   <nav class="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
@@ -416,7 +465,74 @@
   </button>
 
   <!-- Sidebar Footer Options -->
-  <div class="p-3 border-t border-surface-200/40 dark:border-surface-800/40">
+  <div class="p-3 border-t border-surface-200/40 dark:border-surface-800/40 space-y-1">
+    <!-- Profile & Account Link -->
+    <button
+      (click)="navigateTo('/profile')"
+      [attr.title]="'nav.profile' | transloco"
+      [attr.aria-current]="isProfileActive() ? 'page' : null"
+      [class.justify-center]="isCollapsed()"
+      [class.px-2.5]="isCollapsed()"
+      [class.px-3.5]="!isCollapsed()"
+      [class.bg-primary-500/10]="isProfileActive()"
+      [class.dark:bg-primary-500/15]="isProfileActive()"
+      [class.text-primary-600]="isProfileActive()"
+      [class.dark:text-primary-400]="isProfileActive()"
+      [class.font-semibold]="isProfileActive()"
+      [class.text-surface-600]="!isProfileActive()"
+      [class.dark:text-surface-400]="!isProfileActive()"
+      [class.hover:bg-surface-100]="!isProfileActive()"
+      [class.dark:hover:bg-surface-800/60]="!isProfileActive()"
+      [class.hover:text-surface-900]="!isProfileActive()"
+      [class.dark:hover:text-surface-100]="!isProfileActive()"
+      class="w-full flex items-center gap-3 py-2 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      @if (isProfileActive()) {
+        <div class="absolute left-0 top-2 bottom-2 w-1 bg-primary-500 rounded-r-full"></div>
+      }
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.75"
+        stroke="currentColor"
+        class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      @if (!isCollapsed()) {
+        <span class="whitespace-nowrap hidden md:inline">{{ 'nav.profile' | transloco }}</span>
+      }
+      <span class="whitespace-nowrap md:hidden">{{ 'nav.profile' | transloco }}</span>
+    </button>
+
+    <!-- Logout Button -->
+    <button
+      (click)="onLogout()"
+      [attr.title]="'sidebar.logout' | transloco"
+      [class.justify-center]="isCollapsed()"
+      [class.px-2.5]="isCollapsed()"
+      [class.px-3.5]="!isCollapsed()"
+      class="w-full flex items-center gap-3 py-2 rounded-xl hover:bg-red-500/10 dark:hover:bg-red-500/15 text-surface-600 dark:text-surface-400 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 cursor-pointer text-sm group/item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.75"
+        stroke="currentColor"
+        class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+      </svg>
+      @if (!isCollapsed()) {
+        <span class="whitespace-nowrap hidden md:inline">{{ 'sidebar.logout' | transloco }}</span>
+      }
+      <span class="whitespace-nowrap md:hidden">{{ 'sidebar.logout' | transloco }}</span>
+    </button>
+
     <div class="flex items-center justify-between gap-2 w-full">
       <!-- Dark Mode Toggle Button -->
       <button
