@@ -3,12 +3,16 @@ import { CreateMealPlanDTO, UpdateMealPlanDTO } from '../models/data-models/meal
 import { mealPlanService } from '../services/meal-plan.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 
+import { authMiddleware } from '../middleware/auth.ts';
+
 const mealPlans = new Hono();
+mealPlans.use('*', authMiddleware);
 
 // GET /api/meal-plans - Get all planned meals
 mealPlans.get('/', async (c: Context) => {
   try {
-    const data = await mealPlanService.getAllMealPlans();
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const data = await mealPlanService.getAllMealPlans(activeKitchenId);
     return c.json(successResponse(data), HttpStatusCode.OK);
   } catch (error: unknown) {
     console.error('Error fetching meal plans:', error);
@@ -23,7 +27,8 @@ mealPlans.get('/', async (c: Context) => {
 mealPlans.get('/:id', async (c: Context) => {
   try {
     const id = c.req.param('id')!;
-    const plan = await mealPlanService.getMealPlanById(id);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const plan = await mealPlanService.getMealPlanById(id, activeKitchenId);
     if (plan) {
       return c.json(successResponse(plan), HttpStatusCode.OK);
     }
@@ -40,11 +45,13 @@ mealPlans.post('/', async (c: Context) => {
     const body: CreateMealPlanDTO = await c.req.json();
     if (!body || !body.day || !body.mealType || !body.recipeName) {
       return c.json(
-        errorResponse('day, mealType, and recipeName are required'),
+        errorResponse('Day, mealType, and recipeName are required'),
         HttpStatusCode.BAD_REQUEST,
       );
     }
-    const created = await mealPlanService.createMealPlan(body);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const userId = c.get('user').userId;
+    const created = await mealPlanService.createMealPlan(body, activeKitchenId, userId);
     return c.json(successResponse(created), HttpStatusCode.CREATED);
   } catch (error: unknown) {
     console.error('Error creating meal plan:', error);
@@ -60,7 +67,9 @@ mealPlans.put('/:id', async (c: Context) => {
   try {
     const id = c.req.param('id')!;
     const body: UpdateMealPlanDTO = await c.req.json();
-    const updated = await mealPlanService.updateMealPlan(id, body);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const userId = c.get('user').userId;
+    const updated = await mealPlanService.updateMealPlan(id, activeKitchenId, body, userId);
     if (updated) {
       return c.json(successResponse(updated), HttpStatusCode.OK);
     }
@@ -78,7 +87,8 @@ mealPlans.put('/:id', async (c: Context) => {
 mealPlans.delete('/:id', async (c: Context) => {
   try {
     const id = c.req.param('id')!;
-    await mealPlanService.deleteMealPlan(id);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    await mealPlanService.deleteMealPlan(id, activeKitchenId);
     return c.json(
       successResponse({ message: 'Meal plan deleted successfully' }),
       HttpStatusCode.OK,

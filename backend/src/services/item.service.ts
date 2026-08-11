@@ -5,40 +5,40 @@ import {
 } from '../models/data-models/ingredient-item.model.ts';
 
 export class ItemService {
-  async getAllItems() {
-    return await ingredientItemService.getAllIngredientItems();
+  async getAllItems(kitchenId: string) {
+    return await ingredientItemService.getAllIngredientItems(kitchenId);
   }
 
-  async getItemById(id: string) {
-    return await ingredientItemService.getIngredientItemById(id);
+  async getItemById(id: string, kitchenId: string) {
+    return await ingredientItemService.getIngredientItemById(id, kitchenId);
   }
 
-  async createItem(data: CreateIngredientItemDTO) {
-    return await ingredientItemService.createIngredientItem(data);
+  async createItem(data: CreateIngredientItemDTO, kitchenId: string, userId: string) {
+    return await ingredientItemService.createIngredientItem(data, kitchenId, userId);
   }
 
-  async updateItem(id: string, data: UpdateIngredientItemDTO) {
-    return await ingredientItemService.updateIngredientItem(id, data);
+  async updateItem(id: string, kitchenId: string, data: UpdateIngredientItemDTO, userId: string) {
+    return await ingredientItemService.updateIngredientItem(id, kitchenId, data, userId);
   }
 
-  async deleteItemById(id: string) {
-    return await ingredientItemService.deleteIngredientItemById(id);
+  async deleteItemById(id: string, kitchenId: string) {
+    return await ingredientItemService.deleteIngredientItemById(id, kitchenId);
   }
 
-  async bulkClearStock(ids: string[]) {
-    return await ingredientItemService.bulkClearStock(ids);
+  async bulkClearStock(ids: string[], kitchenId: string) {
+    return await ingredientItemService.bulkClearStock(ids, kitchenId);
   }
 
-  async bulkDeleteItems(ids: string[]) {
-    return await ingredientItemService.bulkDeleteIngredientItems(ids);
+  async bulkDeleteItems(ids: string[], kitchenId: string) {
+    return await ingredientItemService.bulkDeleteIngredientItems(ids, kitchenId);
   }
 
-  async findExpiringSoon(days?: number) {
-    return await ingredientItemService.findExpiringSoon(days);
+  async findExpiringSoon(kitchenId: string, days?: number) {
+    return await ingredientItemService.findExpiringSoon(kitchenId, days);
   }
 
-  async findSimilarItems(queryName: string, minScore?: number) {
-    return await ingredientItemService.findSimilarItems(queryName, minScore);
+  async findSimilarItems(queryName: string, kitchenId: string, minScore?: number) {
+    return await ingredientItemService.findSimilarItems(kitchenId, queryName, minScore);
   }
 }
 

@@ -20,21 +20,22 @@ import { isValidUUID } from '../utils/validators.ts';
 
 export class RecipeService {
   /**
-   * Retrieves all recipes from the database.
+   * Retrieves all recipes from the database, optionally filtered by kitchen.
    */
-  async getAllRecipes(): Promise<RecipeDTO[]> {
-    return await this.findAll();
+  async getAllRecipes(kitchenId: string): Promise<RecipeDTO[]> {
+    return await this.findAll(kitchenId);
   }
 
-  findAll(): Promise<RecipeDTO[]> {
+  findAll(kitchenId: string): Promise<RecipeDTO[]> {
     try {
       const db = getDB();
       const rows = db.prepare(`
-        SELECT r.*, d.name as difficulty_name
-        FROM recipes r
-        LEFT JOIN difficulties d ON r.difficulty_id = d.id
-        ORDER BY r.created_at DESC
-      `).all() as (RecipeRow & { difficulty_name: string | null })[];
+          SELECT r.*, d.name as difficulty_name
+          FROM recipes r
+          LEFT JOIN difficulties d ON r.difficulty_id = d.id
+          WHERE r.kitchen_id = ?
+          ORDER BY r.created_at DESC
+        `).all(kitchenId) as (RecipeRow & { difficulty_name: string | null })[];
 
       if (rows.length === 0) {
         return Promise.resolve([]);
@@ -99,11 +100,11 @@ export class RecipeService {
   /**
    * Retrieves a single recipe by its ID.
    */
-  async getRecipeById(id: string): Promise<RecipeDTO | null> {
-    return await this.findById(id);
+  async getRecipeById(id: string, kitchenId: string): Promise<RecipeDTO | null> {
+    return await this.findById(id, kitchenId);
   }
 
-  findById(id: string): Promise<RecipeDTO | null> {
+  findById(id: string, kitchenId: string): Promise<RecipeDTO | null> {
     if (!isValidUUID(id)) {
       throw new Error(RecipeMessages.INVALID_ID_FORMAT_LOG(id));
     }
@@ -113,8 +114,8 @@ export class RecipeService {
         SELECT r.*, d.name as difficulty_name
         FROM recipes r
         LEFT JOIN difficulties d ON r.difficulty_id = d.id
-        WHERE r.id = ?
-      `).get(id) as (RecipeRow & { difficulty_name: string | null }) | undefined;
+        WHERE r.id = ? AND r.kitchen_id = ?
+      `).get(id, kitchenId) as (RecipeRow & { difficulty_name: string | null }) | undefined;
 
       if (!row) return Promise.resolve(null);
 
@@ -130,11 +131,11 @@ export class RecipeService {
   /**
    * Creates a new recipe in the database.
    */
-  async createRecipe(data: CreateRecipeDTO): Promise<RecipeDTO> {
-    return await this.create(data);
+  async createRecipe(data: CreateRecipeDTO, kitchenId: string, userId: string): Promise<RecipeDTO> {
+    return await this.create(data, kitchenId, userId);
   }
 
-  async create(data: CreateRecipeDTO): Promise<RecipeDTO> {
+  async create(data: CreateRecipeDTO, kitchenId: string, userId: string): Promise<RecipeDTO> {
     const db = getDB();
     const recipeId = crypto.randomUUID();
     const now = new Date().toISOString();
@@ -143,8 +144,8 @@ export class RecipeService {
       db.exec('BEGIN');
 
       db.prepare(`
-        INSERT INTO recipes (id, name, description, difficulty_id, servings, prep_time, cook_time, image_url, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO recipes (id, name, description, difficulty_id, servings, prep_time, cook_time, image_url, kitchen_id, created_at, updated_at, created_by, updated_by)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         recipeId,
         data.name,
@@ -154,8 +155,11 @@ export class RecipeService {
         data.prepTime ?? null,
         data.cookTime ?? null,
         data.imageUrl ?? null,
+        kitchenId,
         now,
         now,
+        userId,
+        userId,
       );
 
       if (data.ingredients && data.ingredients.length > 0) {
@@ -202,7 +206,7 @@ export class RecipeService {
       }
 
       db.exec('COMMIT');
-      return (await this.findById(recipeId))!;
+      return (await this.findById(recipeId, kitchenId))!;
     } catch (error: unknown) {
       db.exec('ROLLBACK');
       console.error('Error creating recipe:', error);
@@ -213,16 +217,26 @@ export class RecipeService {
   /**
    * Updates an existing recipe in the database.
    */
-  async updateRecipe(id: string, data: UpdateRecipeDTO): Promise<RecipeDTO | null> {
-    return await this.update(id, data);
+  async updateRecipe(
+    id: string,
+    kitchenId: string,
+    data: UpdateRecipeDTO,
+    userId: string,
+  ): Promise<RecipeDTO | null> {
+    return await this.update(id, kitchenId, data, userId);
   }
 
-  async update(id: string, data: UpdateRecipeDTO): Promise<RecipeDTO | null> {
+  async update(
+    id: string,
+    kitchenId: string,
+    data: UpdateRecipeDTO,
+    userId: string,
+  ): Promise<RecipeDTO | null> {
     if (!isValidUUID(id)) {
       throw new Error(RecipeMessages.INVALID_ID_FORMAT_LOG(id));
     }
     const db = getDB();
-    const existing = await this.findById(id);
+    const existing = await this.findById(id, kitchenId);
     if (!existing) return null;
 
     try {
@@ -236,8 +250,9 @@ export class RecipeService {
             servings = COALESCE(?, servings),
             prep_time = COALESCE(?, prep_time),
             cook_time = COALESCE(?, cook_time),
-            image_url = COALESCE(?, image_url)
-        WHERE id = ?
+            image_url = COALESCE(?, image_url),
+            updated_by = ?
+        WHERE id = ? AND kitchen_id = ?
       `).run(
         data.name ?? null,
         data.description ?? null,
@@ -246,7 +261,9 @@ export class RecipeService {
         data.prepTime ?? null,
         data.cookTime ?? null,
         data.imageUrl ?? null,
+        userId,
         id,
+        kitchenId,
       );
 
       if (data.ingredients) {
@@ -296,7 +313,7 @@ export class RecipeService {
       }
 
       db.exec('COMMIT');
-      return await this.findById(id);
+      return await this.findById(id, kitchenId);
     } catch (error: unknown) {
       db.exec('ROLLBACK');
       console.error('Error updating recipe:', error);
@@ -307,17 +324,17 @@ export class RecipeService {
   /**
    * Deletes a recipe from the database by its ID.
    */
-  async deleteRecipe(id: string): Promise<boolean> {
-    return await this.delete(id);
+  async deleteRecipe(id: string, kitchenId: string): Promise<boolean> {
+    return await this.delete(id, kitchenId);
   }
 
-  delete(id: string): Promise<boolean> {
+  delete(id: string, kitchenId: string): Promise<boolean> {
     if (!isValidUUID(id)) {
       throw new Error(RecipeMessages.INVALID_ID_FORMAT_LOG(id));
     }
     try {
       const db = getDB();
-      db.prepare('DELETE FROM recipes WHERE id = ?').run(id);
+      db.prepare('DELETE FROM recipes WHERE id = ? AND kitchen_id = ?').run(id, kitchenId);
       return Promise.resolve(true);
     } catch (error: unknown) {
       console.error('Error deleting recipe:', error);
@@ -332,7 +349,7 @@ export class RecipeService {
    * 2. Calculate required recipe quantity by ingredient_id (converting to base units using unit factor).
    * 3. Filter recipes where pantry_base_qty >= recipe_base_qty for ALL required ingredients.
    */
-  async getAvailableRecipes(): Promise<RecipeDTO[]> {
+  async getAvailableRecipes(kitchenId: string): Promise<RecipeDTO[]> {
     try {
       const db = getDB();
 
@@ -343,8 +360,9 @@ export class RecipeService {
         FROM ingredient_items i
         LEFT JOIN units u ON i.unit_id = u.id
         WHERE i.ingredient_id IS NOT NULL
+          AND i.kitchen_id = ?
           AND (i.expiration_date IS NULL OR datetime(i.expiration_date) >= datetime('now'))
-      `).all() as { ingredient_id: string; quantity: number; to_base_factor: number }[];
+      `).all(kitchenId) as { ingredient_id: string; quantity: number; to_base_factor: number }[];
 
       const availableMap = new Map<string, number>();
       for (const row of pantryRows) {
@@ -353,7 +371,7 @@ export class RecipeService {
       }
 
       // 2. Fetch all recipes & unit factors
-      const allRecipes = await this.findAll();
+      const allRecipes = await this.findAll(kitchenId);
       const unitRows = db.prepare(
         'SELECT id, COALESCE(to_base_factor, 1.0) as to_base_factor FROM units',
       ).all() as { id: number; to_base_factor: number }[];
@@ -388,8 +406,8 @@ export class RecipeService {
     }
   }
 
-  async findMakeable(_availableItemIds: string[]): Promise<RecipeDTO[]> {
-    return await this.getAvailableRecipes();
+  async findMakeable(_availableItemIds: string[], kitchenId: string): Promise<RecipeDTO[]> {
+    return await this.getAvailableRecipes(kitchenId);
   }
 
   private getRecipeIngredients(recipeId: string): RecipeIngredientDTO[] {

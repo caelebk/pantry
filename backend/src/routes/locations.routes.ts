@@ -4,7 +4,10 @@ import { locationService } from '../services/location.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isPositiveNumber } from '../utils/validators.ts';
 
+import { authMiddleware } from '../middleware/auth.ts';
+
 const locations = new Hono();
+locations.use('*', authMiddleware);
 
 /**
  * GET /api/locations

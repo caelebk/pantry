@@ -3,7 +3,10 @@ import { ingredientCategoryService } from '../services/ingredient-category.servi
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isPositiveNumber } from '../utils/validators.ts';
 
+import { authMiddleware } from '../middleware/auth.ts';
+
 const ingredientCategories = new Hono();
+ingredientCategories.use('*', authMiddleware);
 
 /**
  * GET /api/ingredient-categories

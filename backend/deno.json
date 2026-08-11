@@ -1,8 +1,9 @@
 {
+  "nodeModulesDir": "auto",
   "tasks": {
     "dev": "deno run --allow-env --watch --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi main.ts",
     "start": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi main.ts",
-    "test": "deno test --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi",
+    "test": "NODE_ENV=test deno test --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi",
     "db:migrate": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi scripts/migrate_db.ts",
     "db:backup": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi scripts/backup_db.ts",
     "db:reset": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi scripts/reset_db.ts",
@@ -15,7 +16,8 @@
     "@std/testing": "jsr:@std/testing@^1",
     "@std/dotenv": "jsr:@std/dotenv@^0.225",
     "@std/path": "jsr:@std/path@^1",
-    "@db/sqlite": "jsr:@db/sqlite@^0.12.0"
+    "@db/sqlite": "jsr:@db/sqlite@^0.12.0",
+    "argon2": "npm:argon2@^0.41.0"
   },
   "fmt": {
     "useTabs": false,
