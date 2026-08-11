@@ -115,7 +115,7 @@ export class IngredientGroupsPageComponent implements OnInit {
         return;
       }
 
-      const filteredIngredients = ingList.filter((ing: any) =>
+      const filteredIngredients = ingList.filter((ing: { name: string }) =>
         ing.name.toLowerCase().includes(query),
       );
 

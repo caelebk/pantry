@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
@@ -14,6 +14,7 @@ import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
 
 export interface LocationStat {
   id: number;
@@ -28,13 +29,23 @@ export interface LocationStat {
   imports: [CommonModule, TranslocoModule],
   templateUrl: './inventory-overview-page.component.html',
 })
-export class InventoryOverviewPageComponent implements OnInit {
+export class InventoryOverviewPageComponent {
   private readonly router = inject(Router);
   private readonly categoryService = inject(IngredientCategoryService);
   private readonly groupService = inject(IngredientGroupService);
   private readonly ingredientService = inject(IngredientService);
   private readonly itemService = inject(ItemService);
   private readonly locationService = inject(LocationService);
+  private readonly authService = inject(AuthService);
+
+  constructor() {
+    effect(() => {
+      const activeKitchen = this.authService.activeKitchen();
+      if (activeKitchen) {
+        this.fetchInventoryData();
+      }
+    });
+  }
 
   public readonly categories = signal<IngredientCategory[]>([]);
   public readonly groups = signal<IngredientGroup[]>([]);
@@ -88,10 +99,6 @@ export class InventoryOverviewPageComponent implements OnInit {
       };
     });
   });
-
-  ngOnInit(): void {
-    this.fetchInventoryData();
-  }
 
   public fetchInventoryData(): void {
     this.isLoading.set(true);

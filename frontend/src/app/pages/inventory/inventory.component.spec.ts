@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,6 +14,7 @@ import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
 import { of } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
 import { InventoryComponent } from './inventory.component';
 
 import { UnitType } from '@models/unit.model';
@@ -28,7 +31,7 @@ describe('InventoryComponent', () => {
     quantity: 2,
     unit: { id: 1, name: 'Liters', shortName: 'L', type: UnitType.Volume, toBaseFactor: 1 },
     purchaseDate: new Date('2026-08-01'),
-    expirationDate: new Date('2026-08-10'),
+    expirationDate: new Date('2026-12-31'),
     location: { id: 1, name: 'Fridge' },
     notes: '',
   };
@@ -83,6 +86,8 @@ describe('InventoryComponent', () => {
         }),
       ],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: ItemService, useValue: mockItemService },
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: IngredientService, useValue: { getIngredients: () => of([]) } },
@@ -97,11 +102,16 @@ describe('InventoryComponent', () => {
 
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
         { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
+        {
+          provide: AuthService,
+          useValue: { activeKitchen: jasmine.createSpy().and.returnValue('kitchen-1') },
+        },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(InventoryComponent);
     component = fixture.componentInstance;
+    TestBed.flushEffects();
     fixture.detectChanges();
   });
 

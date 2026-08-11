@@ -38,6 +38,10 @@ export function initDB(): Database {
     db.exec('PRAGMA journal_mode = WAL');
     // Enable foreign key enforcement (off by default in SQLite)
     db.exec('PRAGMA foreign_keys = ON');
+    // Performance tuning pragmas
+    db.exec('PRAGMA busy_timeout = 5000');
+    db.exec('PRAGMA synchronous = NORMAL');
+    db.exec('PRAGMA temp_store = MEMORY');
 
     console.log('✅ Database connected successfully');
     return db;

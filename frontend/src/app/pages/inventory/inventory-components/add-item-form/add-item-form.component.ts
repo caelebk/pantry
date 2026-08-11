@@ -81,4 +81,12 @@ export class AddItemFormComponent {
       this.addItemForm.markAllAsTouched();
     }
   }
+
+  setExpirationDaysOffset(days: number): void {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + days);
+    this.addItemForm.controls.expirationDate.setValue(targetDate);
+    this.addItemForm.controls.expirationDate.markAsTouched();
+    this.addItemForm.controls.expirationDate.markAsDirty();
+  }
 }

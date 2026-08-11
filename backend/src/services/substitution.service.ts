@@ -20,7 +20,7 @@ export class SubstitutionService {
    *   2. Same Ingredient Category (broader match)
    * Only returns ingredients that have unexpired ingredient items in stock.
    */
-  async getSubstitutions(ingredientId: string): Promise<SubstitutionSuggestion[]> {
+  getSubstitutions(ingredientId: string): Promise<SubstitutionSuggestion[]> {
     const db = getDB();
 
     // 1. Get the source ingredient's group and ingredient category
@@ -37,7 +37,7 @@ export class SubstitutionService {
       group_name: string | null;
     } | undefined;
 
-    if (!source) return [];
+    if (!source) return Promise.resolve([]);
 
     // 2. Find all OTHER ingredients that have unexpired stock in ingredient_items
     //    Join ingredients -> ingredient_items -> units to compute base quantity
@@ -106,7 +106,7 @@ export class SubstitutionService {
       return a.ingredient.name.localeCompare(b.ingredient.name);
     });
 
-    return suggestions;
+    return Promise.resolve(suggestions);
   }
 }
 

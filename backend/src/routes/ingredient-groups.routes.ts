@@ -10,14 +10,18 @@ import { ingredientService } from '../services/ingredients.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isPositiveNumber } from '../utils/validators.ts';
 
+import { authMiddleware } from '../middleware/auth.ts';
+
 const ingredientGroups = new Hono();
+ingredientGroups.use('*', authMiddleware);
 
 /**
  * GET /api/ingredient-groups
  */
 ingredientGroups.get('/', async (c: Context) => {
   try {
-    const groups = await ingredientGroupService.getAllIngredientGroups();
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const groups = await ingredientGroupService.getAllIngredientGroups(activeKitchenId);
     return c.json(successResponse(groups), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
@@ -37,7 +41,8 @@ ingredientGroups.get('/:id', async (c: Context) => {
     if (!isPositiveNumber(numericId)) {
       return c.json(errorResponse(IngredientGroupMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
-    const group = await ingredientGroupService.getIngredientGroupById(numericId);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const group = await ingredientGroupService.getIngredientGroupById(numericId, activeKitchenId);
     if (!group) {
       return c.json(errorResponse(IngredientGroupMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
@@ -62,7 +67,13 @@ ingredientGroups.post('/', async (c: Context) => {
         HttpStatusCode.BAD_REQUEST,
       );
     }
-    const created = await ingredientGroupService.createIngredientGroup(body);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const userId = c.get('user').userId;
+    const created = await ingredientGroupService.createIngredientGroup(
+      body,
+      activeKitchenId,
+      userId,
+    );
     return c.json(successResponse(created), HttpStatusCode.CREATED);
   } catch (_error: unknown) {
     return c.json(
@@ -83,7 +94,14 @@ ingredientGroups.put('/:id', async (c: Context) => {
       return c.json(errorResponse(IngredientGroupMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
     const body = await c.req.json<UpdateIngredientGroupDTO>();
-    const updated = await ingredientGroupService.updateIngredientGroup(numericId, body);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const userId = c.get('user').userId;
+    const updated = await ingredientGroupService.updateIngredientGroup(
+      numericId,
+      activeKitchenId,
+      body,
+      userId,
+    );
     if (!updated) {
       return c.json(errorResponse(IngredientGroupMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
@@ -106,7 +124,8 @@ ingredientGroups.delete('/:id', async (c: Context) => {
     if (!isPositiveNumber(numericId)) {
       return c.json(errorResponse(IngredientGroupMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
-    const deleted = await ingredientGroupService.deleteIngredientGroup(numericId);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const deleted = await ingredientGroupService.deleteIngredientGroup(numericId, activeKitchenId);
     if (!deleted) {
       return c.json(errorResponse(IngredientGroupMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
@@ -130,12 +149,13 @@ ingredientGroups.get('/:id/ingredients', async (c: Context) => {
       return c.json(errorResponse(IngredientGroupMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
 
-    const group = await ingredientGroupService.getIngredientGroupById(numericId);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const group = await ingredientGroupService.getIngredientGroupById(numericId, activeKitchenId);
     if (!group) {
       return c.json(errorResponse(IngredientGroupMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
 
-    const ingredients = await ingredientService.getIngredientsByGroup(numericId);
+    const ingredients = await ingredientService.getIngredientsByGroup(numericId, activeKitchenId);
     return c.json(successResponse(ingredients), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(

@@ -20,7 +20,7 @@ const mockMealPlan: MealPlanDTO = {
 
 Deno.test('Meal Plans API - GET /api/meal-plans - success', async () => {
   const originalGetAll = mealPlanService.getAllMealPlans;
-  mealPlanService.getAllMealPlans = () => Promise.resolve([mockMealPlan]);
+  mealPlanService.getAllMealPlans = (_kitchenId) => Promise.resolve([mockMealPlan]);
 
   const res = await app.request('/api/meal-plans');
   assertEquals(res.status, 200);
@@ -35,7 +35,7 @@ Deno.test('Meal Plans API - GET /api/meal-plans - success', async () => {
 
 Deno.test('Meal Plans API - GET /api/meal-plans/:id - success', async () => {
   const originalGetById = mealPlanService.getMealPlanById;
-  mealPlanService.getMealPlanById = (id) =>
+  mealPlanService.getMealPlanById = (id, _kitchenId) =>
     id === mockMealPlan.id ? Promise.resolve(mockMealPlan) : Promise.resolve(null);
 
   const res = await app.request(`/api/meal-plans/${mockMealPlan.id}`);
@@ -50,7 +50,7 @@ Deno.test('Meal Plans API - GET /api/meal-plans/:id - success', async () => {
 
 Deno.test('Meal Plans API - GET /api/meal-plans/:id - not found', async () => {
   const originalGetById = mealPlanService.getMealPlanById;
-  mealPlanService.getMealPlanById = () => Promise.resolve(null);
+  mealPlanService.getMealPlanById = (_id, _kitchenId) => Promise.resolve(null);
 
   const res = await app.request('/api/meal-plans/non-existent');
   assertEquals(res.status, 404);
@@ -63,7 +63,7 @@ Deno.test('Meal Plans API - GET /api/meal-plans/:id - not found', async () => {
 
 Deno.test('Meal Plans API - POST /api/meal-plans - success', async () => {
   const originalCreate = mealPlanService.createMealPlan;
-  mealPlanService.createMealPlan = (dto) =>
+  mealPlanService.createMealPlan = (dto, _kitchenId) =>
     Promise.resolve({ ...mockMealPlan, recipeName: dto.recipeName });
 
   const res = await app.request('/api/meal-plans', {
@@ -91,7 +91,7 @@ Deno.test('Meal Plans API - POST /api/meal-plans - missing required fields', asy
 
 Deno.test('Meal Plans API - PUT /api/meal-plans/:id - success', async () => {
   const originalUpdate = mealPlanService.updateMealPlan;
-  mealPlanService.updateMealPlan = (id, body) =>
+  mealPlanService.updateMealPlan = (id, _kitchenId, body) =>
     Promise.resolve({ ...mockMealPlan, id, cooked: body.cooked ?? false });
 
   const res = await app.request(`/api/meal-plans/${mockMealPlan.id}`, {
@@ -110,7 +110,7 @@ Deno.test('Meal Plans API - PUT /api/meal-plans/:id - success', async () => {
 
 Deno.test('Meal Plans API - DELETE /api/meal-plans/:id - success', async () => {
   const originalDelete = mealPlanService.deleteMealPlan;
-  mealPlanService.deleteMealPlan = () => Promise.resolve(true);
+  mealPlanService.deleteMealPlan = (_id, _kitchenId) => Promise.resolve(true);
 
   const res = await app.request(`/api/meal-plans/${mockMealPlan.id}`, {
     method: 'DELETE',

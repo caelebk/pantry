@@ -17,16 +17,17 @@ export class IngredientGroupService {
   /**
    * Retrieves all ingredient groups from the database, including ingredient category info.
    */
-  async getAllIngredientGroups(): Promise<IngredientGroupDTO[]> {
+  getAllIngredientGroups(kitchenId: string): Promise<IngredientGroupDTO[]> {
     try {
       const db = getDB();
       const rows = db.prepare(`
         SELECT ig.*, ic.name as ingredient_category_name
         FROM ingredient_groups ig
         LEFT JOIN ingredient_categories ic ON ig.ingredient_category_id = ic.id
+        WHERE ig.kitchen_id = ?
         ORDER BY ig.name
-      `).all() as IngredientGroupJoinRow[];
-      return rows.map(this.mapRowToDTO);
+      `).all(kitchenId) as IngredientGroupJoinRow[];
+      return Promise.resolve(rows.map(this.mapRowToDTO));
     } catch (error: unknown) {
       console.error('Error finding ingredient groups:', error);
       throw new Error(IngredientGroupMessages.DB_RETRIEVE_CATEGORIES_ERROR);
@@ -36,16 +37,16 @@ export class IngredientGroupService {
   /**
    * Retrieves an ingredient group by its ID.
    */
-  async getIngredientGroupById(id: number): Promise<IngredientGroupDTO | null> {
+  getIngredientGroupById(id: number, kitchenId: string): Promise<IngredientGroupDTO | null> {
     try {
       const db = getDB();
       const row = db.prepare(`
         SELECT ig.*, ic.name as ingredient_category_name
         FROM ingredient_groups ig
         LEFT JOIN ingredient_categories ic ON ig.ingredient_category_id = ic.id
-        WHERE ig.id = ?
-      `).get(id) as IngredientGroupJoinRow | undefined;
-      return row ? this.mapRowToDTO(row) : null;
+        WHERE ig.id = ? AND ig.kitchen_id = ?
+      `).get(id, kitchenId) as IngredientGroupJoinRow | undefined;
+      return Promise.resolve(row ? this.mapRowToDTO(row) : null);
     } catch (error: unknown) {
       console.error('Error finding ingredient group by ID:', error);
       throw new Error(IngredientGroupMessages.DB_RETRIEVE_CATEGORY_ERROR);
@@ -55,17 +56,22 @@ export class IngredientGroupService {
   /**
    * Creates a new ingredient group.
    */
-  async createIngredientGroup(dto: CreateIngredientGroupDTO): Promise<IngredientGroupDTO> {
+  async createIngredientGroup(
+    dto: CreateIngredientGroupDTO,
+    kitchenId: string,
+    userId: string,
+  ): Promise<IngredientGroupDTO> {
     try {
       const db = getDB();
       const categoryId = dto.ingredientCategoryId ?? dto.nutrientGroupId ?? dto.nutrientTypeId ??
         null;
-      const lastInsertId = db.prepare(`
-        INSERT INTO ingredient_groups (name, ingredient_category_id)
-        VALUES (?, ?)
-      `).run(dto.name, categoryId);
+      db.prepare(`
+        INSERT INTO ingredient_groups (name, ingredient_category_id, kitchen_id, created_by, updated_by)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(dto.name, categoryId, kitchenId, userId, userId);
+      const lastInsertId = db.lastInsertRowId;
 
-      const created = await this.getIngredientGroupById(Number(lastInsertId));
+      const created = await this.getIngredientGroupById(Number(lastInsertId), kitchenId);
       if (!created) {
         throw new Error('Failed to retrieve newly created ingredient group');
       }
@@ -81,11 +87,13 @@ export class IngredientGroupService {
    */
   async updateIngredientGroup(
     id: number,
+    kitchenId: string,
     dto: UpdateIngredientGroupDTO,
+    userId: string,
   ): Promise<IngredientGroupDTO | null> {
     try {
       const db = getDB();
-      const existing = await this.getIngredientGroupById(id);
+      const existing = await this.getIngredientGroupById(id, kitchenId);
       if (!existing) return null;
 
       const name = dto.name !== undefined ? dto.name : existing.name;
@@ -99,11 +107,11 @@ export class IngredientGroupService {
 
       db.prepare(`
         UPDATE ingredient_groups
-        SET name = ?, ingredient_category_id = ?
-        WHERE id = ?
-      `).run(name, categoryId, id);
+        SET name = ?, ingredient_category_id = ?, updated_by = ?
+        WHERE id = ? AND kitchen_id = ?
+      `).run(name, categoryId, userId, id, kitchenId);
 
-      return await this.getIngredientGroupById(id);
+      return await this.getIngredientGroupById(id, kitchenId);
     } catch (error: unknown) {
       console.error('Error updating ingredient group:', error);
       throw new Error('Failed to update ingredient group');
@@ -113,13 +121,16 @@ export class IngredientGroupService {
   /**
    * Deletes an ingredient group by ID.
    */
-  async deleteIngredientGroup(id: number): Promise<boolean> {
+  async deleteIngredientGroup(id: number, kitchenId: string): Promise<boolean> {
     try {
       const db = getDB();
-      const existing = await this.getIngredientGroupById(id);
+      const existing = await this.getIngredientGroupById(id, kitchenId);
       if (!existing) return false;
 
-      db.prepare('DELETE FROM ingredient_groups WHERE id = ?').run(id);
+      db.prepare('DELETE FROM ingredient_groups WHERE id = ? AND kitchen_id = ?').run(
+        id,
+        kitchenId,
+      );
       return true;
     } catch (error: unknown) {
       console.error('Error deleting ingredient group:', error);

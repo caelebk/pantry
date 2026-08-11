@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  effect,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
@@ -28,6 +37,7 @@ import {
   isOutOfStock,
   sortItemsByExpirationDate,
 } from '@utility/itemUtility/ItemUtility';
+import { AuthService } from '../../core/services/auth.service';
 
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -42,6 +52,8 @@ import { ItemCardComponent } from './inventory-components/item-card/item-card.co
 export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh' | 'out_of_stock';
 export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'status';
 
+import { SkeletonModule } from 'primeng/skeleton';
+
 @Component({
   selector: 'pantry-inventory',
   standalone: true,
@@ -55,10 +67,12 @@ export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'stat
     FormsModule,
     SelectModule,
     DialogModule,
+    SkeletonModule,
   ],
   providers: [ConfirmationService],
   templateUrl: './inventory.component.html',
   animations: [fadeInOut, staggeredFadeIn],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InventoryComponent implements OnInit {
   private readonly inventoryService = inject(ItemService);
@@ -70,6 +84,17 @@ export class InventoryComponent implements OnInit {
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly shoppingListService = inject(ShoppingListService);
+  private readonly authService = inject(AuthService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  constructor() {
+    effect(() => {
+      const activeKitchen = this.authService.activeKitchen();
+      if (activeKitchen) {
+        this.initParameters();
+      }
+    });
+  }
 
   readonly staggerDelayPerItemMs = STAGGER_DELAY_PER_ITEM_MS;
 
@@ -103,8 +128,9 @@ export class InventoryComponent implements OnInit {
   public viewMode: 'table' | 'grid' = 'table';
   public sortDirection: 'asc' | 'desc' = 'asc';
 
-  public displayLimit = 15;
-  public readonly batchSize = 15;
+  // Pagination State
+  public currentPage = 1;
+  public pageSize = 15;
 
   public getIngredientName(ingredientId?: string): string | null {
     if (!ingredientId) return null;
@@ -113,7 +139,7 @@ export class InventoryComponent implements OnInit {
   }
 
   public toggleSort(field: SortOption): void {
-    this.displayLimit = this.batchSize; // Reset pagination on sort change
+    this.resetPagination(); // Reset pagination on sort change
     if (this.sortBy === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -190,8 +216,48 @@ export class InventoryComponent implements OnInit {
       });
   }
 
+  public get totalPages(): number {
+    return Math.ceil(this.filteredItems.length / this.pageSize) || 1;
+  }
+
+  public get startIndex(): number {
+    return (this.currentPage - 1) * this.pageSize;
+  }
+
+  public get endIndex(): number {
+    return Math.min(this.startIndex + this.pageSize, this.filteredItems.length);
+  }
+
   public get displayedItems(): Item[] {
-    return this.filteredItems.slice(0, this.displayLimit);
+    return this.filteredItems.slice(this.startIndex, this.endIndex);
+  }
+
+  public get visiblePages(): number[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const pages: number[] = [];
+
+    let start = Math.max(1, current - 2);
+    const end = Math.min(total, start + 4);
+    if (end - start < 4) {
+      start = Math.max(1, end - 4);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  public goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  public onPageSizeChange(size: number | string): void {
+    this.pageSize = Number(size);
+    this.currentPage = 1;
   }
 
   public get locationSelectOptions(): { id: number | null; name: string; icon: string }[] {
@@ -205,14 +271,8 @@ export class InventoryComponent implements OnInit {
     ];
   }
 
-  public loadMoreItems(): void {
-    if (this.displayLimit < this.filteredItems.length) {
-      this.displayLimit += this.batchSize;
-    }
-  }
-
   public resetPagination(): void {
-    this.displayLimit = this.batchSize;
+    this.currentPage = 1;
   }
 
   setStatusFilter(status: StatusFilter): void {
@@ -366,14 +426,6 @@ export class InventoryComponent implements OnInit {
   @HostListener('window:scroll', [])
   onWindowScroll(): void {
     this.showScrollTopButton = window.scrollY > 300;
-
-    if (this.displayLimit < this.filteredItems.length) {
-      const scrollPosition = window.innerHeight + window.scrollY;
-      const threshold = document.documentElement.scrollHeight - 400;
-      if (scrollPosition >= threshold) {
-        this.loadMoreItems();
-      }
-    }
   }
 
   public scrollToTop(): void {
@@ -391,7 +443,7 @@ export class InventoryComponent implements OnInit {
         this.selectedStatusFilter = params['status'] as StatusFilter;
       }
     });
-    this.initParameters();
+    // Initial load is now handled by the effect when activeKitchen signal is set
   }
 
   private initParameters(): void {
@@ -413,10 +465,12 @@ export class InventoryComponent implements OnInit {
 
         setTimeout(() => {
           this.isLoading.set(false);
+          this.cdr.markForCheck();
         }, 50);
       },
       error: () => {
         this.isLoading.set(false);
+        this.cdr.markForCheck();
         this.toastService.showError('Unable to load inventory items.', 'Network Error');
       },
     });
@@ -438,7 +492,10 @@ export class InventoryComponent implements OnInit {
     });
 
     this.ingredientCategoryService.getIngredientCategories().subscribe({
-      next: (nutrientTypes) => (this.nutrientTypes = nutrientTypes),
+      next: (nutrientTypes) => {
+        this.nutrientTypes = nutrientTypes;
+        this.cdr.markForCheck();
+      },
     });
   }
 

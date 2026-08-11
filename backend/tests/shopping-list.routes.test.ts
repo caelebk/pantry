@@ -18,7 +18,7 @@ const mockShoppingItem: ShoppingListItemDTO = {
 
 Deno.test('Shopping List API - GET /api/shopping-list - success', async () => {
   const originalGetAll = shoppingListBackendService.getAllItems;
-  shoppingListBackendService.getAllItems = () => Promise.resolve([mockShoppingItem]);
+  shoppingListBackendService.getAllItems = (_kitchenId) => Promise.resolve([mockShoppingItem]);
 
   const res = await app.request('/api/shopping-list');
   assertEquals(res.status, 200);
@@ -33,7 +33,7 @@ Deno.test('Shopping List API - GET /api/shopping-list - success', async () => {
 
 Deno.test('Shopping List API - POST /api/shopping-list - success', async () => {
   const originalCreate = shoppingListBackendService.createItem;
-  shoppingListBackendService.createItem = (dto) =>
+  shoppingListBackendService.createItem = (dto, _kitchenId) =>
     Promise.resolve({ ...mockShoppingItem, name: dto.name });
 
   const res = await app.request('/api/shopping-list', {
@@ -61,7 +61,7 @@ Deno.test('Shopping List API - POST /api/shopping-list - invalid item name', asy
 
 Deno.test('Shopping List API - POST /api/shopping-list/bulk - success', async () => {
   const originalBulk = shoppingListBackendService.createMultipleItems;
-  shoppingListBackendService.createMultipleItems = (items) =>
+  shoppingListBackendService.createMultipleItems = (items, _kitchenId) =>
     Promise.resolve(
       items.map((i, idx) => ({ ...mockShoppingItem, id: `sl-${idx}`, name: i.name })),
     );
@@ -82,7 +82,7 @@ Deno.test('Shopping List API - POST /api/shopping-list/bulk - success', async ()
 
 Deno.test('Shopping List API - PUT /api/shopping-list/:id - success', async () => {
   const originalUpdate = shoppingListBackendService.updateItem;
-  shoppingListBackendService.updateItem = (id, body) =>
+  shoppingListBackendService.updateItem = (id, _kitchenId, body) =>
     Promise.resolve({ ...mockShoppingItem, id, checked: body.checked ?? false });
 
   const res = await app.request(`/api/shopping-list/${mockShoppingItem.id}`, {
@@ -101,7 +101,7 @@ Deno.test('Shopping List API - PUT /api/shopping-list/:id - success', async () =
 
 Deno.test('Shopping List API - DELETE /api/shopping-list/checked - success', async () => {
   const originalDeleteChecked = shoppingListBackendService.deleteCheckedItems;
-  shoppingListBackendService.deleteCheckedItems = () => Promise.resolve(3);
+  shoppingListBackendService.deleteCheckedItems = (_kitchenId) => Promise.resolve(3);
 
   const res = await app.request('/api/shopping-list/checked', {
     method: 'DELETE',
@@ -117,7 +117,7 @@ Deno.test('Shopping List API - DELETE /api/shopping-list/checked - success', asy
 
 Deno.test('Shopping List API - DELETE /api/shopping-list/:id - success', async () => {
   const originalDeleteItem = shoppingListBackendService.deleteItem;
-  shoppingListBackendService.deleteItem = () => Promise.resolve(true);
+  shoppingListBackendService.deleteItem = (_id, _kitchenId) => Promise.resolve(true);
 
   const res = await app.request(`/api/shopping-list/${mockShoppingItem.id}`, {
     method: 'DELETE',

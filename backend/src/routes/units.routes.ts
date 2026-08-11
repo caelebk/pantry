@@ -4,7 +4,10 @@ import { unitService } from '../services/units.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isPositiveNumber } from '../utils/validators.ts';
 
+import { authMiddleware } from '../middleware/auth.ts';
+
 const units = new Hono();
+units.use('*', authMiddleware);
 
 /**
  * GET /api/units

@@ -17,7 +17,7 @@
           <label
             class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
             for="edit-ingredient">
-            Master Ingredient <span class="text-rose-500 ml-0.5">*</span>
+            Ingredient <span class="text-rose-500 ml-0.5">*</span>
           </label>
           <p-select
             inputId="edit-ingredient"
@@ -64,11 +64,11 @@
     </div>
 
     <div>
-      <label
+      <span
         class="block text-xs font-semibold text-surface-700 dark:text-surface-300 mb-2 uppercase tracking-wider">
         {{ 'addItemForm.location' | transloco }}
         <span class="text-rose-500">*</span>
-      </label>
+      </span>
       <div class="grid grid-cols-3 gap-2">
         @for (loc of locations; track loc.id) {
           <button

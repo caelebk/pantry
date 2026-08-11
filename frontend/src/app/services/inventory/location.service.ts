@@ -5,7 +5,7 @@ import { Location, LocationDTO } from '@models/location.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { mapLocationDTOToLocation } from '@utility/itemUtility/LocationMapper';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -13,12 +13,17 @@ import { map } from 'rxjs/operators';
 export class LocationService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = '/api/locations';
+  private locationsCache$?: Observable<Location[]>;
 
   getLocations(): Observable<Location[]> {
-    return this.http.get<ApiResponse<LocationDTO[]>>(this.apiUrl).pipe(
-      mapResponseData(),
-      map((dtos) => dtos.map(mapLocationDTOToLocation)),
-    );
+    if (!this.locationsCache$) {
+      this.locationsCache$ = this.http.get<ApiResponse<LocationDTO[]>>(this.apiUrl).pipe(
+        mapResponseData(),
+        map((dtos) => dtos.map(mapLocationDTOToLocation)),
+        shareReplay(1),
+      );
+    }
+    return this.locationsCache$;
   }
 
   getLocationById(id: number): Observable<Location> {

@@ -9,12 +9,18 @@ import { recipeService } from '../services/recipe.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isValidUUID } from '../utils/validators.ts';
 
+import { isValidCreateRecipeDTO, isValidUpdateRecipeDTO } from '../validators/recipe.validator.ts';
+
+import { authMiddleware } from '../middleware/auth.ts';
+
 const recipes = new Hono();
+recipes.use('*', authMiddleware);
 
 // GET /api/recipes - Get all recipes
 recipes.get('/', async (c: Context) => {
   try {
-    const data = await recipeService.getAllRecipes();
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const data = await recipeService.getAllRecipes(activeKitchenId);
     return c.json(successResponse(data), HttpStatusCode.OK);
   } catch (error: unknown) {
     console.error('Error fetching recipes:', error);
@@ -28,7 +34,8 @@ recipes.get('/', async (c: Context) => {
 // GET /api/recipes/available - Get available recipes based on pantry items
 recipes.get('/available', async (c: Context) => {
   try {
-    const data = await recipeService.getAvailableRecipes();
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const data = await recipeService.getAvailableRecipes(activeKitchenId);
     return c.json(successResponse(data), HttpStatusCode.OK);
   } catch (error: unknown) {
     console.error('Error fetching available recipes:', error);
@@ -46,7 +53,8 @@ recipes.get('/:id', async (c: Context) => {
     if (!isValidUUID(id)) {
       return c.json(errorResponse(RecipeMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
-    const recipe = await recipeService.getRecipeById(id);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const recipe = await recipeService.getRecipeById(id, activeKitchenId);
     if (recipe) {
       return c.json(successResponse(recipe), HttpStatusCode.OK);
     } else {
@@ -66,14 +74,16 @@ recipes.post('/', async (c: Context) => {
   try {
     const body: CreateRecipeDTO = await c.req.json();
 
-    if (!body || !body.name || typeof body.name !== 'string' || body.name.trim() === '') {
+    if (!isValidCreateRecipeDTO(body)) {
       return c.json(
-        errorResponse('Recipe name is required'),
+        errorResponse('Invalid recipe data or payload schema'),
         HttpStatusCode.BAD_REQUEST,
       );
     }
 
-    const recipe = await recipeService.createRecipe(body);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const userId = c.get('user').userId;
+    const recipe = await recipeService.createRecipe(body, activeKitchenId, userId);
     return c.json(successResponse(recipe), HttpStatusCode.CREATED);
   } catch (error: unknown) {
     console.error('Error creating recipe:', error);
@@ -93,8 +103,16 @@ recipes.put('/:id', async (c: Context) => {
     }
 
     const body: UpdateRecipeDTO = await c.req.json();
-    const recipe = await recipeService.updateRecipe(id, body);
+    if (!isValidUpdateRecipeDTO(body)) {
+      return c.json(
+        errorResponse('Invalid recipe update payload schema'),
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
 
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const userId = c.get('user').userId;
+    const recipe = await recipeService.updateRecipe(id, activeKitchenId, body, userId);
     if (recipe) {
       return c.json(successResponse(recipe), HttpStatusCode.OK);
     } else {
@@ -117,12 +135,13 @@ recipes.delete('/:id', async (c: Context) => {
       return c.json(errorResponse(RecipeMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
 
-    const checkRecipe = await recipeService.getRecipeById(id);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const checkRecipe = await recipeService.getRecipeById(id, activeKitchenId);
     if (!checkRecipe) {
       return c.json(errorResponse(RecipeMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
 
-    await recipeService.deleteRecipe(id);
+    await recipeService.deleteRecipe(id, activeKitchenId);
     return c.json(
       successResponse({ message: RecipeMessages.DELETE_SUCCESS(id) }),
       HttpStatusCode.OK,

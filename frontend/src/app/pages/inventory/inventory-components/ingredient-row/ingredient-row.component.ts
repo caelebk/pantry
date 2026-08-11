@@ -14,7 +14,7 @@ export class IngredientRowComponent {
   @Input({ required: true })
   categoryName!: string;
   @Input()
-  isExpanded: boolean = false;
+  isExpanded = false;
 
   @Output()
   toggleExpand = new EventEmitter<string>();

@@ -9,9 +9,12 @@ import { closeDB, initDB } from './src/db/client.ts';
 console.log(`🚀 Starting Pantry API on port ${config.port}`);
 console.log(`📝 Environment: ${config.env}`);
 
+import { startCronJobs } from './src/cron/cleanup.ts';
+
 // Initialize database connection
 try {
   initDB();
+  startCronJobs();
 } catch (error) {
   console.error('Failed to initialize database:', error);
   Deno.exit(1);

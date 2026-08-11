@@ -5,7 +5,7 @@ import { BreadcrumbsComponent } from './breadcrumbs.component';
 
 describe('BreadcrumbsComponent', () => {
   let component: BreadcrumbsComponent;
-  let mockRouter: any;
+  let mockRouter: unknown;
 
   beforeEach(() => {
     mockRouter = {

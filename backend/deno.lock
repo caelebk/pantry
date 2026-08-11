@@ -3,7 +3,7 @@
   "specifiers": {
     "jsr:@db/sqlite@0.12": "0.12.0",
     "jsr:@denosaurs/plug@1": "1.1.0",
-    "jsr:@hono/hono@*": "4.12.32",
+    "jsr:@hono/hono@^4.6.0": "4.12.32",
     "jsr:@std/assert@0.217": "0.217.0",
     "jsr:@std/assert@1": "1.0.19",
     "jsr:@std/assert@^1.0.19": "1.0.19",
@@ -19,7 +19,9 @@
     "jsr:@std/path@0.217": "0.217.0",
     "jsr:@std/path@1": "1.1.6",
     "jsr:@std/path@^1.1.5": "1.1.6",
-    "jsr:@std/testing@1": "1.0.19"
+    "jsr:@std/testing@1": "1.0.19",
+    "npm:@types/node@*": "22.12.0",
+    "npm:argon2@0.41": "0.41.1"
   },
   "jsr": {
     "@db/sqlite@0.12.0": {
@@ -99,14 +101,43 @@
       ]
     }
   },
+  "npm": {
+    "@phc/format@1.0.0": {
+      "integrity": "sha512-m7X9U6BG2+J+R1lSOdCiITLLrxm+cWlNI3HUFA92oLO77ObGNzaKdh8pMLqdZcshtkKuV84olNNXDfMc4FezBQ=="
+    },
+    "@types/node@22.12.0": {
+      "integrity": "sha512-Fll2FZ1riMjNmlmJOdAyY5pUbkftXslB5DgEzlIuNaiWhXd00FhWxVC/r4yV/4wBb9JfImTu+jiSvXTkJ7F/gA==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
+    "argon2@0.41.1": {
+      "integrity": "sha512-dqCW8kJXke8Ik+McUcMDltrbuAWETPyU6iq+4AhxqKphWi7pChB/Zgd/Tp/o8xRLbg8ksMj46F/vph9wnxpTzQ==",
+      "dependencies": [
+        "@phc/format",
+        "node-addon-api",
+        "node-gyp-build"
+      ]
+    },
+    "node-addon-api@8.9.1": {
+      "integrity": "sha512-4eUQWVPCUUUiBjLnHS3cXWeC6ryoPUc0U3rP7IuzapoGbzMqd/r6KKO0clr0b+snQhsrueFEhCZDdK+LK7hxKg=="
+    },
+    "node-gyp-build@4.8.4": {
+      "integrity": "sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ=="
+    },
+    "undici-types@6.20.0": {
+      "integrity": "sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg=="
+    }
+  },
   "workspace": {
     "dependencies": [
       "jsr:@db/sqlite@0.12",
-      "jsr:@hono/hono@*",
+      "jsr:@hono/hono@^4.6.0",
       "jsr:@std/assert@1",
       "jsr:@std/dotenv@0.225",
       "jsr:@std/path@1",
-      "jsr:@std/testing@1"
+      "jsr:@std/testing@1",
+      "npm:argon2@0.41"
     ]
   }
 }

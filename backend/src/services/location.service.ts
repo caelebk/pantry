@@ -8,11 +8,11 @@ export class LocationService {
    * Retrieves all locations from the database.
    * @returns {Promise<LocationDTO[]>}
    */
-  async getAllLocations(): Promise<LocationDTO[]> {
+  getAllLocations(): Promise<LocationDTO[]> {
     try {
       const db = getDB();
       const rows = db.prepare('SELECT * FROM locations').all() as LocationRow[];
-      return rows.map(this.mapRowToDTO);
+      return Promise.resolve(rows.map(this.mapRowToDTO));
     } catch (error: unknown) {
       console.error('Error finding locations:', error);
       throw new Error(LocationMessages.DB_RETRIEVE_LOCATIONS_ERROR);
@@ -24,13 +24,13 @@ export class LocationService {
    * @param {number} id
    * @returns {Promise<LocationDTO | null>}
    */
-  async getLocationById(id: number): Promise<LocationDTO | null> {
+  getLocationById(id: number): Promise<LocationDTO | null> {
     try {
       const db = getDB();
       const row = db.prepare('SELECT * FROM locations WHERE id = ?').get(id) as
         | LocationRow
         | undefined;
-      return row ? this.mapRowToDTO(row) : null;
+      return Promise.resolve(row ? this.mapRowToDTO(row) : null);
     } catch (error: unknown) {
       console.error('Error finding location by ID:', error);
       throw new Error(LocationMessages.DB_RETRIEVE_LOCATION_ERROR);

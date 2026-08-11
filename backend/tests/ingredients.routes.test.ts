@@ -58,7 +58,7 @@ Deno.test('Ingredients API - GET /api/ingredients - service error', async () => 
 
 Deno.test('Ingredients API - GET /api/ingredients/:id - success', async () => {
   const originalGetById = ingredientService.getIngredientById;
-  ingredientService.getIngredientById = (id) =>
+  ingredientService.getIngredientById = (id, _kitchenId) =>
     Promise.resolve(id === mockIngredient.id ? mockIngredient : null);
 
   try {
@@ -78,7 +78,7 @@ Deno.test('Ingredients API - GET /api/ingredients/:id - success', async () => {
 
 Deno.test('Ingredients API - GET /api/ingredients/:id - not found', async () => {
   const originalGetById = ingredientService.getIngredientById;
-  ingredientService.getIngredientById = () => Promise.resolve(null);
+  ingredientService.getIngredientById = (_id, _kitchenId) => Promise.resolve(null);
 
   try {
     const app = new Hono();
@@ -101,7 +101,8 @@ Deno.test('Ingredients API - GET /api/ingredients/:id - invalid id', async () =>
 
 Deno.test('Ingredients API - POST /api/ingredients - success', async () => {
   const originalCreate = ingredientService.createIngredient;
-  ingredientService.createIngredient = (_data) => Promise.resolve(mockIngredient);
+  ingredientService.createIngredient = (_data, _kitchenId, _userId) =>
+    Promise.resolve(mockIngredient);
 
   try {
     const app = new Hono();
@@ -149,8 +150,8 @@ Deno.test('Ingredients API - DELETE /api/ingredients/:id - success', async () =>
   const originalGetById = ingredientService.getIngredientById;
   const originalDelete = ingredientService.deleteIngredient;
 
-  ingredientService.getIngredientById = () => Promise.resolve(mockIngredient);
-  ingredientService.deleteIngredient = () => Promise.resolve(true);
+  ingredientService.getIngredientById = (_id, _kitchenId) => Promise.resolve(mockIngredient);
+  ingredientService.deleteIngredient = (_id, _kitchenId) => Promise.resolve(true);
 
   try {
     const app = new Hono();
@@ -175,7 +176,7 @@ Deno.test('Ingredients API - DELETE /api/ingredients/:id - invalid id', async ()
 
 Deno.test('Ingredients API - DELETE /api/ingredients/:id - not found', async () => {
   const originalGetById = ingredientService.getIngredientById;
-  ingredientService.getIngredientById = () => Promise.resolve(null);
+  ingredientService.getIngredientById = (_id, _kitchenId) => Promise.resolve(null);
   try {
     const app = new Hono();
     app.route('/api/ingredients', ingredients);
@@ -191,8 +192,8 @@ Deno.test('Ingredients API - PUT /api/ingredients/:id - success', async () => {
   const originalGetById = ingredientService.getIngredientById;
   const originalUpdate = ingredientService.updateIngredient;
 
-  ingredientService.getIngredientById = () => Promise.resolve(mockIngredient);
-  ingredientService.updateIngredient = (_id, _data) =>
+  ingredientService.getIngredientById = (_id, _kitchenId) => Promise.resolve(mockIngredient);
+  ingredientService.updateIngredient = (_id, _kitchenId, _data, _userId) =>
     Promise.resolve({ ...mockIngredient, name: 'Updated' });
 
   try {
@@ -225,7 +226,7 @@ Deno.test('Ingredients API - PUT /api/ingredients/:id - not found', async () => 
 
 Deno.test('Ingredients API - POST /api/ingredients/:id/reconcile-units - success', async () => {
   const originalReconcile = ingredientService.reconcileIngredientUnit;
-  ingredientService.reconcileIngredientUnit = (_id, unitId, _items) =>
+  ingredientService.reconcileIngredientUnit = (_id, _kitchenId, unitId, _items, _userId) =>
     Promise.resolve({ ...mockIngredient, defaultUnitId: unitId });
 
   try {

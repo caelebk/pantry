@@ -28,7 +28,15 @@ describe('AddIngredientPageComponent', () => {
 
     mockIngredientGroupService.getIngredientGroups.and.returnValue(of([]));
     mockUnitService.getUnits.and.returnValue(
-      of([{ id: 1, name: 'Gram', shortName: 'g', type: 'weight' as any, toBaseFactor: 1 }]),
+      of([
+        {
+          id: 1,
+          name: 'Gram',
+          shortName: 'g',
+          type: 'weight' as 'weight' | 'volume' | 'count',
+          toBaseFactor: 1,
+        },
+      ]),
     );
 
     await TestBed.configureTestingModule({

@@ -6,7 +6,7 @@ import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
-import { Unit } from '@models/unit.model';
+import { Unit, UnitType } from '@models/unit.model';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
@@ -60,7 +60,7 @@ export class EditItemPageComponent implements OnInit {
   public locations = signal<Location[]>([]);
 
   public editItemForm: FormGroup<ItemFormControls> = createItemForm();
-  public currentFormValue = signal<any>({});
+  public currentFormValue = signal<Record<string, unknown>>({});
 
   // Quick Create Ingredient Dialog state
   public displayQuickCreateDialog = signal<boolean>(false);
@@ -70,20 +70,28 @@ export class EditItemPageComponent implements OnInit {
   public isCreatingIngredient = signal<boolean>(false);
 
   public previewItem = computed<Item | null>(() => {
-    const val = this.currentFormValue();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const val = (this.currentFormValue() || {}) as any;
+    const defaultUnit: Unit = {
+      id: 1,
+      name: 'piece',
+      shortName: 'pc',
+      type: UnitType.Count,
+      toBaseFactor: 1,
+    };
     if (!val || !val.name) {
       return {
         id: this.itemId() || 'preview',
         ingredientId: '',
-        name: 'Item Preview',
+        name: 'Preview Item',
         quantity: 1,
-        unit: this.units()[0] || { id: 1, name: 'piece', shortName: 'pc' },
+        unit: this.units()[0] || defaultUnit,
         location: this.locations()[0] || { id: 1, name: 'Pantry' },
         purchaseDate: new Date(),
         expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         openedDate: undefined,
         notes: '',
-      };
+      } as Item;
     }
 
     return {
@@ -91,7 +99,7 @@ export class EditItemPageComponent implements OnInit {
       ingredientId: val.ingredient?.id || val.ingredientId || '',
       name: val.name || 'Untitled Item',
       quantity: val.quantity ?? 1,
-      unit: val.unit || this.units()[0] || { id: 1, name: 'piece', shortName: 'pc' },
+      unit: val.unit || this.units()[0] || defaultUnit,
       location: val.location || this.locations()[0] || { id: 1, name: 'Pantry' },
       purchaseDate: val.purchaseDate ? new Date(val.purchaseDate) : new Date(),
       expirationDate: val.expirationDate
@@ -99,7 +107,7 @@ export class EditItemPageComponent implements OnInit {
         : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       openedDate: val.openedDate ? new Date(val.openedDate) : undefined,
       notes: val.notes || '',
-    };
+    } as Item;
   });
 
   ngOnInit(): void {
@@ -195,6 +203,14 @@ export class EditItemPageComponent implements OnInit {
         }
       },
     });
+  }
+
+  setExpirationDaysOffset(days: number): void {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + days);
+    this.editItemForm.controls.expirationDate.setValue(targetDate);
+    this.editItemForm.controls.expirationDate.markAsTouched();
+    this.editItemForm.controls.expirationDate.markAsDirty();
   }
 
   openQuickCreateIngredient(): void {

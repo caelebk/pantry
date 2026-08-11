@@ -1,4 +1,4 @@
-import { assert, assertEquals } from '@std/assert';
+import { assertEquals } from '@std/assert';
 import app from '../src/app.ts';
 import { RecipeDTO } from '../src/models/data-models/recipe.model.ts';
 import { recipeService } from '../src/services/recipe.service.ts';

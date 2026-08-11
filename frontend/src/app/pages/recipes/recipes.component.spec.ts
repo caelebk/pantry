@@ -1,8 +1,12 @@
-import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { Recipe } from '@models/recipe.model';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
+import { AuthService } from '../../core/services/auth.service';
 import { IngredientService } from '../../services/inventory/ingredient.service';
 import { ItemService } from '../../services/inventory/item.service';
 import { UnitService } from '../../services/inventory/unit.service';
@@ -12,12 +16,13 @@ import { RecipesComponent } from './recipes.component';
 
 describe('RecipesComponent', () => {
   let component: RecipesComponent;
-  let mockRecipeService: any;
-  let mockItemService: any;
-  let mockUnitService: any;
-  let mockIngredientService: any;
-  let mockToastService: any;
-  let mockRouter: any;
+  let fixture: ComponentFixture<RecipesComponent>;
+  let mockRecipeService: unknown;
+  let mockItemService: unknown;
+  let mockUnitService: unknown;
+  let mockIngredientService: unknown;
+  let mockToastService: unknown;
+  let mockRouter: unknown;
 
   const mockRecipe: Recipe = {
     id: 'rec-1',
@@ -43,18 +48,29 @@ describe('RecipesComponent', () => {
     mockRouter = { navigate: vi.fn() };
 
     TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: {} },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+        }),
+      ],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: RecipeService, useValue: mockRecipeService },
         { provide: ItemService, useValue: mockItemService },
         { provide: UnitService, useValue: mockUnitService },
         { provide: IngredientService, useValue: mockIngredientService },
         { provide: ToastService, useValue: mockToastService },
         { provide: Router, useValue: mockRouter },
+        { provide: AuthService, useValue: { activeKitchen: vi.fn().mockReturnValue('kitchen-1') } },
       ],
     });
 
-    component = TestBed.runInInjectionContext(() => new RecipesComponent());
-    component.ngOnInit();
+    fixture = TestBed.createComponent(RecipesComponent);
+    component = fixture.componentInstance;
+    TestBed.flushEffects();
+    fixture.detectChanges();
   });
 
   it('should create recipes component and load data', () => {

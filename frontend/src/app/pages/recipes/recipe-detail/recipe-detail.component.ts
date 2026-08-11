@@ -1,22 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
+import { forkJoin } from 'rxjs';
 import { IngredientService } from '../../../services/inventory/ingredient.service';
 import { ItemService } from '../../../services/inventory/item.service';
 import { UnitService } from '../../../services/inventory/unit.service';
 import { RecipeService } from '../../../services/recipe.service';
 
+import { SubstitutionSuggestion } from '@models/inventory.models';
 import { Item } from '@models/items.model';
+
+import { ChangeDetectionStrategy } from '@angular/core';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'pantry-recipe-detail',
   standalone: true,
-  imports: [CommonModule, TranslocoModule],
+  imports: [CommonModule, TranslocoModule, DialogModule],
   templateUrl: './recipe-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipeDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -25,6 +31,8 @@ export class RecipeDetailComponent implements OnInit {
   private readonly ingredientService = inject(IngredientService);
   private readonly unitService = inject(UnitService);
   private readonly itemService = inject(ItemService);
+
+  private readonly cdr = inject(ChangeDetectorRef);
 
   recipe: Recipe | null = null;
   isLoading = true;
@@ -35,7 +43,7 @@ export class RecipeDetailComponent implements OnInit {
   pantryItems: Item[] = [];
 
   activeSubstitutionIngredient: { ingredientId: string; name: string } | null = null;
-  activeSubstitutionSuggestions: any[] = [];
+  activeSubstitutionSuggestions: SubstitutionSuggestion[] = [];
   isLoadingSubstitutions = false;
 
   openSubstitutionModal(event: Event, ing: { ingredientId: string }): void {
@@ -50,10 +58,12 @@ export class RecipeDetailComponent implements OnInit {
       next: (subs) => {
         this.activeSubstitutionSuggestions = subs;
         this.isLoadingSubstitutions = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load substitutions', err);
         this.isLoadingSubstitutions = false;
+        this.cdr.markForCheck();
       },
     });
   }
@@ -61,6 +71,7 @@ export class RecipeDetailComponent implements OnInit {
   closeSubstitutionModal(): void {
     this.activeSubstitutionIngredient = null;
     this.activeSubstitutionSuggestions = [];
+    this.cdr.markForCheck();
   }
 
   ngOnInit(): void {
@@ -70,21 +81,19 @@ export class RecipeDetailComponent implements OnInit {
       return;
     }
 
-    this.ingredientService.getIngredients().subscribe({
-      next: (ingredients) => {
-        ingredients.forEach((ing) => this.ingredientMap.set(ing.id, ing));
-      },
-    });
-
-    this.unitService.getUnits().subscribe({
-      next: (units) => {
-        units.forEach((u) => this.unitMap.set(u.id, u));
-      },
-    });
-
-    this.itemService.getItems().subscribe({
-      next: (items) => {
+    this.isLoading = true;
+    forkJoin({
+      recipe: this.recipeService.getRecipeById(id),
+      ingredients: this.ingredientService.getIngredients(),
+      units: this.unitService.getUnits(),
+      items: this.itemService.getItems(),
+    }).subscribe({
+      next: ({ recipe, ingredients, units, items }) => {
+        this.recipe = recipe;
+        this.ingredientMap = new Map(ingredients.map((ing) => [ing.id, ing]));
+        this.unitMap = new Map(units.map((u) => [u.id, u]));
         this.pantryItems = items;
+
         const map = new Map<string, number>();
         const now = new Date();
         for (const item of items) {
@@ -98,10 +107,15 @@ export class RecipeDetailComponent implements OnInit {
           }
         }
         this.availableBaseMap = map;
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load recipe details', err);
+        this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
-
-    this.loadRecipe(id);
   }
 
   onIngredientClick(event: Event, ing: { ingredientId: string }): void {

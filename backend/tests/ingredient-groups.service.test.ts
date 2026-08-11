@@ -17,7 +17,10 @@ function createTestDB(): Database {
     CREATE TABLE ingredient_groups (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      ingredient_category_id INTEGER REFERENCES ingredient_categories(id)
+      ingredient_category_id INTEGER REFERENCES ingredient_categories(id),
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_by TEXT,
+      updated_by TEXT
     );
   `);
   return db;
@@ -36,7 +39,7 @@ Deno.test('IngredientGroupService - getAllIngredientGroups - success', async () 
   setDB(db);
   seedMockGroup(db);
 
-  const groups = await ingredientGroupService.getAllIngredientGroups();
+  const groups = await ingredientGroupService.getAllIngredientGroups('test-kitchen-id');
   assertEquals(groups.length, 1);
   assertEquals(groups[0].name, 'Test Category');
   db.close();
@@ -46,7 +49,7 @@ Deno.test('IngredientGroupService - getAllIngredientGroups - empty', async () =>
   const db = createTestDB();
   setDB(db);
 
-  const groups = await ingredientGroupService.getAllIngredientGroups();
+  const groups = await ingredientGroupService.getAllIngredientGroups('test-kitchen-id');
   assertEquals(groups.length, 0);
   db.close();
 });
@@ -56,7 +59,7 @@ Deno.test('IngredientGroupService - getIngredientGroupById - success', async () 
   setDB(db);
   const mockRow = seedMockGroup(db);
 
-  const group = await ingredientGroupService.getIngredientGroupById(mockRow.id);
+  const group = await ingredientGroupService.getIngredientGroupById(mockRow.id, 'test-kitchen-id');
   assert(group !== null);
   assertEquals(group?.id, mockRow.id);
   assertEquals(group?.name, mockRow.name);
@@ -67,7 +70,7 @@ Deno.test('IngredientGroupService - getIngredientGroupById - not found', async (
   const db = createTestDB();
   setDB(db);
 
-  const group = await ingredientGroupService.getIngredientGroupById(999);
+  const group = await ingredientGroupService.getIngredientGroupById(999, 'test-kitchen-id');
   assertEquals(group, null);
   db.close();
 });
@@ -76,9 +79,13 @@ Deno.test('IngredientGroupService - createIngredientGroup - success', async () =
   const db = createTestDB();
   setDB(db);
 
-  const created = await ingredientGroupService.createIngredientGroup({
-    name: 'New Group',
-  });
+  const created = await ingredientGroupService.createIngredientGroup(
+    {
+      name: 'New Group',
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
   assert(created !== null);
   assertEquals(created.name, 'New Group');
   db.close();
@@ -89,9 +96,14 @@ Deno.test('IngredientGroupService - updateIngredientGroup - success', async () =
   setDB(db);
   const mockRow = seedMockGroup(db);
 
-  const updated = await ingredientGroupService.updateIngredientGroup(mockRow.id, {
-    name: 'Updated Name',
-  });
+  const updated = await ingredientGroupService.updateIngredientGroup(
+    mockRow.id,
+    'test-kitchen-id',
+    {
+      name: 'Updated Name',
+    },
+    'test-user-id',
+  );
   assert(updated !== null);
   assertEquals(updated?.name, 'Updated Name');
   db.close();
@@ -102,10 +114,10 @@ Deno.test('IngredientGroupService - deleteIngredientGroup - success', async () =
   setDB(db);
   const mockRow = seedMockGroup(db);
 
-  const res = await ingredientGroupService.deleteIngredientGroup(mockRow.id);
+  const res = await ingredientGroupService.deleteIngredientGroup(mockRow.id, 'test-kitchen-id');
   assertEquals(res, true);
 
-  const check = await ingredientGroupService.getIngredientGroupById(mockRow.id);
+  const check = await ingredientGroupService.getIngredientGroupById(mockRow.id, 'test-kitchen-id');
   assertEquals(check, null);
   db.close();
 });

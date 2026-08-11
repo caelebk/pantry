@@ -20,14 +20,15 @@ export class IngredientItemService {
   private readonly soonExpiryDays: number = 7;
 
   /**
-   * Retrieves all ingredient items from the database.
+   * Retrieves all ingredient items from the database, optionally filtered by kitchen ID.
    */
-  async getAllIngredientItems(): Promise<IngredientItemDTO[]> {
+  getAllIngredientItems(kitchenId: string): Promise<IngredientItemDTO[]> {
     try {
       const db = getDB();
-      const rows = db.prepare('SELECT * FROM ingredient_items ORDER BY created_at DESC')
-        .all() as IngredientItemRow[];
-      return rows.map(this.mapItemRowToItem);
+      const rows = db.prepare(
+        'SELECT * FROM ingredient_items WHERE kitchen_id = ? ORDER BY created_at DESC',
+      ).all(kitchenId) as IngredientItemRow[];
+      return Promise.resolve(rows.map(this.mapItemRowToItem));
     } catch (error: unknown) {
       console.error('Error fetching all ingredient items:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEMS_ERROR);
@@ -37,16 +38,19 @@ export class IngredientItemService {
   /**
    * Retrieves a single ingredient item by its ID.
    */
-  async getIngredientItemById(id: string): Promise<IngredientItemDTO | null> {
+  getIngredientItemById(id: string, kitchenId: string): Promise<IngredientItemDTO | null> {
     if (!isValidUUID(id)) {
       throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
     }
     try {
       const db = getDB();
-      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(id) as
+      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ? AND kitchen_id = ?').get(
+        id,
+        kitchenId,
+      ) as
         | IngredientItemRow
         | undefined;
-      return row ? this.mapItemRowToItem(row) : null;
+      return Promise.resolve(row ? this.mapItemRowToItem(row) : null);
     } catch (error: unknown) {
       console.error('Error fetching ingredient item by ID:', error);
       throw new Error(ItemMessages.DB_RETRIEVE_ITEM_ERROR);
@@ -56,7 +60,11 @@ export class IngredientItemService {
   /**
    * Creates a new ingredient item in the database.
    */
-  async createIngredientItem(data: CreateIngredientItemDTO): Promise<IngredientItemDTO> {
+  createIngredientItem(
+    data: CreateIngredientItemDTO,
+    kitchenId: string,
+    userId: string,
+  ): Promise<IngredientItemDTO> {
     try {
       const db = getDB();
       const id = crypto.randomUUID();
@@ -73,7 +81,7 @@ export class IngredientItemService {
       }
 
       db.prepare(
-        'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, kitchen_id, created_at, updated_at, created_by, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       ).run(
         id,
         data.ingredientId ?? null,
@@ -85,14 +93,18 @@ export class IngredientItemService {
         data.openedDate ? toDate(data.openedDate).toISOString() : null,
         toDate(data.purchaseDate).toISOString(),
         data.notes ?? null,
+        kitchenId,
         now,
         now,
+        userId,
+        userId,
       );
 
-      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(
+      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ? AND kitchen_id = ?').get(
         id,
+        kitchenId,
       ) as IngredientItemRow;
-      return this.mapItemRowToItem(row);
+      return Promise.resolve(this.mapItemRowToItem(row));
     } catch (error: unknown) {
       console.error('Error creating ingredient item:', error);
       throw new Error(ItemMessages.DB_CREATE_ERROR);
@@ -102,9 +114,11 @@ export class IngredientItemService {
   /**
    * Updates an existing ingredient item in the database.
    */
-  async updateIngredientItem(
+  updateIngredientItem(
     id: string,
+    kitchenId: string,
     data: UpdateIngredientItemDTO,
+    userId: string,
   ): Promise<IngredientItemDTO | null> {
     if (!isValidUUID(id)) {
       throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
@@ -123,8 +137,9 @@ export class IngredientItemService {
           purchase_date = COALESCE(?, purchase_date), 
           notes = COALESCE(?, notes),
           ingredient_id = CASE WHEN ? = 1 THEN ? ELSE ingredient_id END,
-          updated_at = ?
-        WHERE id = ?`,
+          updated_at = ?,
+          updated_by = ?
+        WHERE id = ? AND kitchen_id = ?`,
       ).run(
         data.label ?? null,
         data.quantity ?? null,
@@ -139,13 +154,18 @@ export class IngredientItemService {
         data.ingredientId !== undefined ? 1 : 0,
         data.ingredientId ?? null,
         new Date().toISOString(),
+        userId,
         id,
+        kitchenId,
       );
 
-      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ?').get(id) as
+      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ? AND kitchen_id = ?').get(
+        id,
+        kitchenId,
+      ) as
         | IngredientItemRow
         | undefined;
-      return row ? this.mapItemRowToItem(row) : null;
+      return Promise.resolve(row ? this.mapItemRowToItem(row) : null);
     } catch (error: unknown) {
       console.error('Error updating ingredient item:', error);
       throw new Error(ItemMessages.DB_UPDATE_ERROR);
@@ -155,14 +175,14 @@ export class IngredientItemService {
   /**
    * Deletes an ingredient item from the database by its ID.
    */
-  async deleteIngredientItemById(id: string): Promise<boolean> {
+  deleteIngredientItemById(id: string, kitchenId: string): Promise<boolean> {
     if (!isValidUUID(id)) {
       throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
     }
     try {
       const db = getDB();
-      db.prepare('DELETE FROM ingredient_items WHERE id = ?').run(id);
-      return true;
+      db.prepare('DELETE FROM ingredient_items WHERE id = ? AND kitchen_id = ?').run(id, kitchenId);
+      return Promise.resolve(true);
     } catch (error: unknown) {
       console.error('Error deleting ingredient item:', error);
       throw new Error(ItemMessages.DB_DELETE_ERROR);
@@ -172,25 +192,28 @@ export class IngredientItemService {
   /**
    * Bulk clears stock (sets quantity to 0 and clears expiration date) for multiple ingredient items.
    */
-  async bulkClearStock(ids: string[]): Promise<number> {
+  bulkClearStock(ids: string[], kitchenId: string): Promise<number> {
     for (const id of ids) {
       if (!isValidUUID(id)) {
         throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
       }
     }
+    const db = getDB();
     try {
-      const db = getDB();
+      db.exec('BEGIN');
       const now = new Date().toISOString();
       const stmt = db.prepare(
-        'UPDATE ingredient_items SET quantity = 0, expiration_date = NULL, updated_at = ? WHERE id = ?',
+        'UPDATE ingredient_items SET quantity = 0, expiration_date = NULL, updated_at = ? WHERE id = ? AND kitchen_id = ?',
       );
       let count = 0;
       for (const id of ids) {
-        const changes = stmt.run(now, id);
+        const changes = stmt.run(now, id, kitchenId);
         if (typeof changes === 'number') count += changes;
       }
-      return count;
+      db.exec('COMMIT');
+      return Promise.resolve(count);
     } catch (error: unknown) {
+      db.exec('ROLLBACK');
       console.error('Error bulk clearing stock:', error);
       throw new Error(ItemMessages.DB_UPDATE_ERROR);
     }
@@ -199,22 +222,25 @@ export class IngredientItemService {
   /**
    * Bulk deletes multiple ingredient items by their IDs.
    */
-  async bulkDeleteIngredientItems(ids: string[]): Promise<number> {
+  bulkDeleteIngredientItems(ids: string[], kitchenId: string): Promise<number> {
     for (const id of ids) {
       if (!isValidUUID(id)) {
         throw new Error(ItemMessages.INVALID_ID_FORMAT_LOG(id));
       }
     }
+    const db = getDB();
     try {
-      const db = getDB();
-      const stmt = db.prepare('DELETE FROM ingredient_items WHERE id = ?');
+      db.exec('BEGIN');
+      const stmt = db.prepare('DELETE FROM ingredient_items WHERE id = ? AND kitchen_id = ?');
       let count = 0;
       for (const id of ids) {
-        const changes = stmt.run(id);
+        const changes = stmt.run(id, kitchenId);
         if (typeof changes === 'number') count += changes;
       }
-      return count;
+      db.exec('COMMIT');
+      return Promise.resolve(count);
     } catch (error: unknown) {
+      db.exec('ROLLBACK');
       console.error('Error bulk deleting ingredient items:', error);
       throw new Error(ItemMessages.DB_DELETE_ERROR);
     }
@@ -223,14 +249,17 @@ export class IngredientItemService {
   /**
    * Finds ingredient items that are expiring within a specified number of days.
    */
-  async findExpiringSoon(days: number = this.soonExpiryDays): Promise<IngredientItemDTO[]> {
+  findExpiringSoon(
+    kitchenId: string,
+    days: number = this.soonExpiryDays,
+  ): Promise<IngredientItemDTO[]> {
     try {
       const db = getDB();
       const futureDate = new Date(Date.now() + days * this.secondsInDay).toISOString();
       const rows = db.prepare(
-        'SELECT * FROM ingredient_items WHERE quantity > 0 AND expiration_date IS NOT NULL AND expiration_date <= ? ORDER BY expiration_date ASC',
-      ).all(futureDate) as IngredientItemRow[];
-      return rows.map(this.mapItemRowToItem);
+        'SELECT * FROM ingredient_items WHERE kitchen_id = ? AND quantity > 0 AND expiration_date IS NOT NULL AND expiration_date <= ? ORDER BY expiration_date ASC',
+      ).all(kitchenId, futureDate) as IngredientItemRow[];
+      return Promise.resolve(rows.map(this.mapItemRowToItem));
     } catch (error: unknown) {
       console.error('Error finding expiring soon ingredient items:', error);
       throw new Error(ItemMessages.DB_FIND_EXPIRING_ERROR);
@@ -240,20 +269,22 @@ export class IngredientItemService {
   /**
    * Finds ingredient items matching a query name by string similarity.
    */
-  async findSimilarItems(
+  findSimilarItems(
+    kitchenId: string,
     queryName: string,
     minScore: number = 0.45,
   ): Promise<ItemSimilarityCandidateDTO[]> {
     if (!queryName || !queryName.trim()) {
-      return [];
+      return Promise.resolve([]);
     }
     const db = getDB();
     const rows = db.prepare(`
       SELECT item.*, ing.name as ingredient_name
       FROM ingredient_items item
       LEFT JOIN ingredients ing ON item.ingredient_id = ing.id
+      WHERE item.kitchen_id = ?
       ORDER BY item.created_at DESC
-    `).all() as (IngredientItemRow & { ingredient_name?: string })[];
+    `).all(kitchenId) as (IngredientItemRow & { ingredient_name?: string })[];
 
     const candidates: ItemSimilarityCandidateDTO[] = [];
 
@@ -271,7 +302,7 @@ export class IngredientItemService {
       }
     }
 
-    return candidates.sort((a, b) => b.score - a.score);
+    return Promise.resolve(candidates.sort((a, b) => b.score - a.score));
   }
 
   private mapItemRowToItem(row: IngredientItemRow): IngredientItemDTO {

@@ -63,8 +63,8 @@ function seedDB() {
         console.log('📦 Seeding pantry ingredient items...');
         const insertItem = db.prepare(
           `INSERT INTO ingredient_items
-           (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date, opened_date, notes)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date, opened_date, notes, kitchen_id)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ktc_00000000-0000-4000-8000-000000000000')`,
         );
         for (const item of seedData.items) {
           const ingId = ingredientIds.get(item.ingredient);
@@ -94,8 +94,8 @@ function seedDB() {
         console.log('🍳 Seeding recipes...');
         const insertRecipe = db.prepare(
           `INSERT INTO recipes
-           (id, name, description, difficulty_id, servings, prep_time, cook_time)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+           (id, name, description, difficulty_id, servings, prep_time, cook_time, kitchen_id)
+           VALUES (?, ?, ?, ?, ?, ?, ?, 'ktc_00000000-0000-4000-8000-000000000000')`,
         );
         const insertRecipeIngredient = db.prepare(
           `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit_id)
@@ -147,8 +147,8 @@ function seedDB() {
         console.log('📅 Seeding meal plans...');
         db.exec('DELETE FROM meal_plans;');
         const insertMealPlan = db.prepare(
-          `INSERT INTO meal_plans (id, day, meal_type, recipe_name, prep_time_minutes, calories, servings, cooked, missing_ingredients, tags)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO meal_plans (id, day, meal_type, recipe_name, prep_time_minutes, calories, servings, cooked, missing_ingredients, tags, kitchen_id)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ktc_00000000-0000-4000-8000-000000000000')`,
         );
         if (seedData.meal_plans) {
           for (const mp of seedData.meal_plans) {
@@ -172,8 +172,8 @@ function seedDB() {
         console.log('🛒 Seeding shopping list items...');
         db.exec('DELETE FROM shopping_list_items;');
         const insertShoppingItem = db.prepare(
-          `INSERT INTO shopping_list_items (id, name, category, quantity, unit, checked, estimated_price, store_name, source, recipe_name)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO shopping_list_items (id, name, category, quantity, unit, checked, estimated_price, store_name, source, recipe_name, kitchen_id)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ktc_00000000-0000-4000-8000-000000000000')`,
         );
         if (seedData.shopping_list_items) {
           for (const item of seedData.shopping_list_items) {
@@ -231,7 +231,12 @@ export function seedBareNecessities(db: ReturnType<typeof getDB>) {
     'INSERT INTO ingredient_categories (name, icon, color, description) VALUES (?, ?, ?, ?)',
   );
   for (const nt of seedData.ingredient_categories) {
-    insertCategory.run(nt.name, nt.icon, nt.color, (nt as any).description || null);
+    insertCategory.run(
+      nt.name,
+      nt.icon,
+      nt.color,
+      (nt as { description?: string }).description || null,
+    );
     const row = db.prepare('SELECT last_insert_rowid() as id').get() as { id: number };
     ingredientCategoryIds.set(nt.name, row.id);
   }

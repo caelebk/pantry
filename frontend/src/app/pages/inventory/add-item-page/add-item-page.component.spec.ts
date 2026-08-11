@@ -35,7 +35,10 @@ describe('AddItemPageComponent', () => {
     defaultUnit: mockUnit,
   };
 
+  let mockQueryParams: Record<string, string> = {};
+
   beforeEach(async () => {
+    mockQueryParams = {};
     mockItemService = jasmine.createSpyObj('ItemService', ['addItem']);
     mockIngredientService = jasmine.createSpyObj('IngredientService', [
       'getIngredients',
@@ -53,7 +56,9 @@ describe('AddItemPageComponent', () => {
     mockIngredientGroupService.getIngredientGroups.and.returnValue(of([]));
     mockLocationService.getLocations.and.returnValue(of([{ id: 1, name: 'Pantry' }]));
     mockUnitService.getUnits.and.returnValue(of([mockUnit]));
-    mockItemService.addItem.and.returnValue(of({ id: 'item-1', label: 'Basmati Rice' } as any));
+    mockItemService.addItem.and.returnValue(
+      of({ id: 'item-1', label: 'Basmati Rice' } as unknown as Item),
+    );
 
     await TestBed.configureTestingModule({
       imports: [AddItemPageComponent],
@@ -68,29 +73,34 @@ describe('AddItemPageComponent', () => {
         { provide: Router, useValue: mockRouter },
         {
           provide: ActivatedRoute,
-          useValue: { queryParamMap: of(new Map()) },
+          useValue: { snapshot: { queryParams: mockQueryParams } },
         },
       ],
     }).compileComponents();
+  });
 
+  function createComponent(): void {
     fixture = TestBed.createComponent(AddItemPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }
 
   it('should initialize and load ingredients and units', () => {
+    createComponent();
     expect(component).toBeTruthy();
     expect(component.ingredients().length).toBe(1);
     expect(component.units().length).toBe(1);
   });
 
   it('should auto-populate and disable unit control when ingredient is selected', () => {
+    createComponent();
     component.addItemForm.patchValue({ ingredient: mockIngredient });
     expect(component.addItemForm.controls.unit.value).toEqual(mockUnit);
     expect(component.addItemForm.controls.unit.disabled).toBeTrue();
   });
 
   it('should submit item creation form cleanly', () => {
+    createComponent();
     component.addItemForm.patchValue({
       name: 'Basmati Rice 5kg',
       ingredient: mockIngredient,
@@ -105,5 +115,15 @@ describe('AddItemPageComponent', () => {
     expect(mockItemService.addItem).toHaveBeenCalled();
     expect(mockToastService.showSuccess).toHaveBeenCalled();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/items']);
+  });
+
+  it('should auto-select ingredient from queryParams on initialization and fill item name & unit', () => {
+    mockQueryParams['ingredientId'] = 'ing-1';
+    createComponent();
+
+    expect(component.addItemForm.controls.ingredient.value).toEqual(mockIngredient);
+    expect(component.addItemForm.controls.name.value).toBe('Basmati Rice');
+    expect(component.addItemForm.controls.unit.value).toEqual(mockUnit);
+    expect(component.addItemForm.controls.unit.disabled).toBeTrue();
   });
 });

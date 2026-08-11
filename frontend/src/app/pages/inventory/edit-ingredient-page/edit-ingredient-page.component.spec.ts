@@ -50,9 +50,13 @@ describe('EditIngredientPageComponent', () => {
     ]);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
-    mockIngredientService.getIngredientById.and.returnValue(of(mockIngredient as any));
+    mockIngredientService.getIngredientById.and.returnValue(
+      of(mockIngredient as unknown as Ingredient),
+    );
     mockIngredientService.getItemsByIngredientId.and.returnValue(of([]));
-    mockIngredientService.updateIngredient.and.returnValue(of(mockIngredient as any));
+    mockIngredientService.updateIngredient.and.returnValue(
+      of(mockIngredient as unknown as Ingredient),
+    );
     mockIngredientGroupService.getIngredientGroups.and.returnValue(of([]));
     mockUnitService.getUnits.and.returnValue(of([mockUnit1, mockUnit2]));
 
@@ -115,7 +119,7 @@ describe('EditIngredientPageComponent', () => {
 
   it('should update ingredient directly if default unit did not change', () => {
     mockIngredientService.updateIngredient.and.returnValue(
-      of({ id: 'ing-99', name: 'Updated Rice' } as any),
+      of({ id: 'ing-99', name: 'Updated Rice' } as unknown as Ingredient),
     );
 
     component.ingredientForm.patchValue({

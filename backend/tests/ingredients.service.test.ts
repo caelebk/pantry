@@ -13,6 +13,9 @@ function createTestDB(): Database {
       name TEXT NOT NULL,
       ingredient_group_id INTEGER,
       default_unit_id INTEGER,
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_by TEXT,
+      updated_by TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
@@ -27,6 +30,9 @@ function createTestDB(): Database {
       opened_date TEXT,
       purchase_date TEXT NOT NULL,
       notes TEXT,
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_by TEXT,
+      updated_by TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
@@ -65,7 +71,7 @@ Deno.test('IngredientsService - getAllIngredients - success', async () => {
   setDB(db);
   seedMockIngredient(db);
 
-  const ingredients = await ingredientService.getAllIngredients();
+  const ingredients = await ingredientService.getAllIngredients('test-kitchen-id');
   assertEquals(ingredients.length, 1);
   assertEquals(ingredients[0].id, mockId);
   db.close();
@@ -75,7 +81,7 @@ Deno.test('IngredientsService - getAllIngredients - empty', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const ingredients = await ingredientService.getAllIngredients();
+  const ingredients = await ingredientService.getAllIngredients('test-kitchen-id');
   assertEquals(ingredients.length, 0);
   db.close();
 });
@@ -85,7 +91,7 @@ Deno.test('IngredientsService - getIngredientById - success', async () => {
   setDB(db);
   seedMockIngredient(db);
 
-  const ingredient = await ingredientService.getIngredientById(mockId);
+  const ingredient = await ingredientService.getIngredientById(mockId, 'test-kitchen-id');
   assert(ingredient !== null);
   assertEquals(ingredient?.id, mockId);
   db.close();
@@ -97,6 +103,7 @@ Deno.test('IngredientsService - getIngredientById - not found', async () => {
 
   const ingredient = await ingredientService.getIngredientById(
     '123e4567-e89b-12d3-a456-426614174999',
+    'test-kitchen-id',
   );
   assertEquals(ingredient, null);
   db.close();
@@ -106,11 +113,15 @@ Deno.test('IngredientsService - createIngredient - success', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const ingredient = await ingredientService.createIngredient({
-    name: 'New Ingredient',
-    ingredientGroupId: 1,
-    defaultUnitId: 1,
-  });
+  const ingredient = await ingredientService.createIngredient(
+    {
+      name: 'New Ingredient',
+      ingredientGroupId: 1,
+      defaultUnitId: 1,
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
   assertEquals(ingredient.name, 'New Ingredient');
   assert(ingredient.id.length > 0);
   db.close();
@@ -121,10 +132,10 @@ Deno.test('IngredientsService - updateIngredient - success', async () => {
   setDB(db);
   seedMockIngredient(db);
 
-  const ingredient = await ingredientService.updateIngredient(mockId, {
+  const ingredient = await ingredientService.updateIngredient(mockId, 'test-kitchen-id', {
     name: 'Updated Ingredient',
     ingredientGroupId: 2,
-  });
+  }, 'test-user-id');
   assert(ingredient !== null);
   assertEquals(ingredient?.name, 'Updated Ingredient');
   db.close();
@@ -136,7 +147,9 @@ Deno.test('IngredientsService - updateIngredient - not found', async () => {
 
   const ingredient = await ingredientService.updateIngredient(
     '123e4567-e89b-12d3-a456-426614174999',
+    'test-kitchen-id',
     { name: 'Ghost' },
+    'test-user-id',
   );
   assertEquals(ingredient, null);
   db.close();
@@ -147,10 +160,10 @@ Deno.test('IngredientsService - deleteIngredient - success', async () => {
   setDB(db);
   seedMockIngredient(db);
 
-  const result = await ingredientService.deleteIngredient(mockId);
+  const result = await ingredientService.deleteIngredient(mockId, 'test-kitchen-id');
   assertEquals(result, true);
 
-  const ingredient = await ingredientService.getIngredientById(mockId);
+  const ingredient = await ingredientService.getIngredientById(mockId, 'test-kitchen-id');
   assertEquals(ingredient, null);
   db.close();
 });
@@ -160,7 +173,7 @@ Deno.test('IngredientsService - getIngredientsByGroup - success', async () => {
   setDB(db);
   seedMockIngredient(db);
 
-  const ingredients = await ingredientService.getIngredientsByGroup(1);
+  const ingredients = await ingredientService.getIngredientsByGroup(1, 'test-kitchen-id');
   assertEquals(ingredients.length, 1);
   assertEquals(ingredients[0].id, mockId);
   db.close();
@@ -171,7 +184,7 @@ Deno.test('IngredientsService - getIngredientsByGroup - empty', async () => {
   setDB(db);
   seedMockIngredient(db);
 
-  const ingredients = await ingredientService.getIngredientsByGroup(999);
+  const ingredients = await ingredientService.getIngredientsByGroup(999, 'test-kitchen-id');
   assertEquals(ingredients.length, 0);
   db.close();
 });
@@ -191,12 +204,12 @@ Deno.test('IngredientsService - reconcileIngredientUnit - success and updates al
   ).run(itemId2, mockId, 'Test Stock 2', 3, 1, 1, '2026-08-12', '2026-08-01');
 
   // Reconcile passing explicit quantity update for item-123 only
-  const updated = await ingredientService.reconcileIngredientUnit(mockId, 2, [
+  const updated = await ingredientService.reconcileIngredientUnit(mockId, 'test-kitchen-id', 2, [
     { id: itemId1, quantity: 5000 },
-  ]);
+  ], 'test-user-id');
 
   assertEquals(updated?.defaultUnitId, 2);
-  const items = await ingredientService.getItemsByIngredientId(mockId);
+  const items = await ingredientService.getItemsByIngredientId(mockId, 'test-kitchen-id');
   assertEquals(items.length, 2);
 
   const item1 = items.find((i) => i.id === itemId1);

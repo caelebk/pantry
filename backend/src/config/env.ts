@@ -14,7 +14,8 @@ export const config = {
     path: Deno.env.get('DB_PATH') || 'pantry.db',
   },
   jwt: {
-    secret: Deno.env.get('JWT_SECRET') || 'your-secret-key',
-    expiresIn: Deno.env.get('JWT_EXPIRES_IN') || '24h',
+    secret: Deno.env.get('JWT_SECRET') || 'pantry-dev-jwt-secret-key-change-in-production-32-bytes',
+    expiresIn: Deno.env.get('JWT_EXPIRES_IN') || '15m',
+    expiresInSeconds: Number(Deno.env.get('JWT_EXPIRES_IN_SECONDS')) || 900,
   },
 } as const;

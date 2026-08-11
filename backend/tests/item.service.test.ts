@@ -15,6 +15,9 @@ function createTestDB(): Database {
       name TEXT NOT NULL,
       ingredient_group_id INTEGER,
       default_unit_id INTEGER NOT NULL,
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_by TEXT,
+      updated_by TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
@@ -29,6 +32,9 @@ function createTestDB(): Database {
       opened_date TEXT,
       purchase_date TEXT NOT NULL,
       notes TEXT,
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_by TEXT,
+      updated_by TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
@@ -80,7 +86,7 @@ Deno.test('ItemService - getAllItems - success', async () => {
   setDB(db);
   const mockRow = seedMockItem(db);
 
-  const items = await itemService.getAllItems();
+  const items = await itemService.getAllItems('test-kitchen-id');
   assertEquals(items.length, 1);
   assertEquals(items[0].id, mockRow.id);
   db.close();
@@ -90,7 +96,7 @@ Deno.test('ItemService - getAllItems - empty', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const items = await itemService.getAllItems();
+  const items = await itemService.getAllItems('test-kitchen-id');
   assertEquals(items.length, 0);
   db.close();
 });
@@ -100,7 +106,7 @@ Deno.test('ItemService - getItemById - success', async () => {
   setDB(db);
   const mockRow = seedMockItem(db);
 
-  const item = await itemService.getItemById(mockRow.id);
+  const item = await itemService.getItemById(mockRow.id, 'test-kitchen-id');
   assert(item !== null);
   assertEquals(item?.id, mockRow.id);
   db.close();
@@ -110,7 +116,10 @@ Deno.test('ItemService - getItemById - not found', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const item = await itemService.getItemById('123e4567-e89b-12d3-a456-426614174999');
+  const item = await itemService.getItemById(
+    '123e4567-e89b-12d3-a456-426614174999',
+    'test-kitchen-id',
+  );
   assertEquals(item, null);
   db.close();
 });
@@ -130,7 +139,7 @@ Deno.test('ItemService - createItem - success', async () => {
     openedDate: undefined,
   };
 
-  const item = await itemService.createItem(newItem);
+  const item = await itemService.createItem(newItem, 'test-kitchen-id', 'test-user-id');
   assertEquals(item.label, newItem.label);
   assert(item.id.length > 0);
   db.close();
@@ -157,7 +166,7 @@ Deno.test('ItemService - createItem - derives unit_id from parent ingredient def
     purchaseDate: mockDate.toISOString(),
   };
 
-  const item = await itemService.createItem(newItem);
+  const item = await itemService.createItem(newItem, 'test-kitchen-id', 'test-user-id');
   assertEquals(item.unitId, 3); // Derived from ingredient default_unit_id
   db.close();
 });
@@ -172,7 +181,12 @@ Deno.test('ItemService - updateItem quantity to 0 (clear stock) - success', asyn
     expirationDate: null,
   };
 
-  const item = await itemService.updateItem(mockRow.id, updateData);
+  const item = await itemService.updateItem(
+    mockRow.id,
+    'test-kitchen-id',
+    updateData,
+    'test-user-id',
+  );
   assert(item !== null);
   assertEquals(item?.quantity, 0);
   assertEquals(item?.expirationDate, undefined);
@@ -189,7 +203,12 @@ Deno.test('ItemService - updateItem - success', async () => {
     quantity: 20,
   };
 
-  const item = await itemService.updateItem(mockRow.id, updateData);
+  const item = await itemService.updateItem(
+    mockRow.id,
+    'test-kitchen-id',
+    updateData,
+    'test-user-id',
+  );
   assert(item !== null);
   assertEquals(item?.label, 'Updated Item');
   assertEquals(item?.quantity, 20);
@@ -210,7 +229,12 @@ Deno.test('ItemService - updateItem restock quantity addition - success', async 
     notes: 'Restocked from shopping list (Protein & Dairy)',
   };
 
-  const updated = await itemService.updateItem(mockRow.id, updateData);
+  const updated = await itemService.updateItem(
+    mockRow.id,
+    'test-kitchen-id',
+    updateData,
+    'test-user-id',
+  );
   assert(updated !== null);
   assertEquals(updated?.quantity, 17);
   assert(updated?.notes?.includes('Restocked'));
@@ -222,7 +246,12 @@ Deno.test('ItemService - updateItem - not found', async () => {
   setDB(db);
 
   const updateData: UpdateItemDTO = { label: 'Ghost Item' };
-  const item = await itemService.updateItem('123e4567-e89b-12d3-a456-426614174999', updateData);
+  const item = await itemService.updateItem(
+    '123e4567-e89b-12d3-a456-426614174999',
+    'test-kitchen-id',
+    updateData,
+    'test-user-id',
+  );
   assertEquals(item, null);
   db.close();
 });
@@ -232,11 +261,11 @@ Deno.test('ItemService - deleteItemById - success', async () => {
   setDB(db);
   const mockRow = seedMockItem(db);
 
-  const result = await itemService.deleteItemById(mockRow.id);
+  const result = await itemService.deleteItemById(mockRow.id, 'test-kitchen-id');
   assertEquals(result, true);
 
   // Verify it's actually deleted
-  const item = await itemService.getItemById(mockRow.id);
+  const item = await itemService.getItemById(mockRow.id, 'test-kitchen-id');
   assertEquals(item, null);
   db.close();
 });
@@ -273,7 +302,7 @@ Deno.test('ItemService - findExpiringSoon - success', async () => {
     mockDate.toISOString(),
   );
 
-  const items = await itemService.findExpiringSoon(7);
+  const items = await itemService.findExpiringSoon('test-kitchen-id', 7);
   assertEquals(items.length, 1);
   assertEquals(items[0].label, 'Expiring Soon');
   db.close();
@@ -295,7 +324,7 @@ Deno.test('ItemService - findSimilarItems - success', async () => {
     mockDate.toISOString(),
   );
 
-  const candidates = await itemService.findSimilarItems('Olive Oil');
+  const candidates = await itemService.findSimilarItems('Olive Oil', 'test-kitchen-id');
   assertEquals(candidates.length, 1);
   assertEquals(candidates[0].item.label, 'Olive Oil (Extra Virgin)');
   assert(candidates[0].score >= 0.75);
@@ -326,7 +355,7 @@ Deno.test('ItemService - findSimilarItems - matches by linked ingredient name', 
     mockDate.toISOString(),
   );
 
-  const candidates = await itemService.findSimilarItems('Baby Spinach');
+  const candidates = await itemService.findSimilarItems('Baby Spinach', 'test-kitchen-id');
   assertEquals(candidates.length, 1);
   assertEquals(candidates[0].item.id, '123e4567-e89b-12d3-a456-426614174099');
   assertEquals(candidates[0].item.label, 'Organic Tub Batch #1');
@@ -340,10 +369,10 @@ Deno.test('ItemService - bulkClearStock - success', async () => {
   setDB(db);
   const mockRow = seedMockItem(db);
 
-  const clearedCount = await itemService.bulkClearStock([mockRow.id]);
+  const clearedCount = await itemService.bulkClearStock([mockRow.id], 'test-kitchen-id');
   assertEquals(clearedCount, 1);
 
-  const updatedItem = await itemService.getItemById(mockRow.id);
+  const updatedItem = await itemService.getItemById(mockRow.id, 'test-kitchen-id');
   assertEquals(updatedItem?.quantity, 0);
   assertEquals(updatedItem?.expirationDate, undefined);
   db.close();
@@ -354,10 +383,10 @@ Deno.test('ItemService - bulkDeleteIngredientItems - success', async () => {
   setDB(db);
   const mockRow = seedMockItem(db);
 
-  const deletedCount = await itemService.bulkDeleteItems([mockRow.id]);
+  const deletedCount = await itemService.bulkDeleteItems([mockRow.id], 'test-kitchen-id');
   assertEquals(deletedCount, 1);
 
-  const updatedItem = await itemService.getItemById(mockRow.id);
+  const updatedItem = await itemService.getItemById(mockRow.id, 'test-kitchen-id');
   assertEquals(updatedItem, null);
   db.close();
 });

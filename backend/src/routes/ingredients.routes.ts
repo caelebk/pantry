@@ -14,7 +14,10 @@ import {
   isValidUpdateIngredientDTO,
 } from '../validators/ingredient.validator.ts';
 
+import { authMiddleware } from '../middleware/auth.ts';
+
 const ingredients = new Hono();
+ingredients.use('*', authMiddleware);
 
 /**
  * GET /api/ingredients
@@ -28,7 +31,8 @@ const ingredients = new Hono();
  */
 ingredients.get('/', async (c: Context) => {
   try {
-    const ingredients = await ingredientService.getAllIngredients();
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const ingredients = await ingredientService.getAllIngredients(activeKitchenId);
     return c.json(successResponse(ingredients), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
@@ -56,7 +60,8 @@ ingredients.get('/:id', async (c: Context) => {
     if (!isValidUUID(id)) {
       return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
-    const ingredient = await ingredientService.getIngredientById(id);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const ingredient = await ingredientService.getIngredientById(id, activeKitchenId);
     if (!ingredient) {
       return c.json(errorResponse(IngredientMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
@@ -91,7 +96,9 @@ ingredients.post('/', async (c: Context) => {
     if (!isValidCreateIngredientDTO(body)) {
       return c.json(errorResponse(IngredientMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
     }
-    const ingredient = await ingredientService.createIngredient(body);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const userId = c.get('user').userId;
+    const ingredient = await ingredientService.createIngredient(body, activeKitchenId, userId);
     return c.json(successResponse(ingredient), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
@@ -129,7 +136,9 @@ ingredients.put('/:id', async (c: Context) => {
     if (!isValidUpdateIngredientDTO(body)) {
       return c.json(errorResponse(IngredientMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
     }
-    const ingredient = await ingredientService.updateIngredient(id, body);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const userId = c.get('user').userId;
+    const ingredient = await ingredientService.updateIngredient(id, activeKitchenId, body, userId);
     if (!ingredient) {
       return c.json(errorResponse(IngredientMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
@@ -161,12 +170,13 @@ ingredients.delete('/:id', async (c: Context) => {
       return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
 
-    const checkIngredient = await ingredientService.getIngredientById(id);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const checkIngredient = await ingredientService.getIngredientById(id, activeKitchenId);
     if (!checkIngredient) {
       return c.json(errorResponse(IngredientMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
 
-    const ingredient = await ingredientService.deleteIngredient(id);
+    const ingredient = await ingredientService.deleteIngredient(id, activeKitchenId);
     return c.json(successResponse(ingredient), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
@@ -189,7 +199,8 @@ ingredients.get('/:id/substitutions', async (c: Context) => {
       return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
 
-    const ingredient = await ingredientService.getIngredientById(id);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const ingredient = await ingredientService.getIngredientById(id, activeKitchenId);
     if (!ingredient) {
       return c.json(errorResponse(IngredientMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
@@ -214,7 +225,8 @@ ingredients.get('/:id/items', async (c: Context) => {
     if (!isValidUUID(id)) {
       return c.json(errorResponse(IngredientMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
-    const items = await ingredientService.getItemsByIngredientId(id);
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const items = await ingredientService.getItemsByIngredientId(id, activeKitchenId);
     return c.json(successResponse(items), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
@@ -243,10 +255,14 @@ ingredients.post('/:id/reconcile-units', async (c: Context) => {
       return c.json(errorResponse(IngredientMessages.INVALID_BODY), HttpStatusCode.BAD_REQUEST);
     }
 
+    const activeKitchenId = c.get('activeKitchenId') || '';
+    const userId = c.get('user').userId;
     const updated = await ingredientService.reconcileIngredientUnit(
       id,
+      activeKitchenId,
       body.newDefaultUnitId,
       body.items,
+      userId,
     );
     if (!updated) {
       return c.json(errorResponse(IngredientMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);

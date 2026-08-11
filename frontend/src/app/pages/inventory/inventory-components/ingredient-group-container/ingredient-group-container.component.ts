@@ -73,30 +73,33 @@ export class IngredientGroupContainerComponent {
     this.selectedCategoryIds.set(ids ?? []);
   }
 
-  getNutrientName(itemOrId: any): string {
+  getNutrientName(itemOrId: unknown): string {
     if (itemOrId == null) return '';
     if (typeof itemOrId === 'object') {
-      return itemOrId.name || itemOrId.label || '';
+      const obj = itemOrId as { name?: string; label?: string };
+      return obj.name || obj.label || '';
     }
     const option = this.nutrientSelectOptions().find((opt) => opt.id === itemOrId);
     return option ? option.name : '';
   }
 
-  getNutrientIcon(itemOrId: any): string {
+  getNutrientIcon(itemOrId: unknown): string {
     if (itemOrId == null) return '✨';
-    if (typeof itemOrId === 'object' && itemOrId.icon) {
-      return itemOrId.icon;
+    if (typeof itemOrId === 'object') {
+      const obj = itemOrId as { id?: number; icon?: string };
+      if (obj.icon) return obj.icon;
+      const option = this.nutrientSelectOptions().find((opt) => opt.id === obj.id);
+      return option ? option.icon : '✨';
     }
-    const option = this.nutrientSelectOptions().find(
-      (opt) => opt.id === (typeof itemOrId === 'object' ? itemOrId.id : itemOrId),
-    );
+    const option = this.nutrientSelectOptions().find((opt) => opt.id === itemOrId);
     return option ? option.icon : '✨';
   }
 
-  getCategoryName(itemOrId: any): string {
+  getCategoryName(itemOrId: unknown): string {
     if (itemOrId == null) return '';
     if (typeof itemOrId === 'object') {
-      return itemOrId.name || itemOrId.label || '';
+      const obj = itemOrId as { name?: string; label?: string };
+      return obj.name || obj.label || '';
     }
     const option = this.categoryGroupOptions().find((opt) => opt.id === itemOrId);
     return option ? option.name : '';

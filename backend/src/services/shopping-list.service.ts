@@ -20,28 +20,36 @@ export interface ShoppingListItemRow {
 }
 
 export class ShoppingListBackendService {
-  async getAllItems(): Promise<ShoppingListItemDTO[]> {
+  getAllItems(kitchenId: string): Promise<ShoppingListItemDTO[]> {
     const db = getDB();
-    const rows = db.prepare('SELECT * FROM shopping_list_items ORDER BY created_at DESC')
-      .all() as ShoppingListItemRow[];
-    return rows.map(this.mapRowToDTO);
+    const rows = db.prepare(
+      'SELECT * FROM shopping_list_items WHERE kitchen_id = ? ORDER BY created_at DESC',
+    ).all(kitchenId) as ShoppingListItemRow[];
+    return Promise.resolve(rows.map(this.mapRowToDTO));
   }
 
-  async getItemById(id: string): Promise<ShoppingListItemDTO | null> {
+  getItemById(id: string, kitchenId: string): Promise<ShoppingListItemDTO | null> {
     const db = getDB();
-    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(id) as
+    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ? AND kitchen_id = ?').get(
+      id,
+      kitchenId,
+    ) as
       | ShoppingListItemRow
       | undefined;
-    return row ? this.mapRowToDTO(row) : null;
+    return Promise.resolve(row ? this.mapRowToDTO(row) : null);
   }
 
-  async createItem(data: CreateShoppingListItemDTO): Promise<ShoppingListItemDTO> {
+  createItem(
+    data: CreateShoppingListItemDTO,
+    kitchenId: string,
+    userId: string,
+  ): Promise<ShoppingListItemDTO> {
     const db = getDB();
     const id = crypto.randomUUID();
 
     db.prepare(`
-      INSERT INTO shopping_list_items (id, name, category, quantity, unit, checked, estimated_price, store_name, source, recipe_name)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO shopping_list_items (id, name, category, quantity, unit, checked, estimated_price, store_name, source, recipe_name, kitchen_id, created_by, updated_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       id,
       data.name,
@@ -53,29 +61,48 @@ export class ShoppingListBackendService {
       data.storeName || '',
       data.source || 'manual',
       data.recipeName || null,
+      kitchenId,
+      userId,
+      userId,
     );
 
-    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(
+    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ? AND kitchen_id = ?').get(
       id,
+      kitchenId,
     ) as ShoppingListItemRow;
-    return this.mapRowToDTO(row);
+    return Promise.resolve(this.mapRowToDTO(row));
   }
 
-  async createMultipleItems(items: CreateShoppingListItemDTO[]): Promise<ShoppingListItemDTO[]> {
-    const created: ShoppingListItemDTO[] = [];
-    for (const item of items) {
-      const dto = await this.createItem(item);
-      created.push(dto);
+  async createMultipleItems(
+    items: CreateShoppingListItemDTO[],
+    kitchenId: string,
+    userId: string,
+  ): Promise<ShoppingListItemDTO[]> {
+    const db = getDB();
+    try {
+      db.exec('BEGIN');
+      const created: ShoppingListItemDTO[] = [];
+      for (const item of items) {
+        const dto = await this.createItem(item, kitchenId, userId);
+        created.push(dto);
+      }
+      db.exec('COMMIT');
+      return created;
+    } catch (error) {
+      db.exec('ROLLBACK');
+      console.error('Error creating multiple shopping list items:', error);
+      throw error;
     }
-    return created;
   }
 
   async updateItem(
     id: string,
+    kitchenId: string,
     data: UpdateShoppingListItemDTO,
+    userId: string,
   ): Promise<ShoppingListItemDTO | null> {
     const db = getDB();
-    const existing = await this.getItemById(id);
+    const existing = await this.getItemById(id, kitchenId);
     if (!existing) return null;
 
     const name = data.name !== undefined ? data.name : existing.name;
@@ -94,8 +121,8 @@ export class ShoppingListBackendService {
 
     db.prepare(`
       UPDATE shopping_list_items
-      SET name = ?, category = ?, quantity = ?, unit = ?, checked = ?, estimated_price = ?, store_name = ?, source = ?, recipe_name = ?
-      WHERE id = ?
+      SET name = ?, category = ?, quantity = ?, unit = ?, checked = ?, estimated_price = ?, store_name = ?, source = ?, recipe_name = ?, updated_by = ?
+      WHERE id = ? AND kitchen_id = ?
     `).run(
       name,
       category,
@@ -106,25 +133,33 @@ export class ShoppingListBackendService {
       storeName,
       source,
       recipeName || null,
+      userId,
       id,
+      kitchenId,
     );
 
-    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(
+    const row = db.prepare('SELECT * FROM shopping_list_items WHERE id = ? AND kitchen_id = ?').get(
       id,
+      kitchenId,
     ) as ShoppingListItemRow;
     return this.mapRowToDTO(row);
   }
 
-  async deleteItem(id: string): Promise<boolean> {
+  deleteItem(id: string, kitchenId: string): Promise<boolean> {
     const db = getDB();
-    db.prepare('DELETE FROM shopping_list_items WHERE id = ?').run(id);
-    return true;
+    db.prepare('DELETE FROM shopping_list_items WHERE id = ? AND kitchen_id = ?').run(
+      id,
+      kitchenId,
+    );
+    return Promise.resolve(true);
   }
 
-  async deleteCheckedItems(): Promise<number> {
+  deleteCheckedItems(kitchenId: string): Promise<number> {
     const db = getDB();
-    const result = db.prepare('DELETE FROM shopping_list_items WHERE checked = 1').run();
-    return typeof result === 'number' ? result : 0;
+    const result = db.prepare(
+      'DELETE FROM shopping_list_items WHERE checked = 1 AND kitchen_id = ?',
+    ).run(kitchenId);
+    return Promise.resolve(typeof result === 'number' ? result : 0);
   }
 
   private mapRowToDTO(row: ShoppingListItemRow): ShoppingListItemDTO {
@@ -137,7 +172,7 @@ export class ShoppingListBackendService {
       checked: Boolean(row.checked),
       estimatedPrice: row.estimated_price,
       storeName: row.store_name,
-      source: (row.source as any) || 'manual',
+      source: (row.source as 'low_stock' | 'recipe_plan' | 'manual') || 'manual',
       recipeName: row.recipe_name || undefined,
       createdAt: row.created_at,
     };

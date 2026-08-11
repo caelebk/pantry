@@ -10,7 +10,7 @@ export interface EnrichedIngredient extends Ingredient {
 
 export interface IngredientGroupCluster {
   group: IngredientGroupDefinition | { id: number; name: string };
-  category?: IngredientGroupDefinition | { id: number; name: string };
+  category?: IngredientCategory | { id: number; name: string };
   ingredients: EnrichedIngredient[];
 }
 
@@ -22,7 +22,6 @@ export interface IngredientCategoryCluster {
 }
 
 // Legacy Aliases
-export type IngredientGroup = IngredientGroupCluster;
 export type NutrientGroup = IngredientCategoryCluster;
 export type NutrientGroupCluster = IngredientCategoryCluster;
 

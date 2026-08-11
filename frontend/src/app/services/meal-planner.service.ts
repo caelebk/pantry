@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { ApiResponse } from '@models/http.model';
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
-import { Recipe } from '@models/recipe.model';
+import { Recipe, RecipeIngredientDTO } from '@models/recipe.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
+import { AuthService } from '../core/services/auth.service';
 import { ShoppingListService } from './shopping-list.service';
 import { ToastService } from './toast.service';
 
@@ -14,6 +15,7 @@ export class MealPlannerService {
   private readonly http = inject(HttpClient);
   private readonly shoppingListService = inject(ShoppingListService);
   private readonly toastService = inject(ToastService);
+  private readonly authService = inject(AuthService);
   private readonly apiUrl = '/api/meal-plans';
 
   readonly days: DayOfWeek[] = [
@@ -30,7 +32,12 @@ export class MealPlannerService {
   readonly meals = this.mealsSignal.asReadonly();
 
   constructor() {
-    this.loadMealsFromBackend();
+    effect(() => {
+      const activeKitchen = this.authService.activeKitchen();
+      if (activeKitchen) {
+        this.loadMealsFromBackend();
+      }
+    });
   }
 
   public loadMealsFromBackend(): void {
@@ -54,7 +61,13 @@ export class MealPlannerService {
   addMealPlan(day: DayOfWeek, mealType: MealType, recipe: Recipe): void {
     const missing = recipe.ingredients
       ? recipe.ingredients
-          .map((i: any) => i.ingredientName || i.name || i.ingredient || 'Ingredient')
+          .map(
+            (i: RecipeIngredientDTO) =>
+              (i as unknown as { ingredientName?: string; name?: string }).ingredientName ||
+              (i as unknown as { ingredientName?: string; name?: string }).name ||
+              i.ingredientId ||
+              'Ingredient',
+          )
           .slice(0, 3)
       : [];
 
@@ -92,8 +105,8 @@ export class MealPlannerService {
   removeMealPlan(id: string): void {
     const meal = this.mealsSignal().find((m) => m.id === id);
     this.http
-      .delete<ApiResponse<any>>(`${this.apiUrl}/${id}`)
-      .pipe(mapResponseData<any>())
+      .delete<ApiResponse<unknown>>(`${this.apiUrl}/${id}`)
+      .pipe(mapResponseData<unknown>())
       .subscribe({
         next: () => {
           this.mealsSignal.update((curr) => curr.filter((m) => m.id !== id));

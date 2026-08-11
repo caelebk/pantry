@@ -25,6 +25,9 @@ function createTestDB(): Database {
       name TEXT NOT NULL,
       ingredient_group_id INTEGER,
       default_unit_id INTEGER,
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_by TEXT,
+      updated_by TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
@@ -40,6 +43,9 @@ function createTestDB(): Database {
       opened_date TEXT,
       purchase_date TEXT NOT NULL,
       notes TEXT,
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_by TEXT,
+      updated_by TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
@@ -53,6 +59,9 @@ function createTestDB(): Database {
       prep_time REAL,
       cook_time REAL,
       image_url TEXT,
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_by TEXT,
+      updated_by TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
@@ -87,26 +96,30 @@ Deno.test('RecipeService - create & findById - success', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const recipe = await recipeService.create({
-    name: 'Pancakes',
-    description: 'Fluffy pancakes',
-    servings: 4,
-    prepTime: 10,
-    cookTime: 15,
-    ingredients: [
-      { ingredientId: mockIngId, quantity: 200, unitId: 1 },
-    ],
-    steps: [
-      { stepNumber: 1, instructionText: 'Mix dry ingredients' },
-      { stepNumber: 2, instructionText: 'Cook on griddle', timerSeconds: 180 },
-    ],
-  });
+  const recipe = await recipeService.create(
+    {
+      name: 'Pancakes',
+      description: 'Fluffy pancakes',
+      servings: 4,
+      prepTime: 10,
+      cookTime: 15,
+      ingredients: [
+        { ingredientId: mockIngId, quantity: 200, unitId: 1 },
+      ],
+      steps: [
+        { stepNumber: 1, instructionText: 'Mix dry ingredients' },
+        { stepNumber: 2, instructionText: 'Cook on griddle', timerSeconds: 180 },
+      ],
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
 
   assertEquals(recipe.name, 'Pancakes');
   assertEquals(recipe.ingredients?.length, 1);
   assertEquals(recipe.steps?.length, 2);
 
-  const found = await recipeService.findById(recipe.id);
+  const found = await recipeService.findById(recipe.id, 'test-kitchen-id');
   assert(found !== null);
   assertEquals(found?.name, 'Pancakes');
   assertEquals(found?.steps?.[0].instructionText, 'Mix dry ingredients');
@@ -118,14 +131,18 @@ Deno.test('RecipeService - update - success', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const recipe = await recipeService.create({
-    name: 'Old Recipe',
-  });
+  const recipe = await recipeService.create(
+    {
+      name: 'Old Recipe',
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
 
-  const updated = await recipeService.update(recipe.id, {
+  const updated = await recipeService.update(recipe.id, 'test-kitchen-id', {
     name: 'Updated Recipe',
     description: 'New Description',
-  });
+  }, 'test-user-id');
 
   assert(updated !== null);
   assertEquals(updated?.name, 'Updated Recipe');
@@ -138,11 +155,15 @@ Deno.test('RecipeService - delete - success', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const recipe = await recipeService.create({ name: 'To Delete' });
-  const result = await recipeService.delete(recipe.id);
+  const recipe = await recipeService.create(
+    { name: 'To Delete' },
+    'test-kitchen-id',
+    'test-user-id',
+  );
+  const result = await recipeService.delete(recipe.id, 'test-kitchen-id');
 
   assertEquals(result, true);
-  const found = await recipeService.findById(recipe.id);
+  const found = await recipeService.findById(recipe.id, 'test-kitchen-id');
   assertEquals(found, null);
 
   db.close();
@@ -176,18 +197,26 @@ Deno.test('RecipeService - getAvailableRecipes - calculates unit factor conversi
   );
 
   // Recipe 1 needs 500g Flour (Available: 1000g >= 500g -> TRUE)
-  await recipeService.create({
-    name: 'Bread',
-    ingredients: [{ ingredientId: flourId, quantity: 500, unitId: 1 }],
-  });
+  await recipeService.create(
+    {
+      name: 'Bread',
+      ingredients: [{ ingredientId: flourId, quantity: 500, unitId: 1 }],
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
 
   // Recipe 2 needs 2000g Flour (Available: 1000g < 2000g -> FALSE)
-  await recipeService.create({
-    name: 'Huge Cake',
-    ingredients: [{ ingredientId: flourId, quantity: 2000, unitId: 1 }],
-  });
+  await recipeService.create(
+    {
+      name: 'Huge Cake',
+      ingredients: [{ ingredientId: flourId, quantity: 2000, unitId: 1 }],
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
 
-  const available = await recipeService.getAvailableRecipes();
+  const available = await recipeService.getAvailableRecipes('test-kitchen-id');
   assertEquals(available.length, 1);
   assertEquals(available[0].name, 'Bread');
 
@@ -219,12 +248,16 @@ Deno.test('RecipeService - getAvailableRecipes - excludes expired pantry items',
   );
 
   // Recipe requires 1L Milk
-  await recipeService.create({
-    name: 'Cereal Bowl',
-    ingredients: [{ ingredientId: milkId, quantity: 1, unitId: 1 }],
-  });
+  await recipeService.create(
+    {
+      name: 'Cereal Bowl',
+      ingredients: [{ ingredientId: milkId, quantity: 1, unitId: 1 }],
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
 
-  const available = await recipeService.getAvailableRecipes();
+  const available = await recipeService.getAvailableRecipes('test-kitchen-id');
   assertEquals(available.length, 0, 'Expired milk should not count toward available recipes');
 
   db.close();
@@ -269,12 +302,16 @@ Deno.test('RecipeService - getAvailableRecipes - sums multiple pantry items for 
   );
 
   // Recipe requires 5 eggs (Total available = 3 + 3 = 6 >= 5 -> TRUE)
-  await recipeService.create({
-    name: 'Omelette',
-    ingredients: [{ ingredientId: eggId, quantity: 5, unitId: 1 }],
-  });
+  await recipeService.create(
+    {
+      name: 'Omelette',
+      ingredients: [{ ingredientId: eggId, quantity: 5, unitId: 1 }],
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
 
-  const available = await recipeService.getAvailableRecipes();
+  const available = await recipeService.getAvailableRecipes('test-kitchen-id');
   assertEquals(available.length, 1);
   assertEquals(available[0].name, 'Omelette');
 
@@ -285,21 +322,25 @@ Deno.test('RecipeService - preserves custom ordering for ingredients and steps',
   const db = createTestDB();
   setDB(db);
 
-  const created = await recipeService.create({
-    name: 'Layered Parfait',
-    ingredients: [
-      { ingredientId: 'ing-granola', quantity: 100, unitId: 1, ingredientOrder: 1 },
-      { ingredientId: 'ing-yogurt', quantity: 200, unitId: 1, ingredientOrder: 2 },
-      { ingredientId: 'ing-berries', quantity: 50, unitId: 1, ingredientOrder: 3 },
-    ],
-    steps: [
-      { stepNumber: 1, instructionText: 'Layer yogurt in glass' },
-      { stepNumber: 2, instructionText: 'Top with granola' },
-      { stepNumber: 3, instructionText: 'Garnish with berries' },
-    ],
-  });
+  const created = await recipeService.create(
+    {
+      name: 'Layered Parfait',
+      ingredients: [
+        { ingredientId: 'ing-granola', quantity: 100, unitId: 1, ingredientOrder: 1 },
+        { ingredientId: 'ing-yogurt', quantity: 200, unitId: 1, ingredientOrder: 2 },
+        { ingredientId: 'ing-berries', quantity: 50, unitId: 1, ingredientOrder: 3 },
+      ],
+      steps: [
+        { stepNumber: 1, instructionText: 'Layer yogurt in glass' },
+        { stepNumber: 2, instructionText: 'Top with granola' },
+        { stepNumber: 3, instructionText: 'Garnish with berries' },
+      ],
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
 
-  const fetched = await recipeService.findById(created.id);
+  const fetched = await recipeService.findById(created.id, 'test-kitchen-id');
   assertEquals(fetched?.ingredients?.map((i: { ingredientId: string }) => i.ingredientId), [
     'ing-granola',
     'ing-yogurt',

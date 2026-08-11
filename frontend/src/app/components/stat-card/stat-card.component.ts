@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, input, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
@@ -7,12 +7,15 @@ import { TranslocoModule } from '@jsverse/transloco';
   standalone: true,
   imports: [CommonModule, TranslocoModule],
   templateUrl: './stat-card.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatCardComponent {
   title = input.required<string>();
   value = input.required<number>();
   subtitle = input<string>();
   valueColor = input<string>('text-gray-900 dark:text-white');
+  trend = input<string>();
+  trendClass = input<string>('badge-primary');
 
   // Animation configuration constants
   private readonly EASING_POWER = 3; // Cubic easing

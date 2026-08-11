@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -13,6 +13,7 @@ import { ShoppingListService } from '@services/shopping-list.service';
   imports: [CommonModule, FormsModule, TranslocoModule],
   templateUrl: './shopping-list.component.html',
   styleUrl: './shopping-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShoppingListComponent {
   private readonly router = inject(Router);

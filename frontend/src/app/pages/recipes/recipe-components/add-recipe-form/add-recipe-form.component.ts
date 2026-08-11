@@ -193,7 +193,8 @@ export class AddRecipeFormComponent implements OnInit {
             id: st.id || crypto.randomUUID(),
             instructionText: st.instructionText,
             timerSeconds: st.timerSeconds || null,
-            textareaHeight: st.textareaHeight || (st as any).textarea_height || null,
+            textareaHeight:
+              st.textareaHeight || (st as { textarea_height?: number }).textarea_height || null,
           }));
         } else {
           this.recipeSteps = [{ id: crypto.randomUUID(), instructionText: '', timerSeconds: null }];
@@ -280,7 +281,7 @@ export class AddRecipeFormComponent implements OnInit {
     }
   }
 
-  onIngredientDrop(event: DragEvent, _dropIndex: number): void {
+  onIngredientDrop(event: DragEvent): void {
     event.preventDefault();
     this.onIngredientDragEnd();
   }
@@ -437,7 +438,7 @@ export class AddRecipeFormComponent implements OnInit {
     }
   }
 
-  onStepDrop(event: DragEvent, _dropIndex: number): void {
+  onStepDrop(event: DragEvent): void {
     event.preventDefault();
     this.onStepDragEnd();
   }

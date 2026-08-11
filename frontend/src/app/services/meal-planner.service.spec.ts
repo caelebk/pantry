@@ -1,6 +1,8 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { PlannedMeal } from '@models/meal-planner.model';
+import { AuthService } from '../core/services/auth.service';
 import { MealPlannerService } from './meal-planner.service';
 import { ShoppingListService } from './shopping-list.service';
 import { ToastService } from './toast.service';
@@ -34,11 +36,16 @@ describe('MealPlannerService', () => {
     ]);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         MealPlannerService,
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: ToastService, useValue: mockToastService },
+        {
+          provide: AuthService,
+          useValue: { activeKitchen: jasmine.createSpy().and.returnValue('kitchen-1') },
+        },
       ],
     });
 
@@ -46,6 +53,7 @@ describe('MealPlannerService', () => {
     httpMock = TestBed.inject(HttpTestingController);
 
     // Handle constructor GET request
+    TestBed.flushEffects();
     const initReq = httpMock.expectOne('/api/meal-plans');
     initReq.flush({ status: 'success', data: [mockMeal] });
   });

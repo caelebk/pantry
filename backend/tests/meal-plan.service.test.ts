@@ -18,6 +18,9 @@ function createTestDB(): Database {
       cooked INTEGER NOT NULL DEFAULT 0,
       missing_ingredients TEXT,
       tags TEXT,
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_by TEXT,
+      updated_by TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
@@ -28,17 +31,21 @@ Deno.test('MealPlanService - create and retrieve meal plan', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const created = await mealPlanService.createMealPlan({
-    day: 'Monday',
-    mealType: 'Dinner',
-    recipeName: 'Test Spaghetti',
-    prepTimeMinutes: 20,
-    calories: 500,
-    servings: 2,
-    cooked: false,
-    missingIngredients: ['Garlic', 'Olive Oil'],
-    tags: ['Italian'],
-  });
+  const created = await mealPlanService.createMealPlan(
+    {
+      day: 'Monday',
+      mealType: 'Dinner',
+      recipeName: 'Test Spaghetti',
+      prepTimeMinutes: 20,
+      calories: 500,
+      servings: 2,
+      cooked: false,
+      missingIngredients: ['Garlic', 'Olive Oil'],
+      tags: ['Italian'],
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
 
   assertNotEquals(created.id, undefined);
   assertEquals(created.recipeName, 'Test Spaghetti');
@@ -47,12 +54,12 @@ Deno.test('MealPlanService - create and retrieve meal plan', async () => {
   assertEquals(created.cooked, false);
   assertEquals(created.missingIngredients, ['Garlic', 'Olive Oil']);
 
-  const fetched = await mealPlanService.getMealPlanById(created.id);
+  const fetched = await mealPlanService.getMealPlanById(created.id, 'test-kitchen-id');
   assertEquals(fetched?.id, created.id);
   assertEquals(fetched?.recipeName, 'Test Spaghetti');
 
   // Clean up
-  await mealPlanService.deleteMealPlan(created.id);
+  await mealPlanService.deleteMealPlan(created.id, 'test-kitchen-id');
   db.close();
 });
 
@@ -60,18 +67,24 @@ Deno.test('MealPlanService - update meal plan status', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const created = await mealPlanService.createMealPlan({
-    day: 'Tuesday',
-    mealType: 'Lunch',
-    recipeName: 'Salad',
-    cooked: false,
-  });
+  const created = await mealPlanService.createMealPlan(
+    {
+      day: 'Tuesday',
+      mealType: 'Lunch',
+      recipeName: 'Salad',
+      cooked: false,
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
 
-  const updated = await mealPlanService.updateMealPlan(created.id, { cooked: true });
+  const updated = await mealPlanService.updateMealPlan(created.id, 'test-kitchen-id', {
+    cooked: true,
+  }, 'test-user-id');
   assertEquals(updated?.cooked, true);
 
   // Clean up
-  await mealPlanService.deleteMealPlan(created.id);
+  await mealPlanService.deleteMealPlan(created.id, 'test-kitchen-id');
   db.close();
 });
 
@@ -79,14 +92,18 @@ Deno.test('MealPlanService - delete meal plan', async () => {
   const db = createTestDB();
   setDB(db);
 
-  const created = await mealPlanService.createMealPlan({
-    day: 'Wednesday',
-    mealType: 'Breakfast',
-    recipeName: 'Pancakes',
-  });
+  const created = await mealPlanService.createMealPlan(
+    {
+      day: 'Wednesday',
+      mealType: 'Breakfast',
+      recipeName: 'Pancakes',
+    },
+    'test-kitchen-id',
+    'test-user-id',
+  );
 
-  await mealPlanService.deleteMealPlan(created.id);
-  const fetched = await mealPlanService.getMealPlanById(created.id);
+  await mealPlanService.deleteMealPlan(created.id, 'test-kitchen-id');
+  const fetched = await mealPlanService.getMealPlanById(created.id, 'test-kitchen-id');
   assertEquals(fetched, null);
   db.close();
 });
