@@ -64,6 +64,8 @@ export class HomeComponent {
     return Math.round((fresh / total) * 100);
   });
 
+  kitchenName = computed(() => this.authService.activeKitchen()?.name || 'My Kitchen');
+
   greetingMessage = computed(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';
