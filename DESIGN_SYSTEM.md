@@ -61,10 +61,10 @@ Containers, modal panels, and inventory overview cards use high-saturate blur wi
 
 ```scss
 .glass-card {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid rgba(226, 232, 240, 0.85); /* Slate 200 */
+  border: 1px solid rgba(226, 232, 240, 0.9); /* Slate 200 high-contrast border */
   box-shadow:
     0 10px 30px -10px rgba(15, 23, 42, 0.06),
     0 2px 6px -1px rgba(15, 23, 42, 0.03);
@@ -85,10 +85,10 @@ Containers, modal panels, and inventory overview cards use high-saturate blur wi
 
 ```scss
 .sub-card, .sub-card-inset {
-  background-color: rgba(255, 255, 255, 0.95) !important;
+  background-color: #ffffff !important;
   border: 1px solid var(--color-surface-200) !important;
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    inset 0 1px 2px rgba(255, 255, 255, 1),
     0 1px 3px rgba(15, 23, 42, 0.04) !important;
 }
 

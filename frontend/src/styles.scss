@@ -62,10 +62,10 @@ body {
 
 /* ── Refined Light & Dark Glass Card Surfaces ───────────────── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid rgba(226, 232, 240, 0.85); /* Slate 200 */
+  border: 1px solid rgba(226, 232, 240, 0.9); /* Slate 200 high-contrast border */
   box-shadow:
     0 10px 30px -10px rgba(15, 23, 42, 0.06),
     0 2px 6px -1px rgba(15, 23, 42, 0.03);
@@ -84,10 +84,10 @@ body {
 /* ── Centralized High-Contrast Sub-Card & Sub-Panel Utility System ──── */
 .sub-card,
 .sub-card-inset {
-  background-color: rgba(255, 255, 255, 0.95) !important;
+  background-color: #ffffff !important;
   border: 1px solid var(--color-surface-200) !important;
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    inset 0 1px 2px rgba(255, 255, 255, 1),
     0 1px 3px rgba(15, 23, 42, 0.04) !important;
 }
 
@@ -147,7 +147,7 @@ body {
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
 }
 
 :where(.dark, .dark *) .glass-header {
@@ -361,11 +361,11 @@ body {
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
   border-radius: 9999px;
-  background: rgba(252, 251, 249, 0.55);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(222, 216, 203, 0.7);
-  box-shadow: 0 4px 16px -4px rgba(135, 125, 108, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.06);
   pointer-events: none;
   animation: floatDrift 18s ease-in-out infinite alternate;
 }
@@ -474,12 +474,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(168, 162, 158, 0.3);
+  background: rgba(148, 163, 184, 0.3);
   border-radius: 100px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 162, 158, 0.5);
+  background: rgba(148, 163, 184, 0.5);
 }
 
 /* ── PrimeNG Override & Unified Form Control System ──────────── */
