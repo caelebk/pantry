@@ -1,6 +1,6 @@
 <!-- Mobile Top Header Bar -->
 <div
-  class="md:hidden sticky top-0 z-50 backdrop-blur-md bg-surface-900/95 border-b border-surface-800/80 dark:bg-surface-950/95 dark:border-surface-800/60 px-4 h-16 flex items-center justify-between">
+  class="md:hidden sticky top-0 z-50 backdrop-blur-2xl bg-surface-900/95 border-b border-surface-800/80 dark:bg-surface-950/85 dark:border-white/10 px-4 h-16 flex items-center justify-between">
   <div class="flex items-center gap-3">
     <div
       class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary-500/20">
@@ -79,11 +79,11 @@
   [class.-translate-x-full]="!mobileMenuOpen()"
   [class.md:w-20]="isCollapsed()"
   [class.md:w-64]="!isCollapsed()"
-  class="fixed md:static top-0 left-0 z-50 md:z-auto h-screen md:h-full w-64 md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col backdrop-blur-xl bg-surface-900 border-r border-surface-800/80 dark:bg-surface-950/95 dark:border-surface-800/60 shadow-2xl md:shadow-none shrink-0 group">
+  class="fixed md:static top-0 left-0 z-50 md:z-auto h-screen md:h-full w-64 md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col backdrop-blur-2xl bg-surface-900 border-r border-surface-800/80 dark:bg-surface-950/85 dark:border-r dark:border-white/10 dark:shadow-[4px_0_24px_rgba(0,0,0,0.4)] md:shadow-none shrink-0 group">
   <!-- Sidebar Header / Logo -->
   <div
     [class.justify-center]="isCollapsed()"
-    class="p-4 md:p-5 flex items-center border-b border-surface-800/80 h-18">
+    class="p-4 md:p-5 flex items-center border-b border-surface-800/80 dark:border-white/10 h-18">
     <div class="flex items-center gap-3">
       <div
         class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md shadow-primary-500/25 transition-all duration-200 hover:scale-105 shrink-0">
@@ -111,7 +111,7 @@
         (click)="toggleKitchenMenu($event)"
         aria-haspopup="true"
         [attr.aria-expanded]="kitchenMenuOpen()"
-        class="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-800/60 hover:bg-surface-800 border border-surface-700/80 transition-all text-left group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+        class="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-800/60 hover:bg-surface-800 border border-surface-700/80 dark:bg-surface-900/60 dark:hover:bg-surface-800/80 dark:border-white/10 transition-all text-left group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
         <div class="flex items-center gap-2.5 min-w-0">
           <div
             class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
@@ -134,20 +134,25 @@
       <!-- Dropdown Kitchen Menu -->
       @if (kitchenMenuOpen()) {
         <div
-          class="absolute top-full left-3 right-3 mt-1 py-1 bg-surface-900 rounded-xl border border-surface-700 shadow-2xl z-50 max-h-48 overflow-y-auto space-y-0.5">
+          class="absolute top-full left-3 right-3 mt-1 py-1 bg-surface-900 dark:bg-surface-950 rounded-xl border border-surface-700 dark:border-white/10 shadow-2xl z-50 max-h-48 overflow-y-auto space-y-0.5">
           @for (k of authService.userKitchens(); track k.id) {
             <button
               type="button"
               (click)="selectKitchen(k)"
               [class.bg-primary-500/20]="authService.activeKitchen()?.id === k.id"
+              [class.dark:bg-primary-500/20]="authService.activeKitchen()?.id === k.id"
               [class.text-primary-400]="authService.activeKitchen()?.id === k.id"
+              [class.dark:text-primary-300]="authService.activeKitchen()?.id === k.id"
+              [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="
+                authService.activeKitchen()?.id === k.id
+              "
               [class.font-bold]="authService.activeKitchen()?.id === k.id"
               [class.border-l-2]="authService.activeKitchen()?.id === k.id"
               [class.border-primary-500]="authService.activeKitchen()?.id === k.id"
-              class="w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-surface-800/80 transition-colors cursor-pointer text-surface-200">
+              class="w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-surface-800/80 dark:hover:bg-surface-800/60 dark:hover:text-primary-300 transition-colors cursor-pointer text-surface-200">
               <span class="font-medium truncate">{{ k.name }}</span>
               @if (authService.activeKitchen()?.id === k.id) {
-                <i class="pi pi-check text-xs text-primary-400"></i>
+                <i class="pi pi-check text-xs text-primary-400 dark:text-primary-300"></i>
               }
             </button>
           }
@@ -174,13 +179,18 @@
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
       [class.bg-primary-500/20]="isHomeActive()"
+      [class.dark:bg-primary-500/20]="isHomeActive()"
       [class.text-primary-400]="isHomeActive()"
+      [class.dark:text-primary-300]="isHomeActive()"
+      [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isHomeActive()"
       [class.font-bold]="isHomeActive()"
       [class.border-l-4]="isHomeActive()"
       [class.border-primary-500]="isHomeActive()"
       [class.text-surface-200]="!isHomeActive()"
       [class.hover:bg-surface-800/80]="!isHomeActive()"
       [class.hover:text-white]="!isHomeActive()"
+      [class.dark:hover:bg-surface-800/60]="!isHomeActive()"
+      [class.dark:hover:text-primary-300]="!isHomeActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -207,13 +217,18 @@
         [class.px-2.5]="isCollapsed()"
         [class.px-3.5]="!isCollapsed()"
         [class.bg-primary-500/20]="isInventoryActive()"
+        [class.dark:bg-primary-500/20]="isInventoryActive()"
         [class.text-primary-400]="isInventoryActive()"
+        [class.dark:text-primary-300]="isInventoryActive()"
+        [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isInventoryActive()"
         [class.font-bold]="isInventoryActive()"
         [class.border-l-4]="isInventoryActive()"
         [class.border-primary-500]="isInventoryActive()"
         [class.text-surface-200]="!isInventoryActive()"
         [class.hover:bg-surface-800/80]="!isInventoryActive()"
         [class.hover:text-white]="!isInventoryActive()"
+        [class.dark:hover:bg-surface-800/60]="!isInventoryActive()"
+        [class.dark:hover:text-primary-300]="!isInventoryActive()"
         class="w-full flex items-center justify-between py-2.5 rounded-xl transition-all duration-200 text-sm group/item relative">
         <button
           type="button"
@@ -250,7 +265,7 @@
                 ? ('sidebar.collapseInventory' | transloco)
                 : ('sidebar.expandInventory' | transloco)
             "
-            class="p-1 text-surface-400 hover:text-white rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 shrink-0">
+            class="p-1 text-surface-400 hover:text-white dark:hover:text-primary-300 rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 shrink-0">
             <svg
               [class.rotate-90]="inventoryExpanded()"
               xmlns="http://www.w3.org/2000/svg"
@@ -272,13 +287,18 @@
           <button
             (click)="navigateTo('/inventory/ingredients')"
             [class.bg-primary-500/20]="isIngredientsActive()"
+            [class.dark:bg-primary-500/20]="isIngredientsActive()"
             [class.text-primary-400]="isIngredientsActive()"
+            [class.dark:text-primary-300]="isIngredientsActive()"
+            [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isIngredientsActive()"
             [class.font-bold]="isIngredientsActive()"
             [class.border-l-2]="isIngredientsActive()"
             [class.border-primary-500]="isIngredientsActive()"
             [class.text-surface-300]="!isIngredientsActive()"
             [class.hover:bg-surface-800/80]="!isIngredientsActive()"
             [class.hover:text-white]="!isIngredientsActive()"
+            [class.dark:hover:bg-surface-800/60]="!isIngredientsActive()"
+            [class.dark:hover:text-primary-300]="!isIngredientsActive()"
             class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredients' | transloco }}</span>
           </button>
@@ -287,13 +307,18 @@
           <button
             (click)="navigateTo('/inventory/items')"
             [class.bg-primary-500/20]="isInventoryItemsActive()"
+            [class.dark:bg-primary-500/20]="isInventoryItemsActive()"
             [class.text-primary-400]="isInventoryItemsActive()"
+            [class.dark:text-primary-300]="isInventoryItemsActive()"
+            [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isInventoryItemsActive()"
             [class.font-bold]="isInventoryItemsActive()"
             [class.border-l-2]="isInventoryItemsActive()"
             [class.border-primary-500]="isInventoryItemsActive()"
             [class.text-surface-300]="!isInventoryItemsActive()"
             [class.hover:bg-surface-800/80]="!isInventoryItemsActive()"
             [class.hover:text-white]="!isInventoryItemsActive()"
+            [class.dark:hover:bg-surface-800/60]="!isInventoryItemsActive()"
+            [class.dark:hover:text-primary-300]="!isInventoryItemsActive()"
             class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredientItems' | transloco }}</span>
           </button>
@@ -302,13 +327,18 @@
           <button
             (click)="navigateTo('/inventory/groups')"
             [class.bg-primary-500/20]="isIngredientGroupsActive()"
+            [class.dark:bg-primary-500/20]="isIngredientGroupsActive()"
             [class.text-primary-400]="isIngredientGroupsActive()"
+            [class.dark:text-primary-300]="isIngredientGroupsActive()"
+            [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isIngredientGroupsActive()"
             [class.font-bold]="isIngredientGroupsActive()"
             [class.border-l-2]="isIngredientGroupsActive()"
             [class.border-primary-500]="isIngredientGroupsActive()"
             [class.text-surface-300]="!isIngredientGroupsActive()"
             [class.hover:bg-surface-800/80]="!isIngredientGroupsActive()"
             [class.hover:text-white]="!isIngredientGroupsActive()"
+            [class.dark:hover:bg-surface-800/60]="!isIngredientGroupsActive()"
+            [class.dark:hover:text-primary-300]="!isIngredientGroupsActive()"
             class="w-full flex justify-start text-left items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredientCategoriesAndGroups' | transloco }}</span>
           </button>
@@ -325,13 +355,18 @@
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
       [class.bg-primary-500/20]="isRecipesActive()"
+      [class.dark:bg-primary-500/20]="isRecipesActive()"
       [class.text-primary-400]="isRecipesActive()"
+      [class.dark:text-primary-300]="isRecipesActive()"
+      [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isRecipesActive()"
       [class.font-bold]="isRecipesActive()"
       [class.border-l-4]="isRecipesActive()"
       [class.border-primary-500]="isRecipesActive()"
       [class.text-surface-200]="!isRecipesActive()"
       [class.hover:bg-surface-800/80]="!isRecipesActive()"
       [class.hover:text-white]="!isRecipesActive()"
+      [class.dark:hover:bg-surface-800/60]="!isRecipesActive()"
+      [class.dark:hover:text-primary-300]="!isRecipesActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -360,13 +395,18 @@
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
       [class.bg-primary-500/20]="isShoppingListActive()"
+      [class.dark:bg-primary-500/20]="isShoppingListActive()"
       [class.text-primary-400]="isShoppingListActive()"
+      [class.dark:text-primary-300]="isShoppingListActive()"
+      [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isShoppingListActive()"
       [class.font-bold]="isShoppingListActive()"
       [class.border-l-4]="isShoppingListActive()"
       [class.border-primary-500]="isShoppingListActive()"
       [class.text-surface-200]="!isShoppingListActive()"
       [class.hover:bg-surface-800/80]="!isShoppingListActive()"
       [class.hover:text-white]="!isShoppingListActive()"
+      [class.dark:hover:bg-surface-800/60]="!isShoppingListActive()"
+      [class.dark:hover:text-primary-300]="!isShoppingListActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -395,13 +435,18 @@
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
       [class.bg-primary-500/20]="isMealPlannerActive()"
+      [class.dark:bg-primary-500/20]="isMealPlannerActive()"
       [class.text-primary-400]="isMealPlannerActive()"
+      [class.dark:text-primary-300]="isMealPlannerActive()"
+      [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isMealPlannerActive()"
       [class.font-bold]="isMealPlannerActive()"
       [class.border-l-4]="isMealPlannerActive()"
       [class.border-primary-500]="isMealPlannerActive()"
       [class.text-surface-200]="!isMealPlannerActive()"
       [class.hover:bg-surface-800/80]="!isMealPlannerActive()"
       [class.hover:text-white]="!isMealPlannerActive()"
+      [class.dark:hover:bg-surface-800/60]="!isMealPlannerActive()"
+      [class.dark:hover:text-primary-300]="!isMealPlannerActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -431,7 +476,7 @@
         : ('sidebar.collapseSidebar' | transloco)
     "
     [attr.aria-expanded]="!isCollapsed()"
-    class="hidden md:flex absolute top-1/2 -right-3.5 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-surface-800 border border-surface-700 shadow-md items-center justify-center text-surface-300 hover:text-primary-400 hover:scale-110 active:scale-95 transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+    class="hidden md:flex absolute top-1/2 -right-3.5 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-surface-800 dark:bg-surface-900 border border-surface-700 dark:border-white/20 shadow-md items-center justify-center text-surface-300 hover:text-primary-400 dark:hover:text-primary-300 hover:scale-110 active:scale-95 transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
     @if (isCollapsed()) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -456,7 +501,7 @@
   </button>
 
   <!-- Sidebar Footer Options -->
-  <div class="p-3 border-t border-surface-800/80 space-y-1">
+  <div class="p-3 border-t border-surface-800/80 dark:border-white/10 space-y-1">
     <!-- Profile & Account Link -->
     <button
       (click)="navigateTo('/profile')"
@@ -466,13 +511,18 @@
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
       [class.bg-primary-500/20]="isProfileActive()"
+      [class.dark:bg-primary-500/20]="isProfileActive()"
       [class.text-primary-400]="isProfileActive()"
+      [class.dark:text-primary-300]="isProfileActive()"
+      [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isProfileActive()"
       [class.font-bold]="isProfileActive()"
       [class.border-l-4]="isProfileActive()"
       [class.border-primary-500]="isProfileActive()"
       [class.text-surface-200]="!isProfileActive()"
       [class.hover:bg-surface-800/80]="!isProfileActive()"
       [class.hover:text-white]="!isProfileActive()"
+      [class.dark:hover:bg-surface-800/60]="!isProfileActive()"
+      [class.dark:hover:text-primary-300]="!isProfileActive()"
       class="w-full flex items-center gap-3 py-2 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -499,7 +549,7 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      class="w-full flex items-center gap-3 py-2 rounded-xl hover:bg-red-500/20 text-surface-200 hover:text-red-400 transition-all duration-200 cursor-pointer text-sm group/item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
+      class="w-full flex items-center gap-3 py-2 rounded-xl hover:bg-red-500/20 text-surface-200 hover:text-red-400 dark:hover:text-red-300 transition-all duration-200 cursor-pointer text-sm group/item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -528,7 +578,7 @@
         [class.justify-center]="isCollapsed()"
         [class.px-2.5]="isCollapsed()"
         [class.px-3.5]="!isCollapsed()"
-        class="w-full flex items-center justify-between py-2 rounded-xl hover:bg-surface-800/80 text-surface-200 hover:text-white transition-all duration-200 text-sm cursor-pointer min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+        class="w-full flex items-center justify-between py-2 rounded-xl hover:bg-surface-800/80 dark:hover:bg-surface-800/60 dark:hover:text-primary-300 text-surface-200 hover:text-white transition-all duration-200 text-sm cursor-pointer min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
         <div class="flex items-center gap-2.5">
           @if (darkMode()) {
             <svg
