@@ -235,7 +235,9 @@
           (click)="navigateTo('/inventory')"
           [attr.title]="'nav.inventory' | transloco"
           [attr.aria-current]="isInventoryActive() ? 'page' : null"
-          class="flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg">
+          [class.justify-center]="isCollapsed()"
+          [class.w-full]="isCollapsed()"
+          class="w-full flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -502,6 +504,73 @@
 
   <!-- Sidebar Footer Options -->
   <div class="p-3 border-t border-surface-800/80 dark:border-white/10 space-y-1">
+    <!-- Dark Mode Toggle Button -->
+    <div class="flex items-center justify-between gap-2 w-full">
+      <button
+        (click)="onToggleTheme()"
+        [attr.aria-label]="
+          darkMode() ? ('sidebar.switchToLight' | transloco) : ('sidebar.switchToDark' | transloco)
+        "
+        [class.justify-center]="isCollapsed()"
+        [class.px-2.5]="isCollapsed()"
+        [class.px-3.5]="!isCollapsed()"
+        class="w-full flex items-center justify-between py-2 rounded-xl hover:bg-surface-800/80 dark:hover:bg-surface-800/60 dark:hover:text-primary-300 text-surface-200 hover:text-white transition-all duration-200 text-sm cursor-pointer min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+        <div class="flex items-center gap-2.5">
+          @if (darkMode()) {
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-5 text-amber-400 shrink-0">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+            @if (!isCollapsed()) {
+              <span
+                class="font-semibold text-surface-200 whitespace-nowrap hidden md:inline text-xs"
+                >{{ 'sidebar.lightMode' | transloco }}</span
+              >
+            }
+            <span class="font-semibold text-surface-200 whitespace-nowrap md:hidden text-xs">{{
+              'sidebar.lightMode' | transloco
+            }}</span>
+          } @else {
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-5 text-indigo-400 shrink-0">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+            @if (!isCollapsed()) {
+              <span
+                class="font-semibold text-surface-200 whitespace-nowrap hidden md:inline text-xs"
+                >{{ 'sidebar.darkMode' | transloco }}</span
+              >
+            }
+            <span class="font-semibold text-surface-200 whitespace-nowrap md:hidden text-xs">{{
+              'sidebar.darkMode' | transloco
+            }}</span>
+          }
+        </div>
+        @if (!isCollapsed()) {
+          <span
+            class="text-xs px-2 py-0.5 rounded-md bg-surface-800 text-surface-400 font-mono hidden md:inline">
+            {{ darkMode() ? 'DARK' : 'LIGHT' }}
+          </span>
+        }
+      </button>
+    </div>
+
     <!-- Profile & Account Link -->
     <button
       (click)="navigateTo('/profile')"
@@ -567,72 +636,5 @@
       }
       <span class="whitespace-nowrap md:hidden">{{ 'sidebar.logout' | transloco }}</span>
     </button>
-
-    <div class="flex items-center justify-between gap-2 w-full">
-      <!-- Dark Mode Toggle Button -->
-      <button
-        (click)="onToggleTheme()"
-        [attr.aria-label]="
-          darkMode() ? ('sidebar.switchToLight' | transloco) : ('sidebar.switchToDark' | transloco)
-        "
-        [class.justify-center]="isCollapsed()"
-        [class.px-2.5]="isCollapsed()"
-        [class.px-3.5]="!isCollapsed()"
-        class="w-full flex items-center justify-between py-2 rounded-xl hover:bg-surface-800/80 dark:hover:bg-surface-800/60 dark:hover:text-primary-300 text-surface-200 hover:text-white transition-all duration-200 text-sm cursor-pointer min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-        <div class="flex items-center gap-2.5">
-          @if (darkMode()) {
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5 text-amber-400 shrink-0">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-            </svg>
-            @if (!isCollapsed()) {
-              <span
-                class="font-semibold text-surface-200 whitespace-nowrap hidden md:inline text-xs"
-                >{{ 'sidebar.lightMode' | transloco }}</span
-              >
-            }
-            <span class="font-semibold text-surface-200 whitespace-nowrap md:hidden text-xs">{{
-              'sidebar.lightMode' | transloco
-            }}</span>
-          } @else {
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5 text-indigo-400 shrink-0">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-            </svg>
-            @if (!isCollapsed()) {
-              <span
-                class="font-semibold text-surface-200 whitespace-nowrap hidden md:inline text-xs"
-                >{{ 'sidebar.darkMode' | transloco }}</span
-              >
-            }
-            <span class="font-semibold text-surface-200 whitespace-nowrap md:hidden text-xs">{{
-              'sidebar.darkMode' | transloco
-            }}</span>
-          }
-        </div>
-        @if (!isCollapsed()) {
-          <span
-            class="text-xs px-2 py-0.5 rounded-md bg-surface-800 text-surface-400 font-mono hidden md:inline">
-            {{ darkMode() ? 'DARK' : 'LIGHT' }}
-          </span>
-        }
-      </button>
-    </div>
   </div>
 </aside>
