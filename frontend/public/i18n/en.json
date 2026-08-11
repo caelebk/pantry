@@ -319,6 +319,8 @@
     "switchToDark": "Switch to Dark Mode",
     "expandSidebar": "Expand Sidebar",
     "collapseSidebar": "Collapse Sidebar",
+    "expandInventory": "Expand Inventory Sub-Menu",
+    "collapseInventory": "Collapse Inventory Sub-Menu",
     "toggleMobileMenu": "Toggle Navigation Menu",
     "logout": "Log Out"
   },

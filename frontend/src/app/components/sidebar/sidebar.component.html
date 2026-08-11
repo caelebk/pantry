@@ -109,6 +109,8 @@
       <button
         type="button"
         (click)="toggleKitchenMenu($event)"
+        aria-haspopup="true"
+        [attr.aria-expanded]="kitchenMenuOpen()"
         class="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-800/60 hover:bg-surface-800 border border-surface-700/80 transition-all text-left group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
         <div class="flex items-center gap-2.5 min-w-0">
           <div
@@ -200,10 +202,7 @@
 
     <!-- Inventory Group (With Subpages) -->
     <div>
-      <button
-        (click)="navigateTo('/inventory')"
-        [attr.title]="'nav.inventory' | transloco"
-        [attr.aria-current]="isInventoryActive() ? 'page' : null"
+      <div
         [class.justify-center]="isCollapsed()"
         [class.px-2.5]="isCollapsed()"
         [class.px-3.5]="!isCollapsed()"
@@ -215,8 +214,13 @@
         [class.text-surface-200]="!isInventoryActive()"
         [class.hover:bg-surface-800/80]="!isInventoryActive()"
         [class.hover:text-white]="!isInventoryActive()"
-        class="w-full flex items-center justify-between py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-        <div class="flex items-center gap-3">
+        class="w-full flex items-center justify-between py-2.5 rounded-xl transition-all duration-200 text-sm group/item relative">
+        <button
+          type="button"
+          (click)="navigateTo('/inventory')"
+          [attr.title]="'nav.inventory' | transloco"
+          [attr.aria-current]="isInventoryActive() ? 'page' : null"
+          class="flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -235,11 +239,18 @@
             }}</span>
           }
           <span class="whitespace-nowrap md:hidden">{{ 'nav.inventory' | transloco }}</span>
-        </div>
+        </button>
         @if (!isCollapsed()) {
-          <span
+          <button
+            type="button"
             (click)="toggleInventoryExpanded($event)"
-            class="p-1 text-surface-400 hover:text-white rounded transition-colors">
+            [attr.aria-expanded]="inventoryExpanded()"
+            [attr.aria-label]="
+              inventoryExpanded()
+                ? ('sidebar.collapseInventory' | transloco)
+                : ('sidebar.expandInventory' | transloco)
+            "
+            class="p-1 text-surface-400 hover:text-white rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 shrink-0">
             <svg
               [class.rotate-90]="inventoryExpanded()"
               xmlns="http://www.w3.org/2000/svg"
@@ -250,9 +261,9 @@
               class="w-3.5 h-3.5 transition-transform duration-200">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
-          </span>
+          </button>
         }
-      </button>
+      </div>
 
       <!-- Nested Inventory Sub-Navigation Links -->
       @if (!isCollapsed() && inventoryExpanded()) {
