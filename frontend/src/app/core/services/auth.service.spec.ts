@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
 @Component({ standalone: true, template: '' })
@@ -85,5 +85,23 @@ describe('AuthService', () => {
     expect(service.getAccessToken()).toBeNull();
     expect(service.currentUser()).toBeNull();
     expect(service.isAuthenticated()).toBe(false);
+  });
+
+  it('should set active kitchen, update localStorage, and navigate to home page', () => {
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, 'navigate');
+    const mockKitchen = {
+      id: 'ktc_99',
+      name: 'Bistro Haven',
+      role: 'owner',
+      createdAt: '',
+      updatedAt: '',
+    };
+
+    service.setActiveKitchen(mockKitchen);
+
+    expect(service.activeKitchen()).toEqual(mockKitchen);
+    expect(localStorage.getItem('activeKitchenId')).toBe('ktc_99');
+    expect(navigateSpy).toHaveBeenCalledWith(['/home']);
   });
 });

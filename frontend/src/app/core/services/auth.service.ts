@@ -191,6 +191,7 @@ export class AuthService {
   setActiveKitchen(kitchen: Kitchen): void {
     this.activeKitchen.set(kitchen);
     localStorage.setItem('activeKitchenId', kitchen.id);
+    this.router.navigate(['/home']);
   }
 
   clearAuthState(): void {
