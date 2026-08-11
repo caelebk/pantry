@@ -1,12 +1,12 @@
 <!-- Mobile Top Header Bar -->
 <div
-  class="md:hidden sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-surface-900/80 border-b border-surface-200/60 dark:border-surface-800/80 px-4 h-16 flex items-center justify-between">
+  class="md:hidden sticky top-0 z-50 backdrop-blur-md bg-surface-900/95 border-b border-surface-800/80 dark:bg-surface-950/95 dark:border-surface-800/60 px-4 h-16 flex items-center justify-between">
   <div class="flex items-center gap-3">
     <div
       class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary-500/20">
       <span class="material-symbols-outlined text-[20px]">skillet</span>
     </div>
-    <h1 class="text-lg font-bold tracking-tight text-surface-900 dark:text-white">
+    <h1 class="text-lg font-bold tracking-tight text-surface-100">
       {{ 'app.name' | transloco }}
     </h1>
   </div>
@@ -16,7 +16,7 @@
       [attr.aria-label]="
         darkMode() ? ('sidebar.switchToLight' | transloco) : ('sidebar.switchToDark' | transloco)
       "
-      class="p-2 cursor-pointer rounded-xl hover:bg-surface-200/60 dark:hover:bg-surface-800/60 text-surface-500 dark:text-surface-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      class="p-2 cursor-pointer rounded-xl hover:bg-surface-800 text-surface-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       @if (darkMode()) {
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +24,7 @@
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="w-5 h-5">
+          class="w-5 h-5 text-amber-400">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -37,7 +37,7 @@
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="w-5 h-5">
+          class="w-5 h-5 text-indigo-400">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -49,7 +49,7 @@
       (click)="toggleMobileMenu()"
       [attr.aria-label]="'sidebar.toggleMobileMenu' | transloco"
       [attr.aria-expanded]="mobileMenuOpen()"
-      class="p-2 cursor-pointer rounded-xl hover:bg-surface-200/60 dark:hover:bg-surface-800/60 text-surface-600 dark:text-surface-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      class="p-2 cursor-pointer rounded-xl hover:bg-surface-800 text-surface-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -70,7 +70,7 @@
 @if (mobileMenuOpen()) {
   <div
     (click)="toggleMobileMenu()"
-    class="md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-xs transition-opacity"></div>
+    class="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity"></div>
 }
 
 <!-- Sidebar Drawer / Desktop Sidebar -->
@@ -79,11 +79,11 @@
   [class.-translate-x-full]="!mobileMenuOpen()"
   [class.md:w-20]="isCollapsed()"
   [class.md:w-64]="!isCollapsed()"
-  class="fixed md:static top-0 left-0 z-50 md:z-auto h-screen md:h-full w-64 md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col backdrop-blur-xl bg-surface-50/95 dark:bg-surface-900/90 border-r border-surface-200/60 dark:border-surface-800/60 shadow-xl md:shadow-none shrink-0 group">
+  class="fixed md:static top-0 left-0 z-50 md:z-auto h-screen md:h-full w-64 md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col backdrop-blur-xl bg-surface-900 border-r border-surface-800/80 dark:bg-surface-950/95 dark:border-surface-800/60 shadow-2xl md:shadow-none shrink-0 group">
   <!-- Sidebar Header / Logo -->
   <div
     [class.justify-center]="isCollapsed()"
-    class="p-4 md:p-5 flex items-center border-b border-surface-200/40 dark:border-surface-800/40 h-18">
+    class="p-4 md:p-5 flex items-center border-b border-surface-800/80 h-18">
     <div class="flex items-center gap-3">
       <div
         class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md shadow-primary-500/25 transition-all duration-200 hover:scale-105 shrink-0">
@@ -92,13 +92,12 @@
       @if (!isCollapsed()) {
         <div class="hidden md:block overflow-hidden transition-all duration-300">
           <h1
-            class="text-lg font-bold tracking-tight text-surface-900 dark:text-white leading-tight whitespace-nowrap">
+            class="text-lg font-bold tracking-tight text-surface-100 leading-tight whitespace-nowrap">
             {{ 'app.name' | transloco }}
           </h1>
-          <span
-            class="text-[11px] font-medium text-surface-500 dark:text-surface-400 whitespace-nowrap"
-            >{{ 'sidebar.subTitle' | transloco }}</span
-          >
+          <span class="text-[11px] font-medium text-surface-400 whitespace-nowrap">{{
+            'sidebar.subTitle' | transloco
+          }}</span>
         </div>
       }
     </div>
@@ -110,41 +109,43 @@
       <button
         type="button"
         (click)="toggleKitchenMenu($event)"
-        class="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-100/70 dark:bg-surface-800/50 hover:bg-surface-200/80 dark:hover:bg-surface-800 border border-surface-200/80 dark:border-surface-700/80 transition-all text-left group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+        class="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-800/60 hover:bg-surface-800 border border-surface-700/80 transition-all text-left group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
         <div class="flex items-center gap-2.5 min-w-0">
           <div
-            class="w-7 h-7 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
             <i class="pi pi-building text-xs"></i>
           </div>
           <div class="truncate">
-            <div class="text-xs font-semibold text-surface-900 dark:text-surface-100 truncate">
+            <div class="text-xs font-bold text-surface-100 truncate">
               {{ authService.activeKitchen()?.name || 'Main Kitchen' }}
             </div>
-            <div class="text-[10px] text-surface-500 dark:text-surface-400 truncate">
+            <div class="text-[10px] font-medium text-surface-400 truncate">
               {{ authService.activeKitchen()?.role || 'member' }}
             </div>
           </div>
         </div>
         <i
           [class.rotate-180]="kitchenMenuOpen()"
-          class="pi pi-chevron-down text-xs text-surface-400 group-hover:text-surface-600 dark:group-hover:text-surface-200 transition-transform duration-200 shrink-0"></i>
+          class="pi pi-chevron-down text-xs text-surface-400 group-hover:text-surface-200 transition-transform duration-200 shrink-0"></i>
       </button>
 
       <!-- Dropdown Kitchen Menu -->
       @if (kitchenMenuOpen()) {
         <div
-          class="absolute top-full left-3 right-3 mt-1 py-1 bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-700 shadow-xl z-50 max-h-48 overflow-y-auto space-y-0.5">
+          class="absolute top-full left-3 right-3 mt-1 py-1 bg-surface-900 rounded-xl border border-surface-700 shadow-2xl z-50 max-h-48 overflow-y-auto space-y-0.5">
           @for (k of authService.userKitchens(); track k.id) {
             <button
               type="button"
               (click)="selectKitchen(k)"
-              [class.bg-primary-500/10]="authService.activeKitchen()?.id === k.id"
-              [class.text-primary-600]="authService.activeKitchen()?.id === k.id"
-              [class.dark:text-primary-400]="authService.activeKitchen()?.id === k.id"
-              class="w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-surface-100 dark:hover:bg-surface-800/80 transition-colors cursor-pointer">
+              [class.bg-primary-500/20]="authService.activeKitchen()?.id === k.id"
+              [class.text-primary-400]="authService.activeKitchen()?.id === k.id"
+              [class.font-bold]="authService.activeKitchen()?.id === k.id"
+              [class.border-l-2]="authService.activeKitchen()?.id === k.id"
+              [class.border-primary-500]="authService.activeKitchen()?.id === k.id"
+              class="w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-surface-800/80 transition-colors cursor-pointer text-surface-200">
               <span class="font-medium truncate">{{ k.name }}</span>
               @if (authService.activeKitchen()?.id === k.id) {
-                <i class="pi pi-check text-xs text-primary-500"></i>
+                <i class="pi pi-check text-xs text-primary-400"></i>
               }
             </button>
           }
@@ -157,7 +158,7 @@
   <nav class="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
     @if (!isCollapsed()) {
       <div
-        class="px-3 pb-2 text-[11px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-wider hidden md:block">
+        class="px-3 pb-2 text-[11px] font-extrabold text-surface-400 uppercase tracking-wider hidden md:block">
         {{ 'sidebar.mainNav' | transloco }}
       </div>
     }
@@ -170,21 +171,15 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/10]="isHomeActive()"
-      [class.dark:bg-primary-500/15]="isHomeActive()"
-      [class.text-primary-600]="isHomeActive()"
-      [class.dark:text-primary-400]="isHomeActive()"
-      [class.font-semibold]="isHomeActive()"
-      [class.text-surface-600]="!isHomeActive()"
-      [class.dark:text-surface-400]="!isHomeActive()"
-      [class.hover:bg-surface-100]="!isHomeActive()"
-      [class.dark:hover:bg-surface-800/60]="!isHomeActive()"
-      [class.hover:text-surface-900]="!isHomeActive()"
-      [class.dark:hover:text-surface-100]="!isHomeActive()"
+      [class.bg-primary-500/20]="isHomeActive()"
+      [class.text-primary-400]="isHomeActive()"
+      [class.font-bold]="isHomeActive()"
+      [class.border-l-4]="isHomeActive()"
+      [class.border-primary-500]="isHomeActive()"
+      [class.text-surface-200]="!isHomeActive()"
+      [class.hover:bg-surface-800/80]="!isHomeActive()"
+      [class.hover:text-white]="!isHomeActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-      @if (isHomeActive()) {
-        <div class="absolute left-0 top-2 bottom-2 w-1 bg-primary-500 rounded-r-full"></div>
-      }
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -212,22 +207,16 @@
         [class.justify-center]="isCollapsed()"
         [class.px-2.5]="isCollapsed()"
         [class.px-3.5]="!isCollapsed()"
-        [class.bg-primary-500/10]="isInventoryActive()"
-        [class.dark:bg-primary-500/15]="isInventoryActive()"
-        [class.text-primary-600]="isInventoryActive()"
-        [class.dark:text-primary-400]="isInventoryActive()"
-        [class.font-semibold]="isInventoryActive()"
-        [class.text-surface-600]="!isInventoryActive()"
-        [class.dark:text-surface-400]="!isInventoryActive()"
-        [class.hover:bg-surface-100]="!isInventoryActive()"
-        [class.dark:hover:bg-surface-800/60]="!isInventoryActive()"
-        [class.hover:text-surface-900]="!isInventoryActive()"
-        [class.dark:hover:text-surface-100]="!isInventoryActive()"
+        [class.bg-primary-500/20]="isInventoryActive()"
+        [class.text-primary-400]="isInventoryActive()"
+        [class.font-bold]="isInventoryActive()"
+        [class.border-l-4]="isInventoryActive()"
+        [class.border-primary-500]="isInventoryActive()"
+        [class.text-surface-200]="!isInventoryActive()"
+        [class.hover:bg-surface-800/80]="!isInventoryActive()"
+        [class.hover:text-white]="!isInventoryActive()"
         class="w-full flex items-center justify-between py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
         <div class="flex items-center gap-3">
-          @if (isInventoryActive()) {
-            <div class="absolute left-0 top-2 bottom-2 w-1 bg-primary-500 rounded-r-full"></div>
-          }
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -250,7 +239,7 @@
         @if (!isCollapsed()) {
           <span
             (click)="toggleInventoryExpanded($event)"
-            class="p-1 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 rounded transition-colors">
+            class="p-1 text-surface-400 hover:text-white rounded transition-colors">
             <svg
               [class.rotate-90]="inventoryExpanded()"
               xmlns="http://www.w3.org/2000/svg"
@@ -271,36 +260,45 @@
           <!-- Ingredients Catalog Subpage -->
           <button
             (click)="navigateTo('/inventory/ingredients')"
-            [class.text-primary-600]="isIngredientsActive()"
-            [class.dark:text-primary-400]="isIngredientsActive()"
-            [class.font-semibold]="isIngredientsActive()"
-            [class.text-surface-600]="!isIngredientsActive()"
-            [class.dark:text-surface-400]="!isIngredientsActive()"
-            class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs hover:bg-surface-100 dark:hover:bg-surface-800/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+            [class.bg-primary-500/20]="isIngredientsActive()"
+            [class.text-primary-400]="isIngredientsActive()"
+            [class.font-bold]="isIngredientsActive()"
+            [class.border-l-2]="isIngredientsActive()"
+            [class.border-primary-500]="isIngredientsActive()"
+            [class.text-surface-300]="!isIngredientsActive()"
+            [class.hover:bg-surface-800/80]="!isIngredientsActive()"
+            [class.hover:text-white]="!isIngredientsActive()"
+            class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredients' | transloco }}</span>
           </button>
 
           <!-- Ingredient Items Subpage -->
           <button
             (click)="navigateTo('/inventory/items')"
-            [class.text-primary-600]="isInventoryItemsActive()"
-            [class.dark:text-primary-400]="isInventoryItemsActive()"
-            [class.font-semibold]="isInventoryItemsActive()"
-            [class.text-surface-600]="!isInventoryItemsActive()"
-            [class.dark:text-surface-400]="!isInventoryItemsActive()"
-            class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs hover:bg-surface-100 dark:hover:bg-surface-800/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+            [class.bg-primary-500/20]="isInventoryItemsActive()"
+            [class.text-primary-400]="isInventoryItemsActive()"
+            [class.font-bold]="isInventoryItemsActive()"
+            [class.border-l-2]="isInventoryItemsActive()"
+            [class.border-primary-500]="isInventoryItemsActive()"
+            [class.text-surface-300]="!isInventoryItemsActive()"
+            [class.hover:bg-surface-800/80]="!isInventoryItemsActive()"
+            [class.hover:text-white]="!isInventoryItemsActive()"
+            class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredientItems' | transloco }}</span>
           </button>
 
           <!-- Ingredient Categories & Groups Subpage -->
           <button
             (click)="navigateTo('/inventory/groups')"
-            [class.text-primary-600]="isIngredientGroupsActive()"
-            [class.dark:text-primary-400]="isIngredientGroupsActive()"
-            [class.font-semibold]="isIngredientGroupsActive()"
-            [class.text-surface-600]="!isIngredientGroupsActive()"
-            [class.dark:text-surface-400]="!isIngredientGroupsActive()"
-            class="w-full flex justify-start text-left items-center gap-2 px-3 py-1.5 rounded-lg text-xs hover:bg-surface-100 dark:hover:bg-surface-800/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+            [class.bg-primary-500/20]="isIngredientGroupsActive()"
+            [class.text-primary-400]="isIngredientGroupsActive()"
+            [class.font-bold]="isIngredientGroupsActive()"
+            [class.border-l-2]="isIngredientGroupsActive()"
+            [class.border-primary-500]="isIngredientGroupsActive()"
+            [class.text-surface-300]="!isIngredientGroupsActive()"
+            [class.hover:bg-surface-800/80]="!isIngredientGroupsActive()"
+            [class.hover:text-white]="!isIngredientGroupsActive()"
+            class="w-full flex justify-start text-left items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredientCategoriesAndGroups' | transloco }}</span>
           </button>
         </div>
@@ -315,21 +313,15 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/10]="isRecipesActive()"
-      [class.dark:bg-primary-500/15]="isRecipesActive()"
-      [class.text-primary-600]="isRecipesActive()"
-      [class.dark:text-primary-400]="isRecipesActive()"
-      [class.font-semibold]="isRecipesActive()"
-      [class.text-surface-600]="!isRecipesActive()"
-      [class.dark:text-surface-400]="!isRecipesActive()"
-      [class.hover:bg-surface-100]="!isRecipesActive()"
-      [class.dark:hover:bg-surface-800/60]="!isRecipesActive()"
-      [class.hover:text-surface-900]="!isRecipesActive()"
-      [class.dark:hover:text-surface-100]="!isRecipesActive()"
+      [class.bg-primary-500/20]="isRecipesActive()"
+      [class.text-primary-400]="isRecipesActive()"
+      [class.font-bold]="isRecipesActive()"
+      [class.border-l-4]="isRecipesActive()"
+      [class.border-primary-500]="isRecipesActive()"
+      [class.text-surface-200]="!isRecipesActive()"
+      [class.hover:bg-surface-800/80]="!isRecipesActive()"
+      [class.hover:text-white]="!isRecipesActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-      @if (isRecipesActive()) {
-        <div class="absolute left-0 top-2 bottom-2 w-1 bg-primary-500 rounded-r-full"></div>
-      }
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -356,21 +348,15 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/10]="isShoppingListActive()"
-      [class.dark:bg-primary-500/15]="isShoppingListActive()"
-      [class.text-primary-600]="isShoppingListActive()"
-      [class.dark:text-primary-400]="isShoppingListActive()"
-      [class.font-semibold]="isShoppingListActive()"
-      [class.text-surface-600]="!isShoppingListActive()"
-      [class.dark:text-surface-400]="!isShoppingListActive()"
-      [class.hover:bg-surface-100]="!isShoppingListActive()"
-      [class.dark:hover:bg-surface-800/60]="!isShoppingListActive()"
-      [class.hover:text-surface-900]="!isShoppingListActive()"
-      [class.dark:hover:text-surface-100]="!isShoppingListActive()"
+      [class.bg-primary-500/20]="isShoppingListActive()"
+      [class.text-primary-400]="isShoppingListActive()"
+      [class.font-bold]="isShoppingListActive()"
+      [class.border-l-4]="isShoppingListActive()"
+      [class.border-primary-500]="isShoppingListActive()"
+      [class.text-surface-200]="!isShoppingListActive()"
+      [class.hover:bg-surface-800/80]="!isShoppingListActive()"
+      [class.hover:text-white]="!isShoppingListActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-      @if (isShoppingListActive()) {
-        <div class="absolute left-0 top-2 bottom-2 w-1 bg-primary-500 rounded-r-full"></div>
-      }
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -397,21 +383,15 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/10]="isMealPlannerActive()"
-      [class.dark:bg-primary-500/15]="isMealPlannerActive()"
-      [class.text-primary-600]="isMealPlannerActive()"
-      [class.dark:text-primary-400]="isMealPlannerActive()"
-      [class.font-semibold]="isMealPlannerActive()"
-      [class.text-surface-600]="!isMealPlannerActive()"
-      [class.dark:text-surface-400]="!isMealPlannerActive()"
-      [class.hover:bg-surface-100]="!isMealPlannerActive()"
-      [class.dark:hover:bg-surface-800/60]="!isMealPlannerActive()"
-      [class.hover:text-surface-900]="!isMealPlannerActive()"
-      [class.dark:hover:text-surface-100]="!isMealPlannerActive()"
+      [class.bg-primary-500/20]="isMealPlannerActive()"
+      [class.text-primary-400]="isMealPlannerActive()"
+      [class.font-bold]="isMealPlannerActive()"
+      [class.border-l-4]="isMealPlannerActive()"
+      [class.border-primary-500]="isMealPlannerActive()"
+      [class.text-surface-200]="!isMealPlannerActive()"
+      [class.hover:bg-surface-800/80]="!isMealPlannerActive()"
+      [class.hover:text-white]="!isMealPlannerActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-      @if (isMealPlannerActive()) {
-        <div class="absolute left-0 top-2 bottom-2 w-1 bg-primary-500 rounded-r-full"></div>
-      }
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -440,7 +420,7 @@
         : ('sidebar.collapseSidebar' | transloco)
     "
     [attr.aria-expanded]="!isCollapsed()"
-    class="hidden md:flex absolute top-1/2 -right-3.5 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-md items-center justify-center text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:scale-110 active:scale-95 transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+    class="hidden md:flex absolute top-1/2 -right-3.5 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-surface-800 border border-surface-700 shadow-md items-center justify-center text-surface-300 hover:text-primary-400 hover:scale-110 active:scale-95 transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
     @if (isCollapsed()) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -465,7 +445,7 @@
   </button>
 
   <!-- Sidebar Footer Options -->
-  <div class="p-3 border-t border-surface-200/40 dark:border-surface-800/40 space-y-1">
+  <div class="p-3 border-t border-surface-800/80 space-y-1">
     <!-- Profile & Account Link -->
     <button
       (click)="navigateTo('/profile')"
@@ -474,21 +454,15 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/10]="isProfileActive()"
-      [class.dark:bg-primary-500/15]="isProfileActive()"
-      [class.text-primary-600]="isProfileActive()"
-      [class.dark:text-primary-400]="isProfileActive()"
-      [class.font-semibold]="isProfileActive()"
-      [class.text-surface-600]="!isProfileActive()"
-      [class.dark:text-surface-400]="!isProfileActive()"
-      [class.hover:bg-surface-100]="!isProfileActive()"
-      [class.dark:hover:bg-surface-800/60]="!isProfileActive()"
-      [class.hover:text-surface-900]="!isProfileActive()"
-      [class.dark:hover:text-surface-100]="!isProfileActive()"
+      [class.bg-primary-500/20]="isProfileActive()"
+      [class.text-primary-400]="isProfileActive()"
+      [class.font-bold]="isProfileActive()"
+      [class.border-l-4]="isProfileActive()"
+      [class.border-primary-500]="isProfileActive()"
+      [class.text-surface-200]="!isProfileActive()"
+      [class.hover:bg-surface-800/80]="!isProfileActive()"
+      [class.hover:text-white]="!isProfileActive()"
       class="w-full flex items-center gap-3 py-2 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-      @if (isProfileActive()) {
-        <div class="absolute left-0 top-2 bottom-2 w-1 bg-primary-500 rounded-r-full"></div>
-      }
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -514,7 +488,7 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      class="w-full flex items-center gap-3 py-2 rounded-xl hover:bg-red-500/10 dark:hover:bg-red-500/15 text-surface-600 dark:text-surface-400 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 cursor-pointer text-sm group/item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
+      class="w-full flex items-center gap-3 py-2 rounded-xl hover:bg-red-500/20 text-surface-200 hover:text-red-400 transition-all duration-200 cursor-pointer text-sm group/item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -543,7 +517,7 @@
         [class.justify-center]="isCollapsed()"
         [class.px-2.5]="isCollapsed()"
         [class.px-3.5]="!isCollapsed()"
-        class="w-full flex items-center justify-between py-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800/60 text-surface-600 dark:text-surface-400 transition-all duration-200 text-sm cursor-pointer min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+        class="w-full flex items-center justify-between py-2 rounded-xl hover:bg-surface-800/80 text-surface-200 hover:text-white transition-all duration-200 text-sm cursor-pointer min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
         <div class="flex items-center gap-2.5">
           @if (darkMode()) {
             <svg
@@ -560,14 +534,13 @@
             </svg>
             @if (!isCollapsed()) {
               <span
-                class="font-medium text-surface-700 dark:text-surface-200 whitespace-nowrap hidden md:inline text-xs"
+                class="font-semibold text-surface-200 whitespace-nowrap hidden md:inline text-xs"
                 >{{ 'sidebar.lightMode' | transloco }}</span
               >
             }
-            <span
-              class="font-medium text-surface-700 dark:text-surface-200 whitespace-nowrap md:hidden text-xs"
-              >{{ 'sidebar.lightMode' | transloco }}</span
-            >
+            <span class="font-semibold text-surface-200 whitespace-nowrap md:hidden text-xs">{{
+              'sidebar.lightMode' | transloco
+            }}</span>
           } @else {
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -575,7 +548,7 @@
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-5 h-5 text-indigo-500 shrink-0">
+              class="w-5 h-5 text-indigo-400 shrink-0">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -583,19 +556,18 @@
             </svg>
             @if (!isCollapsed()) {
               <span
-                class="font-medium text-surface-700 dark:text-surface-200 whitespace-nowrap hidden md:inline text-xs"
+                class="font-semibold text-surface-200 whitespace-nowrap hidden md:inline text-xs"
                 >{{ 'sidebar.darkMode' | transloco }}</span
               >
             }
-            <span
-              class="font-medium text-surface-700 dark:text-surface-200 whitespace-nowrap md:hidden text-xs"
-              >{{ 'sidebar.darkMode' | transloco }}</span
-            >
+            <span class="font-semibold text-surface-200 whitespace-nowrap md:hidden text-xs">{{
+              'sidebar.darkMode' | transloco
+            }}</span>
           }
         </div>
         @if (!isCollapsed()) {
           <span
-            class="text-xs px-2 py-0.5 rounded-md bg-surface-200/60 dark:bg-surface-800 text-surface-500 dark:text-surface-400 font-mono hidden md:inline">
+            class="text-xs px-2 py-0.5 rounded-md bg-surface-800 text-surface-400 font-mono hidden md:inline">
             {{ darkMode() ? 'DARK' : 'LIGHT' }}
           </span>
         }
