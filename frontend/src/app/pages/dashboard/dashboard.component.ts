@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { HomeComponent } from '../home/home.component';
 
 @Component({
@@ -6,5 +6,6 @@ import { HomeComponent } from '../home/home.component';
   standalone: true,
   imports: [HomeComponent],
   template: `<pantry-home></pantry-home>`,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {}

@@ -39,7 +39,6 @@ export class MealPlannerComponent {
       const activeKitchen = this.authService.activeKitchen();
       if (activeKitchen) {
         this.loadRecipes();
-        this.mealPlannerService.loadMealsFromBackend();
       }
     });
   }

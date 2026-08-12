@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -24,6 +25,7 @@ import { getItemTimeStatus, sortItemsByExpirationDate } from '@utility/itemUtili
   styleUrls: ['./items-container.component.scss'],
   animations: [staggeredFadeIn],
   host: { class: 'block' },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemsContainerComponent {
   private readonly elementRef = inject(ElementRef);

@@ -4,6 +4,7 @@ import { ApiResponse } from '@models/http.model';
 import { IngredientCategory } from '@models/ingredient-category.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -11,11 +12,15 @@ import { Observable } from 'rxjs';
 export class IngredientCategoryService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = '/api/ingredient-categories';
+  private categoriesCache$?: Observable<IngredientCategory[]>;
 
   getIngredientCategories(): Observable<IngredientCategory[]> {
-    return this.http
-      .get<ApiResponse<IngredientCategory[]>>(this.apiUrl)
-      .pipe(mapResponseData<IngredientCategory[]>());
+    if (!this.categoriesCache$) {
+      this.categoriesCache$ = this.http
+        .get<ApiResponse<IngredientCategory[]>>(this.apiUrl)
+        .pipe(mapResponseData<IngredientCategory[]>(), shareReplay(1));
+    }
+    return this.categoriesCache$;
   }
 
   getIngredientCategoryById(id: number): Observable<IngredientCategory> {

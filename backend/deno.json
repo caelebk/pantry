@@ -1,9 +1,9 @@
 {
   "nodeModulesDir": "auto",
   "tasks": {
-    "dev": "deno run --allow-env --watch --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi main.ts",
-    "start": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi main.ts",
-    "test": "NODE_ENV=test deno test --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi",
+    "dev": "deno run --allow-env --watch --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi --unstable-cron main.ts",
+    "start": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi --unstable-cron main.ts",
+    "test": "NODE_ENV=test deno test --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi --unstable-cron",
     "db:migrate": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi scripts/migrate_db.ts",
     "db:backup": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi scripts/backup_db.ts",
     "db:reset": "deno run --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi scripts/reset_db.ts",

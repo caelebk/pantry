@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { DayOfWeek, PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 
@@ -9,14 +18,23 @@ import { MealPlannerService } from '@services/meal-planner.service';
   imports: [CommonModule],
   templateUrl: './daily-focus.component.html',
   styleUrl: './daily-focus.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DailyFocusComponent {
   readonly mealPlannerService = inject(MealPlannerService);
 
+  readonly mealsInput = signal<PlannedMeal[]>([]);
+
   @Input() set initialDay(day: DayOfWeek) {
     if (day) this.selectedDay.set(day);
   }
-  @Input() meals: PlannedMeal[] = [];
+  @Input() set meals(val: PlannedMeal[]) {
+    this.mealsInput.set(val || []);
+  }
+  get meals(): PlannedMeal[] {
+    return this.mealsInput();
+  }
+
   @Output() addMealRequested = new EventEmitter<{
     day: DayOfWeek;
     mealType: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snacks';
@@ -26,7 +44,7 @@ export class DailyFocusComponent {
   readonly selectedDay = signal<DayOfWeek>('Monday');
 
   readonly dayMeals = computed(() => {
-    return this.meals.filter((m) => m.day === this.selectedDay());
+    return this.mealsInput().filter((m) => m.day === this.selectedDay());
   });
 
   readonly totalCalories = computed(() => {

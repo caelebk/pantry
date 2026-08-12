@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IngredientGroup } from '@models/ingredient-group.model';
@@ -45,6 +46,7 @@ import { TextareaModule } from 'primeng/textarea';
   templateUrl: './add-item-page.component.html',
 })
 export class AddItemPageComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly itemService = inject(ItemService);
@@ -95,19 +97,21 @@ export class AddItemPageComponent implements OnInit {
     });
 
     // Auto fill Item Name & Unit when selecting an Ingredient
-    this.addItemForm.controls.ingredient.valueChanges.subscribe((selectedIng) => {
-      if (selectedIng) {
-        if (!this.addItemForm.controls.name.value) {
-          this.addItemForm.controls.name.setValue(selectedIng.name);
+    this.addItemForm.controls.ingredient.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((selectedIng) => {
+        if (selectedIng) {
+          if (!this.addItemForm.controls.name.value) {
+            this.addItemForm.controls.name.setValue(selectedIng.name);
+          }
+          if (selectedIng.defaultUnit) {
+            this.addItemForm.controls.unit.setValue(selectedIng.defaultUnit);
+            this.addItemForm.controls.unit.disable();
+          }
+        } else {
+          this.addItemForm.controls.unit.enable();
         }
-        if (selectedIng.defaultUnit) {
-          this.addItemForm.controls.unit.setValue(selectedIng.defaultUnit);
-          this.addItemForm.controls.unit.disable();
-        }
-      } else {
-        this.addItemForm.controls.unit.enable();
-      }
-    });
+      });
   }
 
   loadIngredients(selectNewId?: string): void {

@@ -7,6 +7,7 @@ import {
   effect,
   ElementRef,
   inject,
+  NgZone,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
@@ -76,6 +77,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroyRef = inject(DestroyRef);
   private platformId = inject(PLATFORM_ID);
   private authService = inject(AuthService);
+  private ngZone = inject(NgZone);
 
   Tab = Tab; // Expose enum to template
   title = 'Pantry';
@@ -167,7 +169,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId) && this.particleCanvas) {
-      this.initParticleWeb();
+      this.ngZone.runOutsideAngular(() => {
+        this.initParticleWeb();
+      });
     }
   }
 

@@ -45,7 +45,7 @@
     </div>
 
     <div #itemsList class="space-y-2.5 items-list" [class.isExpanded]="isExpanded()">
-      @for (item of visibleItems(); track item.name; let i = $index) {
+      @for (item of visibleItems(); track item.id; let i = $index) {
         <div
           [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
           class="sub-card sub-card-hover p-3.5 rounded-xl flex justify-between items-center group/item">

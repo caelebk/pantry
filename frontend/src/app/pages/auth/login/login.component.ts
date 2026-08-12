@@ -3,8 +3,8 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  HostListener,
   inject,
+  NgZone,
   OnDestroy,
   OnInit,
   signal,
@@ -306,6 +306,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   private toastService = inject(ToastService);
+  private ngZone = inject(NgZone);
 
   readonly showPassword = signal(false);
   readonly isSubmitting = signal(false);
@@ -318,6 +319,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   });
 
   private animationFrameId?: number;
+  private resizeListener?: () => void;
   private particles: Particle[] = [];
 
   ngOnInit() {
@@ -325,24 +327,17 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.initCanvasAnimation();
+    this.ngZone.runOutsideAngular(() => {
+      this.initCanvasAnimation();
+    });
   }
 
   ngOnDestroy() {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    if (this.canvasRef?.nativeElement) {
-      const canvas = this.canvasRef.nativeElement;
-      const parent = canvas.parentElement;
-      if (parent) {
-        canvas.width = parent.clientWidth;
-        canvas.height = parent.clientHeight;
-      }
+    if (this.resizeListener && typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.resizeListener);
     }
   }
 
@@ -388,6 +383,17 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     const parent = canvas.parentElement;
     const width = (canvas.width = parent ? parent.clientWidth : 600);
     const height = (canvas.height = parent ? parent.clientHeight : 800);
+
+    this.resizeListener = () => {
+      const p = canvas.parentElement;
+      if (p) {
+        canvas.width = p.clientWidth;
+        canvas.height = p.clientHeight;
+      }
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.resizeListener);
+    }
 
     const count = 45;
     this.particles = [];

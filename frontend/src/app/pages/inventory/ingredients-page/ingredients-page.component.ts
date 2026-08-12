@@ -103,25 +103,48 @@ export class IngredientsPageComponent {
     });
   }
 
+  public connectedItemsMap = computed(() => {
+    const map = new Map<string, Item[]>();
+    for (const item of this.items()) {
+      if (item.ingredientId) {
+        const list = map.get(item.ingredientId) || [];
+        list.push(item);
+        map.set(item.ingredientId, list);
+      }
+    }
+    return map;
+  });
+
+  public quantitySummaryMap = computed(() => {
+    const summaryMap = new Map<string, string>();
+    const itemsMap = this.connectedItemsMap();
+
+    itemsMap.forEach((connected, ingId) => {
+      if (connected.length === 0) {
+        summaryMap.set(ingId, '0 items');
+        return;
+      }
+      const unitMap = new Map<string, number>();
+      for (const item of connected) {
+        const unitName = item.unit.shortName || item.unit.name;
+        unitMap.set(unitName, (unitMap.get(unitName) || 0) + item.quantity);
+      }
+      const parts: string[] = [];
+      unitMap.forEach((qty, unit) => {
+        parts.push(`${qty} ${unit}`);
+      });
+      summaryMap.set(ingId, parts.join(', '));
+    });
+
+    return summaryMap;
+  });
+
   getConnectedItems(ingredientId: string): Item[] {
-    return this.items().filter((item) => item.ingredientId === ingredientId);
+    return this.connectedItemsMap().get(ingredientId) || [];
   }
 
   getTotalQuantityText(ingredientId: string): string {
-    const connected = this.getConnectedItems(ingredientId);
-    if (connected.length === 0) return '0 items';
-
-    const unitMap = new Map<string, number>();
-    for (const item of connected) {
-      const unitName = item.unit.shortName || item.unit.name;
-      unitMap.set(unitName, (unitMap.get(unitName) || 0) + item.quantity);
-    }
-
-    const parts: string[] = [];
-    unitMap.forEach((qty, unit) => {
-      parts.push(`${qty} ${unit}`);
-    });
-    return parts.join(', ');
+    return this.quantitySummaryMap().get(ingredientId) || '0 items';
   }
 
   // Summary Metrics

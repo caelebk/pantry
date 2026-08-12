@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input, Output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  Output,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
@@ -22,6 +30,7 @@ import { Subject } from 'rxjs';
   imports: [CommonModule, TranslocoModule, DialogModule, ButtonModule],
   templateUrl: './item-card.component.html',
   styles: [':host { display: block; height: 100%; }'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemCardComponent {
   private readonly router = inject(Router);
