@@ -202,7 +202,7 @@
       @if (viewMode === 'table') {
         <!-- High-Density Interactive Data Table -->
         <div
-          class="glass-card rounded-2xl overflow-hidden border border-surface-200/70 dark:border-surface-800/80 shadow-xs">
+          class="glass-card rounded-2xl overflow-hidden border border-surface-200/70 dark:border-surface-800/80 shadow-xs page-enter-smooth">
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
@@ -437,7 +437,8 @@
         </div>
       } @else {
         <!-- Grid View -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 page-enter-smooth">
           @for (item of displayedItems; track item.name; let i = $index) {
             <pantry-item-card
               [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"

@@ -113,11 +113,13 @@
   </div>
 
   <!-- Dynamic Views -->
-  @if (activeSubTab() === 'calendar') {
-    <pantry-weekly-view [meals]="plannedMeals()" (addMealRequested)="openAddModal($event)">
-    </pantry-weekly-view>
-  } @else if (activeSubTab() === 'daily') {
-    <pantry-daily-focus [meals]="plannedMeals()" (addMealRequested)="openAddModal($event)">
-    </pantry-daily-focus>
-  }
+  <div class="page-enter-smooth">
+    @if (activeSubTab() === 'calendar') {
+      <pantry-weekly-view [meals]="plannedMeals()" (addMealRequested)="openAddModal($event)">
+      </pantry-weekly-view>
+    } @else if (activeSubTab() === 'daily') {
+      <pantry-daily-focus [meals]="plannedMeals()" (addMealRequested)="openAddModal($event)">
+      </pantry-daily-focus>
+    }
+  </div>
 </div>

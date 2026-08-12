@@ -1,15 +1,15 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 
-// Animation configuration constants
-export const FADE_ANIMATION_DURATION_MS = 300;
-export const FADE_TRANSLATE_DISTANCE_PX = 20;
-export const STAGGER_ANIMATION_DURATION_MS = 400;
-export const STAGGER_TRANSLATE_DISTANCE_PX = 20;
-export const STAGGER_INITIAL_SCALE = 0.95;
+// Animation configuration constants (Optimized for snappy 60 FPS UX)
+export const FADE_ANIMATION_DURATION_MS = 160;
+export const FADE_TRANSLATE_DISTANCE_PX = 6;
+export const STAGGER_ANIMATION_DURATION_MS = 180;
+export const STAGGER_TRANSLATE_DISTANCE_PX = 6;
+export const STAGGER_INITIAL_SCALE = 0.98;
 export const STAGGER_FINAL_SCALE = 1;
 export const STAGGER_INITIAL_OPACITY = 0;
 export const STAGGER_FINAL_OPACITY = 1;
-export const STAGGER_DELAY_PER_ITEM_MS = 50;
+export const STAGGER_DELAY_PER_ITEM_MS = 10;
 
 /**
  * Fade in/out animation with vertical translation
