@@ -18,6 +18,7 @@ import { QuickActionsContainerComponent } from './home-components/quick-actions-
 
 import { ChangeDetectionStrategy, DestroyRef, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -82,6 +83,8 @@ export class HomeComponent {
     return new Date().toLocaleDateString(undefined, options);
   });
 
+  isLoading = signal(true);
+
   constructor() {
     effect(() => {
       const activeKitchen = this.authService.activeKitchen();
@@ -92,39 +95,29 @@ export class HomeComponent {
   }
 
   fetchData(): void {
-    this.itemService
-      .getItems()
+    this.isLoading.set(true);
+    forkJoin({
+      items: this.itemService.getItems(),
+      recipes: this.recipeService.getAvailableRecipes(),
+      locations: this.locationService.getLocations(),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (items: Item[]) => {
+        next: ({ items, recipes, locations }) => {
           this.items.set(items);
-          this.expiredItems.set(this.items().filter((item) => isExpired(item)));
-          this.soonToExpireItems.set(this.items().filter((item) => isExpiringSoon(item)));
+          this.expiredItems.set(items.filter((item) => isExpired(item)));
+          this.soonToExpireItems.set(items.filter((item) => isExpiringSoon(item)));
           this.availableItems.set(
-            this.items().filter((item) => !isExpired(item) && !isExpiringSoon(item)),
+            items.filter((item) => !isExpired(item) && !isExpiringSoon(item)),
           );
-        },
-        error: (err) => console.error('Failed to load items:', err),
-      });
-
-    this.recipeService
-      .getAvailableRecipes()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (recipes: Recipe[]) => {
           this.recipes.set(recipes);
-        },
-        error: (err) => console.error('Failed to load recipes:', err),
-      });
-
-    this.locationService
-      .getLocations()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (locations: Location[]) => {
           this.locations.set(locations);
+          this.isLoading.set(false);
         },
-        error: (err) => console.error('Failed to load locations:', err),
+        error: (err) => {
+          console.error('Failed to load home data:', err);
+          this.isLoading.set(false);
+        },
       });
   }
 

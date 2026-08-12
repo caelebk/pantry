@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -50,6 +58,40 @@ export class SidebarComponent {
     { initialValue: this.router.url },
   );
 
+  private readonly activeUrl = computed(() => this.currentUrl() || this.router.url || '');
+
+  readonly isHomeActive = computed(() => {
+    const url = this.activeUrl();
+    return url === '/' || url.startsWith('/home') || url.startsWith('/dashboard');
+  });
+
+  readonly isInventoryActive = computed(() => this.activeUrl().startsWith('/inventory'));
+
+  readonly isIngredientsActive = computed(() => {
+    const url = this.activeUrl();
+    return url === '/inventory/ingredients' || url.startsWith('/inventory/ingredients/');
+  });
+
+  readonly isInventoryItemsActive = computed(() => {
+    const url = this.activeUrl();
+    return url === '/inventory/items' || url.startsWith('/inventory/items/');
+  });
+
+  readonly isIngredientGroupsActive = computed(() => {
+    const url = this.activeUrl();
+    return (
+      url === '/inventory/groups' ||
+      url.startsWith('/inventory/groups/') ||
+      url.startsWith('/inventory/categories') ||
+      url.startsWith('/inventory/nutrients')
+    );
+  });
+
+  readonly isRecipesActive = computed(() => this.activeUrl().startsWith('/recipes'));
+  readonly isShoppingListActive = computed(() => this.activeUrl().startsWith('/shopping-list'));
+  readonly isMealPlannerActive = computed(() => this.activeUrl().startsWith('/meal-planner'));
+  readonly isProfileActive = computed(() => this.activeUrl().startsWith('/profile'));
+
   toggleCollapse(): void {
     this.isCollapsed.update((v) => !v);
   }
@@ -75,54 +117,5 @@ export class SidebarComponent {
     this.mobileMenuOpen.set(false);
     this.kitchenMenuOpen.set(false);
     this.router.navigate([path]);
-  }
-
-  private get url(): string {
-    return this.currentUrl() || this.router.url || '';
-  }
-
-  isHomeActive(): boolean {
-    const url = this.url;
-    return url === '/' || url.startsWith('/home') || url.startsWith('/dashboard');
-  }
-
-  isInventoryActive(): boolean {
-    return this.url.startsWith('/inventory');
-  }
-
-  isIngredientsActive(): boolean {
-    const url = this.url;
-    return url === '/inventory/ingredients' || url.startsWith('/inventory/ingredients/');
-  }
-
-  isInventoryItemsActive(): boolean {
-    const url = this.url;
-    return url === '/inventory/items' || url.startsWith('/inventory/items/');
-  }
-
-  isIngredientGroupsActive(): boolean {
-    const url = this.url;
-    return (
-      url === '/inventory/groups' ||
-      url.startsWith('/inventory/groups/') ||
-      url.startsWith('/inventory/categories') ||
-      url.startsWith('/inventory/nutrients')
-    );
-  }
-
-  isRecipesActive(): boolean {
-    return this.url.startsWith('/recipes');
-  }
-
-  isShoppingListActive(): boolean {
-    return this.url.startsWith('/shopping-list');
-  }
-
-  isMealPlannerActive(): boolean {
-    return this.url.startsWith('/meal-planner');
-  }
-
-  isProfileActive(): boolean {
-    return this.url.startsWith('/profile');
   }
 }
