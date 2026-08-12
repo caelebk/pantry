@@ -402,10 +402,10 @@
     "alreadyHaveAccount": "Already have an account?",
     "signUpNow": "Sign Up",
     "signInNow": "Sign In",
-    "welcomeBack": "Welcome Back to Pantry",
-    "welcomeSubtitle": "Sign in to manage your smart kitchen & shared pantries",
-    "createAccountTitle": "Join Pantry Today",
-    "createAccountSubtitle": "Start managing zero-waste inventory with shared kitchen workspaces"
+    "welcomeBack": "Welcome Back",
+    "welcomeSubtitle": "Sign in to access your kitchen workspace",
+    "createAccountTitle": "Create Account",
+    "createAccountSubtitle": "Get started with your kitchen workspace"
   },
   "profile": {
     "title": "Chef Profile & Account Settings",

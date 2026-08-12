@@ -1,29 +1,10 @@
 import { CommonModule } from '@angular/common';
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  inject,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  signal,
-  ViewChild,
-} from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../services/toast.service';
-
-interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  radius: number;
-  alpha: number;
-}
 
 @Component({
   selector: 'pantry-signup',
@@ -31,13 +12,13 @@ interface Particle {
   imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslocoModule],
   template: `
     <div
-      class="relative min-h-screen w-full flex bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-50 font-sans transition-colors duration-300 overflow-hidden">
-      <!-- Top-Right Floating Controls (Theme Toggle) -->
-      <div class="absolute top-5 right-5 z-30 flex items-center gap-3">
+      class="relative min-h-screen w-full flex animated-gradient-bg text-surface-900 dark:text-surface-50 font-sans transition-colors duration-300 overflow-hidden">
+      <!-- Top-Right Floating Theme Toggle -->
+      <div class="absolute top-5 right-5 z-30">
         <button
           type="button"
           (click)="toggleTheme()"
-          class="w-10 h-10 rounded-xl bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-800 backdrop-blur-xl flex items-center justify-center text-surface-700 dark:text-surface-200 hover:text-orange-500 dark:hover:text-orange-400 shadow-md transition-all duration-200 active:scale-95 cursor-pointer"
+          class="w-10 h-10 rounded-xl bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-800 backdrop-blur-xl flex items-center justify-center text-surface-700 dark:text-surface-200 hover:text-primary-500 dark:hover:text-primary-400 shadow-sm transition-all duration-200 active:scale-95 cursor-pointer"
           [attr.aria-label]="isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
           <i
             [class]="
@@ -48,107 +29,147 @@ interface Particle {
         </button>
       </div>
 
-      <!-- Left Hero Showcase Panel (Desktop lg:flex 50% Width) -->
+      <!-- Left Hero Showcase Panel (Desktop Split 50%) -->
       <div
-        class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden bg-gradient-to-br from-amber-600/10 via-surface-900 to-orange-950/40 dark:from-amber-950/40 dark:via-surface-950 dark:to-black border-r border-surface-200/50 dark:border-surface-800/50">
-        <!-- Interactive Orange Graph Canvas Layer -->
-        <canvas
-          #bgCanvas
-          class="absolute inset-0 z-0 pointer-events-none opacity-80"
-          aria-hidden="true"></canvas>
+        class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 bg-surface-100/50 dark:bg-surface-900/40 backdrop-blur-md border-r border-surface-200/80 dark:border-surface-800/80 overflow-hidden">
+        <!-- Floating Kitchen & Food Organization Watermark Vector Shapes Layer -->
+        <div class="absolute inset-0 pointer-events-none z-0" aria-hidden="true">
+          <!-- Pantry Storage Jar Vector -->
+          <svg
+            class="vector-float-slow absolute -top-6 -right-6 w-56 h-56 text-primary-500/10 dark:text-primary-400/10"
+            viewBox="0 0 100 100"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5">
+            <rect x="25" y="30" width="50" height="58" rx="8" />
+            <rect x="30" y="18" width="40" height="12" rx="4" />
+            <path d="M 35,18 L 35,12 C 35,10 65,10 65,12 L 65,18" />
+            <path d="M 30,50 Q 50,46 70,50" stroke-dasharray="3 3" />
+            <path d="M 30,68 Q 50,64 70,68" stroke-dasharray="3 3" />
+          </svg>
 
-        <!-- Brand Top Header -->
-        <div class="relative z-10 flex items-center gap-2.5">
+          <!-- Skillet & Cooking Pan Vector -->
+          <svg
+            class="vector-float-medium absolute -bottom-10 -left-10 w-64 h-64 text-amber-500/10 dark:text-amber-400/10"
+            viewBox="0 0 100 100"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5">
+            <circle cx="42" cy="50" r="32" />
+            <circle cx="42" cy="50" r="26" stroke-dasharray="4 3" />
+            <path d="M 68,66 L 92,84" stroke-width="3" stroke-linecap="round" />
+            <circle cx="90" cy="82" r="2.5" fill="currentColor" />
+          </svg>
+
+          <!-- Refrigerator Storage Cabinet Vector -->
+          <svg
+            class="vector-float-fast absolute top-1/4 -left-12 w-48 h-48 text-orange-500/10 dark:text-orange-400/10"
+            viewBox="0 0 100 100"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5">
+            <rect x="25" y="15" width="50" height="70" rx="6" />
+            <line x1="25" y1="42" x2="75" y2="42" />
+            <line x1="32" y1="28" x2="32" y2="36" stroke-width="2" stroke-linecap="round" />
+            <line x1="32" y1="48" x2="32" y2="60" stroke-width="2" stroke-linecap="round" />
+          </svg>
+
+          <!-- Crossed Utensils & Spatula Vector -->
+          <svg
+            class="vector-float-slow absolute bottom-1/4 -right-10 w-52 h-52 text-amber-500/10 dark:text-amber-400/10"
+            viewBox="0 0 100 100"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5">
+            <path d="M 25,25 L 75,75" stroke-width="2" stroke-linecap="round" />
+            <rect x="18" y="14" width="14" height="18" rx="2" transform="rotate(-45 25 23)" />
+            <path d="M 75,25 L 25,75" stroke-width="2" stroke-linecap="round" />
+            <circle cx="75" cy="25" r="5" fill="currentColor" fill-opacity="0.2" />
+          </svg>
+
+          <!-- Fresh Produce Apple Vector -->
+          <svg
+            class="vector-float-medium absolute top-12 right-1/3 w-36 h-36 text-emerald-500/10 dark:text-emerald-400/10"
+            viewBox="0 0 100 100"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5">
+            <path
+              d="M 50,35 C 40,20 20,25 20,48 C 20,72 40,85 50,82 C 60,85 80,72 80,48 C 80,25 60,20 50,35 Z" />
+            <path d="M 50,32 Q 54,20 60,15" stroke-width="2" stroke-linecap="round" />
+            <path d="M 54,22 Q 68,18 64,28 Q 54,28 54,22 Z" fill="currentColor" fill-opacity="0.2" />
+          </svg>
+        </div>
+
+        <!-- Brand Emblem Header -->
+        <div class="relative z-10 flex items-center gap-3">
           <div
-            class="w-7 h-7 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-500 dark:text-orange-400 flex items-center justify-center">
-            <span class="material-symbols-outlined text-[16px]">skillet</span>
+            class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold shadow-md shadow-primary-500/20">
+            <span class="material-symbols-outlined text-[20px]">skillet</span>
           </div>
-          <span
-            class="text-xs font-light tracking-[0.3em] uppercase text-surface-800 dark:text-surface-200">
+          <span class="text-xl font-bold tracking-tight text-surface-900 dark:text-white">
             Pantry
           </span>
         </div>
 
-        <!-- Hero Content -->
-        <div class="relative z-10 my-auto max-w-lg space-y-8">
+        <!-- Minimal Hero Content -->
+        <div class="relative z-10 my-auto max-w-md space-y-6">
           <div>
-            <span
-              class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 dark:text-orange-400 border border-orange-500/20 text-xs font-semibold uppercase tracking-wider">
-              Start Your Free Workspace
-            </span>
             <h1
-              class="text-4xl xl:text-5xl font-extrabold tracking-tight text-surface-900 dark:text-white mt-4 leading-tight">
-              Organize your kitchen,
-              <span
-                class="bg-gradient-to-r from-orange-500 to-amber-400 bg-clip-text text-transparent"
-                >effortlessly.</span
-              >
+              class="text-4xl xl:text-5xl font-extrabold tracking-tight text-surface-900 dark:text-white leading-tight">
+              Organize your kitchen.
             </h1>
-            <p class="text-base text-surface-600 dark:text-surface-400 mt-4 leading-relaxed">
-              Create your account in 30 seconds. Automatically provision a shared kitchen workspace,
-              invite family members, and start tracking inventory.
+            <p class="text-sm text-surface-600 dark:text-surface-400 mt-3 leading-relaxed">
+              Create shared pantries, invite housemates, and track ingredients.
             </p>
           </div>
 
-          <!-- Feature Cards Grid -->
-          <div class="grid grid-cols-2 gap-4">
+          <!-- Minimal Feature Cards -->
+          <div class="grid grid-cols-2 gap-3">
             <div
-              class="p-4 rounded-2xl bg-white/70 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl space-y-2">
-              <i class="pi pi-building text-orange-500 text-xl"></i>
+              class="glass-card p-3.5 rounded-xl border border-surface-200/80 dark:border-surface-800/80 space-y-1 shadow-sm">
+              <i class="pi pi-building text-primary-500 text-base"></i>
               <div class="text-xs font-bold text-surface-900 dark:text-surface-100">
-                Shared Workspaces
-              </div>
-              <div class="text-[11px] text-surface-500">
-                Collaborate with family & team members in real-time.
+                Shared Kitchens
               </div>
             </div>
             <div
-              class="p-4 rounded-2xl bg-white/70 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl space-y-2">
-              <i class="pi pi-shield text-amber-500 text-xl"></i>
+              class="glass-card p-3.5 rounded-xl border border-surface-200/80 dark:border-surface-800/80 space-y-1 shadow-sm">
+              <i class="pi pi-shield text-amber-500 text-base"></i>
               <div class="text-xs font-bold text-surface-900 dark:text-surface-100">
-                Enterprise Security
-              </div>
-              <div class="text-[11px] text-surface-500">
-                Argon2id encryption & session protection.
+                Zero-Waste Tracking
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Footer Badges -->
-        <div
-          class="relative z-10 flex items-center gap-6 text-xs font-medium text-surface-500 dark:text-surface-400">
-          <span class="flex items-center gap-1.5"
-            ><i class="pi pi-check-circle text-orange-500"></i> No Credit Card Required</span
-          >
-          <span class="flex items-center gap-1.5"
-            ><i class="pi pi-check-circle text-orange-500"></i> Instant Workspace Provisioning</span
-          >
+        <!-- Minimal Footer -->
+        <div class="relative z-10 text-xs text-surface-400 dark:text-surface-500 font-medium">
+          Smart workspace for home & shared kitchens.
         </div>
       </div>
 
       <!-- Right Form Panel (100% Mobile, 50% Desktop Width) -->
       <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative z-10">
-        <div class="w-full max-w-md space-y-7">
-          <!-- Mobile Brand Logo Header -->
-          <div class="lg:hidden text-center mb-6">
+        <div class="w-full max-w-md space-y-6">
+          <!-- Mobile Brand Emblem Header -->
+          <div class="lg:hidden flex flex-col items-center text-center space-y-2 mb-6">
             <div
-              class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-500 dark:text-orange-400 mb-2">
-              <span class="material-symbols-outlined text-[18px]">skillet</span>
+              class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold shadow-md shadow-primary-500/20">
+              <span class="material-symbols-outlined text-[22px]">skillet</span>
             </div>
-            <h1
-              class="text-xs font-light tracking-[0.3em] uppercase text-surface-800 dark:text-surface-200">
+            <span class="text-lg font-bold tracking-tight text-surface-900 dark:text-white">
               Pantry
-            </h1>
+            </span>
           </div>
 
           <!-- Form Header -->
           <div>
-            <h2
-              class="text-2xl sm:text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
-              {{ 'auth.createAccountTitle' | transloco }}
-            </h2>
-            <p class="text-sm text-surface-600 dark:text-surface-400 mt-2">
+            <h1
+              class="text-2xl sm:text-3xl font-bold tracking-tight text-surface-900 dark:text-white">
+              {{ 'auth.signup' | transloco }}
+            </h1>
+            <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
               {{ 'auth.createAccountSubtitle' | transloco }}
             </p>
           </div>
@@ -157,20 +178,20 @@ interface Particle {
           @if (errorMessage()) {
             <div
               role="alert"
-              class="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium flex items-center gap-2">
+              class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-medium flex items-center gap-2">
               <i class="pi pi-exclamation-triangle text-base shrink-0"></i>
               <span>{{ errorMessage() }}</span>
             </div>
           }
 
-          <!-- Signup Reactive Form -->
+          <!-- Signup Form -->
           <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-4">
             <!-- Full Name Field -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
                 <label
                   for="fullName"
-                  class="text-xs font-bold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
                   {{ 'auth.fullName' | transloco }}
                 </label>
               </div>
@@ -181,11 +202,15 @@ interface Particle {
                   id="fullName"
                   type="text"
                   formControlName="fullName"
-                  class="w-full h-[42px] pl-10 pr-4 rounded-xl bg-white dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all duration-200"
+                  aria-describedby="fullName-error"
+                  class="w-full h-[42px] pl-10 pr-4 rounded-xl bg-white/80 dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200"
                   placeholder="Chef Gordon Ramsey" />
               </div>
               @if (signupForm.get('fullName')?.touched && signupForm.get('fullName')?.invalid) {
-                <div class="text-xs text-rose-500 dark:text-rose-400 mt-1">
+                <div
+                  id="fullName-error"
+                  role="alert"
+                  class="text-xs text-rose-500 dark:text-rose-400 mt-1">
                   Full name is required.
                 </div>
               }
@@ -196,7 +221,7 @@ interface Particle {
               <div class="flex items-center justify-between h-6 mb-1.5">
                 <label
                   for="email"
-                  class="text-xs font-bold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
                   {{ 'auth.email' | transloco }}
                 </label>
               </div>
@@ -207,11 +232,15 @@ interface Particle {
                   id="email"
                   type="email"
                   formControlName="email"
-                  class="w-full h-[42px] pl-10 pr-4 rounded-xl bg-white dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all duration-200"
+                  aria-describedby="email-error"
+                  class="w-full h-[42px] pl-10 pr-4 rounded-xl bg-white/80 dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200"
                   placeholder="chef@pantry.app" />
               </div>
               @if (signupForm.get('email')?.touched && signupForm.get('email')?.invalid) {
-                <div class="text-xs text-rose-500 dark:text-rose-400 mt-1">
+                <div
+                  id="email-error"
+                  role="alert"
+                  class="text-xs text-rose-500 dark:text-rose-400 mt-1">
                   Please enter a valid email address.
                 </div>
               }
@@ -222,7 +251,7 @@ interface Particle {
               <div class="flex items-center justify-between h-6 mb-1.5">
                 <label
                   for="password"
-                  class="text-xs font-bold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
                   {{ 'auth.password' | transloco }}
                 </label>
               </div>
@@ -233,7 +262,8 @@ interface Particle {
                   id="password"
                   [type]="showPassword() ? 'text' : 'password'"
                   formControlName="password"
-                  class="w-full h-[42px] pl-10 pr-12 rounded-xl bg-white dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all duration-200"
+                  aria-describedby="password-error"
+                  class="w-full h-[42px] pl-10 pr-12 rounded-xl bg-white/80 dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200"
                   placeholder="••••••••" />
                 <button
                   type="button"
@@ -247,7 +277,10 @@ interface Particle {
                 </button>
               </div>
               @if (signupForm.get('password')?.touched && signupForm.get('password')?.invalid) {
-                <div class="text-xs text-rose-500 dark:text-rose-400 mt-1">
+                <div
+                  id="password-error"
+                  role="alert"
+                  class="text-xs text-rose-500 dark:text-rose-400 mt-1">
                   Password must be at least 8 characters.
                 </div>
               }
@@ -257,7 +290,7 @@ interface Particle {
             <button
               type="submit"
               [disabled]="isSubmitting()"
-              class="w-full h-[42px] rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 active:scale-[0.99] text-white font-semibold text-sm shadow-lg shadow-orange-500/25 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 cursor-pointer">
+              class="w-full h-[42px] rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 active:scale-[0.99] text-white font-semibold text-sm shadow-md shadow-orange-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 cursor-pointer">
               @if (isSubmitting()) {
                 <i class="pi pi-spin pi-spinner text-sm"></i>
                 <span>Creating Account...</span>
@@ -268,11 +301,11 @@ interface Particle {
           </form>
 
           <!-- Footer Link -->
-          <div class="pt-2 text-center text-sm text-surface-600 dark:text-surface-400">
+          <div class="pt-2 text-center text-sm text-surface-500 dark:text-surface-400">
             <span>{{ 'auth.alreadyHaveAccount' | transloco }}</span>
             <a
               routerLink="/auth/login"
-              class="ml-1.5 font-bold text-orange-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+              class="ml-1.5 font-bold text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
               {{ 'auth.signInNow' | transloco }}
             </a>
           </div>
@@ -281,14 +314,11 @@ interface Particle {
     </div>
   `,
 })
-export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('bgCanvas', { static: false }) canvasRef?: ElementRef<HTMLCanvasElement>;
-
+export class SignupComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
   private toastService = inject(ToastService);
-  private ngZone = inject(NgZone);
 
   readonly showPassword = signal(false);
   readonly isSubmitting = signal(false);
@@ -301,27 +331,8 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
-  private animationFrameId?: number;
-  private resizeListener?: () => void;
-  private particles: Particle[] = [];
-
   ngOnInit() {
     this.isDarkMode.set(document.documentElement.classList.contains('dark'));
-  }
-
-  ngAfterViewInit() {
-    this.ngZone.runOutsideAngular(() => {
-      this.initCanvasAnimation();
-    });
-  }
-
-  ngOnDestroy() {
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
-    if (this.resizeListener && typeof window !== 'undefined') {
-      window.removeEventListener('resize', this.resizeListener);
-    }
   }
 
   toggleTheme() {
@@ -331,10 +342,6 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   togglePasswordVisibility() {
     this.showPassword.update((val) => !val);
-  }
-
-  onGoogleLogin() {
-    this.toastService.showInfo('Google OAuth is coming soon!');
   }
 
   onSubmit() {
@@ -359,88 +366,5 @@ export class SignupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.toastService.showError(errorMsg, 'Signup Error');
       },
     });
-  }
-
-  private initCanvasAnimation() {
-    if (!this.canvasRef) return;
-    const canvas = this.canvasRef.nativeElement;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const parent = canvas.parentElement;
-    const width = (canvas.width = parent ? parent.clientWidth : 600);
-    const height = (canvas.height = parent ? parent.clientHeight : 800);
-
-    this.resizeListener = () => {
-      const p = canvas.parentElement;
-      if (p) {
-        canvas.width = p.clientWidth;
-        canvas.height = p.clientHeight;
-      }
-    };
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', this.resizeListener);
-    }
-
-    const count = 45;
-    this.particles = [];
-
-    for (let i = 0; i < count; i++) {
-      this.particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
-        radius: Math.random() * 2 + 1.5,
-        alpha: Math.random() * 0.6 + 0.3,
-      });
-    }
-
-    const animate = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      // Draw Graph Edges (Connecting Lines)
-      for (let i = 0; i < this.particles.length; i++) {
-        for (let j = i + 1; j < this.particles.length; j++) {
-          const p1 = this.particles[i];
-          const p2 = this.particles[j];
-          const dx = p1.x - p2.x;
-          const dy = p1.y - p2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < 130) {
-            const lineAlpha = (1 - dist / 130) * 0.25;
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(249, 115, 22, ${lineAlpha})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Draw Particle Graph Nodes
-      this.particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-        if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(249, 115, 22, ${p.alpha})`;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = 'rgba(249, 115, 22, 0.5)';
-        ctx.fill();
-      });
-
-      this.animationFrameId = requestAnimationFrame(animate);
-    };
-
-    animate();
   }
 }
