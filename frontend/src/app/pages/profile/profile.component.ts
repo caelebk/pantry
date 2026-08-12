@@ -26,8 +26,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
   providers: [MessageService],
   template: `
     <p-toast></p-toast>
-    <div
-      class="min-h-screen bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-50 p-4 sm:p-8 space-y-8 max-w-6xl mx-auto">
+    <div class="space-y-8 max-w-6xl mx-auto">
       <!-- Page Header -->
       <div
         class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-200 dark:border-surface-800 pb-6">
@@ -82,7 +81,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
                   type="email"
                   [value]="authService.currentUser()?.email"
                   disabled
-                  class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-950/80 border border-surface-300 dark:border-surface-800 text-surface-500 dark:text-surface-400 text-sm cursor-not-allowed outline-none" />
+                  class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-900/80 border border-surface-300 dark:border-surface-800 text-surface-500 dark:text-surface-400 text-sm cursor-not-allowed outline-none" />
               </div>
 
               <div>

@@ -73,6 +73,7 @@ export class SidebarComponent {
 
   navigateTo(path: string): void {
     this.mobileMenuOpen.set(false);
+    this.kitchenMenuOpen.set(false);
     this.router.navigate([path]);
   }
 

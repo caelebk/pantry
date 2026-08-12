@@ -1,12 +1,12 @@
 <!-- Mobile Top Header Bar -->
 <div
-  class="md:hidden sticky top-0 z-50 backdrop-blur-xl bg-surface-900/70 border-b border-surface-800/80 dark:bg-surface-950/60 dark:border-white/10 px-4 h-16 flex items-center justify-between">
+  class="md:hidden sticky top-0 z-50 glass-header px-4 h-16 flex items-center justify-between transition-colors duration-300">
   <div class="flex items-center gap-3">
     <div
       class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary-500/20">
       <span class="material-symbols-outlined text-[20px]">skillet</span>
     </div>
-    <h1 class="text-lg font-bold tracking-tight text-surface-100">
+    <h1 class="text-lg font-bold tracking-tight text-surface-900 dark:text-surface-100">
       {{ 'app.name' | transloco }}
     </h1>
   </div>
@@ -16,7 +16,7 @@
       [attr.aria-label]="
         darkMode() ? ('sidebar.switchToLight' | transloco) : ('sidebar.switchToDark' | transloco)
       "
-      class="p-2 cursor-pointer rounded-xl hover:bg-surface-800 text-surface-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      class="p-2 cursor-pointer rounded-xl hover:bg-surface-200/50 dark:hover:bg-surface-800/50 text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       @if (darkMode()) {
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +49,7 @@
       (click)="toggleMobileMenu()"
       [attr.aria-label]="'sidebar.toggleMobileMenu' | transloco"
       [attr.aria-expanded]="mobileMenuOpen()"
-      class="p-2 cursor-pointer rounded-xl hover:bg-surface-800 text-surface-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      class="p-2 cursor-pointer rounded-xl hover:bg-surface-200/50 dark:hover:bg-surface-800/50 text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -79,11 +79,11 @@
   [class.-translate-x-full]="!mobileMenuOpen()"
   [class.md:w-20]="isCollapsed()"
   [class.md:w-64]="!isCollapsed()"
-  class="fixed md:static top-0 left-0 z-50 md:z-auto h-screen md:h-full w-64 md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col backdrop-blur-2xl bg-surface-900/70 border-r border-surface-800/80 dark:bg-surface-950/60 dark:border-r dark:border-white/10 dark:shadow-[4px_0_24px_rgba(0,0,0,0.4)] md:shadow-none shrink-0 group">
+  class="fixed md:static top-0 left-0 z-50 md:z-auto h-screen md:h-full w-64 md:translate-x-0 transition-all duration-300 ease-in-out flex flex-col glass-sidebar shrink-0 group">
   <!-- Sidebar Header / Logo -->
   <div
     [class.justify-center]="isCollapsed()"
-    class="p-4 md:p-5 flex items-center border-b border-surface-800/80 dark:border-white/10 h-18">
+    class="p-4 md:p-5 flex items-center border-b border-surface-200/50 dark:border-white/10 h-18">
     <div class="flex items-center gap-3">
       <div
         class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md shadow-primary-500/25 transition-all duration-200 hover:scale-105 shrink-0">
@@ -92,12 +92,13 @@
       @if (!isCollapsed()) {
         <div class="hidden md:block overflow-hidden transition-all duration-300">
           <h1
-            class="text-lg font-bold tracking-tight text-surface-100 leading-tight whitespace-nowrap">
+            class="text-lg font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight whitespace-nowrap">
             {{ 'app.name' | transloco }}
           </h1>
-          <span class="text-[11px] font-medium text-surface-400 whitespace-nowrap">{{
-            'sidebar.subTitle' | transloco
-          }}</span>
+          <span
+            class="text-[11px] font-medium text-surface-500 dark:text-surface-400 whitespace-nowrap"
+            >{{ 'sidebar.subTitle' | transloco }}</span
+          >
         </div>
       }
     </div>
@@ -111,51 +112,117 @@
         (click)="toggleKitchenMenu($event)"
         aria-haspopup="true"
         [attr.aria-expanded]="kitchenMenuOpen()"
-        class="w-full flex items-center justify-between p-2.5 rounded-xl bg-surface-800/60 hover:bg-surface-800 border border-surface-700/80 dark:bg-surface-900/60 dark:hover:bg-surface-800/80 dark:border-white/10 transition-all text-left group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+        [class.border-primary-500/50]="kitchenMenuOpen()"
+        [class.ring-2]="kitchenMenuOpen()"
+        [class.ring-primary-500/20]="kitchenMenuOpen()"
+        class="w-full flex items-center justify-between p-2.5 rounded-xl bg-white/50 hover:bg-white/70 border border-surface-200/60 text-surface-900 dark:bg-white/10 dark:hover:bg-white/15 dark:border-white/15 dark:text-surface-100 transition-all text-left group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
         <div class="flex items-center gap-2.5 min-w-0">
           <div
-            class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+            class="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500/20 to-amber-500/20 text-primary-600 dark:text-primary-400 border border-primary-500/20 flex items-center justify-center shrink-0 shadow-xs">
             <i class="pi pi-building text-xs"></i>
           </div>
           <div class="truncate">
-            <div class="text-xs font-bold text-surface-100 truncate">
+            <div class="text-xs font-bold text-surface-900 dark:text-surface-100 truncate">
               {{ authService.activeKitchen()?.name || 'Main Kitchen' }}
             </div>
-            <div class="text-[10px] font-medium text-surface-400 truncate">
+            <div
+              class="text-[10px] font-semibold text-primary-600 dark:text-primary-400/90 uppercase tracking-wider truncate">
               {{ authService.activeKitchen()?.role || 'member' }}
             </div>
           </div>
         </div>
         <i
           [class.rotate-180]="kitchenMenuOpen()"
-          class="pi pi-chevron-down text-xs text-surface-400 group-hover:text-surface-200 transition-transform duration-200 shrink-0"></i>
+          class="pi pi-chevron-down text-xs text-surface-400 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-transform duration-200 shrink-0"></i>
       </button>
 
       <!-- Dropdown Kitchen Menu -->
       @if (kitchenMenuOpen()) {
         <div
-          class="absolute top-full left-3 right-3 mt-1 py-1 bg-surface-900 dark:bg-surface-950 rounded-xl border border-surface-700 dark:border-white/10 shadow-2xl z-50 max-h-48 overflow-y-auto space-y-0.5">
+          class="absolute top-full left-3 right-3 mt-1.5 p-1.5 bg-white/95 dark:bg-surface-900/95 backdrop-blur-2xl rounded-2xl border border-surface-200/90 dark:border-white/15 shadow-2xl shadow-surface-950/10 dark:shadow-black/60 z-50 max-h-60 overflow-y-auto space-y-1">
+          <div
+            class="px-2 pt-1 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-surface-400 dark:text-surface-500 flex items-center justify-between">
+            <span>Workspaces</span>
+            <span
+              class="text-[9px] px-1.5 py-0.5 rounded-md bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 font-medium">
+              {{ authService.userKitchens().length }}
+            </span>
+          </div>
+
           @for (k of authService.userKitchens(); track k.id) {
             <button
               type="button"
               (click)="selectKitchen(k)"
-              [class.bg-primary-500/20]="authService.activeKitchen()?.id === k.id"
-              [class.dark:bg-primary-500/20]="authService.activeKitchen()?.id === k.id"
-              [class.text-primary-400]="authService.activeKitchen()?.id === k.id"
+              [class.bg-gradient-to-r]="authService.activeKitchen()?.id === k.id"
+              [class.from-primary-500/20]="authService.activeKitchen()?.id === k.id"
+              [class.via-primary-500/15]="authService.activeKitchen()?.id === k.id"
+              [class.to-transparent]="authService.activeKitchen()?.id === k.id"
+              [class.border-primary-500/30]="authService.activeKitchen()?.id === k.id"
+              [class.shadow-xs]="authService.activeKitchen()?.id === k.id"
+              [class.text-primary-700]="authService.activeKitchen()?.id === k.id"
               [class.dark:text-primary-300]="authService.activeKitchen()?.id === k.id"
-              [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="
-                authService.activeKitchen()?.id === k.id
-              "
-              [class.font-bold]="authService.activeKitchen()?.id === k.id"
-              [class.border-l-2]="authService.activeKitchen()?.id === k.id"
-              [class.border-primary-500]="authService.activeKitchen()?.id === k.id"
-              class="w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-surface-800/80 dark:hover:bg-surface-800/60 dark:hover:text-primary-300 transition-colors cursor-pointer text-surface-200">
-              <span class="font-medium truncate">{{ k.name }}</span>
+              [class.border-transparent]="authService.activeKitchen()?.id !== k.id"
+              [class.text-surface-700]="authService.activeKitchen()?.id !== k.id"
+              [class.dark:text-surface-300]="authService.activeKitchen()?.id !== k.id"
+              [class.hover:bg-surface-100]="authService.activeKitchen()?.id !== k.id"
+              [class.dark:hover:bg-surface-800/70]="authService.activeKitchen()?.id !== k.id"
+              [class.hover:text-surface-900]="authService.activeKitchen()?.id !== k.id"
+              [class.dark:hover:text-white]="authService.activeKitchen()?.id !== k.id"
+              class="w-full text-left px-2.5 py-2 rounded-xl text-xs flex items-center justify-between border transition-all cursor-pointer group/kitchen">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div
+                  [class.bg-primary-500/20]="authService.activeKitchen()?.id === k.id"
+                  [class.text-primary-600]="authService.activeKitchen()?.id === k.id"
+                  [class.dark:text-primary-400]="authService.activeKitchen()?.id === k.id"
+                  [class.border-primary-500/30]="authService.activeKitchen()?.id === k.id"
+                  [class.bg-surface-100]="authService.activeKitchen()?.id !== k.id"
+                  [class.dark:bg-surface-800/80]="authService.activeKitchen()?.id !== k.id"
+                  [class.text-surface-400]="authService.activeKitchen()?.id !== k.id"
+                  [class.group-hover\/kitchen:text-surface-700]="
+                    authService.activeKitchen()?.id !== k.id
+                  "
+                  [class.dark:group-hover\/kitchen:text-surface-200]="
+                    authService.activeKitchen()?.id !== k.id
+                  "
+                  class="w-7 h-7 rounded-lg border border-transparent flex items-center justify-center text-xs shrink-0 transition-colors">
+                  <i class="pi pi-building"></i>
+                </div>
+                <div class="truncate">
+                  <div
+                    [class.font-bold]="authService.activeKitchen()?.id === k.id"
+                    [class.text-primary-900]="authService.activeKitchen()?.id === k.id"
+                    [class.dark:text-primary-200]="authService.activeKitchen()?.id === k.id"
+                    [class.font-semibold]="authService.activeKitchen()?.id !== k.id"
+                    [class.text-surface-800]="authService.activeKitchen()?.id !== k.id"
+                    [class.dark:text-surface-200]="authService.activeKitchen()?.id !== k.id"
+                    class="text-xs truncate leading-tight group-hover/kitchen:text-surface-900 dark:group-hover/kitchen:text-white">
+                    {{ k.name }}
+                  </div>
+                  <div
+                    [class.text-primary-600]="authService.activeKitchen()?.id === k.id"
+                    [class.dark:text-primary-300/80]="authService.activeKitchen()?.id === k.id"
+                    [class.text-surface-500]="authService.activeKitchen()?.id !== k.id"
+                    [class.dark:text-surface-400]="authService.activeKitchen()?.id !== k.id"
+                    class="text-[10px] capitalize truncate mt-0.5 font-medium">
+                    {{ k.role || 'member' }}
+                  </div>
+                </div>
+              </div>
               @if (authService.activeKitchen()?.id === k.id) {
-                <i class="pi pi-check text-xs text-primary-400 dark:text-primary-300"></i>
+                <i
+                  class="pi pi-check-circle text-xs text-primary-600 dark:text-primary-400 shrink-0 ml-2"></i>
               }
             </button>
           }
+
+          <div class="my-1 border-t border-surface-200/80 dark:border-surface-800/80"></div>
+          <button
+            type="button"
+            (click)="navigateTo('/profile')"
+            class="w-full text-left px-2.5 py-1.5 rounded-xl text-xs flex items-center gap-2 text-surface-500 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-300 hover:bg-surface-100 dark:hover:bg-surface-800/50 transition-colors cursor-pointer">
+            <i class="pi pi-plus-circle text-xs text-primary-600 dark:text-primary-400"></i>
+            <span class="font-medium">Manage Workspaces</span>
+          </button>
         </div>
       }
     </div>
@@ -165,7 +232,7 @@
   <nav class="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
     @if (!isCollapsed()) {
       <div
-        class="px-3 pb-2 text-[11px] font-extrabold text-surface-400 uppercase tracking-wider hidden md:block">
+        class="px-3 pb-2 text-[11px] font-extrabold text-surface-400 dark:text-surface-500 uppercase tracking-wider hidden md:block">
         {{ 'sidebar.mainNav' | transloco }}
       </div>
     }
@@ -178,18 +245,19 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/20]="isHomeActive()"
+      [class.bg-primary-500/10]="isHomeActive()"
       [class.dark:bg-primary-500/20]="isHomeActive()"
-      [class.text-primary-400]="isHomeActive()"
+      [class.text-primary-600]="isHomeActive()"
       [class.dark:text-primary-300]="isHomeActive()"
       [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isHomeActive()"
       [class.font-bold]="isHomeActive()"
       [class.border-l-4]="isHomeActive()"
       [class.border-primary-500]="isHomeActive()"
-      [class.text-surface-200]="!isHomeActive()"
-      [class.hover:bg-surface-800/80]="!isHomeActive()"
-      [class.hover:text-white]="!isHomeActive()"
-      [class.dark:hover:bg-surface-800/60]="!isHomeActive()"
+      [class.text-surface-600]="!isHomeActive()"
+      [class.dark:text-surface-300]="!isHomeActive()"
+      [class.hover:bg-surface-200/50]="!isHomeActive()"
+      [class.hover:text-surface-900]="!isHomeActive()"
+      [class.dark:hover:bg-white/10]="!isHomeActive()"
       [class.dark:hover:text-primary-300]="!isHomeActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
@@ -216,18 +284,19 @@
         [class.justify-center]="isCollapsed()"
         [class.px-2.5]="isCollapsed()"
         [class.px-3.5]="!isCollapsed()"
-        [class.bg-primary-500/20]="isInventoryActive()"
+        [class.bg-primary-500/10]="isInventoryActive()"
         [class.dark:bg-primary-500/20]="isInventoryActive()"
-        [class.text-primary-400]="isInventoryActive()"
+        [class.text-primary-600]="isInventoryActive()"
         [class.dark:text-primary-300]="isInventoryActive()"
         [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isInventoryActive()"
         [class.font-bold]="isInventoryActive()"
         [class.border-l-4]="isInventoryActive()"
         [class.border-primary-500]="isInventoryActive()"
-        [class.text-surface-200]="!isInventoryActive()"
-        [class.hover:bg-surface-800/80]="!isInventoryActive()"
-        [class.hover:text-white]="!isInventoryActive()"
-        [class.dark:hover:bg-surface-800/60]="!isInventoryActive()"
+        [class.text-surface-600]="!isInventoryActive()"
+        [class.dark:text-surface-300]="!isInventoryActive()"
+        [class.hover:bg-surface-200/50]="!isInventoryActive()"
+        [class.hover:text-surface-900]="!isInventoryActive()"
+        [class.dark:hover:bg-white/10]="!isInventoryActive()"
         [class.dark:hover:text-primary-300]="!isInventoryActive()"
         class="w-full flex items-center justify-between py-2.5 rounded-xl transition-all duration-200 text-sm group/item relative">
         <button
@@ -267,7 +336,7 @@
                 ? ('sidebar.collapseInventory' | transloco)
                 : ('sidebar.expandInventory' | transloco)
             "
-            class="p-1 text-surface-400 hover:text-white dark:hover:text-primary-300 rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 shrink-0">
+            class="p-1 text-surface-400 hover:text-surface-900 dark:hover:text-primary-300 rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 shrink-0">
             <svg
               [class.rotate-90]="inventoryExpanded()"
               xmlns="http://www.w3.org/2000/svg"
@@ -288,18 +357,19 @@
           <!-- Ingredients Catalog Subpage -->
           <button
             (click)="navigateTo('/inventory/ingredients')"
-            [class.bg-primary-500/20]="isIngredientsActive()"
+            [class.bg-primary-500/10]="isIngredientsActive()"
             [class.dark:bg-primary-500/20]="isIngredientsActive()"
-            [class.text-primary-400]="isIngredientsActive()"
+            [class.text-primary-600]="isIngredientsActive()"
             [class.dark:text-primary-300]="isIngredientsActive()"
             [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isIngredientsActive()"
             [class.font-bold]="isIngredientsActive()"
             [class.border-l-2]="isIngredientsActive()"
             [class.border-primary-500]="isIngredientsActive()"
-            [class.text-surface-300]="!isIngredientsActive()"
-            [class.hover:bg-surface-800/80]="!isIngredientsActive()"
-            [class.hover:text-white]="!isIngredientsActive()"
-            [class.dark:hover:bg-surface-800/60]="!isIngredientsActive()"
+            [class.text-surface-600]="!isIngredientsActive()"
+            [class.dark:text-surface-400]="!isIngredientsActive()"
+            [class.hover:bg-surface-200/50]="!isIngredientsActive()"
+            [class.hover:text-surface-900]="!isIngredientsActive()"
+            [class.dark:hover:bg-white/10]="!isIngredientsActive()"
             [class.dark:hover:text-primary-300]="!isIngredientsActive()"
             class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredients' | transloco }}</span>
@@ -308,18 +378,19 @@
           <!-- Ingredient Items Subpage -->
           <button
             (click)="navigateTo('/inventory/items')"
-            [class.bg-primary-500/20]="isInventoryItemsActive()"
+            [class.bg-primary-500/10]="isInventoryItemsActive()"
             [class.dark:bg-primary-500/20]="isInventoryItemsActive()"
-            [class.text-primary-400]="isInventoryItemsActive()"
+            [class.text-primary-600]="isInventoryItemsActive()"
             [class.dark:text-primary-300]="isInventoryItemsActive()"
             [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isInventoryItemsActive()"
             [class.font-bold]="isInventoryItemsActive()"
             [class.border-l-2]="isInventoryItemsActive()"
             [class.border-primary-500]="isInventoryItemsActive()"
-            [class.text-surface-300]="!isInventoryItemsActive()"
-            [class.hover:bg-surface-800/80]="!isInventoryItemsActive()"
-            [class.hover:text-white]="!isInventoryItemsActive()"
-            [class.dark:hover:bg-surface-800/60]="!isInventoryItemsActive()"
+            [class.text-surface-600]="!isInventoryItemsActive()"
+            [class.dark:text-surface-400]="!isInventoryItemsActive()"
+            [class.hover:bg-surface-200/50]="!isInventoryItemsActive()"
+            [class.hover:text-surface-900]="!isInventoryItemsActive()"
+            [class.dark:hover:bg-white/10]="!isInventoryItemsActive()"
             [class.dark:hover:text-primary-300]="!isInventoryItemsActive()"
             class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredientItems' | transloco }}</span>
@@ -328,18 +399,19 @@
           <!-- Ingredient Categories & Groups Subpage -->
           <button
             (click)="navigateTo('/inventory/groups')"
-            [class.bg-primary-500/20]="isIngredientGroupsActive()"
+            [class.bg-primary-500/10]="isIngredientGroupsActive()"
             [class.dark:bg-primary-500/20]="isIngredientGroupsActive()"
-            [class.text-primary-400]="isIngredientGroupsActive()"
+            [class.text-primary-600]="isIngredientGroupsActive()"
             [class.dark:text-primary-300]="isIngredientGroupsActive()"
             [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isIngredientGroupsActive()"
             [class.font-bold]="isIngredientGroupsActive()"
             [class.border-l-2]="isIngredientGroupsActive()"
             [class.border-primary-500]="isIngredientGroupsActive()"
-            [class.text-surface-300]="!isIngredientGroupsActive()"
-            [class.hover:bg-surface-800/80]="!isIngredientGroupsActive()"
-            [class.hover:text-white]="!isIngredientGroupsActive()"
-            [class.dark:hover:bg-surface-800/60]="!isIngredientGroupsActive()"
+            [class.text-surface-600]="!isIngredientGroupsActive()"
+            [class.dark:text-surface-400]="!isIngredientGroupsActive()"
+            [class.hover:bg-surface-200/50]="!isIngredientGroupsActive()"
+            [class.hover:text-surface-900]="!isIngredientGroupsActive()"
+            [class.dark:hover:bg-white/10]="!isIngredientGroupsActive()"
             [class.dark:hover:text-primary-300]="!isIngredientGroupsActive()"
             class="w-full flex justify-start text-left items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredientCategoriesAndGroups' | transloco }}</span>
@@ -356,18 +428,19 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/20]="isRecipesActive()"
+      [class.bg-primary-500/10]="isRecipesActive()"
       [class.dark:bg-primary-500/20]="isRecipesActive()"
-      [class.text-primary-400]="isRecipesActive()"
+      [class.text-primary-600]="isRecipesActive()"
       [class.dark:text-primary-300]="isRecipesActive()"
       [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isRecipesActive()"
       [class.font-bold]="isRecipesActive()"
       [class.border-l-4]="isRecipesActive()"
       [class.border-primary-500]="isRecipesActive()"
-      [class.text-surface-200]="!isRecipesActive()"
-      [class.hover:bg-surface-800/80]="!isRecipesActive()"
-      [class.hover:text-white]="!isRecipesActive()"
-      [class.dark:hover:bg-surface-800/60]="!isRecipesActive()"
+      [class.text-surface-600]="!isRecipesActive()"
+      [class.dark:text-surface-300]="!isRecipesActive()"
+      [class.hover:bg-surface-200/50]="!isRecipesActive()"
+      [class.hover:text-surface-900]="!isRecipesActive()"
+      [class.dark:hover:bg-white/10]="!isRecipesActive()"
       [class.dark:hover:text-primary-300]="!isRecipesActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
@@ -396,18 +469,19 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/20]="isShoppingListActive()"
+      [class.bg-primary-500/10]="isShoppingListActive()"
       [class.dark:bg-primary-500/20]="isShoppingListActive()"
-      [class.text-primary-400]="isShoppingListActive()"
+      [class.text-primary-600]="isShoppingListActive()"
       [class.dark:text-primary-300]="isShoppingListActive()"
       [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isShoppingListActive()"
       [class.font-bold]="isShoppingListActive()"
       [class.border-l-4]="isShoppingListActive()"
       [class.border-primary-500]="isShoppingListActive()"
-      [class.text-surface-200]="!isShoppingListActive()"
-      [class.hover:bg-surface-800/80]="!isShoppingListActive()"
-      [class.hover:text-white]="!isShoppingListActive()"
-      [class.dark:hover:bg-surface-800/60]="!isShoppingListActive()"
+      [class.text-surface-600]="!isShoppingListActive()"
+      [class.dark:text-surface-300]="!isShoppingListActive()"
+      [class.hover:bg-surface-200/50]="!isShoppingListActive()"
+      [class.hover:text-surface-900]="!isShoppingListActive()"
+      [class.dark:hover:bg-white/10]="!isShoppingListActive()"
       [class.dark:hover:text-primary-300]="!isShoppingListActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
@@ -436,18 +510,19 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/20]="isMealPlannerActive()"
+      [class.bg-primary-500/10]="isMealPlannerActive()"
       [class.dark:bg-primary-500/20]="isMealPlannerActive()"
-      [class.text-primary-400]="isMealPlannerActive()"
+      [class.text-primary-600]="isMealPlannerActive()"
       [class.dark:text-primary-300]="isMealPlannerActive()"
       [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isMealPlannerActive()"
       [class.font-bold]="isMealPlannerActive()"
       [class.border-l-4]="isMealPlannerActive()"
       [class.border-primary-500]="isMealPlannerActive()"
-      [class.text-surface-200]="!isMealPlannerActive()"
-      [class.hover:bg-surface-800/80]="!isMealPlannerActive()"
-      [class.hover:text-white]="!isMealPlannerActive()"
-      [class.dark:hover:bg-surface-800/60]="!isMealPlannerActive()"
+      [class.text-surface-600]="!isMealPlannerActive()"
+      [class.dark:text-surface-300]="!isMealPlannerActive()"
+      [class.hover:bg-surface-200/50]="!isMealPlannerActive()"
+      [class.hover:text-surface-900]="!isMealPlannerActive()"
+      [class.dark:hover:bg-white/10]="!isMealPlannerActive()"
       [class.dark:hover:text-primary-300]="!isMealPlannerActive()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
@@ -478,7 +553,7 @@
         : ('sidebar.collapseSidebar' | transloco)
     "
     [attr.aria-expanded]="!isCollapsed()"
-    class="hidden md:flex absolute top-1/2 -right-3.5 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-surface-800 dark:bg-surface-900 border border-surface-700 dark:border-white/20 shadow-md items-center justify-center text-surface-300 hover:text-primary-400 dark:hover:text-primary-300 hover:scale-110 active:scale-95 transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+    class="hidden md:flex absolute top-1/2 -right-3.5 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-white/90 dark:bg-surface-800/90 backdrop-blur-md border border-surface-200 dark:border-white/20 shadow-md items-center justify-center text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-300 hover:scale-110 active:scale-95 transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
     @if (isCollapsed()) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -503,7 +578,7 @@
   </button>
 
   <!-- Sidebar Footer Options -->
-  <div class="p-3 border-t border-surface-800/80 dark:border-white/10 space-y-1">
+  <div class="p-3 border-t border-surface-200/50 dark:border-white/10 space-y-1">
     <!-- Dark Mode Toggle Button -->
     <div class="flex items-center justify-between gap-2 w-full">
       <button
@@ -514,7 +589,7 @@
         [class.justify-center]="isCollapsed()"
         [class.px-2.5]="isCollapsed()"
         [class.px-3.5]="!isCollapsed()"
-        class="w-full flex items-center justify-between py-2 rounded-xl hover:bg-surface-800/80 dark:hover:bg-surface-800/60 dark:hover:text-primary-300 text-surface-200 hover:text-white transition-all duration-200 text-sm cursor-pointer min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+        class="w-full flex items-center justify-between py-2 rounded-xl hover:bg-surface-200/50 dark:hover:bg-white/10 dark:hover:text-primary-300 text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-white transition-all duration-200 text-sm cursor-pointer min-h-[40px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
         <div class="flex items-center gap-2.5">
           @if (darkMode()) {
             <svg
@@ -531,13 +606,14 @@
             </svg>
             @if (!isCollapsed()) {
               <span
-                class="font-semibold text-surface-200 whitespace-nowrap hidden md:inline text-xs"
+                class="font-semibold text-surface-700 dark:text-surface-200 whitespace-nowrap hidden md:inline text-xs"
                 >{{ 'sidebar.lightMode' | transloco }}</span
               >
             }
-            <span class="font-semibold text-surface-200 whitespace-nowrap md:hidden text-xs">{{
-              'sidebar.lightMode' | transloco
-            }}</span>
+            <span
+              class="font-semibold text-surface-700 dark:text-surface-200 whitespace-nowrap md:hidden text-xs"
+              >{{ 'sidebar.lightMode' | transloco }}</span
+            >
           } @else {
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -545,7 +621,7 @@
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-5 h-5 text-indigo-400 shrink-0">
+              class="w-5 h-5 text-indigo-500 dark:text-indigo-400 shrink-0">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -553,18 +629,19 @@
             </svg>
             @if (!isCollapsed()) {
               <span
-                class="font-semibold text-surface-200 whitespace-nowrap hidden md:inline text-xs"
+                class="font-semibold text-surface-700 dark:text-surface-200 whitespace-nowrap hidden md:inline text-xs"
                 >{{ 'sidebar.darkMode' | transloco }}</span
               >
             }
-            <span class="font-semibold text-surface-200 whitespace-nowrap md:hidden text-xs">{{
-              'sidebar.darkMode' | transloco
-            }}</span>
+            <span
+              class="font-semibold text-surface-700 dark:text-surface-200 whitespace-nowrap md:hidden text-xs"
+              >{{ 'sidebar.darkMode' | transloco }}</span
+            >
           }
         </div>
         @if (!isCollapsed()) {
           <span
-            class="text-xs px-2 py-0.5 rounded-md bg-surface-800 text-surface-400 font-mono hidden md:inline">
+            class="text-xs px-2 py-0.5 rounded-md bg-surface-200/70 dark:bg-white/10 text-surface-600 dark:text-surface-400 font-mono hidden md:inline">
             {{ darkMode() ? 'DARK' : 'LIGHT' }}
           </span>
         }
@@ -579,18 +656,19 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/20]="isProfileActive()"
+      [class.bg-primary-500/10]="isProfileActive()"
       [class.dark:bg-primary-500/20]="isProfileActive()"
-      [class.text-primary-400]="isProfileActive()"
+      [class.text-primary-600]="isProfileActive()"
       [class.dark:text-primary-300]="isProfileActive()"
       [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isProfileActive()"
       [class.font-bold]="isProfileActive()"
       [class.border-l-4]="isProfileActive()"
       [class.border-primary-500]="isProfileActive()"
-      [class.text-surface-200]="!isProfileActive()"
-      [class.hover:bg-surface-800/80]="!isProfileActive()"
-      [class.hover:text-white]="!isProfileActive()"
-      [class.dark:hover:bg-surface-800/60]="!isProfileActive()"
+      [class.text-surface-600]="!isProfileActive()"
+      [class.dark:text-surface-200]="!isProfileActive()"
+      [class.hover:bg-surface-200/50]="!isProfileActive()"
+      [class.hover:text-surface-900]="!isProfileActive()"
+      [class.dark:hover:bg-white/10]="!isProfileActive()"
       [class.dark:hover:text-primary-300]="!isProfileActive()"
       class="w-full flex items-center gap-3 py-2 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
@@ -618,7 +696,7 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      class="w-full flex items-center gap-3 py-2 rounded-xl hover:bg-red-500/20 text-surface-200 hover:text-red-400 dark:hover:text-red-300 transition-all duration-200 cursor-pointer text-sm group/item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
+      class="w-full flex items-center gap-3 py-2 rounded-xl hover:bg-red-500/10 text-surface-600 dark:text-surface-300 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 cursor-pointer text-sm group/item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
