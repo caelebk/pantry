@@ -16,6 +16,8 @@ import { isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 
+import { SkeletonModule } from 'primeng/skeleton';
+
 export interface LocationStat {
   id: number;
   name: string;
@@ -26,7 +28,7 @@ export interface LocationStat {
 @Component({
   selector: 'pantry-inventory-overview-page',
   standalone: true,
-  imports: [CommonModule, TranslocoModule],
+  imports: [CommonModule, TranslocoModule, SkeletonModule],
   templateUrl: './inventory-overview-page.component.html',
 })
 export class InventoryOverviewPageComponent {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { IngredientCategoryCluster } from '@models/inventory.models';
@@ -25,6 +25,7 @@ import { IngredientCategoryComponent } from '../ingredient-category/ingredient-c
     IngredientCategoryComponent,
   ],
   templateUrl: './ingredient-group-container.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientGroupContainerComponent {
   // Inputs

@@ -3,12 +3,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  DestroyRef,
   effect,
-  HostListener,
   inject,
+  NgZone,
   OnInit,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
@@ -86,6 +88,8 @@ export class InventoryComponent implements OnInit {
   private readonly shoppingListService = inject(ShoppingListService);
   private readonly authService = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly ngZone = inject(NgZone);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     effect(() => {
@@ -128,6 +132,10 @@ export class InventoryComponent implements OnInit {
   public viewMode: 'table' | 'grid' = 'table';
   public sortDirection: 'asc' | 'desc' = 'asc';
 
+  private filteredItemsCache: Item[] | null = null;
+  private filteredItemsCacheKey = '';
+  private filteredItemsCacheSource: Item[] | null = null;
+
   // Pagination State
   public currentPage = 1;
   public pageSize = 15;
@@ -149,7 +157,18 @@ export class InventoryComponent implements OnInit {
   }
 
   public get filteredItems(): Item[] {
-    return this.items
+    const cacheKey = [
+      this.searchQuery,
+      this.selectedLocationId ?? '',
+      this.selectedStatusFilter,
+      this.sortBy,
+      this.sortDirection,
+    ].join('|');
+    if (this.filteredItemsCacheSource === this.items && this.filteredItemsCacheKey === cacheKey) {
+      return this.filteredItemsCache || [];
+    }
+
+    const filtered = this.items
       .filter((item) => {
         // 1. Text Search
         const matchesSearch =
@@ -214,6 +233,10 @@ export class InventoryComponent implements OnInit {
         }
         return this.sortDirection === 'asc' ? result : -result;
       });
+    this.filteredItemsCacheSource = this.items;
+    this.filteredItemsCacheKey = cacheKey;
+    this.filteredItemsCache = filtered;
+    return filtered;
   }
 
   public get totalPages(): number {
@@ -423,11 +446,6 @@ export class InventoryComponent implements OnInit {
   public expandedCategories = new Set<number>();
   public loading = false;
 
-  @HostListener('window:scroll', [])
-  onWindowScroll(): void {
-    this.showScrollTopButton = window.scrollY > 300;
-  }
-
   public scrollToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -435,7 +453,7 @@ export class InventoryComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       if (params['search']) {
         this.searchQuery = params['search'];
       }
@@ -443,7 +461,20 @@ export class InventoryComponent implements OnInit {
         this.selectedStatusFilter = params['status'] as StatusFilter;
       }
     });
-    // Initial load is now handled by the effect when activeKitchen signal is set
+
+    this.ngZone.runOutsideAngular(() => {
+      const scrollHandler = () => {
+        const shouldShow = window.scrollY > 300;
+        if (this.showScrollTopButton !== shouldShow) {
+          this.showScrollTopButton = shouldShow;
+          this.cdr.markForCheck();
+        }
+      };
+      window.addEventListener('scroll', scrollHandler, { passive: true });
+      this.destroyRef.onDestroy(() => {
+        window.removeEventListener('scroll', scrollHandler);
+      });
+    });
   }
 
   private initParameters(): void {
@@ -463,10 +494,8 @@ export class InventoryComponent implements OnInit {
           (item) => !isExpired(item) && !isExpiringSoon(item) && item.quantity > 0,
         ).length;
 
-        setTimeout(() => {
-          this.isLoading.set(false);
-          this.cdr.markForCheck();
-        }, 50);
+        this.isLoading.set(false);
+        this.cdr.markForCheck();
       },
       error: () => {
         this.isLoading.set(false);

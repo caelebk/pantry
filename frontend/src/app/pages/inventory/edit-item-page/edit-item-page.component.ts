@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IngredientGroup } from '@models/ingredient-group.model';
@@ -110,11 +111,13 @@ export class EditItemPageComponent implements OnInit {
     } as Item;
   });
 
+  private readonly destroyRef = inject(DestroyRef);
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      this.toastService.showError('Invalid item reference');
-      this.router.navigate(['/inventory/items']);
+      this.toastService.showError('Invalid item ID');
+      this.router.navigate(['/inventory']);
       return;
     }
 
@@ -134,21 +137,23 @@ export class EditItemPageComponent implements OnInit {
 
     this.loadIngredients(id);
 
-    this.editItemForm.controls.ingredient.valueChanges.subscribe((selectedIng) => {
-      if (selectedIng) {
-        if (!this.editItemForm.controls.name.value) {
-          this.editItemForm.controls.name.setValue(selectedIng.name);
+    this.editItemForm.controls.ingredient.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((selectedIng) => {
+        if (selectedIng) {
+          if (!this.editItemForm.controls.name.value) {
+            this.editItemForm.controls.name.setValue(selectedIng.name);
+          }
+          if (selectedIng.defaultUnit) {
+            this.editItemForm.controls.unit.setValue(selectedIng.defaultUnit);
+            this.editItemForm.controls.unit.disable();
+          }
+        } else {
+          this.editItemForm.controls.unit.enable();
         }
-        if (selectedIng.defaultUnit) {
-          this.editItemForm.controls.unit.setValue(selectedIng.defaultUnit);
-          this.editItemForm.controls.unit.disable();
-        }
-      } else {
-        this.editItemForm.controls.unit.enable();
-      }
-    });
+      });
 
-    this.editItemForm.valueChanges.subscribe((val) => {
+    this.editItemForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((val) => {
       this.currentFormValue.set(val);
     });
   }

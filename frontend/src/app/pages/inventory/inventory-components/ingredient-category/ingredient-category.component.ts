@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { IngredientCategoryCluster } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { IngredientGroupComponent } from '../ingredient-group/ingredient-group.component';
@@ -9,6 +9,7 @@ import { IngredientGroupComponent } from '../ingredient-group/ingredient-group.c
   standalone: true,
   imports: [CommonModule, IngredientGroupComponent],
   templateUrl: './ingredient-category.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientCategoryComponent {
   @Input({ required: true })

@@ -200,4 +200,18 @@ describe('InventoryComponent', () => {
     );
     expect(component.selectedItemIds().size).toBe(0);
   });
+
+  it('should toggle showScrollTopButton based on scroll threshold (300px)', () => {
+    expect(component.showScrollTopButton).toBeFalse();
+
+    Object.defineProperty(window, 'scrollY', { value: 350, writable: true });
+    window.dispatchEvent(new Event('scroll'));
+    fixture.detectChanges();
+    expect(component.showScrollTopButton).toBeTrue();
+
+    Object.defineProperty(window, 'scrollY', { value: 100, writable: true });
+    window.dispatchEvent(new Event('scroll'));
+    fixture.detectChanges();
+    expect(component.showScrollTopButton).toBeFalse();
+  });
 });

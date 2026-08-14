@@ -52,6 +52,18 @@ describe('IngredientService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('shares the ingredients request across subscribers', async () => {
+    const first = firstValueFrom(service.getIngredients());
+    const second = firstValueFrom(service.getIngredients());
+
+    const req = httpMock.expectOne('/api/ingredients');
+    expect(req.request.method).toBe('GET');
+    req.flush({ status: 'success', data: [] });
+
+    expect(await first).toEqual([]);
+    expect(await second).toEqual([]);
+  });
+
   it('should fetch ingredients and map group & unit references', async () => {
     const promise = firstValueFrom(service.getIngredients());
 

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, Input, input, Output } from '@angular/core';
+import { Component, DestroyRef, effect, inject, Input, input, Output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item } from '@models/items.model';
@@ -33,6 +34,8 @@ import { Select } from 'primeng/select';
   templateUrl: './edit-item-form.component.html',
 })
 export class EditItemFormComponent {
+  private readonly destroyRef = inject(DestroyRef);
+
   @Input()
   units: Unit[] = [];
   @Input()
@@ -64,21 +67,23 @@ export class EditItemFormComponent {
       }
     });
 
-    this.editItemForm.controls.ingredient.valueChanges.subscribe((selectedIng) => {
-      if (selectedIng) {
-        if (!this.editItemForm.controls.name.value) {
-          this.editItemForm.controls.name.setValue(selectedIng.name);
-        }
-        if (selectedIng.defaultUnit) {
-          this.editItemForm.controls.unit.setValue(selectedIng.defaultUnit);
-          this.editItemForm.controls.unit.disable();
+    this.editItemForm.controls.ingredient.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((selectedIng) => {
+        if (selectedIng) {
+          if (!this.editItemForm.controls.name.value) {
+            this.editItemForm.controls.name.setValue(selectedIng.name);
+          }
+          if (selectedIng.defaultUnit) {
+            this.editItemForm.controls.unit.setValue(selectedIng.defaultUnit);
+            this.editItemForm.controls.unit.disable();
+          } else {
+            this.editItemForm.controls.unit.enable();
+          }
         } else {
           this.editItemForm.controls.unit.enable();
         }
-      } else {
-        this.editItemForm.controls.unit.enable();
-      }
-    });
+      });
   }
 
   selectLocation(loc: Location): void {

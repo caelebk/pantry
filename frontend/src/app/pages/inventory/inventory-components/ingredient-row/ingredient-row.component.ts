@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { EnrichedIngredient } from '@models/inventory.models';
 
 @Component({
@@ -7,6 +7,7 @@ import { EnrichedIngredient } from '@models/inventory.models';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './ingredient-row.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientRowComponent {
   @Input({ required: true })

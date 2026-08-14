@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { IngredientGroupCluster } from '@models/inventory.models';
 
@@ -10,6 +17,7 @@ import { Item } from '@models/items.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './ingredient-group.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientGroupComponent {
   private readonly router = inject(Router);

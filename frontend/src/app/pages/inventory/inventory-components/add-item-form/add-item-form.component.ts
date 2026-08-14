@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output } from '@angular/core';
+import { Component, DestroyRef, inject, Input, Output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item } from '@models/items.model';
@@ -33,6 +34,8 @@ import { Ingredient } from '@models/ingredient.model';
   templateUrl: './add-item-form.component.html',
 })
 export class AddItemFormComponent {
+  private readonly destroyRef = inject(DestroyRef);
+
   @Input()
   units: Unit[] = [];
   @Input()
@@ -46,21 +49,23 @@ export class AddItemFormComponent {
   addItemForm: FormGroup<ItemFormControls> = createItemForm();
 
   constructor() {
-    this.addItemForm.controls.ingredient.valueChanges.subscribe((selectedIng) => {
-      if (selectedIng) {
-        if (!this.addItemForm.controls.name.value) {
-          this.addItemForm.controls.name.setValue(selectedIng.name);
-        }
-        if (selectedIng.defaultUnit) {
-          this.addItemForm.controls.unit.setValue(selectedIng.defaultUnit);
-          this.addItemForm.controls.unit.disable();
+    this.addItemForm.controls.ingredient.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((selectedIng) => {
+        if (selectedIng) {
+          if (!this.addItemForm.controls.name.value) {
+            this.addItemForm.controls.name.setValue(selectedIng.name);
+          }
+          if (selectedIng.defaultUnit) {
+            this.addItemForm.controls.unit.setValue(selectedIng.defaultUnit);
+            this.addItemForm.controls.unit.disable();
+          } else {
+            this.addItemForm.controls.unit.enable();
+          }
         } else {
           this.addItemForm.controls.unit.enable();
         }
-      } else {
-        this.addItemForm.controls.unit.enable();
-      }
-    });
+      });
   }
 
   onSubmit() {

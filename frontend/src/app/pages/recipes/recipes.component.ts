@@ -76,6 +76,9 @@ export class RecipesComponent {
   availableBaseMap = new Map<string, number>();
 
   isLoading = false;
+  private filteredRecipesCache: Recipe[] | null = null;
+  private filteredRecipesCacheKey = '';
+  private filteredRecipesCacheSource: Recipe[] | null = null;
 
   // Filter & Sort Controls
   searchQuery = '';
@@ -242,6 +245,17 @@ export class RecipesComponent {
   }
 
   get filteredRecipes(): Recipe[] {
+    const cacheKey = [
+      this.searchQuery,
+      this.sortBy,
+      this.availabilityFilter,
+      this.difficultyFilter,
+      this.maxTimeFilter,
+    ].join('|');
+    if (this.filteredRecipesCacheSource === this.recipes && this.filteredRecipesCacheKey === cacheKey) {
+      return this.filteredRecipesCache || [];
+    }
+
     let list = [...this.recipes];
 
     // 1. Search filter
@@ -282,7 +296,7 @@ export class RecipesComponent {
     }
 
     // 5. Sorting
-    return list.sort((a, b) => {
+    const sorted = list.sort((a, b) => {
       switch (this.sortBy) {
         case 'priority': {
           const scoreA = this.getRecipePriorityScore(a).score;
@@ -333,6 +347,10 @@ export class RecipesComponent {
           return a.name.localeCompare(b.name);
       }
     });
+    this.filteredRecipesCacheSource = this.recipes;
+    this.filteredRecipesCacheKey = cacheKey;
+    this.filteredRecipesCache = sorted;
+    return sorted;
   }
 
   get hasActiveFilters(): boolean {

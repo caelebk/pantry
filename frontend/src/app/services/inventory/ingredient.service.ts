@@ -12,7 +12,7 @@ import { SubstitutionSuggestion } from '@models/inventory.models';
 import { Unit } from '@models/unit.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { forkJoin, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay, tap } from 'rxjs/operators';
 import { IngredientGroupService } from './ingredient-group.service';
 import { UnitService } from './unit.service';
 
@@ -26,34 +26,39 @@ export class IngredientService {
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly unitService = inject(UnitService);
   private readonly apiUrl = '/api/ingredients';
+  private ingredientsCache$?: Observable<Ingredient[]>;
 
   getIngredients(): Observable<Ingredient[]> {
-    return forkJoin({
-      ingredients: this.http
-        .get<ApiResponse<IngredientDTO[]>>(this.apiUrl)
-        .pipe(mapResponseData<IngredientDTO[]>()),
-      groups: this.ingredientGroupService.getIngredientGroups(),
-      units: this.unitService.getUnits(),
-    }).pipe(
-      map(({ ingredients, groups, units }) => {
-        const groupMap = new Map(groups.map((g: IngredientGroup) => [g.id, g]));
-        const unitMap = new Map(units.map((u: Unit) => [u.id, u]));
+    if (!this.ingredientsCache$) {
+      this.ingredientsCache$ = forkJoin({
+        ingredients: this.http
+          .get<ApiResponse<IngredientDTO[]>>(this.apiUrl)
+          .pipe(mapResponseData<IngredientDTO[]>()),
+        groups: this.ingredientGroupService.getIngredientGroups(),
+        units: this.unitService.getUnits(),
+      }).pipe(
+        map(({ ingredients, groups, units }) => {
+          const groupMap = new Map(groups.map((g: IngredientGroup) => [g.id, g]));
+          const unitMap = new Map(units.map((u: Unit) => [u.id, u]));
 
-        return ingredients.map((dto: IngredientDTO) => {
-          const groupId = dto.ingredientGroupId;
-          const groupObj = groupId ? groupMap.get(groupId) : undefined;
-          return {
-            id: dto.id,
-            name: dto.name,
-            ingredientGroup: groupObj,
-            category: groupObj,
-            defaultUnit: dto.defaultUnitId ? unitMap.get(dto.defaultUnitId) : undefined,
-            createdAt: dto.createdAt ? new Date(dto.createdAt) : undefined,
-            updatedAt: dto.updatedAt ? new Date(dto.updatedAt) : undefined,
-          };
-        });
-      }),
-    );
+          return ingredients.map((dto: IngredientDTO) => {
+            const groupId = dto.ingredientGroupId;
+            const groupObj = groupId ? groupMap.get(groupId) : undefined;
+            return {
+              id: dto.id,
+              name: dto.name,
+              ingredientGroup: groupObj,
+              category: groupObj,
+              defaultUnit: dto.defaultUnitId ? unitMap.get(dto.defaultUnitId) : undefined,
+              createdAt: dto.createdAt ? new Date(dto.createdAt) : undefined,
+              updatedAt: dto.updatedAt ? new Date(dto.updatedAt) : undefined,
+            };
+          });
+        }),
+        shareReplay({ bufferSize: 1, refCount: true }),
+      );
+    }
+    return this.ingredientsCache$;
   }
 
   getIngredientById(id: string): Observable<Ingredient> {
@@ -86,19 +91,28 @@ export class IngredientService {
   createIngredient(dto: CreateIngredientDTO): Observable<IngredientDTO> {
     return this.http
       .post<ApiResponse<IngredientDTO>>(this.apiUrl, dto)
-      .pipe(mapResponseData<IngredientDTO>());
+      .pipe(
+        mapResponseData<IngredientDTO>(),
+        tap(() => this.clearIngredientsCache()),
+      );
   }
 
   updateIngredient(id: string, dto: UpdateIngredientDTO): Observable<IngredientDTO> {
     return this.http
       .put<ApiResponse<IngredientDTO>>(`${this.apiUrl}/${id}`, dto)
-      .pipe(mapResponseData<IngredientDTO>());
+      .pipe(
+        mapResponseData<IngredientDTO>(),
+        tap(() => this.clearIngredientsCache()),
+      );
   }
 
   deleteIngredient(id: string): Observable<boolean> {
     return this.http
       .delete<ApiResponse<boolean>>(`${this.apiUrl}/${id}`)
-      .pipe(mapResponseData<boolean>());
+      .pipe(
+        mapResponseData<boolean>(),
+        tap(() => this.clearIngredientsCache()),
+      );
   }
 
   getSubstitutions(id: string): Observable<SubstitutionSuggestion[]> {
@@ -123,6 +137,13 @@ export class IngredientService {
         newDefaultUnitId,
         items,
       })
-      .pipe(mapResponseData<IngredientDTO>());
+      .pipe(
+        mapResponseData<IngredientDTO>(),
+        tap(() => this.clearIngredientsCache()),
+      );
+  }
+
+  private clearIngredientsCache(): void {
+    this.ingredientsCache$ = undefined;
   }
 }

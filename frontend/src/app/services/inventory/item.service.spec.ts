@@ -47,6 +47,18 @@ describe('ItemService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('shares the ingredient-items request across subscribers', async () => {
+    const first = firstValueFrom(service.getIngredientItems());
+    const second = firstValueFrom(service.getIngredientItems());
+
+    const req = httpMock.expectOne('/api/ingredient-items');
+    expect(req.request.method).toBe('GET');
+    req.flush({ status: 'success', data: [] });
+
+    expect(await first).toEqual([]);
+    expect(await second).toEqual([]);
+  });
+
   it('should call GET /api/ingredient-items/similarity and map response data', async () => {
     const mockApiResponse = {
       success: true,

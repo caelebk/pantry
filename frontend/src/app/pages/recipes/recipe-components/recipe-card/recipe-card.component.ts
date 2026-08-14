@@ -1,11 +1,9 @@
 import { CommonModule } from '@angular/common';
 import {
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   inject,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import { Router } from '@angular/router';
@@ -13,11 +11,6 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
-import { forkJoin } from 'rxjs';
-import { IngredientService } from '../../../../services/inventory/ingredient.service';
-import { ItemService } from '../../../../services/inventory/item.service';
-import { UnitService } from '../../../../services/inventory/unit.service';
-
 import { Item } from '@models/items.model';
 
 import { ChangeDetectionStrategy } from '@angular/core';
@@ -30,49 +23,15 @@ import { ChangeDetectionStrategy } from '@angular/core';
   styles: [':host { display: block; }'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RecipeCardComponent implements OnInit {
+export class RecipeCardComponent {
   @Input() recipe: Recipe = {} as Recipe;
+  @Input() ingredientMap = new Map<string, Ingredient>();
+  @Input() unitMap = new Map<number, Unit>();
+  @Input() availableBaseMap = new Map<string, number>();
+  @Input() pantryItems: Item[] = [];
   @Output() delete = new EventEmitter<string>();
 
-  private readonly ingredientService = inject(IngredientService);
-  private readonly unitService = inject(UnitService);
-  private readonly itemService = inject(ItemService);
   private readonly router = inject(Router);
-  private readonly cdr = inject(ChangeDetectorRef);
-
-  ingredientMap = new Map<string, Ingredient>();
-  unitMap = new Map<number, Unit>();
-  availableBaseMap = new Map<string, number>();
-  pantryItems: Item[] = [];
-
-  ngOnInit(): void {
-    forkJoin({
-      ingredients: this.ingredientService.getIngredients(),
-      units: this.unitService.getUnits(),
-      items: this.itemService.getItems(),
-    }).subscribe({
-      next: ({ ingredients, units, items }) => {
-        this.ingredientMap = new Map(ingredients.map((ing) => [ing.id, ing]));
-        this.unitMap = new Map(units.map((u) => [u.id, u]));
-        this.pantryItems = items;
-
-        const map = new Map<string, number>();
-        const now = new Date();
-        for (const item of items) {
-          if (item.ingredientId) {
-            if (item.expirationDate && new Date(item.expirationDate) < now) {
-              continue;
-            }
-            const factor = item.unit?.toBaseFactor || 1;
-            const baseQty = item.quantity * factor;
-            map.set(item.ingredientId, (map.get(item.ingredientId) || 0) + baseQty);
-          }
-        }
-        this.availableBaseMap = map;
-        this.cdr.markForCheck();
-      },
-    });
-  }
 
   onIngredientClick(event: Event, ing: { ingredientId: string }): void {
     event.stopPropagation();

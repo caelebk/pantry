@@ -9,7 +9,7 @@ import {
   mapItemToUpdateItemDTO,
 } from '@utility/itemUtility/ItemMapper';
 import { forkJoin, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay, tap } from 'rxjs/operators';
 import { LocationService } from './location.service';
 import { UnitService } from './unit.service';
 
@@ -27,6 +27,7 @@ export class ItemService {
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly apiUrl = '/api/ingredient-items';
+  private ingredientItemsCache$?: Observable<IngredientItem[]>;
 
   getSimilarIngredientItems(name: string, minScore = 0.45): Observable<ItemSimilarityCandidate[]> {
     return forkJoin({
@@ -68,34 +69,46 @@ export class ItemService {
   }
 
   getIngredientItems(): Observable<IngredientItem[]> {
-    return forkJoin({
-      items: this.http
-        .get<ApiResponse<IngredientItemDTO[]>>(this.apiUrl)
-        .pipe(mapResponseData<IngredientItemDTO[]>()),
-      units: this.unitService.getUnits(),
-      locations: this.locationService.getLocations(),
-    }).pipe(
-      map(({ items, units, locations }) => {
-        const unitMap = new Map(units.map((u) => [u.id, u]));
-        const locationMap = new Map(locations.map((l) => [l.id, l]));
+    if (!this.ingredientItemsCache$) {
+      this.ingredientItemsCache$ = forkJoin({
+        items: this.http
+          .get<ApiResponse<IngredientItemDTO[]>>(this.apiUrl)
+          .pipe(mapResponseData<IngredientItemDTO[]>()),
+        units: this.unitService.getUnits(),
+        locations: this.locationService.getLocations(),
+      }).pipe(
+        map(({ items, units, locations }) => {
+          const unitMap = new Map(units.map((u) => [u.id, u]));
+          const locationMap = new Map(locations.map((l) => [l.id, l]));
 
-        return items.map((item: IngredientItemDTO) => mapItemDTOToItem(item, unitMap, locationMap));
-      }),
-    );
+          return items.map((item: IngredientItemDTO) =>
+            mapItemDTOToItem(item, unitMap, locationMap),
+          );
+        }),
+        shareReplay({ bufferSize: 1, refCount: true }),
+      );
+    }
+    return this.ingredientItemsCache$;
   }
 
   addIngredientItem(item: IngredientItem): Observable<IngredientItemDTO> {
     const itemDTO = mapItemToItemDTO(item);
     return this.http
       .post<ApiResponse<IngredientItemDTO>>(this.apiUrl, itemDTO)
-      .pipe(mapResponseData<IngredientItemDTO>());
+      .pipe(
+        mapResponseData<IngredientItemDTO>(),
+        tap(() => this.clearIngredientItemsCache()),
+      );
   }
 
   removeIngredientItem(item: IngredientItem): Observable<void> {
     const id: string = item.id;
     return this.http
       .delete<ApiResponse<void>>(`${this.apiUrl}/${id}`)
-      .pipe(mapResponseData<void>());
+      .pipe(
+        mapResponseData<void>(),
+        tap(() => this.clearIngredientItemsCache()),
+      );
   }
 
   getIngredientItemById(id: string): Observable<IngredientItem> {
@@ -119,19 +132,32 @@ export class ItemService {
     const itemDTO: UpdateIngredientItemDTO = mapItemToUpdateItemDTO(item);
     return this.http
       .put<ApiResponse<IngredientItemDTO>>(`${this.apiUrl}/${id}`, itemDTO)
-      .pipe(mapResponseData<IngredientItemDTO>());
+      .pipe(
+        mapResponseData<IngredientItemDTO>(),
+        tap(() => this.clearIngredientItemsCache()),
+      );
   }
 
   bulkClearStock(ids: string[]): Observable<{ clearedCount: number }> {
     return this.http
       .post<ApiResponse<{ clearedCount: number }>>(`${this.apiUrl}/bulk-clear-stock`, { ids })
-      .pipe(mapResponseData<{ clearedCount: number }>());
+      .pipe(
+        mapResponseData<{ clearedCount: number }>(),
+        tap(() => this.clearIngredientItemsCache()),
+      );
   }
 
   bulkDeleteItems(ids: string[]): Observable<{ deletedCount: number }> {
     return this.http
       .post<ApiResponse<{ deletedCount: number }>>(`${this.apiUrl}/bulk-delete`, { ids })
-      .pipe(mapResponseData<{ deletedCount: number }>());
+      .pipe(
+        mapResponseData<{ deletedCount: number }>(),
+        tap(() => this.clearIngredientItemsCache()),
+      );
+  }
+
+  private clearIngredientItemsCache(): void {
+    this.ingredientItemsCache$ = undefined;
   }
 
   // Legacy Aliases
