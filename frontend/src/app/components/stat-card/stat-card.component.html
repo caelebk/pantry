@@ -12,7 +12,7 @@
   </div>
   <div class="flex items-baseline justify-between gap-2">
     <div class="text-2xl font-extrabold tracking-tight" [ngClass]="valueColor()">
-      {{ displayValue() }}
+      {{ value() }}
     </div>
     @if (trend()) {
       <span [class]="trendClass()">{{ trend() }}</span>

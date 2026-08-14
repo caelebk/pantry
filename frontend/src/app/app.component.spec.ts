@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
 import { vi } from 'vitest';
@@ -28,6 +29,7 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [
+        provideNoopAnimations(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
@@ -85,5 +87,47 @@ describe('AppComponent', () => {
       expect(v0.x).not.toEqual(startX + 9999);
       expect(mockCtx.clearRect).toHaveBeenCalledWith(0, 0, 1000, 800);
     }
+  });
+
+  it('should enforce optimized particle count cap (<= 15) and kitchen vector cap (<= 6)', () => {
+    const comp = component as unknown as { particles: unknown[]; kitchenVectors: unknown[] };
+    expect(comp.particles.length).toBeLessThanOrEqual(15);
+    expect(comp.kitchenVectors.length).toBeLessThanOrEqual(6);
+  });
+
+  it('should skip particle & vector rendering when document is hidden', () => {
+    const comp = component as unknown as ComponentWithPrivateMembers;
+    const mockCtx = {
+      clearRect: vi.fn(),
+      save: vi.fn(),
+      restore: vi.fn(),
+      translate: vi.fn(),
+      rotate: vi.fn(),
+      scale: vi.fn(),
+      stroke: vi.fn(),
+      beginPath: vi.fn(),
+      closePath: vi.fn(),
+      arc: vi.fn(),
+      arcTo: vi.fn(),
+      rect: vi.fn(),
+      bezierCurveTo: vi.fn(),
+      fill: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+    } as unknown as CanvasRenderingContext2D;
+
+    const originalVisibility = document.visibilityState;
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => 'hidden',
+    });
+
+    comp.renderParticlesAndVectors(mockCtx, 1000, 800);
+    expect(mockCtx.clearRect).not.toHaveBeenCalled();
+
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => originalVisibility,
+    });
   });
 });

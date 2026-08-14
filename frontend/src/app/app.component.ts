@@ -23,6 +23,8 @@ import { Tab } from './components/tabs/tabs.model';
 import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 import { AuthService } from './core/services/auth.service';
 
+import { routeTransition } from '@utility/animationUtility/animations';
+
 interface Particle {
   x: number;
   y: number;
@@ -66,6 +68,7 @@ export interface KitchenVector {
     ToastContainerComponent,
     BreadcrumbsComponent,
   ],
+  animations: [routeTransition],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -84,6 +87,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   darkMode = signal(true);
   currentTab = signal<Tab>(Tab.Home);
   isAuthRoute = signal(false);
+
+  prepareRoute(outlet: RouterOutlet): string {
+    return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation']
+      ? outlet.activatedRouteData['animation']
+      : '';
+  }
 
   private animationFrameId?: number;
   private particles: Particle[] = [];
@@ -223,16 +232,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     window.addEventListener('mouseleave', this.mouseLeaveListener);
 
     const animate = () => {
-      this.renderParticlesAndVectors(ctx, canvas.width, canvas.height);
-      this.animationFrameId = requestAnimationFrame(animate);
+      if (document.visibilityState !== 'hidden') {
+        this.renderParticlesAndVectors(ctx, canvas.width, canvas.height);
+      }
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        this.animationFrameId = requestAnimationFrame(animate);
+      }
     };
 
     animate();
   }
 
   private createParticles(width: number, height: number) {
-    // Dynamic particle count based on screen area (capped for optimal performance)
-    const particleCount = Math.min(Math.floor((width * height) / 18000), 55);
+    // Dynamic particle count based on screen area (strictly capped for performance)
+    const particleCount = Math.min(Math.floor((width * height) / 36000), 15);
     const colors = ['#f97316', '#f59e0b', '#fb923c', '#d97706'];
 
     this.particles = [];
@@ -240,29 +253,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: (Math.random() - 0.5) * 0.6,
-        radius: Math.random() * 1.5 + 1,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        radius: Math.random() * 1.2 + 1,
         color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
   }
 
   private createKitchenVectors(width: number, height: number) {
-    const types: KitchenVectorType[] = [
-      'spatula',
-      'pan',
-      'whisk',
-      'chefHat',
-      'rollingPin',
-      'pot',
-      'saltShaker',
-      'forkKnife',
-      'ladle',
-      'cleaver',
-    ];
+    const types: KitchenVectorType[] = ['spatula', 'pan', 'whisk', 'chefHat', 'pot', 'forkKnife'];
 
-    const count = Math.min(Math.max(Math.floor((width * height) / 45000), 12), 24);
+    const count = Math.min(Math.max(Math.floor((width * height) / 90000), 3), 6);
     this.kitchenVectors = [];
 
     for (let i = 0; i < count; i++) {
@@ -270,18 +272,21 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.kitchenVectors.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
         rotation: Math.random() * Math.PI * 2,
-        vRot: (Math.random() - 0.5) * 0.006,
-        scale: Math.random() * 0.35 + 0.65,
-        opacity: Math.random() * 0.2 + 0.15,
+        vRot: (Math.random() - 0.5) * 0.004,
+        scale: Math.random() * 0.25 + 0.55,
+        opacity: Math.random() * 0.15 + 0.1,
         type,
       });
     }
   }
 
   private renderParticlesAndVectors(ctx: CanvasRenderingContext2D, width: number, height: number) {
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+      return;
+    }
     ctx.clearRect(0, 0, width, height);
     const isDark = this.darkMode();
 

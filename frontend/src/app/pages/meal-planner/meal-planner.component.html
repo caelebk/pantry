@@ -38,7 +38,14 @@
   </div>
 
   <!-- Executive Summary Cards Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  @if (mealPlannerService.isLoading()) {
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" aria-busy="true" aria-label="Loading meal plan">
+      @for (card of [1, 2, 3]; track card) {
+        <div class="glass-card p-4 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 h-24 animate-pulse"></div>
+      }
+    </div>
+  } @else {
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 panel-reveal panel-delay-1">
     <div
       class="glass-card p-4 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-xs flex items-center gap-4">
       <div
@@ -84,10 +91,11 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- Sub-Page Navigation Tabs -->
   <div
-    class="flex items-center justify-between border-b border-surface-200/80 dark:border-surface-800/80 pb-3">
+    class="flex items-center justify-between border-b border-surface-200/80 dark:border-surface-800/80 pb-3 panel-reveal panel-delay-2">
     <div
       class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800/60 p-1 rounded-xl border border-surface-200/80 dark:border-surface-800/80">
       <button
@@ -113,8 +121,10 @@
   </div>
 
   <!-- Dynamic Views -->
-  <div class="page-enter-smooth">
-    @if (activeSubTab() === 'calendar') {
+  <div class="panel-reveal panel-delay-3">
+    @if (mealPlannerService.isLoading()) {
+      <div class="glass-card rounded-2xl h-96 animate-pulse" aria-busy="true"></div>
+    } @else if (activeSubTab() === 'calendar') {
       <pantry-weekly-view [meals]="plannedMeals()" (addMealRequested)="openAddModal($event)">
       </pantry-weekly-view>
     } @else if (activeSubTab() === 'daily') {

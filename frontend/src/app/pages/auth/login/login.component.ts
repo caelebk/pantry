@@ -97,7 +97,10 @@ import { ToastService } from '../../../services/toast.service';
             <path
               d="M 50,35 C 40,20 20,25 20,48 C 20,72 40,85 50,82 C 60,85 80,72 80,48 C 80,25 60,20 50,35 Z" />
             <path d="M 50,32 Q 54,20 60,15" stroke-width="2" stroke-linecap="round" />
-            <path d="M 54,22 Q 68,18 64,28 Q 54,28 54,22 Z" fill="currentColor" fill-opacity="0.2" />
+            <path
+              d="M 54,22 Q 68,18 64,28 Q 54,28 54,22 Z"
+              fill="currentColor"
+              fill-opacity="0.2" />
           </svg>
         </div>
 

@@ -245,21 +245,8 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/10]="isHomeActive()"
-      [class.dark:bg-primary-500/20]="isHomeActive()"
-      [class.text-primary-600]="isHomeActive()"
-      [class.dark:text-primary-300]="isHomeActive()"
-      [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isHomeActive()"
-      [class.font-bold]="isHomeActive()"
-      [class.border-l-4]="isHomeActive()"
-      [class.border-primary-500]="isHomeActive()"
-      [class.text-surface-600]="!isHomeActive()"
-      [class.dark:text-surface-300]="!isHomeActive()"
-      [class.hover:bg-surface-200/50]="!isHomeActive()"
-      [class.hover:text-surface-900]="!isHomeActive()"
-      [class.dark:hover:bg-white/10]="!isHomeActive()"
-      [class.dark:hover:text-primary-300]="!isHomeActive()"
-      class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      [class.sidebar-nav-active]="isHomeActive()"
+      class="sidebar-nav-item w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -284,21 +271,8 @@
         [class.justify-center]="isCollapsed()"
         [class.px-2.5]="isCollapsed()"
         [class.px-3.5]="!isCollapsed()"
-        [class.bg-primary-500/10]="isInventoryActive()"
-        [class.dark:bg-primary-500/20]="isInventoryActive()"
-        [class.text-primary-600]="isInventoryActive()"
-        [class.dark:text-primary-300]="isInventoryActive()"
-        [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isInventoryActive()"
-        [class.font-bold]="isInventoryActive()"
-        [class.border-l-4]="isInventoryActive()"
-        [class.border-primary-500]="isInventoryActive()"
-        [class.text-surface-600]="!isInventoryActive()"
-        [class.dark:text-surface-300]="!isInventoryActive()"
-        [class.hover:bg-surface-200/50]="!isInventoryActive()"
-        [class.hover:text-surface-900]="!isInventoryActive()"
-        [class.dark:hover:bg-white/10]="!isInventoryActive()"
-        [class.dark:hover:text-primary-300]="!isInventoryActive()"
-        class="w-full flex items-center justify-between py-2.5 rounded-xl transition-all duration-200 text-sm group/item relative">
+        [class.sidebar-nav-active]="isInventoryActive()"
+        class="sidebar-nav-item w-full flex items-center justify-between py-2.5 rounded-xl text-sm group/item relative">
         <button
           type="button"
           (click)="navigateTo('/inventory')"
@@ -357,63 +331,24 @@
           <!-- Ingredients Catalog Subpage -->
           <button
             (click)="navigateTo('/inventory/ingredients')"
-            [class.bg-primary-500/10]="isIngredientsActive()"
-            [class.dark:bg-primary-500/20]="isIngredientsActive()"
-            [class.text-primary-600]="isIngredientsActive()"
-            [class.dark:text-primary-300]="isIngredientsActive()"
-            [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isIngredientsActive()"
-            [class.font-bold]="isIngredientsActive()"
-            [class.border-l-2]="isIngredientsActive()"
-            [class.border-primary-500]="isIngredientsActive()"
-            [class.text-surface-600]="!isIngredientsActive()"
-            [class.dark:text-surface-400]="!isIngredientsActive()"
-            [class.hover:bg-surface-200/50]="!isIngredientsActive()"
-            [class.hover:text-surface-900]="!isIngredientsActive()"
-            [class.dark:hover:bg-white/10]="!isIngredientsActive()"
-            [class.dark:hover:text-primary-300]="!isIngredientsActive()"
-            class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+            [class.sidebar-subnav-active]="isIngredientsActive()"
+            class="sidebar-subnav-item w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredients' | transloco }}</span>
           </button>
 
           <!-- Ingredient Items Subpage -->
           <button
             (click)="navigateTo('/inventory/items')"
-            [class.bg-primary-500/10]="isInventoryItemsActive()"
-            [class.dark:bg-primary-500/20]="isInventoryItemsActive()"
-            [class.text-primary-600]="isInventoryItemsActive()"
-            [class.dark:text-primary-300]="isInventoryItemsActive()"
-            [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isInventoryItemsActive()"
-            [class.font-bold]="isInventoryItemsActive()"
-            [class.border-l-2]="isInventoryItemsActive()"
-            [class.border-primary-500]="isInventoryItemsActive()"
-            [class.text-surface-600]="!isInventoryItemsActive()"
-            [class.dark:text-surface-400]="!isInventoryItemsActive()"
-            [class.hover:bg-surface-200/50]="!isInventoryItemsActive()"
-            [class.hover:text-surface-900]="!isInventoryItemsActive()"
-            [class.dark:hover:bg-white/10]="!isInventoryItemsActive()"
-            [class.dark:hover:text-primary-300]="!isInventoryItemsActive()"
-            class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+            [class.sidebar-subnav-active]="isInventoryItemsActive()"
+            class="sidebar-subnav-item w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredientItems' | transloco }}</span>
           </button>
 
           <!-- Ingredient Categories & Groups Subpage -->
           <button
             (click)="navigateTo('/inventory/groups')"
-            [class.bg-primary-500/10]="isIngredientGroupsActive()"
-            [class.dark:bg-primary-500/20]="isIngredientGroupsActive()"
-            [class.text-primary-600]="isIngredientGroupsActive()"
-            [class.dark:text-primary-300]="isIngredientGroupsActive()"
-            [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isIngredientGroupsActive()"
-            [class.font-bold]="isIngredientGroupsActive()"
-            [class.border-l-2]="isIngredientGroupsActive()"
-            [class.border-primary-500]="isIngredientGroupsActive()"
-            [class.text-surface-600]="!isIngredientGroupsActive()"
-            [class.dark:text-surface-400]="!isIngredientGroupsActive()"
-            [class.hover:bg-surface-200/50]="!isIngredientGroupsActive()"
-            [class.hover:text-surface-900]="!isIngredientGroupsActive()"
-            [class.dark:hover:bg-white/10]="!isIngredientGroupsActive()"
-            [class.dark:hover:text-primary-300]="!isIngredientGroupsActive()"
-            class="w-full flex justify-start text-left items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+            [class.sidebar-subnav-active]="isIngredientGroupsActive()"
+            class="sidebar-subnav-item w-full flex justify-start text-left items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span>{{ 'sidebar.ingredientCategoriesAndGroups' | transloco }}</span>
           </button>
         </div>
@@ -428,21 +363,8 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/10]="isRecipesActive()"
-      [class.dark:bg-primary-500/20]="isRecipesActive()"
-      [class.text-primary-600]="isRecipesActive()"
-      [class.dark:text-primary-300]="isRecipesActive()"
-      [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isRecipesActive()"
-      [class.font-bold]="isRecipesActive()"
-      [class.border-l-4]="isRecipesActive()"
-      [class.border-primary-500]="isRecipesActive()"
-      [class.text-surface-600]="!isRecipesActive()"
-      [class.dark:text-surface-300]="!isRecipesActive()"
-      [class.hover:bg-surface-200/50]="!isRecipesActive()"
-      [class.hover:text-surface-900]="!isRecipesActive()"
-      [class.dark:hover:bg-white/10]="!isRecipesActive()"
-      [class.dark:hover:text-primary-300]="!isRecipesActive()"
-      class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      [class.sidebar-nav-active]="isRecipesActive()"
+      class="sidebar-nav-item w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -469,21 +391,8 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/10]="isShoppingListActive()"
-      [class.dark:bg-primary-500/20]="isShoppingListActive()"
-      [class.text-primary-600]="isShoppingListActive()"
-      [class.dark:text-primary-300]="isShoppingListActive()"
-      [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isShoppingListActive()"
-      [class.font-bold]="isShoppingListActive()"
-      [class.border-l-4]="isShoppingListActive()"
-      [class.border-primary-500]="isShoppingListActive()"
-      [class.text-surface-600]="!isShoppingListActive()"
-      [class.dark:text-surface-300]="!isShoppingListActive()"
-      [class.hover:bg-surface-200/50]="!isShoppingListActive()"
-      [class.hover:text-surface-900]="!isShoppingListActive()"
-      [class.dark:hover:bg-white/10]="!isShoppingListActive()"
-      [class.dark:hover:text-primary-300]="!isShoppingListActive()"
-      class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      [class.sidebar-nav-active]="isShoppingListActive()"
+      class="sidebar-nav-item w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -510,21 +419,8 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/10]="isMealPlannerActive()"
-      [class.dark:bg-primary-500/20]="isMealPlannerActive()"
-      [class.text-primary-600]="isMealPlannerActive()"
-      [class.dark:text-primary-300]="isMealPlannerActive()"
-      [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isMealPlannerActive()"
-      [class.font-bold]="isMealPlannerActive()"
-      [class.border-l-4]="isMealPlannerActive()"
-      [class.border-primary-500]="isMealPlannerActive()"
-      [class.text-surface-600]="!isMealPlannerActive()"
-      [class.dark:text-surface-300]="!isMealPlannerActive()"
-      [class.hover:bg-surface-200/50]="!isMealPlannerActive()"
-      [class.hover:text-surface-900]="!isMealPlannerActive()"
-      [class.dark:hover:bg-white/10]="!isMealPlannerActive()"
-      [class.dark:hover:text-primary-300]="!isMealPlannerActive()"
-      class="w-full flex items-center gap-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      [class.sidebar-nav-active]="isMealPlannerActive()"
+      class="sidebar-nav-item w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -656,21 +552,8 @@
       [class.justify-center]="isCollapsed()"
       [class.px-2.5]="isCollapsed()"
       [class.px-3.5]="!isCollapsed()"
-      [class.bg-primary-500/10]="isProfileActive()"
-      [class.dark:bg-primary-500/20]="isProfileActive()"
-      [class.text-primary-600]="isProfileActive()"
-      [class.dark:text-primary-300]="isProfileActive()"
-      [class.dark:shadow-[0_0_12px_rgba(249,115,22,0.25)]]="isProfileActive()"
-      [class.font-bold]="isProfileActive()"
-      [class.border-l-4]="isProfileActive()"
-      [class.border-primary-500]="isProfileActive()"
-      [class.text-surface-600]="!isProfileActive()"
-      [class.dark:text-surface-200]="!isProfileActive()"
-      [class.hover:bg-surface-200/50]="!isProfileActive()"
-      [class.hover:text-surface-900]="!isProfileActive()"
-      [class.dark:hover:bg-white/10]="!isProfileActive()"
-      [class.dark:hover:text-primary-300]="!isProfileActive()"
-      class="w-full flex items-center gap-3 py-2 rounded-xl transition-all duration-200 cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      [class.sidebar-nav-active]="isProfileActive()"
+      class="sidebar-nav-item w-full flex items-center gap-3 py-2 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

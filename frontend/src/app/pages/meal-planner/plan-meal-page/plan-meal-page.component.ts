@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DayOfWeek, MealType } from '@models/meal-planner.model';
@@ -19,6 +20,7 @@ export class PlanMealPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly mealPlannerService = inject(MealPlannerService);
   private readonly recipeService = inject(RecipeService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly days: DayOfWeek[] = [
     'Monday',
@@ -42,7 +44,7 @@ export class PlanMealPageComponent implements OnInit {
 
   ngOnInit(): void {
     // Read query params if provided (e.g. ?day=Tuesday&type=Lunch)
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       if (params['day'] && this.days.includes(params['day'])) {
         this.selectedDay.set(params['day']);
       }

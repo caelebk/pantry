@@ -62,23 +62,19 @@ body {
 
 /* ── Refined Light & Dark Glass Card Surfaces ───────────────── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(226, 232, 240, 0.9); /* Slate 200 high-contrast border */
   box-shadow:
-    0 10px 30px -10px rgba(15, 23, 42, 0.06),
-    0 2px 6px -1px rgba(15, 23, 42, 0.03);
+    0 4px 14px -4px rgba(15, 23, 42, 0.05),
+    0 1px 3px 0 rgba(15, 23, 42, 0.03);
 }
 
 :where(.dark, .dark *) .glass-card {
-  background: rgba(30, 41, 59, 0.78); /* Slate 800 */
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  background: rgba(30, 41, 59, 0.92); /* Slate 800 */
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 10px 30px -10px rgba(0, 0, 0, 0.4),
-    0 2px 6px -1px rgba(0, 0, 0, 0.2);
+    0 4px 14px -4px rgba(0, 0, 0, 0.3),
+    0 1px 3px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* ── Centralized High-Contrast Sub-Card & Sub-Panel Utility System ──── */
@@ -144,14 +140,12 @@ body {
 
 /* ── Glass header ───────────────────────────────────────────── */
 .glass-header {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid rgba(226, 232, 240, 0.9);
 }
 
 :where(.dark, .dark *) .glass-header {
-  background: rgba(15, 23, 42, 0.92);
+  background: rgba(15, 23, 42, 0.96);
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
@@ -168,6 +162,88 @@ body {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Premium Animated Sidebar Navigation Items ─────────────── */
+.sidebar-nav-item {
+  position: relative;
+  border-left: 3.5px solid transparent;
+  color: var(--color-surface-600);
+  font-weight: 500;
+  transition:
+    background-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 200ms ease,
+    transform 180ms ease;
+}
+
+:where(.dark, .dark *) .sidebar-nav-item {
+  color: var(--color-surface-300);
+}
+
+.sidebar-nav-item:hover:not(.sidebar-nav-active) {
+  background-color: rgba(226, 232, 240, 0.5);
+  color: var(--color-surface-900);
+}
+
+:where(.dark, .dark *) .sidebar-nav-item:hover:not(.sidebar-nav-active) {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-primary-300);
+}
+
+.sidebar-nav-active {
+  background-color: rgba(249, 115, 22, 0.1);
+  border-left-color: var(--color-primary-500);
+  color: var(--color-primary-600) !important;
+  font-weight: 700 !important;
+}
+
+:where(.dark, .dark *) .sidebar-nav-active {
+  background-color: rgba(249, 115, 22, 0.2);
+  border-left-color: var(--color-primary-500);
+  color: var(--color-primary-300) !important;
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.25);
+}
+
+/* ── Sub-Navigation Items ────────────────────────────────────── */
+.sidebar-subnav-item {
+  border-left: 2.5px solid transparent;
+  color: var(--color-surface-600);
+  font-weight: 500;
+  transition:
+    background-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 180ms ease;
+}
+
+:where(.dark, .dark *) .sidebar-subnav-item {
+  color: var(--color-surface-400);
+}
+
+.sidebar-subnav-item:hover:not(.sidebar-subnav-active) {
+  background-color: rgba(226, 232, 240, 0.5);
+  color: var(--color-surface-900);
+}
+
+:where(.dark, .dark *) .sidebar-subnav-item:hover:not(.sidebar-subnav-active) {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-primary-300);
+}
+
+.sidebar-subnav-active {
+  background-color: rgba(249, 115, 22, 0.1);
+  border-left-color: var(--color-primary-500);
+  color: var(--color-primary-600) !important;
+  font-weight: 700 !important;
+}
+
+:where(.dark, .dark *) .sidebar-subnav-active {
+  background-color: rgba(249, 115, 22, 0.2);
+  border-left-color: var(--color-primary-500);
+  color: var(--color-primary-300) !important;
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.25);
 }
 
 /* ── Gradient text utility ──────────────────────────────────── */
@@ -260,9 +336,7 @@ body {
   position: absolute;
   pointer-events: none;
   border-radius: 50%;
-  filter: blur(120px);
   transform: translateZ(0);
-  will-change: transform;
 }
 
 .spotlight-top {
@@ -305,33 +379,30 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.22;
-  background-image: radial-gradient(rgba(71, 85, 105, 0.3) 1px, transparent 1px);
+  opacity: 0.12;
+  background-image: radial-gradient(rgba(71, 85, 105, 0.25) 1px, transparent 1px);
   background-size: 28px 28px;
   background-position: 0 0;
-  mask-image: radial-gradient(ellipse 85% 80% at 50% 40%, black 35%, transparent 95%);
-  -webkit-mask-image: radial-gradient(ellipse 85% 80% at 50% 40%, black 35%, transparent 95%);
 }
 
 :where(.dark, .dark *) .dot-grid-pattern-overlay {
-  opacity: 0.14;
-  background-image: radial-gradient(rgba(148, 163, 184, 0.3) 1px, transparent 1px);
+  opacity: 0.08;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.25) 1px, transparent 1px);
 }
 
 /* Precision Subtle Ambient Wave Accents */
 .topo-wave-accent {
   position: absolute;
-  border-radius: 45% 55% 65% 35% / 45% 50% 55% 45%;
+  border-radius: 40%;
   pointer-events: none;
-  filter: blur(60px);
-  opacity: 0.1;
+  opacity: 0.08;
   transform: translateZ(0);
   will-change: transform;
   animation: topoMorph 24s ease-in-out infinite alternate;
 }
 
 :where(.dark, .dark *) .topo-wave-accent {
-  opacity: 0.06;
+  opacity: 0.04;
 }
 
 .wave-1 {
@@ -355,20 +426,17 @@ body {
 
 @keyframes topoMorph {
   0% {
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-    border-radius: 45% 55% 65% 35% / 45% 50% 55% 45%;
+    transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(25px, -20px, 0) rotate(90deg) scale(1.05);
-    border-radius: 55% 45% 35% 65% / 50% 35% 65% 50%;
+    transform: translate3d(20px, -15px, 0) scale(1.03);
   }
   100% {
-    transform: translate3d(-15px, 25px, 0) rotate(180deg) scale(0.97);
-    border-radius: 35% 65% 50% 50% / 35% 55% 45% 65%;
+    transform: translate3d(-10px, 15px, 0) scale(0.98);
   }
 }
 
-/* Subtle Glass Ambient Pill Badges */
+/* Subtle Ambient Pill Badges */
 .ambient-glass-pill {
   position: absolute;
   display: inline-flex;
@@ -376,19 +444,17 @@ body {
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 12px -4px rgba(15, 23, 42, 0.05);
   pointer-events: none;
   animation: floatDrift 18s ease-in-out infinite alternate;
 }
 
 :where(.dark, .dark *) .ambient-glass-pill {
-  background: rgba(41, 37, 32, 0.45);
+  background: rgba(30, 41, 59, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.3);
 }
 
 .pill-1 {
@@ -407,13 +473,26 @@ body {
 
 @keyframes floatDrift {
   0% {
-    transform: translateY(0px) rotate(0deg);
+    transform: translateY(0px);
   }
   50% {
-    transform: translateY(-12px) rotate(1.5deg);
+    transform: translateY(-8px);
   }
   100% {
-    transform: translateY(8px) rotate(-1deg);
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line-wave-1,
+  .line-wave-2,
+  .line-wave-3,
+  .topo-wave-accent,
+  .ambient-glass-pill,
+  .vector-float-slow,
+  .vector-float-medium,
+  .vector-float-fast {
+    animation: none !important;
   }
 }
 
@@ -1206,6 +1285,46 @@ p-inputnumber {
   will-change: opacity, transform;
 }
 
+/* ── Staggered Panel Reveal Animation System ────────────────── */
+/* Apply .panel-reveal to any content section (stat cards, glass cards,
+   tables, summary grids) for a smooth cascading entrance.
+   Use .panel-delay-1 through .panel-delay-6 for staggered timing. */
+
+@keyframes panelReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-reveal {
+  opacity: 0;
+  animation: panelReveal 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.panel-delay-1 {
+  animation-delay: 0ms;
+}
+.panel-delay-2 {
+  animation-delay: 0ms;
+}
+.panel-delay-3 {
+  animation-delay: 0ms;
+}
+.panel-delay-4 {
+  animation-delay: 0ms;
+}
+.panel-delay-5 {
+  animation-delay: 0ms;
+}
+.panel-delay-6 {
+  animation-delay: 0ms;
+}
+
 /* ── Floating Kitchen Vector Animation Utilities ────────────── */
 .vector-float-slow {
   will-change: transform;
@@ -1261,8 +1380,14 @@ p-inputnumber {
 @media (prefers-reduced-motion: reduce) {
   .vector-float-slow,
   .vector-float-medium,
-  .vector-float-fast {
+  .vector-float-fast,
+  .page-enter-smooth,
+  .panel-reveal {
     animation: none !important;
+    opacity: 1 !important;
+  }
+  .sidebar-nav-item,
+  .sidebar-subnav-item {
+    transition: none !important;
   }
 }
-

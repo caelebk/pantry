@@ -36,6 +36,16 @@
     </div>
   </div>
 
+  @if (isLoading()) {
+    <div class="space-y-5" aria-busy="true" aria-label="Loading dashboard">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        @for (card of [1, 2, 3, 4]; track card) {
+          <div class="glass-card rounded-2xl h-28 animate-pulse"></div>
+        }
+      </div>
+      <div class="glass-card rounded-2xl h-96 animate-pulse"></div>
+    </div>
+  } @else {
   <!-- Simple Urgent Alert Notices -->
   @if (expiredItemsCount() > 0 || expiringSoonItemsCount() > 0) {
     <div class="flex flex-col gap-3">
@@ -88,7 +98,8 @@
   }
 
   <!-- Key Stats Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 panel-reveal panel-delay-1">
     <pantry-stat-card
       [title]="'home.stats.totalItems' | transloco"
       [value]="totalItemsCount()"
@@ -118,7 +129,7 @@
   </div>
 
   <!-- Core 2-Column Home Layout -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 page-enter-smooth">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 panel-reveal panel-delay-2">
     <!-- Left Main Column (2 Columns Wide): Watchlists & Recipes Spotlight -->
     <div class="lg:col-span-2 flex flex-col gap-6">
       <!-- "What You Can Cook Today" Recipe Spotlight -->
@@ -166,4 +177,5 @@
       </pantry-location-overview-container>
     </div>
   </div>
+  }
 </div>

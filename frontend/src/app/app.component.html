@@ -65,7 +65,7 @@
     <div class="dot-grid-pattern-overlay"></div>
 
     <!-- HTML5 Canvas Particle Web -->
-    <canvas #particleCanvas class="absolute inset-0 w-full h-full pointer-events-auto"></canvas>
+    <canvas #particleCanvas class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
   </div>
 
   <!-- Auth Layout Split: Full-screen Auth Pages vs Main App Shell -->
@@ -84,9 +84,11 @@
         (tabSelected)="onTabSelected($event)"></pantry-sidebar>
 
       <div class="flex-1 min-w-0 flex flex-col overflow-y-auto">
-        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 page-enter-smooth">
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <pantry-breadcrumbs></pantry-breadcrumbs>
-          <router-outlet></router-outlet>
+          <div [@routeTransition]="prepareRoute(outlet)" class="w-full">
+            <router-outlet #outlet="outlet"></router-outlet>
+          </div>
         </main>
       </div>
 
