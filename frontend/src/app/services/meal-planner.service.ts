@@ -30,6 +30,8 @@ export class MealPlannerService {
 
   private readonly mealsSignal = signal<PlannedMeal[]>([]);
   readonly meals = this.mealsSignal.asReadonly();
+  readonly isLoading = signal(false);
+  readonly hasLoaded = signal(false);
 
   constructor() {
     effect(() => {
@@ -41,15 +43,20 @@ export class MealPlannerService {
   }
 
   public loadMealsFromBackend(): void {
+    this.isLoading.set(true);
     this.http
       .get<ApiResponse<PlannedMeal[]>>(this.apiUrl)
       .pipe(mapResponseData<PlannedMeal[]>())
       .subscribe({
         next: (data) => {
           this.mealsSignal.set(data || []);
+          this.isLoading.set(false);
+          this.hasLoaded.set(true);
         },
         error: (err) => {
           console.error('Failed to load meal plans from backend:', err);
+          this.isLoading.set(false);
+          this.hasLoaded.set(true);
         },
       });
   }

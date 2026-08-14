@@ -511,4 +511,83 @@ test.describe('Pantry Application Performance Benchmarks', () => {
       }
     }
   });
+
+  test('5. Sidebar Navigation Input Delay & Click Latency Benchmark', async ({ page }) => {
+    await setupApiMocks(page);
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    const sidebarNavResults: Array<{ navItem: string; latencyMs: number }> = [];
+    const navItems = [
+      {
+        name: 'Inventory Overview',
+        selector: 'button:has-text("Inventory"), a:has-text("Inventory")',
+      },
+      { name: 'Recipes', selector: 'button:has-text("Recipes"), a:has-text("Recipes")' },
+      {
+        name: 'Shopping List',
+        selector: 'button:has-text("Shopping List"), a:has-text("Shopping List")',
+      },
+      {
+        name: 'Meal Planner',
+        selector: 'button:has-text("Meal Planner"), a:has-text("Meal Planner")',
+      },
+      { name: 'Home', selector: 'button:has-text("Home"), a:has-text("Home")' },
+    ];
+
+    for (const nav of navItems) {
+      const btn = page.locator(nav.selector).first();
+      if (await btn.isVisible()) {
+        const start = Date.now();
+        await btn.click();
+        await page.waitForLoadState('domcontentloaded');
+        const latency = Date.now() - start;
+        sidebarNavResults.push({ navItem: nav.name, latencyMs: latency });
+        await page.waitForTimeout(50);
+      }
+    }
+
+    console.log(
+      '\n================ Performance Benchmark: Sidebar Click & Navigation Latency ================',
+    );
+    console.table(sidebarNavResults);
+
+    for (const res of sidebarNavResults) {
+      expect(res.latencyMs).toBeLessThan(500); // 500ms strict budget for sidebar click navigation
+    }
+  });
+
+  test('6. Continuous Page Scroll Performance & Recalc Style Overhead', async ({ page }) => {
+    await setupApiMocks(page);
+    const client = await page.context().newCDPSession(page);
+    await client.send('Performance.enable');
+
+    await page.goto('/inventory');
+    await page.waitForLoadState('networkidle');
+
+    const baselineMetrics = await getCDPMetrics(client);
+
+    // Perform continuous scroll down and up 10 times
+    for (let i = 0; i < 10; i++) {
+      await page.evaluate(() => window.scrollBy(0, 400));
+      await page.waitForTimeout(20);
+      await page.evaluate(() => window.scrollBy(0, -400));
+      await page.waitForTimeout(20);
+    }
+
+    const finalMetrics = await getCDPMetrics(client);
+    const layoutDelta = (finalMetrics.LayoutCount || 0) - (baselineMetrics.LayoutCount || 0);
+    const recalcDelta =
+      (finalMetrics.RecalcStyleCount || 0) - (baselineMetrics.RecalcStyleCount || 0);
+
+    console.log(
+      '\n================ Performance Benchmark: Continuous Scroll Recalc Overhead ================',
+    );
+    console.log(`Scroll Layout Count Delta: ${layoutDelta}`);
+    console.log(`Scroll Recalc Style Count Delta: ${recalcDelta}`);
+
+    // Verify scrolling does not trigger excessive reflows or style recalcs
+    expect(layoutDelta).toBeLessThan(120);
+    expect(recalcDelta).toBeLessThan(250);
+  });
 });

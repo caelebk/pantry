@@ -17,6 +17,8 @@ export class ShoppingListService {
 
   private readonly itemsSignal = signal<ShoppingItem[]>([]);
   readonly items = this.itemsSignal.asReadonly();
+  readonly isLoading = signal(false);
+  readonly hasLoaded = signal(false);
 
   constructor() {
     effect(() => {
@@ -28,15 +30,20 @@ export class ShoppingListService {
   }
 
   public loadItemsFromBackend(): void {
+    this.isLoading.set(true);
     this.http
       .get<ApiResponse<ShoppingItem[]>>(this.apiUrl)
       .pipe(mapResponseData<ShoppingItem[]>())
       .subscribe({
         next: (data) => {
           this.itemsSignal.set(data || []);
+          this.isLoading.set(false);
+          this.hasLoaded.set(true);
         },
         error: (err) => {
           console.error('Failed to load shopping list from backend:', err);
+          this.isLoading.set(false);
+          this.hasLoaded.set(true);
         },
       });
   }
