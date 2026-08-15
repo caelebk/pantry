@@ -1,17 +1,11 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
+import { Item } from '@models/items.model';
 import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
-import { Item } from '@models/items.model';
 
 import { ChangeDetectionStrategy } from '@angular/core';
 

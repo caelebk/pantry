@@ -146,13 +146,13 @@
                   meal.missingIngredients && meal.missingIngredients.length > 0 && !meal.cooked
                 ) {
                   <div
-                    class="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                    <span class="text-amber-800 dark:text-amber-200 font-semibold truncate">
+                    class="p-2 rounded-lg bg-rose-500/10 dark:bg-rose-500/10 border border-rose-500/20 dark:border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                    <span class="text-rose-700 dark:text-rose-400 font-semibold truncate">
                       ⚠️ Missing: {{ meal.missingIngredients.join(', ') }}
                     </span>
                     <button
                       (click)="addMissingToShoppingList(meal)"
-                      class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 font-bold rounded-lg text-xs transition-colors cursor-pointer shrink-0 text-center">
+                      class="px-2.5 py-1 bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 dark:text-rose-300 font-bold rounded-lg text-xs transition-colors cursor-pointer shrink-0 text-center border border-rose-500/20">
                       🛒 Add to Cart
                     </button>
                   </div>
@@ -256,7 +256,7 @@
                 ) {
                   <button
                     (click)="addMissingToShoppingList(meal)"
-                    class="w-full py-1 text-[10px] bg-amber-100 text-amber-800 font-bold rounded">
+                    class="w-full py-1 text-[10px] bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/20 font-bold rounded">
                     🛒 Add Missing
                   </button>
                 }

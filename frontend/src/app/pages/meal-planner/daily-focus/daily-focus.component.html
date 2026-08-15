@@ -68,8 +68,8 @@
       <div
         [class]="
           missingIngredients().length === 0
-            ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600'
-            : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600'
+            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
         "
         class="w-10 h-10 rounded-xl flex items-center justify-center text-lg">
         {{ missingIngredients().length === 0 ? '✅' : '⚠️' }}
@@ -134,7 +134,7 @@
                 </div>
 
                 @if (meal.missingIngredients && meal.missingIngredients.length > 0) {
-                  <div class="text-xs text-amber-600 dark:text-amber-400 font-semibold pt-1">
+                  <div class="text-xs text-rose-600 dark:text-rose-400 font-semibold pt-1">
                     ⚠️ Missing ingredients: {{ meal.missingIngredients.join(', ') }}
                   </div>
                 }
@@ -146,7 +146,7 @@
                 ) {
                   <button
                     (click)="addMissingToShoppingList(meal)"
-                    class="px-3 py-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 font-bold rounded-xl text-xs transition-colors cursor-pointer border border-amber-200">
+                    class="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold rounded-xl text-xs transition-colors cursor-pointer border border-rose-500/20">
                     🛒 Add Missing
                   </button>
                 }
@@ -207,10 +207,10 @@
                 @if (meal.missingIngredients && meal.missingIngredients.length > 0) {
                   @for (ing of meal.missingIngredients; track ing) {
                     <div
-                      class="flex items-center justify-between text-amber-700 dark:text-amber-300 font-medium pl-2">
+                      class="flex items-center justify-between text-rose-700 dark:text-rose-300 font-medium pl-2">
                       <span>⚠️ {{ ing }}</span>
                       <span
-                        class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/40"
+                        class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
                         >Missing</span
                       >
                     </div>

@@ -16,5 +16,4 @@ export class StatCardComponent {
   valueColor = input<string>('text-gray-900 dark:text-white');
   trend = input<string>();
   trendClass = input<string>('badge-primary');
-
 }

@@ -46,136 +46,137 @@
       <div class="glass-card rounded-2xl h-96 animate-pulse"></div>
     </div>
   } @else {
-  <!-- Simple Urgent Alert Notices -->
-  @if (expiredItemsCount() > 0 || expiringSoonItemsCount() > 0) {
-    <div class="flex flex-col gap-3">
-      <!-- Expired Items Notice -->
-      @if (expiredItemsCount() > 0) {
-        <div
-          class="bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 flex items-center justify-between gap-4 text-xs">
-          <div class="flex items-center gap-3">
-            <i class="pi pi-exclamation-triangle text-red-600 dark:text-red-400 text-base"></i>
-            <div>
-              <span class="font-bold text-red-900 dark:text-red-200">
-                {{ expiredItemsCount() }} Expired Item(s)
-              </span>
-              <span class="text-red-700 dark:text-red-300 ml-1">
-                require your review to update inventory.
-              </span>
+    <!-- Simple Urgent Alert Notices -->
+    @if (expiredItemsCount() > 0 || expiringSoonItemsCount() > 0) {
+      <div class="flex flex-col gap-3">
+        <!-- Expired Items Notice -->
+        @if (expiredItemsCount() > 0) {
+          <div
+            class="bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 flex items-center justify-between gap-4 text-xs">
+            <div class="flex items-center gap-3">
+              <i class="pi pi-exclamation-triangle text-red-600 dark:text-red-400 text-base"></i>
+              <div>
+                <span class="font-bold text-red-900 dark:text-red-200">
+                  {{ expiredItemsCount() }} Expired Item(s)
+                </span>
+                <span class="text-red-700 dark:text-red-300 ml-1">
+                  require your review to update inventory.
+                </span>
+              </div>
             </div>
+            <button
+              (click)="onReviewExpired()"
+              class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors cursor-pointer shrink-0">
+              Review Expired Items
+            </button>
           </div>
-          <button
-            (click)="onReviewExpired()"
-            class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors cursor-pointer shrink-0">
-            Review Expired Items
-          </button>
-        </div>
-      }
+        }
 
-      <!-- Expiring Soon Notice -->
-      @if (expiringSoonItemsCount() > 0) {
-        <div
-          class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3.5 flex items-center justify-between gap-4 text-xs">
-          <div class="flex items-center gap-3">
-            <i class="pi pi-clock text-amber-600 dark:text-amber-400 text-base"></i>
-            <div>
-              <span class="font-bold text-amber-900 dark:text-amber-200">
-                {{ expiringSoonItemsCount() }} Item(s) Expiring Soon
-              </span>
-              <span class="text-amber-700 dark:text-amber-300 ml-1">
-                within 7 days. Plan your upcoming meals.
-              </span>
+        <!-- Expiring Soon Notice -->
+        @if (expiringSoonItemsCount() > 0) {
+          <div
+            class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3.5 flex items-center justify-between gap-4 text-xs">
+            <div class="flex items-center gap-3">
+              <i class="pi pi-clock text-amber-600 dark:text-amber-400 text-base"></i>
+              <div>
+                <span class="font-bold text-amber-900 dark:text-amber-200">
+                  {{ expiringSoonItemsCount() }} Item(s) Expiring Soon
+                </span>
+                <span class="text-amber-700 dark:text-amber-300 ml-1">
+                  within 7 days. Plan your upcoming meals.
+                </span>
+              </div>
             </div>
+            <button
+              (click)="onNavigateToRecipes()"
+              class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-colors cursor-pointer shrink-0">
+              View Recipes
+            </button>
           </div>
-          <button
-            (click)="onNavigateToRecipes()"
-            class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-colors cursor-pointer shrink-0">
-            View Recipes
-          </button>
-        </div>
-      }
-    </div>
-  }
+        }
+      </div>
+    }
 
-  <!-- Key Stats Grid -->
-  <div
-    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 panel-reveal panel-delay-1">
-    <pantry-stat-card
-      [title]="'home.stats.totalItems' | transloco"
-      [value]="totalItemsCount()"
-      [subtitle]="'home.stats.inInventory' | transloco">
-    </pantry-stat-card>
+    <!-- Key Stats Grid -->
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 panel-reveal panel-delay-1">
+      <pantry-stat-card
+        [title]="'home.stats.totalItems' | transloco"
+        [value]="totalItemsCount()"
+        [subtitle]="'home.stats.inInventory' | transloco">
+      </pantry-stat-card>
 
-    <pantry-stat-card
-      [title]="'home.stats.expiringSoon' | transloco"
-      [value]="expiringSoonItemsCount()"
-      [subtitle]="'home.stats.within7Days' | transloco"
-      [valueColor]="'text-amber-600 dark:text-amber-500'">
-    </pantry-stat-card>
+      <pantry-stat-card
+        [title]="'home.stats.expiringSoon' | transloco"
+        [value]="expiringSoonItemsCount()"
+        [subtitle]="'home.stats.within7Days' | transloco"
+        [valueColor]="'text-amber-600 dark:text-amber-500'">
+      </pantry-stat-card>
 
-    <pantry-stat-card
-      [title]="'home.stats.expired' | transloco"
-      [value]="expiredItemsCount()"
-      [subtitle]="'home.stats.needsRemoval' | transloco"
-      [valueColor]="'text-red-600 dark:text-red-500'">
-    </pantry-stat-card>
+      <pantry-stat-card
+        [title]="'home.stats.expired' | transloco"
+        [value]="expiredItemsCount()"
+        [subtitle]="'home.stats.needsRemoval' | transloco"
+        [valueColor]="'text-red-600 dark:text-red-500'">
+      </pantry-stat-card>
 
-    <pantry-stat-card
-      [title]="'home.stats.canMake' | transloco"
-      [value]="canMakeRecipesCount()"
-      [subtitle]="'home.stats.recipes' | transloco"
-      [valueColor]="'text-emerald-600 dark:text-emerald-400'">
-    </pantry-stat-card>
-  </div>
-
-  <!-- Core 2-Column Home Layout -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 panel-reveal panel-delay-2">
-    <!-- Left Main Column (2 Columns Wide): Watchlists & Recipes Spotlight -->
-    <div class="lg:col-span-2 flex flex-col gap-6">
-      <!-- "What You Can Cook Today" Recipe Spotlight -->
-      <pantry-cookable-recipes-container [recipes]="recipes()"> </pantry-cookable-recipes-container>
-
-      <!-- Expired Items Section (Target for Review button) -->
-      @if (expiredItems().length > 0) {
-        <div id="expired-items-section" class="block">
-          <pantry-items-container
-            [titleKey]="'dashboard.expiredItems.title'"
-            [items]="expiredItems()"
-            [theme]="Theme.Red"
-            [footerMessageKey]="'dashboard.expiredItems.moreItems'"
-            (removeItem)="onRemoveItem($event)">
-          </pantry-items-container>
-        </div>
-      }
-
-      <!-- Soon to Expire Items List -->
-      <pantry-items-container
-        [titleKey]="'dashboard.expiringSoonItems.title'"
-        [items]="soonToExpireItems()"
-        [theme]="Theme.Amber"
-        [footerMessageKey]="'dashboard.expiringSoonItems.moreItems'"
-        (removeItem)="onRemoveItem($event)">
-      </pantry-items-container>
-
-      <!-- Available Fresh Items List -->
-      <pantry-items-container
-        [titleKey]="'dashboard.availableItems.title'"
-        [items]="availableItems()"
-        [theme]="Theme.Orange"
-        [footerMessageKey]="'dashboard.availableItems.moreItems'"
-        (removeItem)="onRemoveItem($event)">
-      </pantry-items-container>
+      <pantry-stat-card
+        [title]="'home.stats.canMake' | transloco"
+        [value]="canMakeRecipesCount()"
+        [subtitle]="'home.stats.recipes' | transloco"
+        [valueColor]="'text-emerald-600 dark:text-emerald-400'">
+      </pantry-stat-card>
     </div>
 
-    <!-- Right Side Column (1 Column Wide): Shortcuts & Storage Breakdown -->
-    <div class="lg:col-span-1 flex flex-col gap-6">
-      <!-- Quick Shortcuts Panel -->
-      <pantry-quick-actions-container></pantry-quick-actions-container>
+    <!-- Core 2-Column Home Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 panel-reveal panel-delay-2">
+      <!-- Left Main Column (2 Columns Wide): Watchlists & Recipes Spotlight -->
+      <div class="lg:col-span-2 flex flex-col gap-6">
+        <!-- "What You Can Cook Today" Recipe Spotlight -->
+        <pantry-cookable-recipes-container [recipes]="recipes()">
+        </pantry-cookable-recipes-container>
 
-      <!-- Storage Locations Breakdown -->
-      <pantry-location-overview-container [items]="items()" [locations]="locations()">
-      </pantry-location-overview-container>
+        <!-- Expired Items Section (Target for Review button) -->
+        @if (expiredItems().length > 0) {
+          <div id="expired-items-section" class="block">
+            <pantry-items-container
+              [titleKey]="'dashboard.expiredItems.title'"
+              [items]="expiredItems()"
+              [theme]="Theme.Red"
+              [footerMessageKey]="'dashboard.expiredItems.moreItems'"
+              (removeItem)="onRemoveItem($event)">
+            </pantry-items-container>
+          </div>
+        }
+
+        <!-- Soon to Expire Items List -->
+        <pantry-items-container
+          [titleKey]="'dashboard.expiringSoonItems.title'"
+          [items]="soonToExpireItems()"
+          [theme]="Theme.Amber"
+          [footerMessageKey]="'dashboard.expiringSoonItems.moreItems'"
+          (removeItem)="onRemoveItem($event)">
+        </pantry-items-container>
+
+        <!-- Available Fresh Items List -->
+        <pantry-items-container
+          [titleKey]="'dashboard.availableItems.title'"
+          [items]="availableItems()"
+          [theme]="Theme.Orange"
+          [footerMessageKey]="'dashboard.availableItems.moreItems'"
+          (removeItem)="onRemoveItem($event)">
+        </pantry-items-container>
+      </div>
+
+      <!-- Right Side Column (1 Column Wide): Shortcuts & Storage Breakdown -->
+      <div class="lg:col-span-1 flex flex-col gap-6">
+        <!-- Quick Shortcuts Panel -->
+        <pantry-quick-actions-container></pantry-quick-actions-container>
+
+        <!-- Storage Locations Breakdown -->
+        <pantry-location-overview-container [items]="items()" [locations]="locations()">
+        </pantry-location-overview-container>
+      </div>
     </div>
-  </div>
   }
 </div>

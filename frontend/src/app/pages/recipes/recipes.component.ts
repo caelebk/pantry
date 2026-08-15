@@ -252,7 +252,10 @@ export class RecipesComponent {
       this.difficultyFilter,
       this.maxTimeFilter,
     ].join('|');
-    if (this.filteredRecipesCacheSource === this.recipes && this.filteredRecipesCacheKey === cacheKey) {
+    if (
+      this.filteredRecipesCacheSource === this.recipes &&
+      this.filteredRecipesCacheKey === cacheKey
+    ) {
       return this.filteredRecipesCache || [];
     }
 

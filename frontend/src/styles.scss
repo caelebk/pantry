@@ -208,14 +208,12 @@ body {
 
 /* ── Sub-Navigation Items ────────────────────────────────────── */
 .sidebar-subnav-item {
-  border-left: 2.5px solid transparent;
-  color: var(--color-surface-600);
+  background-color: transparent;
+  color: var(--color-surface-500);
   font-weight: 500;
   transition:
-    background-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
-    color 180ms ease;
+    color 180ms ease,
+    text-shadow 180ms ease;
 }
 
 :where(.dark, .dark *) .sidebar-subnav-item {
@@ -223,27 +221,27 @@ body {
 }
 
 .sidebar-subnav-item:hover:not(.sidebar-subnav-active) {
-  background-color: rgba(226, 232, 240, 0.5);
   color: var(--color-surface-900);
 }
 
 :where(.dark, .dark *) .sidebar-subnav-item:hover:not(.sidebar-subnav-active) {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--color-primary-300);
+  color: var(--color-surface-100);
 }
 
 .sidebar-subnav-active {
-  background-color: rgba(249, 115, 22, 0.1);
-  border-left-color: var(--color-primary-500);
+  background-color: transparent !important;
   color: var(--color-primary-600) !important;
   font-weight: 700 !important;
+  text-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
 }
 
 :where(.dark, .dark *) .sidebar-subnav-active {
-  background-color: rgba(249, 115, 22, 0.2);
-  border-left-color: var(--color-primary-500);
-  color: var(--color-primary-300) !important;
-  box-shadow: 0 0 12px rgba(249, 115, 22, 0.25);
+  background-color: transparent !important;
+  color: var(--color-primary-400) !important;
+  box-shadow: none !important;
+  text-shadow:
+    0 0 12px rgba(249, 115, 22, 0.65),
+    0 0 24px rgba(249, 115, 22, 0.35);
 }
 
 /* ── Gradient text utility ──────────────────────────────────── */
@@ -752,6 +750,11 @@ textarea::placeholder,
   font-weight: 400 !important;
 }
 
+:where(.dark, .dark *) .p-select-label.p-placeholder,
+:where(.dark, .dark *) .p-multiselect-label.p-placeholder {
+  color: #ffffff !important;
+}
+
 /* PrimeNG Select & MultiSelect Labels */
 .p-select-label,
 .p-multiselect-label,
@@ -765,10 +768,21 @@ textarea::placeholder,
   box-sizing: border-box !important;
 }
 
+:where(.dark, .dark *) .p-select-label,
+:where(.dark, .dark *) .p-multiselect-label,
+:where(.dark, .dark *) .p-multiselect-label-container {
+  color: #ffffff !important;
+}
+
 .p-select-dropdown,
 .p-multiselect-dropdown {
   color: var(--color-surface-400) !important;
   padding-left: 0.5rem !important;
+}
+
+:where(.dark, .dark *) .p-select-dropdown,
+:where(.dark, .dark *) .p-multiselect-dropdown {
+  color: #ffffff !important;
 }
 
 /* PrimeNG InputNumber Host Element & Inner Wrapper */

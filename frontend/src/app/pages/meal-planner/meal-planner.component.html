@@ -15,7 +15,7 @@
       @if (missingItemsCount() > 0) {
         <button
           (click)="syncAllMissingToShoppingList()"
-          class="inline-flex items-center gap-2 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-900/50 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
+          class="inline-flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/20 dark:border-rose-500/30 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
           🛒 Sync {{ missingItemsCount() }} Missing Item{{ missingItemsCount() > 1 ? 's' : '' }}
         </button>
       }
@@ -37,65 +37,9 @@
     </div>
   </div>
 
-  <!-- Executive Summary Cards Grid -->
-  @if (mealPlannerService.isLoading()) {
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" aria-busy="true" aria-label="Loading meal plan">
-      @for (card of [1, 2, 3]; track card) {
-        <div class="glass-card p-4 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 h-24 animate-pulse"></div>
-      }
-    </div>
-  } @else {
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 panel-reveal panel-delay-1">
-    <div
-      class="glass-card p-4 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-xs flex items-center gap-4">
-      <div
-        class="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 flex items-center justify-center font-extrabold text-xl">
-        {{ totalPlannedCount() }}
-      </div>
-      <div>
-        <div
-          class="text-xs font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider">
-          Planned Meals
-        </div>
-        <div class="text-sm font-bold text-surface-900 dark:text-white">This Week</div>
-      </div>
-    </div>
-
-    <div
-      class="glass-card p-4 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-xs flex items-center gap-4">
-      <div
-        class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-extrabold text-xl">
-        {{ cookedCount() }}
-      </div>
-      <div>
-        <div
-          class="text-xs font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider">
-          Completed
-        </div>
-        <div class="text-sm font-bold text-surface-900 dark:text-white">Meals Cooked</div>
-      </div>
-    </div>
-
-    <div
-      class="glass-card p-4 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-xs flex items-center gap-4">
-      <div
-        class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex items-center justify-center font-extrabold text-xl">
-        {{ missingItemsCount() }}
-      </div>
-      <div>
-        <div
-          class="text-xs font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider">
-          Missing Needed
-        </div>
-        <div class="text-sm font-bold text-surface-900 dark:text-white">Ingredients</div>
-      </div>
-    </div>
-  </div>
-  }
-
   <!-- Sub-Page Navigation Tabs -->
   <div
-    class="flex items-center justify-between border-b border-surface-200/80 dark:border-surface-800/80 pb-3 panel-reveal panel-delay-2">
+    class="flex items-center justify-between border-b border-surface-200/80 dark:border-surface-800/80 pb-3 panel-reveal panel-delay-1">
     <div
       class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800/60 p-1 rounded-xl border border-surface-200/80 dark:border-surface-800/80">
       <button
@@ -121,7 +65,7 @@
   </div>
 
   <!-- Dynamic Views -->
-  <div class="panel-reveal panel-delay-3">
+  <div class="panel-reveal panel-delay-2">
     @if (mealPlannerService.isLoading()) {
       <div class="glass-card rounded-2xl h-96 animate-pulse" aria-busy="true"></div>
     } @else if (activeSubTab() === 'calendar') {

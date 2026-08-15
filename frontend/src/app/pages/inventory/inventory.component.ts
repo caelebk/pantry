@@ -691,6 +691,7 @@ export class InventoryComponent implements OnInit {
       event.stopPropagation();
     }
     this.shoppingListService.addItem({
+      ingredientId: item.ingredientId,
       name: item.name,
       category: 'Pantry Restock',
       quantity: 1,
@@ -732,6 +733,7 @@ export class InventoryComponent implements OnInit {
 
     const selectedItems = this.items.filter((item) => ids.includes(item.id));
     const dtos = selectedItems.map((item) => ({
+      ingredientId: item.ingredientId,
       name: item.name,
       category: 'Pantry Restock',
       quantity: 1,

@@ -36,11 +36,11 @@
           filterPlaceholder="Search categories..."
           appendTo="body"
           placeholder="✨ All Categories"
-          styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
+          styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs dark:!text-white">
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
               <div
-                class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-surface-200">
+                class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-white">
                 @if (selectedItems.length === 1) {
                   <span>{{ getNutrientIcon(selectedItems[0]) }}</span>
                   <span>{{ getNutrientName(selectedItems[0]) }}</span>
@@ -63,7 +63,7 @@
           <button
             type="button"
             (click)="onNutrientTypesSelect([])"
-            class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+            class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:text-surface-300 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
             title="Reset category filter">
             <i class="pi pi-times text-xs font-bold"></i>
           </button>
@@ -84,11 +84,11 @@
           filterPlaceholder="Search groups..."
           appendTo="body"
           placeholder="🏷️ All Groups"
-          styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
+          styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs dark:!text-white">
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
               <div
-                class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-surface-200">
+                class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-white">
                 @if (selectedItems.length === 1) {
                   <span>🏷️</span>
                   <span>{{ getCategoryName(selectedItems[0]) }}</span>
@@ -111,32 +111,11 @@
           <button
             type="button"
             (click)="onCategoryIdsSelect([])"
-            class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+            class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:text-surface-300 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
             title="Reset group filter">
             <i class="pi pi-times text-xs font-bold"></i>
           </button>
         }
-      </div>
-
-      <!-- Expand / Collapse Controls -->
-      <div
-        class="flex items-center h-[42px] bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-xs border border-surface-200 dark:border-surface-700 shadow-xs shrink-0">
-        <button
-          type="button"
-          (click)="expandAll()"
-          class="px-3 py-1.5 rounded-lg text-xs font-bold text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
-          title="Expand All Groups">
-          <i class="pi pi-arrows-alt text-xs"></i>
-          <span>Expand All</span>
-        </button>
-        <button
-          type="button"
-          (click)="collapseAll()"
-          class="px-3 py-1.5 rounded-lg text-xs font-bold text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 hover:shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
-          title="Collapse All Groups">
-          <i class="pi pi-minus text-xs"></i>
-          <span>Collapse</span>
-        </button>
       </div>
     </div>
   </div>
