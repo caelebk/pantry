@@ -6,112 +6,194 @@ export const seedData = {
   ],
   ingredient_categories: [
     {
-      name: 'Protein',
+      name: 'Protein & Eggs',
       icon: '🥩',
       color: '#ef4444',
-      description:
-        'Essential amino acids & building blocks from meats, seafood, dairy, eggs, and legumes.',
+      description: 'Meat, seafood, eggs, legumes, and other protein-rich ingredients.',
     },
     {
-      name: 'Carbohydrate',
+      name: 'Dairy',
+      icon: '🥛',
+      color: '#38bdf8',
+      description: 'Milk, cream, cheese, yogurt, cultured dairy, and butter.',
+    },
+    {
+      name: 'Grains & Bakery',
       icon: '🌾',
       color: '#f59e0b',
-      description:
-        'Primary energy sources including whole grains, pasta, bakery items, and starches.',
+      description: 'Grains, pasta, bread, baked goods, and baking ingredients.',
     },
     {
-      name: 'Fat & Oil',
+      name: 'Oils, Nuts & Seeds',
       icon: '🫒',
       color: '#22c55e',
-      description: 'Healthy fats, cooking oils, butter, nuts, and concentrated energy sources.',
+      description: 'Cooking oils, nuts, seeds, nut butters, and other shelf-stable fats.',
     },
     {
-      name: 'Fiber & Produce',
+      name: 'Produce',
       icon: '🥬',
       color: '#10b981',
-      description: 'Fresh fruits, vegetables, leafy greens, aromatics, and dietary fiber.',
+      description: 'Fresh fruits, vegetables, leafy greens, herbs, and aromatics.',
     },
     {
-      name: 'Seasoning',
+      name: 'Herbs, Spices & Seasonings',
       icon: '🧂',
       color: '#8b5cf6',
       description: 'Spices, herbs, seasonings, and flavor enhancers for culinary prep.',
     },
     {
-      name: 'Condiment',
+      name: 'Condiments & Sauces',
       icon: '🍶',
       color: '#06b6d4',
       description: 'Sauces, dressings, vinegars, dips, and table condiments.',
     },
     {
-      name: 'Beverage',
+      name: 'Beverages',
       icon: '☕',
       color: '#64748b',
       description: 'Hot and cold beverages, juices, coffees, teas, and liquid refreshments.',
     },
     {
-      name: 'Quick Foods',
+      name: 'Snacks & Prepared Foods',
       icon: '📦',
       color: '#94a3b8',
-      description: 'Convenience items, snacks, sweets, frozen foods, and instant meal packs.',
+      description: 'Snacks, sweets, frozen foods, and ready-to-eat or instant meals.',
     },
   ],
   get nutrient_types() {
     return this.ingredient_categories;
   },
   categories: [
-    // Fiber & Produce
-    { name: 'Fruits', ingredient_category: 'Fiber & Produce', nutrient_type: 'Fiber & Produce' },
+    // Produce
+    { name: 'Fruits', ingredient_category: 'Produce', nutrient_type: 'Produce' },
     {
       name: 'Vegetables',
-      ingredient_category: 'Fiber & Produce',
-      nutrient_type: 'Fiber & Produce',
+      ingredient_category: 'Produce',
+      nutrient_type: 'Produce',
     },
     {
-      name: 'Fresh Herbs & Greens',
-      ingredient_category: 'Fiber & Produce',
-      nutrient_type: 'Fiber & Produce',
+      name: 'Herbs & Greens',
+      ingredient_category: 'Produce',
+      nutrient_type: 'Produce',
     },
-    { name: 'Aromatics', ingredient_category: 'Fiber & Produce', nutrient_type: 'Fiber & Produce' },
+    { name: 'Aromatics', ingredient_category: 'Produce', nutrient_type: 'Produce' },
 
-    // Protein
-    { name: 'Meat', ingredient_category: 'Protein', nutrient_type: 'Protein' },
-    { name: 'Seafood', ingredient_category: 'Protein', nutrient_type: 'Protein' },
-    { name: 'Dairy & Eggs', ingredient_category: 'Protein', nutrient_type: 'Protein' },
-    { name: 'Beans', ingredient_category: 'Protein', nutrient_type: 'Protein' },
+    // Protein & Eggs
+    { name: 'Meat', ingredient_category: 'Protein & Eggs', nutrient_type: 'Protein & Eggs' },
+    { name: 'Seafood', ingredient_category: 'Protein & Eggs', nutrient_type: 'Protein & Eggs' },
+    { name: 'Eggs', ingredient_category: 'Protein & Eggs', nutrient_type: 'Protein & Eggs' },
+    {
+      name: 'Beans & Legumes',
+      ingredient_category: 'Protein & Eggs',
+      nutrient_type: 'Protein & Eggs',
+    },
+    {
+      name: 'Tofu & Tempeh',
+      ingredient_category: 'Protein & Eggs',
+      nutrient_type: 'Protein & Eggs',
+    },
 
-    // Carbohydrate
-    { name: 'Grains', ingredient_category: 'Carbohydrate', nutrient_type: 'Carbohydrate' },
-    { name: 'Pasta', ingredient_category: 'Carbohydrate', nutrient_type: 'Carbohydrate' },
-    { name: 'Bakery', ingredient_category: 'Carbohydrate', nutrient_type: 'Carbohydrate' },
-    { name: 'Baking', ingredient_category: 'Carbohydrate', nutrient_type: 'Carbohydrate' },
+    // Dairy
+    { name: 'Milk & Cream', ingredient_category: 'Dairy', nutrient_type: 'Dairy' },
+    { name: 'Cheese', ingredient_category: 'Dairy', nutrient_type: 'Dairy' },
+    {
+      name: 'Yogurt & Cultured Dairy',
+      ingredient_category: 'Dairy',
+      nutrient_type: 'Dairy',
+    },
+    { name: 'Butter', ingredient_category: 'Dairy', nutrient_type: 'Dairy' },
 
-    // Fat & Oil
-    { name: 'Oils', ingredient_category: 'Fat & Oil', nutrient_type: 'Fat & Oil' },
-    { name: 'Protein fats', ingredient_category: 'Fat & Oil', nutrient_type: 'Fat & Oil' },
-    { name: 'Butter', ingredient_category: 'Fat & Oil', nutrient_type: 'Fat & Oil' },
-    { name: 'Nuts', ingredient_category: 'Fat & Oil', nutrient_type: 'Fat & Oil' },
+    // Grains & Bakery
+    { name: 'Grains', ingredient_category: 'Grains & Bakery', nutrient_type: 'Grains & Bakery' },
+    { name: 'Pasta', ingredient_category: 'Grains & Bakery', nutrient_type: 'Grains & Bakery' },
+    {
+      name: 'Bread & Bakery',
+      ingredient_category: 'Grains & Bakery',
+      nutrient_type: 'Grains & Bakery',
+    },
+    {
+      name: 'Baking Ingredients',
+      ingredient_category: 'Grains & Bakery',
+      nutrient_type: 'Grains & Bakery',
+    },
 
-    // Seasoning
-    { name: 'Seasoning', ingredient_category: 'Seasoning', nutrient_type: 'Seasoning' },
-    { name: 'Spices', ingredient_category: 'Seasoning', nutrient_type: 'Seasoning' },
+    // Oils, Nuts & Seeds
+    {
+      name: 'Oils',
+      ingredient_category: 'Oils, Nuts & Seeds',
+      nutrient_type: 'Oils, Nuts & Seeds',
+    },
+    {
+      name: 'Nuts & Seeds',
+      ingredient_category: 'Oils, Nuts & Seeds',
+      nutrient_type: 'Oils, Nuts & Seeds',
+    },
+    {
+      name: 'Nut Butters',
+      ingredient_category: 'Oils, Nuts & Seeds',
+      nutrient_type: 'Oils, Nuts & Seeds',
+    },
 
-    // Condiment
-    { name: 'Condiment', ingredient_category: 'Condiment', nutrient_type: 'Condiment' },
-    { name: 'Sauce', ingredient_category: 'Condiment', nutrient_type: 'Condiment' },
+    // Herbs, Spices & Seasonings
+    {
+      name: 'Seasoning Blends',
+      ingredient_category: 'Herbs, Spices & Seasonings',
+      nutrient_type: 'Herbs, Spices & Seasonings',
+    },
+    {
+      name: 'Spices & Dried Herbs',
+      ingredient_category: 'Herbs, Spices & Seasonings',
+      nutrient_type: 'Herbs, Spices & Seasonings',
+    },
 
-    // Beverage
-    { name: 'Hot Beverages', ingredient_category: 'Beverage', nutrient_type: 'Beverage' },
-    { name: 'Cold Juice', ingredient_category: 'Beverage', nutrient_type: 'Beverage' },
-    { name: 'Cold Drinks', ingredient_category: 'Beverage', nutrient_type: 'Beverage' },
+    // Condiments & Sauces
+    {
+      name: 'Condiments',
+      ingredient_category: 'Condiments & Sauces',
+      nutrient_type: 'Condiments & Sauces',
+    },
+    {
+      name: 'Sauces',
+      ingredient_category: 'Condiments & Sauces',
+      nutrient_type: 'Condiments & Sauces',
+    },
+    {
+      name: 'Dressings',
+      ingredient_category: 'Condiments & Sauces',
+      nutrient_type: 'Condiments & Sauces',
+    },
+    {
+      name: 'Vinegars',
+      ingredient_category: 'Condiments & Sauces',
+      nutrient_type: 'Condiments & Sauces',
+    },
 
-    // Quick Foods
-    { name: 'Snacks', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
-    { name: 'Sweets', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
-    { name: 'Frozen Foods', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
-    { name: 'Desserts', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
-    { name: 'Instant Foods', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
-    { name: 'Instant Sauces', ingredient_category: 'Quick Foods', nutrient_type: 'Quick Foods' },
+    // Beverages
+    { name: 'Coffee & Tea', ingredient_category: 'Beverages', nutrient_type: 'Beverages' },
+    { name: 'Juice', ingredient_category: 'Beverages', nutrient_type: 'Beverages' },
+    { name: 'Soft Drinks', ingredient_category: 'Beverages', nutrient_type: 'Beverages' },
+
+    // Snacks & Prepared Foods
+    {
+      name: 'Snacks',
+      ingredient_category: 'Snacks & Prepared Foods',
+      nutrient_type: 'Snacks & Prepared Foods',
+    },
+    {
+      name: 'Sweets & Desserts',
+      ingredient_category: 'Snacks & Prepared Foods',
+      nutrient_type: 'Snacks & Prepared Foods',
+    },
+    {
+      name: 'Frozen Foods',
+      ingredient_category: 'Snacks & Prepared Foods',
+      nutrient_type: 'Snacks & Prepared Foods',
+    },
+    {
+      name: 'Ready & Instant Meals',
+      ingredient_category: 'Snacks & Prepared Foods',
+      nutrient_type: 'Snacks & Prepared Foods',
+    },
   ],
   units: [
     { name: 'piece', short_name: 'pc', type: 'count', to_base_factor: 1 },
@@ -134,7 +216,7 @@ export const seedData = {
     { name: 'Hard' },
   ],
   ingredients: [
-    // Fruits & Vegetables & Greens & Aromatics (Fiber & Produce)
+    // Fruits, vegetables, herbs & greens, and aromatics (Produce)
     { name: 'Apples', category: 'Fruits', default_unit: 'piece' },
     { name: 'Bananas', category: 'Fruits', default_unit: 'piece' },
     { name: 'Lemons', category: 'Fruits', default_unit: 'piece' },
@@ -145,79 +227,83 @@ export const seedData = {
     { name: 'Potatoes', category: 'Vegetables', default_unit: 'kilogram' },
     { name: 'Tomatoes', category: 'Vegetables', default_unit: 'piece' },
     { name: 'Garlic', category: 'Aromatics', default_unit: 'clove' },
-    { name: 'Fresh Basil', category: 'Fresh Herbs & Greens', default_unit: 'gram' },
+    { name: 'Fresh Basil', category: 'Herbs & Greens', default_unit: 'gram' },
 
-    // Meat, Seafood, Dairy, Beans (Protein)
+    // Meat, seafood, eggs, and legumes (Protein & Eggs)
     { name: 'Chicken Breast', category: 'Meat', default_unit: 'kilogram' },
     { name: 'Ground Beef', category: 'Meat', default_unit: 'kilogram' },
     { name: 'Pork Chops', category: 'Meat', default_unit: 'piece' },
     { name: 'Bacon', category: 'Meat', default_unit: 'gram' },
     { name: 'Salmon Fillet', category: 'Seafood', default_unit: 'kilogram' },
     { name: 'Canned Tuna', category: 'Seafood', default_unit: 'can' },
-    { name: 'Milk', category: 'Dairy & Eggs', default_unit: 'liter' },
-    { name: 'Large Eggs', category: 'Dairy & Eggs', default_unit: 'piece' },
-    { name: 'Cheddar Cheese', category: 'Dairy & Eggs', default_unit: 'gram' },
-    { name: 'Greek Yogurt', category: 'Dairy & Eggs', default_unit: 'gram' },
-    { name: 'Heavy Cream', category: 'Dairy & Eggs', default_unit: 'milliliter' },
-    { name: 'Parmesan Cheese', category: 'Dairy & Eggs', default_unit: 'gram' },
-    { name: 'Feta Cheese', category: 'Dairy & Eggs', default_unit: 'gram' },
-    { name: 'Chickpeas', category: 'Beans', default_unit: 'can' },
-    { name: 'Black Beans', category: 'Beans', default_unit: 'can' },
+    { name: 'Large Eggs', category: 'Eggs', default_unit: 'piece' },
+    { name: 'Chickpeas', category: 'Beans & Legumes', default_unit: 'can' },
+    { name: 'Black Beans', category: 'Beans & Legumes', default_unit: 'can' },
 
-    // Grains, Pasta, Bakery, Baking (Carbohydrate)
+    // Dairy
+    { name: 'Milk', category: 'Milk & Cream', default_unit: 'liter' },
+    { name: 'Heavy Cream', category: 'Milk & Cream', default_unit: 'milliliter' },
+    { name: 'Cheddar Cheese', category: 'Cheese', default_unit: 'gram' },
+    { name: 'Parmesan Cheese', category: 'Cheese', default_unit: 'gram' },
+    { name: 'Feta Cheese', category: 'Cheese', default_unit: 'gram' },
+    { name: 'Greek Yogurt', category: 'Yogurt & Cultured Dairy', default_unit: 'gram' },
+
+    // Grains, pasta, bread, and baking ingredients (Grains & Bakery)
     { name: 'Basmati Rice', category: 'Grains', default_unit: 'kilogram' },
     { name: 'Quinoa', category: 'Grains', default_unit: 'gram' },
     { name: 'Rolled Oats', category: 'Grains', default_unit: 'gram' },
     { name: 'Spaghetti', category: 'Pasta', default_unit: 'gram' },
     { name: 'Penne Pasta', category: 'Pasta', default_unit: 'gram' },
-    { name: 'Sourdough Bread', category: 'Bakery', default_unit: 'piece' },
-    { name: 'All-Purpose Flour', category: 'Baking', default_unit: 'kilogram' },
-    { name: 'Granulated Sugar', category: 'Baking', default_unit: 'kilogram' },
-    { name: 'Brown Sugar', category: 'Baking', default_unit: 'kilogram' },
-    { name: 'Baking Powder', category: 'Baking', default_unit: 'teaspoon' },
-    { name: 'Honey', category: 'Baking', default_unit: 'milliliter' },
-    { name: 'Vanilla Extract', category: 'Baking', default_unit: 'teaspoon' },
+    { name: 'Sourdough Bread', category: 'Bread & Bakery', default_unit: 'piece' },
+    { name: 'All-Purpose Flour', category: 'Baking Ingredients', default_unit: 'kilogram' },
+    { name: 'Granulated Sugar', category: 'Baking Ingredients', default_unit: 'kilogram' },
+    { name: 'Brown Sugar', category: 'Baking Ingredients', default_unit: 'kilogram' },
+    { name: 'Baking Powder', category: 'Baking Ingredients', default_unit: 'teaspoon' },
+    { name: 'Honey', category: 'Baking Ingredients', default_unit: 'milliliter' },
+    { name: 'Vanilla Extract', category: 'Baking Ingredients', default_unit: 'teaspoon' },
 
-    // Oils, Butter, Nuts, Protein fats (Fat & Oil)
+    // Oils, nuts, seeds, and nut butters (Oils, Nuts & Seeds)
     { name: 'Olive Oil', category: 'Oils', default_unit: 'milliliter' },
     { name: 'Vegetable Oil', category: 'Oils', default_unit: 'milliliter' },
+    { name: 'Peanut Butter', category: 'Nut Butters', default_unit: 'gram' },
+    { name: 'Almonds', category: 'Nuts & Seeds', default_unit: 'gram' },
+
+    // Dairy butter
     { name: 'Unsalted Butter', category: 'Butter', default_unit: 'gram' },
-    { name: 'Peanut Butter', category: 'Nuts', default_unit: 'gram' },
-    { name: 'Almonds', category: 'Nuts', default_unit: 'gram' },
 
     // Condiments & Sauces
-    { name: 'Soy Sauce', category: 'Condiment', default_unit: 'milliliter' },
-    { name: 'Balsamic Vinegar', category: 'Condiment', default_unit: 'milliliter' },
-    { name: 'Ketchup', category: 'Condiment', default_unit: 'milliliter' },
-    { name: 'Mayonnaise', category: 'Condiment', default_unit: 'milliliter' },
-    { name: 'Dijon Mustard', category: 'Condiment', default_unit: 'teaspoon' },
-    { name: 'Marinara Sauce', category: 'Sauce', default_unit: 'milliliter' },
-    { name: 'Diced Tomatoes', category: 'Sauce', default_unit: 'can' },
-    { name: 'Coconut Milk', category: 'Sauce', default_unit: 'milliliter' },
+    { name: 'Soy Sauce', category: 'Condiments', default_unit: 'milliliter' },
+    { name: 'Ketchup', category: 'Condiments', default_unit: 'milliliter' },
+    { name: 'Mayonnaise', category: 'Condiments', default_unit: 'milliliter' },
+    { name: 'Dijon Mustard', category: 'Condiments', default_unit: 'teaspoon' },
+    { name: 'Balsamic Vinegar', category: 'Vinegars', default_unit: 'milliliter' },
+    { name: 'Marinara Sauce', category: 'Sauces', default_unit: 'milliliter' },
+    { name: 'Diced Tomatoes', category: 'Sauces', default_unit: 'can' },
+    { name: 'Coconut Milk', category: 'Sauces', default_unit: 'milliliter' },
 
-    // Seasoning & Spices
-    { name: 'Salt', category: 'Seasoning', default_unit: 'gram' },
-    { name: 'Black Pepper', category: 'Spices', default_unit: 'gram' },
-    { name: 'Cumin', category: 'Spices', default_unit: 'teaspoon' },
-    { name: 'Paprika', category: 'Spices', default_unit: 'teaspoon' },
-    { name: 'Dried Oregano', category: 'Spices', default_unit: 'teaspoon' },
-    { name: 'Cinnamon', category: 'Spices', default_unit: 'teaspoon' },
-    { name: 'Garlic Powder', category: 'Spices', default_unit: 'teaspoon' },
+    // Herbs, Spices & Seasonings
+    { name: 'Salt', category: 'Seasoning Blends', default_unit: 'gram' },
+    { name: 'Black Pepper', category: 'Spices & Dried Herbs', default_unit: 'gram' },
+    { name: 'Cumin', category: 'Spices & Dried Herbs', default_unit: 'teaspoon' },
+    { name: 'Paprika', category: 'Spices & Dried Herbs', default_unit: 'teaspoon' },
+    { name: 'Dried Oregano', category: 'Spices & Dried Herbs', default_unit: 'teaspoon' },
+    { name: 'Cinnamon', category: 'Spices & Dried Herbs', default_unit: 'teaspoon' },
+    { name: 'Garlic Powder', category: 'Spices & Dried Herbs', default_unit: 'teaspoon' },
 
-    // Quick Foods (Snacks, Sweets, Frozen, Desserts, etc.)
+    // Snacks & Prepared Foods
     { name: 'Frozen Peas', category: 'Frozen Foods', default_unit: 'gram' },
     { name: 'Frozen Berries', category: 'Frozen Foods', default_unit: 'gram' },
     { name: 'Frozen Pizza', category: 'Frozen Foods', default_unit: 'piece' },
-    { name: 'Vanilla Ice Cream', category: 'Desserts', default_unit: 'liter' },
+    { name: 'Vanilla Ice Cream', category: 'Sweets & Desserts', default_unit: 'liter' },
     { name: 'Potato Chips', category: 'Snacks', default_unit: 'gram' },
     { name: 'Pretzels', category: 'Snacks', default_unit: 'gram' },
-    { name: 'Dark Chocolate', category: 'Sweets', default_unit: 'gram' },
+    { name: 'Dark Chocolate', category: 'Sweets & Desserts', default_unit: 'gram' },
 
     // Beverages
-    { name: 'Coffee Beans', category: 'Hot Beverages', default_unit: 'kilogram' },
-    { name: 'Earl Grey Tea', category: 'Hot Beverages', default_unit: 'piece' },
-    { name: 'Orange Juice', category: 'Cold Juice', default_unit: 'liter' },
-    { name: 'Cola', category: 'Cold Drinks', default_unit: 'can' },
+    { name: 'Coffee Beans', category: 'Coffee & Tea', default_unit: 'kilogram' },
+    { name: 'Earl Grey Tea', category: 'Coffee & Tea', default_unit: 'piece' },
+    { name: 'Orange Juice', category: 'Juice', default_unit: 'liter' },
+    { name: 'Cola', category: 'Soft Drinks', default_unit: 'can' },
   ],
   items: [
     // Fridge Items
@@ -826,9 +912,34 @@ export const seedData = {
       tags: ['Baking', 'Dessert'],
     },
   ],
+  users: [
+    {
+      id: 'usr_00000000-0000-4000-8000-000000000001',
+      email: 'chef@pantry.app',
+      fullName: 'Head Chef',
+      globalRole: 'admin',
+      password: 'password123',
+      themePreference: 'system',
+      locale: 'en',
+    },
+  ],
+  kitchens: [
+    {
+      id: 'ktc_00000000-0000-4000-8000-000000000000',
+      name: 'Main Kitchen',
+      description: 'Default shared workspace for existing pantry inventory',
+    },
+  ],
+  stores: [
+    { name: "Trader Joe's" },
+    { name: 'Safeway' },
+    { name: 'Whole Foods' },
+    { name: 'Costco' },
+  ],
   shopping_list_items: [
     {
       name: 'Olive Oil (Extra Virgin)',
+      ingredient: 'Olive Oil',
       category: 'Pantry',
       quantity: 1,
       unit: 'bottle',
@@ -839,6 +950,7 @@ export const seedData = {
     },
     {
       name: 'Heavy Cream',
+      ingredient: 'Heavy Cream',
       category: 'Dairy',
       quantity: 1,
       unit: 'carton',
@@ -850,6 +962,7 @@ export const seedData = {
     },
     {
       name: 'Fresh Basil',
+      ingredient: 'Fresh Basil',
       category: 'Produce',
       quantity: 1,
       unit: 'bunch',
@@ -861,6 +974,7 @@ export const seedData = {
     },
     {
       name: 'Garlic Bulbs',
+      ingredient: 'Garlic',
       category: 'Produce',
       quantity: 2,
       unit: 'heads',
@@ -871,6 +985,7 @@ export const seedData = {
     },
     {
       name: 'Salmon Fillets',
+      ingredient: 'Salmon Fillet',
       category: 'Seafood',
       quantity: 2,
       unit: 'pcs',
@@ -882,6 +997,7 @@ export const seedData = {
     },
     {
       name: 'Parmesan Cheese',
+      ingredient: 'Parmesan Cheese',
       category: 'Dairy',
       quantity: 1,
       unit: 'wedge',

@@ -13,6 +13,7 @@ import locations from './locations.routes.ts';
 import mealPlans from './meal-plans.routes.ts';
 import recipes from './recipes.routes.ts';
 import shoppingList from './shopping-list.routes.ts';
+import stores from './stores.routes.ts';
 import units from './units.routes.ts';
 import { authRoutes } from './auth.routes.ts';
 import { kitchenRoutes } from './kitchen.routes.ts';
@@ -35,6 +36,7 @@ v1.route('/units', units);
 v1.route('/locations', locations);
 v1.route('/meal-plans', mealPlans);
 v1.route('/shopping-list', shoppingList);
+v1.route('/stores', stores);
 
 // Mount /v1 sub-router onto /api/v1
 api.route('/v1', v1);
@@ -59,6 +61,7 @@ api.route('/units', units);
 api.route('/locations', locations);
 api.route('/meal-plans', mealPlans);
 api.route('/shopping-list', shoppingList);
+api.route('/stores', stores);
 
 // Health check endpoint
 api.get('/health', (c) => {

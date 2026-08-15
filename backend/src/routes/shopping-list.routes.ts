@@ -3,7 +3,10 @@ import {
   CreateShoppingListItemDTO,
   UpdateShoppingListItemDTO,
 } from '../models/data-models/shopping-list.model.ts';
-import { shoppingListBackendService } from '../services/shopping-list.service.ts';
+import {
+  shoppingListBackendService,
+  ShoppingListDuplicateError,
+} from '../services/shopping-list.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 
 import { authMiddleware } from '../middleware/auth.ts';
@@ -18,6 +21,9 @@ shoppingList.get('/', async (c: Context) => {
     const data = await shoppingListBackendService.getAllItems(activeKitchenId);
     return c.json(successResponse(data), HttpStatusCode.OK);
   } catch (error: unknown) {
+    if (error instanceof ShoppingListDuplicateError) {
+      return c.json(errorResponse(error.message), HttpStatusCode.CONFLICT);
+    }
     console.error('Error fetching shopping list items:', error);
     return c.json(
       errorResponse('Failed to fetch shopping list items'),
@@ -38,6 +44,9 @@ shoppingList.post('/', async (c: Context) => {
     const created = await shoppingListBackendService.createItem(body, activeKitchenId, userId);
     return c.json(successResponse(created), HttpStatusCode.CREATED);
   } catch (error: unknown) {
+    if (error instanceof ShoppingListDuplicateError) {
+      return c.json(errorResponse(error.message), HttpStatusCode.CONFLICT);
+    }
     console.error('Error creating shopping list item:', error);
     return c.json(
       errorResponse('Failed to create shopping list item'),
@@ -62,12 +71,50 @@ shoppingList.post('/bulk', async (c: Context) => {
     );
     return c.json(successResponse(created), HttpStatusCode.CREATED);
   } catch (error: unknown) {
+    if (error instanceof ShoppingListDuplicateError) {
+      return c.json(errorResponse(error.message), HttpStatusCode.CONFLICT);
+    }
     console.error('Error creating multiple shopping list items:', error);
     return c.json(
       errorResponse('Failed to create shopping list items'),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
+});
+
+shoppingList.get('/:id', async (c: Context) => {
+  const item = await shoppingListBackendService.getItemById(
+    c.req.param('id')!,
+    c.get('activeKitchenId') || '',
+  );
+  return item
+    ? c.json(successResponse(item), HttpStatusCode.OK)
+    : c.json(errorResponse('Shopping list item not found'), HttpStatusCode.NOT_FOUND);
+});
+
+shoppingList.put('/bulk', async (c: Context) => {
+  const body = await c.req.json<{ ids?: string[]; checked?: boolean }>();
+  if (!Array.isArray(body.ids) || body.ids.length === 0) {
+    return c.json(errorResponse('ids are required'), HttpStatusCode.BAD_REQUEST);
+  }
+  const count = body.checked === false ? 0 : await shoppingListBackendService.markBought(
+    body.ids,
+    c.get('activeKitchenId') || '',
+    c.get('user').userId,
+  );
+  return c.json(successResponse({ count }), HttpStatusCode.OK);
+});
+
+shoppingList.delete('/bulk', async (c: Context) => {
+  const body = await c.req.json<{ ids?: string[] }>();
+  if (!Array.isArray(body.ids) || body.ids.length === 0) {
+    return c.json(errorResponse('ids are required'), HttpStatusCode.BAD_REQUEST);
+  }
+  const count = await shoppingListBackendService.deleteItems(
+    body.ids,
+    c.get('activeKitchenId') || '',
+  );
+  return c.json(successResponse({ count }), HttpStatusCode.OK);
 });
 
 // PUT /api/shopping-list/:id - Update item
