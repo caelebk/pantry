@@ -1,8 +1,12 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { Ingredient } from '@models/ingredient.model';
 import { PlannedMeal } from '@models/meal-planner.model';
+import { of } from 'rxjs';
 import { AuthService } from '../core/services/auth.service';
+import { IngredientService } from './inventory/ingredient.service';
 import { MealPlannerService } from './meal-planner.service';
 import { ShoppingListService } from './shopping-list.service';
 import { ToastService } from './toast.service';
@@ -12,6 +16,7 @@ describe('MealPlannerService', () => {
   let httpMock: HttpTestingController;
   let mockShoppingListService: jasmine.SpyObj<ShoppingListService>;
   let mockToastService: jasmine.SpyObj<ToastService>;
+  let ingredients: Ingredient[];
 
   const mockMeal: PlannedMeal = {
     id: 'mp-1',
@@ -29,6 +34,8 @@ describe('MealPlannerService', () => {
 
   beforeEach(() => {
     mockShoppingListService = jasmine.createSpyObj('ShoppingListService', ['addMultipleItems']);
+    Object.assign(mockShoppingListService, { items: signal([]) });
+    ingredients = [];
     mockToastService = jasmine.createSpyObj('ToastService', [
       'showSuccess',
       'showError',
@@ -42,6 +49,7 @@ describe('MealPlannerService', () => {
         MealPlannerService,
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: ToastService, useValue: mockToastService },
+        { provide: IngredientService, useValue: { getIngredients: () => of(ingredients) } },
         {
           provide: AuthService,
           useValue: { activeKitchen: jasmine.createSpy().and.returnValue('kitchen-1') },
@@ -107,6 +115,30 @@ describe('MealPlannerService', () => {
         unit: 'pcs',
         source: 'recipe_plan',
         recipeName: 'Tuscan Chicken',
+      },
+    ]);
+  });
+
+  it('should skip ingredients already on the shopping list when syncing meals', () => {
+    Object.assign(mockShoppingListService, {
+      items: signal([{ id: 'sl-1', ingredientId: 'ing-garlic', name: 'Garlic' }]),
+    });
+    ingredients = [
+      { id: 'ing-garlic', name: 'Garlic' } as Ingredient,
+      { id: 'ing-cream', name: 'Cream' } as Ingredient,
+    ];
+
+    service.addAllMissingToShoppingList();
+
+    expect(mockShoppingListService.addMultipleItems).toHaveBeenCalledWith([
+      {
+        name: 'Cream',
+        category: 'General',
+        quantity: 1,
+        unit: 'pcs',
+        source: 'recipe_plan',
+        recipeName: 'Tuscan Chicken',
+        ingredientId: 'ing-cream',
       },
     ]);
   });

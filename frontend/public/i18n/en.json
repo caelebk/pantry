@@ -438,5 +438,77 @@
     "roleViewer": "Viewer",
     "switchKitchen": "Switch Kitchen",
     "currentKitchen": "Active Kitchen"
+  },
+  "shoppingList": {
+    "title": "Shopping List",
+    "subtitle": "Track needed ingredients, organize by store, and restock directly to pantry stock",
+    "actions": {
+      "addItem": "Add Ingredients",
+      "syncMealPlan": "Sync Meal Plan",
+      "manageStores": "Manage Stores",
+      "restockPantry": "Restock to Pantry",
+      "markBought": "Mark Bought",
+      "markToBuy": "Mark as To Buy",
+      "delete": "Delete",
+      "clearSelection": "Clear",
+      "clearFilters": "Clear Filters"
+    },
+    "stats": {
+      "combinedTitle": "Shopping Progress & Budget",
+      "itemsSummary": "items bought",
+      "costSummary": "spent of estimated",
+      "remainingSpend": "remaining to spend",
+      "itemsRemaining": "items to buy",
+      "bought": "Bought"
+    },
+    "filters": {
+      "searchPlaceholder": "Search items, categories, stores...",
+      "all": "All",
+      "unchecked": "To Buy",
+      "checked": "Bought"
+    },
+    "selectedBar": {
+      "selected": "Selected"
+    },
+    "table": {
+      "selectAll": "Select all items",
+      "selectItem": "Select {{name}}",
+      "item": "Item Name",
+      "category": "Category",
+      "store": "Store",
+      "quantity": "Quantity",
+      "price": "Est. Price",
+      "status": "Status",
+      "noStore": "No store assigned",
+      "uncategorized": "Uncategorized",
+      "editItem": "Edit {{name}}"
+    },
+    "empty": {
+      "title": "Your shopping list is empty",
+      "description": "Add ingredients here or sync your meal plan to get started.",
+      "noMatches": "No matching items",
+      "noMatchesDesc": "Try changing your search or status filter."
+    },
+    "form": {
+      "addTitle": "Add Shopping Ingredient",
+      "editTitle": "Edit Shopping Ingredient",
+      "subtitle": "Choose an ingredient from your catalog, then add purchase details.",
+      "ingredientSection": "Ingredient",
+      "ingredientHint": "Category and unit come from the ingredient catalog.",
+      "searchPlaceholder": "Search ingredients...",
+      "quantity": "Quantity",
+      "price": "Estimated Price",
+      "pricePlaceholder": "Not estimated",
+      "store": "Store (optional)",
+      "storePlaceholder": "Select a store",
+      "createStore": "+ Create store",
+      "cancelCreateStore": "Cancel",
+      "newStorePlaceholder": "Store name (e.g., Trader Joe's, Costco)",
+      "saveStore": "Add Store",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "add": "Add to Shopping List",
+      "saving": "Saving..."
+    }
   }
 }

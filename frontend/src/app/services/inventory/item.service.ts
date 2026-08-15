@@ -93,22 +93,18 @@ export class ItemService {
 
   addIngredientItem(item: IngredientItem): Observable<IngredientItemDTO> {
     const itemDTO = mapItemToItemDTO(item);
-    return this.http
-      .post<ApiResponse<IngredientItemDTO>>(this.apiUrl, itemDTO)
-      .pipe(
-        mapResponseData<IngredientItemDTO>(),
-        tap(() => this.clearIngredientItemsCache()),
-      );
+    return this.http.post<ApiResponse<IngredientItemDTO>>(this.apiUrl, itemDTO).pipe(
+      mapResponseData<IngredientItemDTO>(),
+      tap(() => this.clearIngredientItemsCache()),
+    );
   }
 
   removeIngredientItem(item: IngredientItem): Observable<void> {
     const id: string = item.id;
-    return this.http
-      .delete<ApiResponse<void>>(`${this.apiUrl}/${id}`)
-      .pipe(
-        mapResponseData<void>(),
-        tap(() => this.clearIngredientItemsCache()),
-      );
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`).pipe(
+      mapResponseData<void>(),
+      tap(() => this.clearIngredientItemsCache()),
+    );
   }
 
   getIngredientItemById(id: string): Observable<IngredientItem> {
@@ -130,12 +126,10 @@ export class ItemService {
   updateIngredientItem(item: IngredientItem): Observable<IngredientItemDTO> {
     const id: string = item.id;
     const itemDTO: UpdateIngredientItemDTO = mapItemToUpdateItemDTO(item);
-    return this.http
-      .put<ApiResponse<IngredientItemDTO>>(`${this.apiUrl}/${id}`, itemDTO)
-      .pipe(
-        mapResponseData<IngredientItemDTO>(),
-        tap(() => this.clearIngredientItemsCache()),
-      );
+    return this.http.put<ApiResponse<IngredientItemDTO>>(`${this.apiUrl}/${id}`, itemDTO).pipe(
+      mapResponseData<IngredientItemDTO>(),
+      tap(() => this.clearIngredientItemsCache()),
+    );
   }
 
   bulkClearStock(ids: string[]): Observable<{ clearedCount: number }> {

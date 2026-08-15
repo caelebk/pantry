@@ -3,6 +3,7 @@ import { effect, inject, Injectable, signal } from '@angular/core';
 import { ApiResponse } from '@models/http.model';
 import { AddShoppingItemDTO, ShoppingItem } from '@models/shopping-list.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
+import { Observable } from 'rxjs';
 import { AuthService } from '../core/services/auth.service';
 import { ToastService } from './toast.service';
 
@@ -52,32 +53,43 @@ export class ShoppingListService {
     return this.itemsSignal();
   }
 
+  getItem(id: string): Observable<ShoppingItem> {
+    return this.http
+      .get<ApiResponse<ShoppingItem>>(`${this.apiUrl}/${id}`)
+      .pipe(mapResponseData<ShoppingItem>());
+  }
+
   addItem(dto: AddShoppingItemDTO): void {
+    this.createItem(dto).subscribe({
+      next: (newItem) => {
+        this.itemsSignal.update((curr) => [newItem, ...curr]);
+        this.toastService.showSuccess(`Added "${dto.name}" to shopping list`, 'Shopping List');
+      },
+      error: (err) => {
+        console.error('Failed to add shopping list item:', err);
+        this.toastService.showError('Failed to add item to shopping list on server.');
+      },
+    });
+  }
+
+  createItem(dto: AddShoppingItemDTO): Observable<ShoppingItem> {
     const payload = {
       name: dto.name,
+      ingredientId: dto.ingredientId,
       category: dto.category || 'General',
       quantity: dto.quantity || 1,
       unit: dto.unit || 'pcs',
       checked: false,
       estimatedPrice: dto.estimatedPrice || 0,
       storeName: dto.storeName || '',
+      storeId: dto.storeId,
       source: dto.source || 'manual',
       recipeName: dto.recipeName,
+      duplicateMode: dto.duplicateMode,
     };
-
-    this.http
+    return this.http
       .post<ApiResponse<ShoppingItem>>(this.apiUrl, payload)
-      .pipe(mapResponseData<ShoppingItem>())
-      .subscribe({
-        next: (newItem) => {
-          this.itemsSignal.update((curr) => [newItem, ...curr]);
-          this.toastService.showSuccess(`Added "${dto.name}" to shopping list`, 'Shopping List');
-        },
-        error: (err) => {
-          console.error('Failed to add shopping list item:', err);
-          this.toastService.showError('Failed to add item to shopping list on server.');
-        },
-      });
+      .pipe(mapResponseData<ShoppingItem>());
   }
 
   addMultipleItems(items: AddShoppingItemDTO[]): void {
@@ -90,6 +102,7 @@ export class ShoppingListService {
       estimatedPrice: dto.estimatedPrice || 0,
       storeName: dto.storeName || '',
       source: dto.source || 'recipe_plan',
+      ingredientId: dto.ingredientId,
       recipeName: dto.recipeName,
     }));
 
@@ -112,32 +125,44 @@ export class ShoppingListService {
   }
 
   updateItemPrice(id: string, price: number): void {
-    this.http
-      .put<ApiResponse<ShoppingItem>>(`${this.apiUrl}/${id}`, { estimatedPrice: price })
-      .pipe(mapResponseData<ShoppingItem>())
-      .subscribe({
-        next: (updated) => {
-          this.itemsSignal.update((curr) => curr.map((item) => (item.id === id ? updated : item)));
-        },
-        error: (err) => {
-          console.error('Failed to update item price:', err);
-        },
-      });
+    this.updateItem(id, { estimatedPrice: price }).subscribe({
+      next: (updated) => {
+        this.itemsSignal.update((curr) => curr.map((item) => (item.id === id ? updated : item)));
+      },
+      error: (err) => {
+        console.error('Failed to update item price:', err);
+      },
+    });
   }
 
   updateItemQuantity(id: string, qty: number): void {
     if (qty <= 0) return;
-    this.http
-      .put<ApiResponse<ShoppingItem>>(`${this.apiUrl}/${id}`, { quantity: qty })
-      .pipe(mapResponseData<ShoppingItem>())
-      .subscribe({
-        next: (updated) => {
-          this.itemsSignal.update((curr) => curr.map((item) => (item.id === id ? updated : item)));
-        },
-        error: (err) => {
-          console.error('Failed to update item quantity:', err);
-        },
-      });
+    this.updateItem(id, { quantity: qty }).subscribe({
+      next: (updated) => {
+        this.itemsSignal.update((curr) => curr.map((item) => (item.id === id ? updated : item)));
+      },
+      error: (err) => {
+        console.error('Failed to update item quantity:', err);
+      },
+    });
+  }
+
+  updateItem(id: string, patch: Partial<ShoppingItem>): Observable<ShoppingItem> {
+    return this.http
+      .put<ApiResponse<ShoppingItem>>(`${this.apiUrl}/${id}`, patch)
+      .pipe(mapResponseData<ShoppingItem>());
+  }
+
+  markBought(ids: string[]): Observable<{ count: number }> {
+    return this.http
+      .put<ApiResponse<{ count: number }>>(`${this.apiUrl}/bulk`, { ids, checked: true })
+      .pipe(mapResponseData<{ count: number }>());
+  }
+
+  deleteItems(ids: string[]): Observable<{ count: number }> {
+    return this.http
+      .delete<ApiResponse<{ count: number }>>(`${this.apiUrl}/bulk`, { body: { ids } })
+      .pipe(mapResponseData<{ count: number }>());
   }
 
   toggleItem(id: string): void {

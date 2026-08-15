@@ -89,30 +89,24 @@ export class IngredientService {
   }
 
   createIngredient(dto: CreateIngredientDTO): Observable<IngredientDTO> {
-    return this.http
-      .post<ApiResponse<IngredientDTO>>(this.apiUrl, dto)
-      .pipe(
-        mapResponseData<IngredientDTO>(),
-        tap(() => this.clearIngredientsCache()),
-      );
+    return this.http.post<ApiResponse<IngredientDTO>>(this.apiUrl, dto).pipe(
+      mapResponseData<IngredientDTO>(),
+      tap(() => this.clearIngredientsCache()),
+    );
   }
 
   updateIngredient(id: string, dto: UpdateIngredientDTO): Observable<IngredientDTO> {
-    return this.http
-      .put<ApiResponse<IngredientDTO>>(`${this.apiUrl}/${id}`, dto)
-      .pipe(
-        mapResponseData<IngredientDTO>(),
-        tap(() => this.clearIngredientsCache()),
-      );
+    return this.http.put<ApiResponse<IngredientDTO>>(`${this.apiUrl}/${id}`, dto).pipe(
+      mapResponseData<IngredientDTO>(),
+      tap(() => this.clearIngredientsCache()),
+    );
   }
 
   deleteIngredient(id: string): Observable<boolean> {
-    return this.http
-      .delete<ApiResponse<boolean>>(`${this.apiUrl}/${id}`)
-      .pipe(
-        mapResponseData<boolean>(),
-        tap(() => this.clearIngredientsCache()),
-      );
+    return this.http.delete<ApiResponse<boolean>>(`${this.apiUrl}/${id}`).pipe(
+      mapResponseData<boolean>(),
+      tap(() => this.clearIngredientsCache()),
+    );
   }
 
   getSubstitutions(id: string): Observable<SubstitutionSuggestion[]> {

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Ingredient } from '@models/ingredient.model';
 import { IngredientItem, Item } from '@models/items.model';
 import { Location } from '@models/location.model';
@@ -21,6 +21,7 @@ import { catchError } from 'rxjs/operators';
 
 export interface RestockDraftItem {
   shoppingId: string;
+  ingredientId?: string;
   name: string;
   category: string;
   quantity: number;
@@ -46,6 +47,7 @@ export interface RestockDraftItem {
 })
 export class RestockReviewPageComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute, { optional: true });
   private readonly shoppingListService = inject(ShoppingListService);
   private readonly itemService = inject(ItemService);
   private readonly ingredientService = inject(IngredientService);
@@ -81,6 +83,7 @@ export class RestockReviewPageComponent implements OnInit {
 
   readonly unitsOptions = signal<string[]>(this.defaultUnits);
   readonly locationsOptions = signal<string[]>(this.defaultLocations);
+  private readonly selectedRestockIds = signal<Set<string> | null>(null);
 
   constructor() {
     effect(() => {
@@ -92,6 +95,8 @@ export class RestockReviewPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const ids = this.route?.snapshot.queryParamMap.get('ids');
+    if (ids) this.selectedRestockIds.set(new Set(ids.split(',').filter(Boolean)));
     this.itemService
       .getIngredientItems()
       .pipe(catchError(() => of([])))
@@ -147,14 +152,17 @@ export class RestockReviewPageComponent implements OnInit {
   }
 
   private initDrafts(sourceList: ShoppingItem[]): void {
-    const boughtItems = sourceList.filter((i) => i.checked);
-    const sourceItems: ShoppingItem[] = boughtItems.length > 0 ? boughtItems : sourceList;
+    const scoped = this.selectedRestockIds();
+    const eligibleList = scoped ? sourceList.filter((item) => scoped.has(item.id)) : sourceList;
+    const boughtItems = eligibleList.filter((i) => i.checked);
+    const sourceItems: ShoppingItem[] = boughtItems.length > 0 ? boughtItems : eligibleList;
 
     const defaultExp = new Date(Date.now() + 14 * 86400000);
 
     const drafts: RestockDraftItem[] = sourceItems.map((item) => {
       const draft: RestockDraftItem = {
         shoppingId: item.id,
+        ingredientId: item.ingredientId,
         name: item.name,
         category: item.category || 'General',
         quantity: item.quantity || 1,
@@ -400,6 +408,7 @@ export class RestockReviewPageComponent implements OnInit {
       createdCount++;
       const newItem: Item = {
         id: '',
+        ingredientId: draft.ingredientId,
         name: draft.name,
         quantity: draft.quantity,
         unit: matchedUnit,
@@ -420,9 +429,9 @@ export class RestockReviewPageComponent implements OnInit {
     });
 
     forkJoin(restockRequests).subscribe({
-      next: () => {
-        itemsToRestock.forEach((item) => {
-          this.shoppingListService.removeItem(item.shoppingId);
+      next: (results) => {
+        results.forEach((result, index) => {
+          if (result) this.shoppingListService.removeItem(itemsToRestock[index].shoppingId);
         });
 
         this.isSubmitting.set(false);

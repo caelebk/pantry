@@ -193,6 +193,23 @@ export const routes: Routes = [
         (m) => m.AddShoppingItemPageComponent,
       ),
   },
+  {
+    path: 'shopping-list/stores',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/shopping-list/stores-page/stores-page.component').then(
+        (m) => m.StoresPageComponent,
+      ),
+  },
+  {
+    path: 'shopping-list/:id/edit',
+    canActivate: [authGuard],
+    data: { animation: 'EditShoppingItemPage' },
+    loadComponent: () =>
+      import('./pages/shopping-list/add-item-page/add-item-page.component').then(
+        (m) => m.AddShoppingItemPageComponent,
+      ),
+  },
   { path: 'shopping-list/add', redirectTo: 'shopping-list/new', pathMatch: 'full' },
   {
     path: 'shopping-list/restock',

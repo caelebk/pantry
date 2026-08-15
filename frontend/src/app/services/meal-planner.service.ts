@@ -1,10 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { ApiResponse } from '@models/http.model';
+import { Ingredient } from '@models/ingredient.model';
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
 import { Recipe, RecipeIngredientDTO } from '@models/recipe.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { AuthService } from '../core/services/auth.service';
+import { IngredientService } from './inventory/ingredient.service';
 import { ShoppingListService } from './shopping-list.service';
 import { ToastService } from './toast.service';
 
@@ -16,6 +20,7 @@ export class MealPlannerService {
   private readonly shoppingListService = inject(ShoppingListService);
   private readonly toastService = inject(ToastService);
   private readonly authService = inject(AuthService);
+  private readonly ingredientService = inject(IngredientService, { optional: true });
   private readonly apiUrl = '/api/meal-plans';
 
   readonly days: DayOfWeek[] = [
@@ -168,7 +173,7 @@ export class MealPlannerService {
       recipeName: meal.recipeName,
     }));
 
-    this.shoppingListService.addMultipleItems(itemsToAdd);
+    this.addResolvedItems(itemsToAdd);
   }
 
   addAllMissingToShoppingList(): void {
@@ -202,6 +207,62 @@ export class MealPlannerService {
       return;
     }
 
-    this.shoppingListService.addMultipleItems(missingItems);
+    this.addResolvedItems(missingItems);
+  }
+
+  private addResolvedItems(
+    items: {
+      name: string;
+      category: string;
+      quantity: number;
+      unit: string;
+      source: 'recipe_plan';
+      recipeName: string;
+    }[],
+  ): void {
+    if (!this.ingredientService) {
+      this.shoppingListService.addMultipleItems(items);
+      return;
+    }
+    this.ingredientService
+      .getIngredients()
+      .pipe(catchError(() => of([] as Ingredient[])))
+      .subscribe((ingredients) => {
+        const existingIngredientIds = new Set(
+          this.shoppingListService
+            .items()
+            .map((item) => item.ingredientId)
+            .filter(Boolean),
+        );
+        const existingNames = new Set(
+          this.shoppingListService.items().map((item) => item.name.toLocaleLowerCase()),
+        );
+        const seen = new Set<string>();
+        const resolved = items
+          .map((item) => ({
+            ...item,
+            ingredientId: ingredients.find(
+              (ingredient) => ingredient.name.toLocaleLowerCase() === item.name.toLocaleLowerCase(),
+            )?.id,
+          }))
+          .filter((item) => {
+            const key = item.ingredientId || item.name.toLocaleLowerCase();
+            if (
+              seen.has(key) ||
+              (item.ingredientId && existingIngredientIds.has(item.ingredientId)) ||
+              existingNames.has(item.name.toLocaleLowerCase())
+            ) {
+              return false;
+            }
+            seen.add(key);
+            return true;
+          });
+
+        if (resolved.length === 0) {
+          this.toastService.showInfo('All missing ingredients are already on your shopping list.');
+          return;
+        }
+        this.shoppingListService.addMultipleItems(resolved);
+      });
   }
 }

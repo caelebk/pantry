@@ -1,151 +1,290 @@
 <div class="max-w-3xl mx-auto space-y-6 pb-12">
-  <!-- Back Button & Header -->
-  <div class="flex items-center gap-3 mb-2">
+  <div class="flex items-center gap-3">
     <button
       (click)="goBack()"
       type="button"
-      class="p-2.5 rounded-xl text-surface-500 hover:text-surface-900 dark:hover:text-white bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 transition-all cursor-pointer"
-      title="Back to Shopping List">
-      <i class="pi pi-arrow-left text-base"></i>
+      [attr.aria-label]="'shoppingList.form.cancel' | transloco"
+      class="p-2.5 h-[42px] w-[42px] rounded-xl text-surface-500 hover:text-surface-900 dark:hover:text-white bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 border border-surface-200 dark:border-surface-700 flex items-center justify-center transition-all cursor-pointer shadow-xs">
+      <i class="pi pi-arrow-left text-sm"></i>
     </button>
     <div>
-      <h2 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
-        Add Shopping Item
-      </h2>
+      <h1 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
+        {{
+          (editingId() ? 'shoppingList.form.editTitle' : 'shoppingList.form.addTitle') | transloco
+        }}
+      </h1>
       <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
-        Add a new grocery item with category, store location, and estimated price
+        {{ 'shoppingList.form.subtitle' | transloco }}
       </p>
     </div>
   </div>
 
-  <!-- Main Form Card -->
+  @if (error()) {
+    <div
+      role="alert"
+      class="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-sm font-medium text-rose-700 dark:text-rose-300">
+      {{ error() }}
+    </div>
+  }
+  @if (duplicateItem(); as duplicate) {
+    <div
+      class="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 space-y-3">
+      <p class="text-sm text-amber-900 dark:text-amber-200 font-medium">
+        {{ duplicate.name }} is already listed with {{ duplicate.quantity }} {{ duplicate.unit }}.
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          (click)="increaseDuplicateQuantity()"
+          class="px-3.5 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold transition-all cursor-pointer">
+          Increase existing quantity
+        </button>
+        <button
+          type="button"
+          (click)="openDuplicate()"
+          class="px-3.5 py-2 rounded-xl border border-amber-300 dark:border-amber-700 text-xs font-semibold hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-all cursor-pointer">
+          Open existing item
+        </button>
+      </div>
+    </div>
+  }
+
   <form
     (ngSubmit)="saveItem()"
-    class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-6 shadow-xs space-y-5">
-    <!-- Item Name Field -->
-    <div class="space-y-1.5">
-      <label
-        for="item-name-input"
-        class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider"
-        >Item Name <span class="text-rose-500">*</span></label
-      >
-      <input
-        pInputText
-        id="item-name-input"
-        type="text"
-        [ngModel]="name()"
-        (ngModelChange)="name.set($event)"
-        name="name"
-        placeholder="e.g., Organic Avocados, Extra Virgin Olive Oil..."
-        class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white"
-        required />
-    </div>
+    class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-6 shadow-xs space-y-6">
+    <section class="space-y-4">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider">
+            {{ 'shoppingList.form.ingredientSection' | transloco }}
+          </h2>
+          <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+            {{ 'shoppingList.form.ingredientHint' | transloco }}
+          </p>
+        </div>
+        <button
+          type="button"
+          (click)="toggleIngredientCreation()"
+          class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline cursor-pointer">
+          {{ isCreatingIngredient() ? 'Cancel' : '+ Create ingredient' }}
+        </button>
+      </div>
 
-    <!-- Category & Store Name Row -->
+      <p-select
+        inputId="ingredient"
+        [options]="ingredients()"
+        optionLabel="name"
+        [filter]="true"
+        filterBy="name"
+        [ngModel]="selectedIngredient()"
+        (ngModelChange)="selectIngredient($event)"
+        name="ingredient"
+        [placeholder]="'shoppingList.form.searchPlaceholder' | transloco"
+        styleClass="w-full !h-[42px]"
+        appendTo="body">
+        <ng-template pTemplate="item" let-item>
+          <div class="flex flex-col py-1">
+            <span class="font-semibold">{{ item.name }}</span>
+            <span class="text-xs text-surface-500">
+              {{
+                item.ingredientGroup?.ingredientCategoryName ||
+                  item.ingredientGroup?.name ||
+                  'Uncategorized'
+              }}
+              · {{ item.defaultUnit?.shortName || 'unit not set' }}
+            </span>
+          </div>
+        </ng-template>
+      </p-select>
+
+      @if (selectedIngredient(); as ingredient) {
+        <div
+          class="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-primary-50/70 dark:bg-primary-950/30 border border-primary-200 dark:border-primary-900">
+          <span class="font-bold text-sm text-surface-900 dark:text-white">{{
+            ingredient.name
+          }}</span>
+          <span
+            class="px-2 py-1 rounded-lg bg-white/80 dark:bg-surface-900/70 text-xs text-surface-600 dark:text-surface-300 font-medium"
+            >Category:
+            {{
+              ingredient.ingredientGroup?.ingredientCategoryName ||
+                ingredient.ingredientGroup?.name ||
+                'Uncategorized'
+            }}</span
+          >
+          <span
+            class="px-2 py-1 rounded-lg bg-white/80 dark:bg-surface-900/70 text-xs text-surface-600 dark:text-surface-300 font-medium"
+            >Unit: {{ ingredient.defaultUnit?.shortName || 'Not set' }}</span
+          >
+        </div>
+      }
+
+      @if (isCreatingIngredient()) {
+        <div
+          class="sub-card rounded-xl p-4 space-y-3 bg-surface-50 dark:bg-surface-800/40 border border-surface-200 dark:border-surface-700">
+          <input
+            pInputText
+            [ngModel]="newIngredientName()"
+            (ngModelChange)="newIngredientName.set($event)"
+            name="newIngredientName"
+            placeholder="Ingredient name"
+            class="w-full !h-[42px]" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <p-select
+              [options]="groups()"
+              optionLabel="name"
+              optionValue="id"
+              [ngModel]="newIngredientGroupId()"
+              (ngModelChange)="newIngredientGroupId.set($event)"
+              name="newIngredientGroup"
+              placeholder="Ingredient group"
+              styleClass="w-full !h-[42px]"
+              appendTo="body"></p-select>
+            <p-select
+              [options]="units()"
+              optionLabel="name"
+              optionValue="id"
+              [ngModel]="newIngredientUnitId()"
+              (ngModelChange)="newIngredientUnitId.set($event)"
+              name="newIngredientUnit"
+              placeholder="Default unit"
+              styleClass="w-full !h-[42px]"
+              appendTo="body"></p-select>
+          </div>
+          <button
+            type="button"
+            (click)="createIngredient()"
+            class="px-4 py-2 rounded-xl bg-primary-600 text-white text-xs font-bold cursor-pointer">
+            Create and select
+          </button>
+        </div>
+      }
+    </section>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="space-y-1.5">
-        <span
-          class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider"
-          >Category</span
-        >
-        <p-select
-          [options]="categories"
-          [ngModel]="category()"
-          (ngModelChange)="category.set($event)"
-          name="category"
-          class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700"
-          appendTo="body">
-        </p-select>
-      </div>
-
-      <div class="space-y-1.5">
         <label
-          for="store-name-input"
-          class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider"
-          >Store Name (Optional)</label
-        >
-        <input
-          pInputText
-          id="store-name-input"
-          type="text"
-          [ngModel]="storeName()"
-          (ngModelChange)="storeName.set($event)"
-          name="storeName"
-          placeholder="e.g., Trader Joe's, Costco, Whole Foods..."
-          class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white" />
-      </div>
-    </div>
-
-    <!-- Quantity, Unit, Estimated Price Row -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-      <!-- Quantity Counter -->
-      <div class="space-y-1.5">
-        <span
-          class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider"
-          >Quantity</span
-        >
+          for="quantity"
+          class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300">
+          {{ 'shoppingList.form.quantity' | transloco }}
+        </label>
         <p-inputnumber
+          inputId="quantity"
           [ngModel]="quantity()"
           (ngModelChange)="quantity.set($event || 1)"
           name="quantity"
           [min]="1"
           [showButtons]="true"
-          class="w-full"
-          inputStyleClass="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white">
-        </p-inputnumber>
+          styleClass="w-full !h-[42px]"
+          inputStyleClass="w-full !h-[42px] !rounded-xl"></p-inputnumber>
       </div>
-
-      <!-- Unit Select -->
       <div class="space-y-1.5">
-        <span
-          class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider"
-          >Unit</span
-        >
-        <p-select
-          [options]="units"
-          [ngModel]="unit()"
-          (ngModelChange)="unit.set($event)"
-          name="unit"
-          class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700"
-          appendTo="body">
-        </p-select>
-      </div>
-
-      <!-- Est Price Input -->
-      <div class="space-y-1.5">
-        <span
-          class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider"
-          >Est. Price ($)</span
-        >
+        <label
+          for="price"
+          class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300">
+          {{ 'shoppingList.form.price' | transloco }}
+        </label>
         <p-inputnumber
+          inputId="price"
           [ngModel]="estimatedPrice()"
           (ngModelChange)="estimatedPrice.set($event)"
           name="estimatedPrice"
           mode="currency"
           currency="USD"
-          locale="en-US"
           [min]="0"
-          placeholder="$0.00"
-          class="w-full"
-          inputStyleClass="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white">
-        </p-inputnumber>
+          [placeholder]="'shoppingList.form.pricePlaceholder' | transloco"
+          styleClass="w-full !h-[42px]"
+          inputStyleClass="w-full !h-[42px] !rounded-xl"></p-inputnumber>
       </div>
     </div>
 
-    <!-- Action Bar -->
+    <!-- Store Select with Direct Create Shortcut -->
+    <div class="space-y-2">
+      <div class="flex items-center justify-between">
+        <label
+          for="store"
+          class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300">
+          {{ 'shoppingList.form.store' | transloco }}
+        </label>
+        <button
+          type="button"
+          (click)="toggleStoreCreation()"
+          class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline cursor-pointer">
+          {{
+            (isCreatingStore()
+              ? 'shoppingList.form.cancelCreateStore'
+              : 'shoppingList.form.createStore'
+            ) | transloco
+          }}
+        </button>
+      </div>
+
+      @if (isCreatingStore()) {
+        <div
+          class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/40 border border-surface-200 dark:border-surface-700 flex flex-col sm:flex-row gap-2">
+          <input
+            pInputText
+            [ngModel]="newStoreName()"
+            (ngModelChange)="newStoreName.set($event)"
+            name="newStoreName"
+            (keydown.enter)="$event.preventDefault(); createStore()"
+            [placeholder]="'shoppingList.form.newStorePlaceholder' | transloco"
+            class="flex-1 !h-[42px]" />
+          <button
+            type="button"
+            (click)="createStore()"
+            [disabled]="!newStoreName().trim() || isSavingStore()"
+            class="h-[42px] px-4 rounded-xl bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white text-xs font-bold transition-all cursor-pointer whitespace-nowrap">
+            {{
+              isSavingStore()
+                ? ('shoppingList.form.saving' | transloco)
+                : ('shoppingList.form.saveStore' | transloco)
+            }}
+          </button>
+        </div>
+      }
+
+      <p-select
+        inputId="store"
+        [options]="stores()"
+        optionLabel="name"
+        [filter]="true"
+        filterBy="name"
+        [showClear]="true"
+        [ngModel]="selectedStore()"
+        (ngModelChange)="onStoreSelect($event)"
+        name="store"
+        [placeholder]="'shoppingList.form.storePlaceholder' | transloco"
+        styleClass="w-full !h-[42px]"
+        appendTo="body">
+        <ng-template pTemplate="item" let-item>
+          <div class="flex items-center gap-2 py-0.5">
+            <i class="pi pi-map-marker text-xs text-primary-500"></i>
+            <span class="font-medium text-sm">{{ item.name }}</span>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+
     <div
-      class="flex items-center justify-end gap-3 pt-6 border-t border-surface-200/80 dark:border-surface-800/80">
+      class="flex justify-end gap-3 pt-4 border-t border-surface-200/80 dark:border-surface-800/80">
       <button
         type="button"
         (click)="goBack()"
-        class="px-5 py-2.5 border border-surface-200 dark:border-surface-800 text-surface-700 dark:text-surface-300 text-xs font-semibold rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors cursor-pointer">
-        Cancel
+        class="h-[42px] px-5 border border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl text-xs font-semibold cursor-pointer transition-all">
+        {{ 'shoppingList.form.cancel' | transloco }}
       </button>
       <button
         type="submit"
-        [disabled]="!name().trim()"
-        class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-xs">
-        Save to Shopping List
+        [disabled]="isSaving()"
+        class="h-[42px] px-6 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow-md shadow-primary-600/20 cursor-pointer transition-all">
+        {{
+          isSaving()
+            ? ('shoppingList.form.saving' | transloco)
+            : editingId()
+              ? ('shoppingList.form.save' | transloco)
+              : ('shoppingList.form.add' | transloco)
+        }}
       </button>
     </div>
   </form>
