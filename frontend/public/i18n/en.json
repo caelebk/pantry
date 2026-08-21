@@ -517,13 +517,60 @@
       "store": "Store (optional)",
       "storePlaceholder": "Select a store",
       "createStore": "+ Create store",
-      "cancelCreateStore": "Cancel",
-      "newStorePlaceholder": "Store name (e.g., Trader Joe's, Costco)",
       "saveStore": "Add Store",
       "cancel": "Cancel",
       "save": "Save Changes",
       "add": "Add to Shopping List",
       "saving": "Saving..."
     }
+  },
+  "stores": {
+    "title": "Manage Stores",
+    "subtitle": "Add new stores, rename existing ones, or archive suggestions for this kitchen.",
+    "addStore": "Add New Store",
+    "storeNamePlaceholder": "Enter store name (e.g. Trader Joe's, Costco...)",
+    "addStoreBtn": "Add Store",
+    "yourStores": "Your Stores",
+    "noStoresTitle": "No stores added yet",
+    "noStoresDesc": "Add your first store above to organize your shopping trips.",
+    "archivedBadge": "Archived",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "recipeDetail": {
+    "backToRecipes": "Back to Recipes",
+    "notFound": "Recipe not found.",
+    "prepTime": "Prep Time",
+    "cookTime": "Cook Time",
+    "totalTime": "Total Time",
+    "servings": "Servings",
+    "ingredientsTitle": "Ingredients",
+    "instructionsTitle": "Step-by-Step Instructions",
+    "substituteBtn": "Substitute",
+    "substitutesModalTitle": "Substitutes for {{name}}",
+    "noSubstitutes": "No In-Stock Substitutes Found",
+    "inStockBadge": "In Stock",
+    "missingBadge": "Missing"
+  },
+  "inventoryOverview": {
+    "title": "Kitchen Inventory Overview",
+    "subtitle": "Manage taxonomy, monitor physical stock, and explore your 4-tier kitchen domain hierarchy.",
+    "addStockItem": "Add Stock Item",
+    "addIngredient": "Add Ingredient",
+    "addGroup": "Add Group",
+    "hierarchyTitle": "Kitchen Inventory 4-Tier Hierarchy",
+    "hierarchySubtitle": "Click any pyramid tier below to expand its detailed taxonomy definition and direct actions."
+  },
+  "authVerification": {
+    "passwordRequirements": "Password must be at least 8 characters, include uppercase, lowercase, number, and special symbol.",
+    "passwordTooWeak": "Password is too weak or commonly guessed.",
+    "passwordStrength": "Password Strength",
+    "strengthWeak": "Weak",
+    "strengthMedium": "Fair",
+    "strengthStrong": "Strong",
+    "verifyEmailTitle": "Email Verification",
+    "verifyEmailDesc": "Please check your inbox to verify your email address.",
+    "resendVerificationBtn": "Resend Verification Link",
+    "emailVerifiedSuccess": "Your email address has been verified successfully."
   }
 }

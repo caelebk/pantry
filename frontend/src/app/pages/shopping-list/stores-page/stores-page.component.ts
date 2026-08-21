@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Store } from '@models/store.model';
 import { StoreService } from '@services/store.service';
 import { InputTextModule } from 'primeng/inputtext';
@@ -9,7 +10,7 @@ import { InputTextModule } from 'primeng/inputtext';
 @Component({
   selector: 'pantry-stores-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule],
+  imports: [CommonModule, FormsModule, InputTextModule, TranslocoPipe],
   templateUrl: './stores-page.component.html',
 })
 export class StoresPageComponent implements OnInit {

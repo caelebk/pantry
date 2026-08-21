@@ -1,5 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
+import { provideTransloco } from '@jsverse/transloco';
 import { UnitType } from '@models/unit.model';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
@@ -7,6 +10,7 @@ import { UnitService } from '@services/inventory/unit.service';
 import { RecipeService } from '@services/recipe.service';
 import { ToastService } from '@services/toast.service';
 import { of } from 'rxjs';
+import { TranslocoHttpLoader } from '../../../../transloco-loader';
 import { AddRecipeFormComponent } from './add-recipe-form.component';
 
 describe('AddRecipeFormComponent', () => {
@@ -78,6 +82,12 @@ describe('AddRecipeFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AddRecipeFormComponent],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideTransloco({
+          config: { availableLangs: ['en'], defaultLang: 'en' },
+          loader: TranslocoHttpLoader,
+        }),
         { provide: RecipeService, useValue: mockRecipeService },
         { provide: IngredientService, useValue: mockIngredientService },
         { provide: IngredientGroupService, useValue: mockIngredientGroupService },
