@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  HostListener,
   inject,
   input,
   output,
@@ -38,6 +39,13 @@ export class SidebarComponent {
   isCollapsed = signal(false);
   inventoryExpanded = signal(true);
   kitchenMenuOpen = signal(false);
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    if (this.kitchenMenuOpen()) {
+      this.kitchenMenuOpen.set(false);
+    }
+  }
 
   toggleKitchenMenu(event?: Event): void {
     if (event) event.stopPropagation();

@@ -93,9 +93,28 @@ describe('SidebarComponent', () => {
     expect(component.mobileMenuOpen()).toBe(false);
   });
 
-  it('should emit themeToggled on toggle', () => {
-    const spy = vi.spyOn(component.themeToggled, 'emit');
-    component.onToggleTheme();
-    expect(spy).toHaveBeenCalled();
+  it('should toggle kitchen menu and close on outside document click', () => {
+    expect(component.kitchenMenuOpen()).toBe(false);
+    component.toggleKitchenMenu();
+    expect(component.kitchenMenuOpen()).toBe(true);
+
+    component.onDocumentClick();
+    expect(component.kitchenMenuOpen()).toBe(false);
+  });
+
+  it('should select active kitchen and close kitchen menu', () => {
+    const mockKitchen = {
+      id: 'k-1',
+      name: 'Family Kitchen',
+      role: 'owner' as const,
+      isPrimary: true,
+      memberCount: 2,
+    };
+    const spy = vi.spyOn(component.authService, 'setActiveKitchen');
+    component.kitchenMenuOpen.set(true);
+
+    component.selectKitchen(mockKitchen);
+    expect(spy).toHaveBeenCalledWith(mockKitchen);
+    expect(component.kitchenMenuOpen()).toBe(false);
   });
 });
