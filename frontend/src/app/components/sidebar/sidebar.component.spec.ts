@@ -2,8 +2,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router, Event as RouterEvent } from '@angular/router';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { vi } from 'vitest';
+import { KitchenService } from '../../core/services/kitchen.service';
 import { SidebarComponent } from './sidebar.component';
 
 describe('SidebarComponent', () => {
@@ -116,5 +117,37 @@ describe('SidebarComponent', () => {
     component.selectKitchen(mockKitchen);
     expect(spy).toHaveBeenCalledWith(mockKitchen);
     expect(component.kitchenMenuOpen()).toBe(false);
+  });
+
+  it('should open add kitchen dialog and reset fields', () => {
+    component.kitchenMenuOpen.set(true);
+    component.openAddKitchenDialog();
+
+    expect(component.kitchenMenuOpen()).toBe(false);
+    expect(component.showAddKitchenDialog()).toBe(true);
+    expect(component.newKitchenName()).toBe('');
+    expect(component.newKitchenDescription()).toBe('');
+  });
+
+  it('should invoke kitchenService.createKitchen on valid name', () => {
+    const kitchenService = TestBed.inject(KitchenService);
+    const mockCreated = {
+      id: 'k-new',
+      name: 'Beach House',
+      role: 'owner' as const,
+      isPrimary: false,
+      memberCount: 1,
+    };
+    const spy = vi.spyOn(kitchenService, 'createKitchen').mockReturnValue(of(mockCreated));
+
+    component.newKitchenName.set('Beach House');
+    component.newKitchenDescription.set('Summer home');
+    component.showAddKitchenDialog.set(true);
+
+    component.createKitchen();
+
+    expect(spy).toHaveBeenCalledWith('Beach House', 'Summer home');
+    expect(component.showAddKitchenDialog()).toBe(false);
+    expect(component.newKitchenName()).toBe('');
   });
 });

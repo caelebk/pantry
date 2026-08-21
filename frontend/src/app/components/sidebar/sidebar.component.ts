@@ -12,21 +12,26 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
+import { DialogModule } from 'primeng/dialog';
 import { filter, map } from 'rxjs/operators';
 import { Tab } from '../tabs/tabs.model';
 
 import { AuthService } from '../../core/services/auth.service';
+import { KitchenService } from '../../core/services/kitchen.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'pantry-sidebar',
   standalone: true,
-  imports: [CommonModule, TranslocoModule],
+  imports: [CommonModule, TranslocoModule, DialogModule],
   templateUrl: './sidebar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
   private readonly router = inject(Router);
   readonly authService = inject(AuthService);
+  private readonly kitchenService = inject(KitchenService);
+  private readonly toastService = inject(ToastService);
 
   darkMode = input(true);
   activeTab = input<Tab>(Tab.Home);
@@ -39,6 +44,10 @@ export class SidebarComponent {
   isCollapsed = signal(false);
   inventoryExpanded = signal(true);
   kitchenMenuOpen = signal(false);
+  showAddKitchenDialog = signal(false);
+  newKitchenName = signal('');
+  newKitchenDescription = signal('');
+  isCreatingKitchen = signal(false);
 
   @HostListener('document:click')
   onDocumentClick(): void {
@@ -55,6 +64,44 @@ export class SidebarComponent {
   selectKitchen(kitchen: import('../../core/models/auth.model').Kitchen): void {
     this.authService.setActiveKitchen(kitchen);
     this.kitchenMenuOpen.set(false);
+  }
+
+  openAddKitchenDialog(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.kitchenMenuOpen.set(false);
+    this.newKitchenName.set('');
+    this.newKitchenDescription.set('');
+    this.showAddKitchenDialog.set(true);
+  }
+
+  createKitchen(): void {
+    const name = this.newKitchenName().trim();
+    if (!name || this.isCreatingKitchen()) return;
+
+    this.isCreatingKitchen.set(true);
+    this.kitchenService
+      .createKitchen(name, this.newKitchenDescription().trim() || undefined)
+      .subscribe({
+        next: () => {
+          this.isCreatingKitchen.set(false);
+          this.showAddKitchenDialog.set(false);
+          this.newKitchenName.set('');
+          this.newKitchenDescription.set('');
+          this.toastService.show({
+            type: 'success',
+            title: 'Kitchen Created',
+            message: `Workspace "${name}" created successfully.`,
+          });
+        },
+        error: () => {
+          this.isCreatingKitchen.set(false);
+          this.toastService.show({
+            type: 'error',
+            title: 'Creation Failed',
+            message: 'Failed to create new kitchen workspace.',
+          });
+        },
+      });
   }
 
   // Reactive URL signal driven by Router events for OnPush change detection
