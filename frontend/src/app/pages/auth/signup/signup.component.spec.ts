@@ -60,6 +60,7 @@ describe('SignupComponent', () => {
   it('should submit valid registration and navigate on success', () => {
     component.signupForm.setValue({
       fullName: 'Gordon Ramsey',
+      username: 'gordon_ramsay',
       email: 'gordon@pantry.app',
       password: 'securepassword123',
     });
@@ -67,6 +68,7 @@ describe('SignupComponent', () => {
 
     expect(mockAuthService.signup).toHaveBeenCalledWith({
       fullName: 'Gordon Ramsey',
+      username: 'gordon_ramsay',
       email: 'gordon@pantry.app',
       password: 'securepassword123',
     });
@@ -80,6 +82,7 @@ describe('SignupComponent', () => {
     );
     component.signupForm.setValue({
       fullName: 'Gordon Ramsey',
+      username: 'gordon_ramsay',
       email: 'gordon@pantry.app',
       password: 'securepassword123',
     });

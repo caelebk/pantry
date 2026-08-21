@@ -11,12 +11,21 @@ export interface ValidationResult {
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,30}$/;
 
 export function validateSignupRequest(body: Partial<SignupRequest>): ValidationResult {
   const errors: string[] = [];
 
   if (!body.email || typeof body.email !== 'string' || !EMAIL_REGEX.test(body.email.trim())) {
     errors.push('Please provide a valid email address.');
+  }
+
+  if (body.username !== undefined) {
+    if (typeof body.username !== 'string' || !USERNAME_REGEX.test(body.username.trim())) {
+      errors.push(
+        'Username must be 3-30 characters long and contain only letters, numbers, and underscores.',
+      );
+    }
   }
 
   if (!body.password || typeof body.password !== 'string' || body.password.length < 8) {
@@ -35,9 +44,10 @@ export function validateSignupRequest(body: Partial<SignupRequest>): ValidationR
 
 export function validateLoginRequest(body: Partial<LoginRequest>): ValidationResult {
   const errors: string[] = [];
+  const identifier = body.identifier || body.email || body.username;
 
-  if (!body.email || typeof body.email !== 'string' || body.email.trim().length === 0) {
-    errors.push('Email address is required.');
+  if (!identifier || typeof identifier !== 'string' || identifier.trim().length === 0) {
+    errors.push('Email address or username is required.');
   }
 
   if (!body.password || typeof body.password !== 'string' || body.password.length === 0) {
@@ -54,6 +64,14 @@ export function validateUpdateProfileRequest(
   body: Partial<UpdateProfileRequest>,
 ): ValidationResult {
   const errors: string[] = [];
+
+  if (body.username !== undefined) {
+    if (typeof body.username !== 'string' || !USERNAME_REGEX.test(body.username.trim())) {
+      errors.push(
+        'Username must be 3-30 characters long and contain only letters, numbers, and underscores.',
+      );
+    }
+  }
 
   if (
     body.fullName !== undefined &&

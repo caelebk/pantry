@@ -219,6 +219,36 @@ import { ToastService } from '../../../services/toast.service';
               }
             </div>
 
+            <!-- Username Field -->
+            <div>
+              <div class="flex items-center justify-between h-6 mb-1.5">
+                <label
+                  for="username"
+                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                  {{ 'auth.username' | transloco }}
+                </label>
+              </div>
+              <div class="relative">
+                <i
+                  class="pi pi-at absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"></i>
+                <input
+                  id="username"
+                  type="text"
+                  formControlName="username"
+                  aria-describedby="username-error"
+                  class="w-full h-[42px] pl-10 pr-4 rounded-xl bg-white/80 dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200"
+                  placeholder="chef_ramsay" />
+              </div>
+              @if (signupForm.get('username')?.touched && signupForm.get('username')?.invalid) {
+                <div
+                  id="username-error"
+                  role="alert"
+                  class="text-xs text-rose-500 dark:text-rose-400 mt-1">
+                  Username must be 3-30 letters, numbers, or underscores.
+                </div>
+              }
+            </div>
+
             <!-- Email Field -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
@@ -330,6 +360,7 @@ export class SignupComponent implements OnInit {
 
   readonly signupForm = this.fb.group({
     fullName: ['', [Validators.required]],
+    username: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]{3,30}$/)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
@@ -355,19 +386,26 @@ export class SignupComponent implements OnInit {
 
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
-    const { fullName, email, password } = this.signupForm.value;
+    const { fullName, username, email, password } = this.signupForm.value;
 
-    this.authService.signup({ fullName: fullName!, email: email!, password: password! }).subscribe({
-      next: () => {
-        this.toastService.showSuccess('Account created! Welcome to Pantry.');
-        this.router.navigate(['/']);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        const errorMsg = err.error?.message || 'Failed to create account.';
-        this.errorMessage.set(errorMsg);
-        this.toastService.showError(errorMsg, 'Signup Error');
-      },
-    });
+    this.authService
+      .signup({
+        fullName: fullName!,
+        username: username?.trim() || undefined,
+        email: email!,
+        password: password!,
+      })
+      .subscribe({
+        next: () => {
+          this.toastService.showSuccess('Account created! Welcome to Pantry.');
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          const errorMsg = err.error?.message || 'Failed to create account.';
+          this.errorMessage.set(errorMsg);
+          this.toastService.showError(errorMsg, 'Signup Error');
+        },
+      });
   }
 }

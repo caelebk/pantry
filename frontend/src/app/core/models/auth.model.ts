@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   email: string;
+  username?: string;
   fullName: string;
   globalRole: string;
   avatarUrl?: string;
@@ -13,12 +14,15 @@ export interface User {
 
 export interface SignupRequest {
   email: string;
+  username?: string;
   password: string;
   fullName: string;
 }
 
 export interface LoginRequest {
-  email: string;
+  email?: string;
+  username?: string;
+  identifier?: string;
   password: string;
 }
 

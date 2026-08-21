@@ -35,30 +35,47 @@ export async function signupUser(
 ): Promise<{ authResponse: AuthResponseDTO; refreshToken: string }> {
   const db = getDB();
   const normalizedEmail = request.email.trim().toLowerCase();
+  const rawUsername = request.username?.trim() || request.email.split('@')[0];
+  const normalizedUsername = rawUsername.toLowerCase();
 
   db.exec('BEGIN TRANSACTION;');
   try {
-    // 1. Check duplicate email
-    const dupQuery = `SELECT id FROM users WHERE email_normalized = ?;`;
-    const dupStmt = db.prepare(dupQuery);
-    const dupRows = dupStmt.values(normalizedEmail);
-    dupStmt.finalize();
+    // 1. Check duplicate email or username
+    const dupEmailQuery = `SELECT id FROM users WHERE email_normalized = ?;`;
+    const dupEmailStmt = db.prepare(dupEmailQuery);
+    const dupEmailRows = dupEmailStmt.values(normalizedEmail);
+    dupEmailStmt.finalize();
 
-    if (dupRows.length > 0) {
+    if (dupEmailRows.length > 0) {
       throw new Error('EMAIL_ALREADY_EXISTS');
+    }
+
+    const dupUserQuery = `SELECT id FROM users WHERE username_normalized = ?;`;
+    const dupUserStmt = db.prepare(dupUserQuery);
+    const dupUserRows = dupUserStmt.values(normalizedUsername);
+    dupUserStmt.finalize();
+
+    if (dupUserRows.length > 0) {
+      throw new Error('USERNAME_ALREADY_EXISTS');
     }
 
     // 2. Create User record
     const insertUserQuery = `
-      INSERT INTO users (email, email_normalized, status, global_role)
-      VALUES (?, ?, 'active', 'user')
-      RETURNING id, email, global_role, created_at, updated_at;
+      INSERT INTO users (email, email_normalized, username, username_normalized, status, global_role)
+      VALUES (?, ?, ?, ?, 'active', 'user')
+      RETURNING id, email, username, global_role, created_at, updated_at;
     `;
     const userStmt = db.prepare(insertUserQuery);
-    const userRows = userStmt.values(request.email.trim(), normalizedEmail);
+    const userRows = userStmt.values(
+      request.email.trim(),
+      normalizedEmail,
+      rawUsername,
+      normalizedUsername,
+    );
     userStmt.finalize();
 
-    const [userId, email, globalRole, createdAt, updatedAt] = userRows[0] as [
+    const [userId, email, username, globalRole, createdAt, updatedAt] = userRows[0] as [
+      string,
       string,
       string,
       string,
@@ -117,6 +134,7 @@ export async function signupUser(
     const userDTO: UserDTO = {
       id: userId,
       email,
+      username,
       fullName: request.fullName.trim(),
       globalRole,
       themePreference: 'system',
@@ -146,38 +164,53 @@ export async function loginUser(
   ipAddress?: string,
 ): Promise<{ authResponse: AuthResponseDTO; refreshToken: string }> {
   const db = getDB();
-  const normalizedEmail = request.email.trim().toLowerCase();
+  const rawIdentifier = (request.identifier || request.email || request.username || '').trim();
+  const normalizedIdentifier = rawIdentifier.toLowerCase();
 
-  // Find User & Credential
+  // Find User & Credential (Search either email or username)
   const userQuery = `
-    SELECT u.id, u.email, u.global_role, c.secret_hash, p.full_name, p.theme_preference, p.locale, u.primary_kitchen_id
+    SELECT u.id, u.email, u.username, u.global_role, c.secret_hash, p.full_name, p.theme_preference, p.locale, u.primary_kitchen_id, u.created_at, u.updated_at
     FROM users u
     JOIN credentials c ON u.id = c.user_id AND c.type = 'password'
     JOIN profiles p ON u.id = p.user_id
-    WHERE u.email_normalized = ? AND u.status = 'active';
+    WHERE (u.email_normalized = ? OR u.username_normalized = ?) AND u.status = 'active';
   `;
 
   const stmt = db.prepare(userQuery);
-  const rows = stmt.values(normalizedEmail);
+  const rows = stmt.values(normalizedIdentifier, normalizedIdentifier);
   stmt.finalize();
 
   if (rows.length === 0) {
-    // Constant-time execution for missing email
+    // Constant-time execution for missing identifier
     await verifyPassword(DUMMY_HASH, request.password);
     throw new Error('INVALID_CREDENTIALS');
   }
 
-  const [userId, email, globalRole, secretHash, fullName, themePref, locale, primaryKitchenId] =
-    rows[0] as [
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-    ];
+  const [
+    userId,
+    email,
+    username,
+    globalRole,
+    secretHash,
+    fullName,
+    themePref,
+    locale,
+    primaryKitchenId,
+    createdAt,
+    updatedAt,
+  ] = rows[0] as [
+    string,
+    string,
+    string | null,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+  ];
 
   const isValidPassword = await verifyPassword(secretHash, request.password);
   if (!isValidPassword) {
@@ -211,11 +244,14 @@ export async function loginUser(
   const userDTO: UserDTO = {
     id: userId,
     email,
+    username: username || undefined,
     fullName,
     globalRole,
     themePreference: themePref,
     locale,
     primaryKitchenId: activeKitchenId,
+    createdAt,
+    updatedAt,
   };
 
   return {
@@ -308,7 +344,7 @@ export async function logoutUserSession(refreshToken: string): Promise<void> {
 export function getUserProfile(userId: string): { user: UserDTO; memberships: KitchenDTO[] } {
   const db = getDB();
   const query = `
-    SELECT u.id, u.email, u.global_role, p.full_name, p.avatar_url, p.theme_preference, p.locale, u.created_at, u.updated_at, u.primary_kitchen_id
+    SELECT u.id, u.email, u.username, u.global_role, p.full_name, p.avatar_url, p.theme_preference, p.locale, u.created_at, u.updated_at, u.primary_kitchen_id
     FROM users u
     JOIN profiles p ON u.id = p.user_id
     WHERE u.id = ? AND u.status = 'active';
@@ -325,6 +361,7 @@ export function getUserProfile(userId: string): { user: UserDTO; memberships: Ki
   const [
     id,
     email,
+    username,
     globalRole,
     fullName,
     avatarUrl,
@@ -336,6 +373,7 @@ export function getUserProfile(userId: string): { user: UserDTO; memberships: Ki
   ] = rows[0] as [
     string,
     string,
+    string | null,
     string,
     string,
     string | null,
@@ -352,6 +390,7 @@ export function getUserProfile(userId: string): { user: UserDTO; memberships: Ki
     user: {
       id,
       email,
+      username: username || undefined,
       fullName,
       avatarUrl: avatarUrl ?? undefined,
       themePreference: themePref,
@@ -367,6 +406,31 @@ export function getUserProfile(userId: string): { user: UserDTO; memberships: Ki
 
 export function updateUserProfile(userId: string, request: UpdateProfileRequest): UserDTO {
   const db = getDB();
+
+  if (request.username !== undefined) {
+    const rawUsername = request.username.trim();
+    const normalizedUsername = rawUsername.toLowerCase();
+
+    // Check duplicate username if changing
+    const dupUserQuery = `SELECT id FROM users WHERE username_normalized = ? AND id != ?;`;
+    const dupUserStmt = db.prepare(dupUserQuery);
+    const dupUserRows = dupUserStmt.values(normalizedUsername, userId);
+    dupUserStmt.finalize();
+
+    if (dupUserRows.length > 0) {
+      throw new Error('USERNAME_ALREADY_EXISTS');
+    }
+
+    const updateUsernameQuery = `
+      UPDATE users 
+      SET username = ?, username_normalized = ?, updated_at = datetime('now')
+      WHERE id = ?;
+    `;
+    const uStmt = db.prepare(updateUsernameQuery);
+    uStmt.run(rawUsername, normalizedUsername, userId);
+    uStmt.finalize();
+  }
+
   const query = `
     UPDATE profiles
     SET full_name = COALESCE(?, full_name),

@@ -65,6 +65,12 @@ authRoutes.post('/signup', async (c) => {
     if (msg === 'EMAIL_ALREADY_EXISTS') {
       return c.json(errorResponse('An account with this email address already exists.'), 409);
     }
+    if (msg === 'USERNAME_ALREADY_EXISTS') {
+      return c.json(
+        errorResponse('This username is already taken. Please choose another one.'),
+        409,
+      );
+    }
     return c.json(errorResponse(msg), 500);
   }
 });
@@ -88,7 +94,7 @@ authRoutes.post('/login', async (c) => {
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Login failed';
     if (msg === 'INVALID_CREDENTIALS') {
-      return c.json(errorResponse('Invalid email or password.'), 401);
+      return c.json(errorResponse('Invalid email, username, or password.'), 401);
     }
     return c.json(errorResponse(msg), 500);
   }
@@ -177,6 +183,12 @@ authRoutes.patch('/me/profile', authMiddleware, async (c) => {
     return c.json(successResponse({ user: updatedUser }, 'Profile updated successfully'), 200);
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Failed to update profile';
+    if (msg === 'USERNAME_ALREADY_EXISTS') {
+      return c.json(
+        errorResponse('This username is already taken. Please choose another one.'),
+        409,
+      );
+    }
     return c.json(errorResponse(msg), 500);
   }
 });

@@ -7,15 +7,17 @@ Deno.test('Auth Routes Integration - Full Authentication & Session Lifecycle', a
   db.exec('DELETE FROM auth_rate_limits;');
   try {
     const testEmail = `chef_${Date.now()}@pantry.app`;
+    const testUsername = `chef_${Date.now()}`;
     const testPassword = 'SecurePassword123!';
     const testFullName = 'Chef Gordon Ramsey';
 
-    // 1. POST /api/v1/auth/signup
+    // 1. POST /api/v1/auth/signup with username
     const signupRes = await app.request('/api/v1/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: testEmail,
+        username: testUsername,
         password: testPassword,
         fullName: testFullName,
       }),
@@ -26,6 +28,7 @@ Deno.test('Auth Routes Integration - Full Authentication & Session Lifecycle', a
     assertEquals(signupBody.status, 'success');
     assertExists(signupBody.data.user.id);
     assertEquals(signupBody.data.user.email, testEmail);
+    assertEquals(signupBody.data.user.username, testUsername);
     assertEquals(signupBody.data.user.fullName, testFullName);
     assertExists(signupBody.data.user.primaryKitchenId);
     assertExists(signupBody.data.accessToken);
@@ -45,7 +48,34 @@ Deno.test('Auth Routes Integration - Full Authentication & Session Lifecycle', a
     });
     assertEquals(dupSignupRes.status, 409);
 
-    // 2. POST /api/v1/auth/login
+    // Duplicate username signup conflict (409)
+    const dupUserSignupRes = await app.request('/api/v1/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: `other_${Date.now()}@pantry.app`,
+        username: testUsername,
+        password: testPassword,
+        fullName: 'Another Chef',
+      }),
+    });
+    assertEquals(dupUserSignupRes.status, 409);
+
+    // 2. POST /api/v1/auth/login via USERNAME
+    const loginViaUserRes = await app.request('/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        identifier: testUsername,
+        password: testPassword,
+      }),
+    });
+    assertEquals(loginViaUserRes.status, 200);
+    const loginViaUserBody = await loginViaUserRes.json();
+    assertEquals(loginViaUserBody.status, 'success');
+    assertEquals(loginViaUserBody.data.user.username, testUsername);
+
+    // 2b. POST /api/v1/auth/login via EMAIL
     const loginRes = await app.request('/api/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

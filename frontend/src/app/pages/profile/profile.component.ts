@@ -75,6 +75,17 @@ import { KitchenService } from '../../core/services/kitchen.service';
               <div>
                 <label
                   class="block text-xs font-semibold uppercase text-surface-600 dark:text-surface-300 mb-2"
+                  >{{ 'profile.username' | transloco }}</label
+                >
+                <input
+                  type="text"
+                  formControlName="username"
+                  class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none" />
+              </div>
+
+              <div>
+                <label
+                  class="block text-xs font-semibold uppercase text-surface-600 dark:text-surface-300 mb-2"
                   >{{ 'auth.email' | transloco }}</label
                 >
                 <input
@@ -402,6 +413,7 @@ export class ProfileComponent implements OnInit {
 
   readonly profileForm = this.fb.group({
     fullName: ['', [Validators.required]],
+    username: ['', [Validators.pattern(/^[a-zA-Z0-9_]{3,30}$/)]],
     themePreference: ['system', [Validators.required]],
   });
 
@@ -425,6 +437,7 @@ export class ProfileComponent implements OnInit {
     if (u) {
       this.profileForm.patchValue({
         fullName: u.fullName,
+        username: u.username || '',
         themePreference: u.themePreference || 'system',
       });
     }
@@ -444,11 +457,12 @@ export class ProfileComponent implements OnInit {
     if (this.profileForm.invalid) return;
 
     this.isSavingProfile.set(true);
-    const { fullName, themePreference } = this.profileForm.value;
+    const { fullName, username, themePreference } = this.profileForm.value;
 
     this.authService
       .updateProfile({
-        fullName: fullName!,
+        fullName: fullName || undefined,
+        username: username?.trim() || undefined,
         themePreference: themePreference as 'system' | 'light' | 'dark',
       })
       .subscribe({
@@ -456,16 +470,16 @@ export class ProfileComponent implements OnInit {
           this.isSavingProfile.set(false);
           this.messageService.add({
             severity: 'success',
-            summary: 'Success',
-            detail: 'Profile updated',
+            summary: 'Profile Updated',
+            detail: 'Your profile has been saved successfully.',
           });
         },
-        error: () => {
+        error: (err) => {
           this.isSavingProfile.set(false);
           this.messageService.add({
             severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to update profile',
+            summary: 'Update Failed',
+            detail: err.error?.message || 'Failed to update profile.',
           });
         },
       });

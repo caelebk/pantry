@@ -58,11 +58,11 @@ describe('LoginComponent', () => {
   });
 
   it('should submit valid credentials and navigate on success', () => {
-    component.loginForm.setValue({ email: 'chef@pantry.app', password: 'password123' });
+    component.loginForm.setValue({ identifier: 'chef@pantry.app', password: 'password123' });
     component.onSubmit();
 
     expect(mockAuthService.login).toHaveBeenCalledWith({
-      email: 'chef@pantry.app',
+      identifier: 'chef@pantry.app',
       password: 'password123',
     });
     expect(mockToastService.showSuccess).toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe('LoginComponent', () => {
     mockAuthService.login.mockReturnValue(
       throwError(() => ({ error: { message: 'Invalid credentials' } })),
     );
-    component.loginForm.setValue({ email: 'chef@pantry.app', password: 'wrong' });
+    component.loginForm.setValue({ identifier: 'chef@pantry.app', password: 'wrong' });
     component.onSubmit();
 
     expect(component.errorMessage()).toBe('Invalid credentials');

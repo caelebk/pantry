@@ -1,6 +1,7 @@
 export interface UserDTO {
   id: string;
   email: string;
+  username?: string;
   fullName: string;
   globalRole: string;
   avatarUrl?: string;
@@ -13,12 +14,15 @@ export interface UserDTO {
 
 export interface SignupRequest {
   email: string;
+  username?: string;
   password: string;
   fullName: string;
 }
 
 export interface LoginRequest {
-  email: string;
+  email?: string;
+  username?: string;
+  identifier?: string;
   password: string;
 }
 
@@ -34,6 +38,7 @@ export interface RefreshResponseDTO {
 }
 
 export interface UpdateProfileRequest {
+  username?: string;
   fullName?: string;
   avatarUrl?: string;
   themePreference?: 'system' | 'light' | 'dark';
