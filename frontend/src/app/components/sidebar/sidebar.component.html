@@ -154,16 +154,7 @@
           [class.top-0]="isCollapsed()"
           [class.ml-2]="isCollapsed()"
           [class.w-64]="isCollapsed()"
-          class="absolute top-full px-3 py-2.5 bg-surface-50/98 dark:bg-surface-900/98 backdrop-blur-2xl border-y border-surface-200/60 dark:border-white/10 shadow-2xl shadow-surface-950/10 dark:shadow-black/60 z-50 max-h-72 overflow-y-auto space-y-1">
-          <div
-            class="px-2 py-1 text-[10px] font-semibold tracking-wider text-surface-400 dark:text-surface-500 uppercase flex items-center justify-between mb-0.5">
-            <span>Workspaces</span>
-            <span
-              class="text-[9px] px-1.5 py-0.5 rounded-md bg-surface-200/60 dark:bg-surface-800 text-surface-600 dark:text-surface-300 font-medium">
-              {{ authService.userKitchens().length }}
-            </span>
-          </div>
-
+          class="absolute top-full py-1 bg-surface-50/98 dark:bg-surface-900/98 backdrop-blur-2xl border-y border-surface-200/60 dark:border-white/10 shadow-2xl shadow-surface-950/10 dark:shadow-black/60 z-50 max-h-72 overflow-y-auto">
           @for (k of authService.userKitchens(); track k.id) {
             <button
               type="button"
@@ -172,35 +163,29 @@
               [class.text-primary-600]="authService.activeKitchen()?.id === k.id"
               [class.dark:bg-primary-500/15]="authService.activeKitchen()?.id === k.id"
               [class.dark:text-primary-400]="authService.activeKitchen()?.id === k.id"
-              [class.font-semibold]="authService.activeKitchen()?.id === k.id"
               [class.text-surface-700]="authService.activeKitchen()?.id !== k.id"
               [class.dark:text-surface-300]="authService.activeKitchen()?.id !== k.id"
-              [class.hover:bg-surface-200/50]="authService.activeKitchen()?.id !== k.id"
+              [class.hover:bg-surface-100/70]="authService.activeKitchen()?.id !== k.id"
               [class.dark:hover:bg-white/5]="authService.activeKitchen()?.id !== k.id"
               [class.hover:text-surface-900]="authService.activeKitchen()?.id !== k.id"
               [class.dark:hover:text-white]="authService.activeKitchen()?.id !== k.id"
-              class="w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-all cursor-pointer group/kitchen">
-              <div class="flex items-center gap-2.5 min-w-0">
-                <div
-                  [class.bg-primary-500/15]="authService.activeKitchen()?.id === k.id"
+              [class.px-3]="isCollapsed()"
+              [class.px-4]="!isCollapsed()"
+              [class.md:px-5]="!isCollapsed()"
+              class="w-full text-left py-2.5 text-xs flex items-center justify-between transition-all cursor-pointer group/opt focus-visible:outline-none focus-visible:bg-surface-100/70 dark:focus-visible:bg-white/5">
+              <div class="flex items-center gap-3 min-w-0">
+                <i
                   [class.text-primary-600]="authService.activeKitchen()?.id === k.id"
                   [class.dark:text-primary-400]="authService.activeKitchen()?.id === k.id"
-                  [class.bg-surface-200/50]="authService.activeKitchen()?.id !== k.id"
-                  [class.dark:bg-surface-800]="authService.activeKitchen()?.id !== k.id"
-                  [class.text-surface-500]="authService.activeKitchen()?.id !== k.id"
-                  [class.dark:text-surface-400]="authService.activeKitchen()?.id !== k.id"
-                  class="w-6 h-6 rounded-md flex items-center justify-center shrink-0">
-                  <i class="pi pi-building text-[10px]"></i>
-                </div>
-                <div class="truncate">
-                  <div class="text-xs truncate leading-tight">
-                    {{ k.name }}
-                  </div>
-                  <div
-                    class="text-[10px] text-surface-400 dark:text-surface-500 capitalize truncate leading-tight mt-0.5">
-                    {{ k.role || 'member' }}
-                  </div>
-                </div>
+                  [class.text-surface-400]="authService.activeKitchen()?.id !== k.id"
+                  [class.dark:text-surface-500]="authService.activeKitchen()?.id !== k.id"
+                  class="pi pi-building text-xs shrink-0"></i>
+                <span
+                  [class.font-semibold]="authService.activeKitchen()?.id === k.id"
+                  [class.font-normal]="authService.activeKitchen()?.id !== k.id"
+                  class="truncate text-xs">
+                  {{ k.name }}
+                </span>
               </div>
               @if (authService.activeKitchen()?.id === k.id) {
                 <i
@@ -208,15 +193,6 @@
               }
             </button>
           }
-
-          <div class="my-1.5 border-t border-surface-200/50 dark:border-white/10"></div>
-          <button
-            type="button"
-            (click)="navigateTo('/profile')"
-            class="w-full text-left px-3 py-2 rounded-xl text-xs flex items-center gap-2.5 text-surface-500 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-surface-200/40 dark:hover:bg-white/5 transition-all cursor-pointer font-medium">
-            <i class="pi pi-cog text-xs"></i>
-            <span>Manage Workspaces</span>
-          </button>
         </div>
       }
     </div>
