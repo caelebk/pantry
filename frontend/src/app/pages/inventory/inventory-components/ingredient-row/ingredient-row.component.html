@@ -1,16 +1,16 @@
 <div
-  class="flex items-center justify-between p-2.5 rounded-xl cursor-pointer hover:bg-surface-100/70 dark:hover:bg-surface-800/50 transition-all select-none group"
+  class="flex items-center justify-between p-2.5 rounded-xl cursor-pointer hover:bg-surface-100/70 dark:hover:bg-surface-800/50 transition-all select-none group/row"
   (click)="toggleExpand.emit(ingredient.id)">
   <div class="flex items-center gap-3 min-w-0">
     <div
-      class="w-6 h-6 rounded-lg bg-surface-100 dark:bg-surface-800 group-hover:bg-primary-500/10 text-surface-400 dark:text-surface-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 flex items-center justify-center transition-colors shrink-0"
+      class="w-6 h-6 rounded-lg bg-surface-100 dark:bg-surface-800 group-hover/row:bg-primary-500/10 text-surface-400 dark:text-surface-500 group-hover/row:text-primary-600 dark:group-hover/row:text-primary-400 flex items-center justify-center transition-colors shrink-0"
       [class.rotate-90]="isExpanded">
       <i class="pi pi-chevron-right text-[10px] font-bold"></i>
     </div>
 
     <div class="min-w-0">
       <p
-        class="text-sm font-bold text-surface-900 dark:text-white truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+        class="text-sm font-bold text-surface-900 dark:text-white truncate group-hover/row:text-primary-600 dark:group-hover/row:text-primary-400 transition-colors">
         {{ ingredient.name }}
       </p>
     </div>

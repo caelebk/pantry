@@ -56,6 +56,23 @@
               ⚠️ Unassigned
             </span>
           }
+          @if (item().createdBy?.username || item().createdBy?.fullName) {
+            <span
+              class="inline-flex items-center gap-1 text-[10px] text-surface-500 dark:text-surface-400 bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700/60 px-2 py-0.5 rounded-md"
+              [title]="
+                'Added by ' +
+                (item().createdBy?.username
+                  ? '@' + item().createdBy?.username
+                  : item().createdBy?.fullName)
+              ">
+              <i class="pi pi-user text-[9px]"></i>
+              <span>{{
+                item().createdBy?.username
+                  ? '@' + item().createdBy?.username
+                  : item().createdBy?.fullName
+              }}</span>
+            </span>
+          }
         </div>
       </div>
 
@@ -71,7 +88,7 @@
         </button>
         <button
           type="button"
-          (click)="showEdit()"
+          (click)="showEdit($event)"
           class="p-1.5 rounded-lg text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 transition-all duration-150 cursor-pointer"
           title="Edit Item">
           <i class="pi pi-pencil text-xs"></i>
@@ -161,9 +178,46 @@
   [dismissableMask]="true"
   [style]="{ width: '90vw', maxWidth: '500px' }"
   [header]="item().name">
-  <p class="m-0 text-surface-600 dark:text-surface-300 leading-relaxed text-sm">
-    {{ item().notes ? item().notes : 'No notes recorded for this item.' }}
-  </p>
+  <div class="space-y-4">
+    <p class="m-0 text-surface-600 dark:text-surface-300 leading-relaxed text-sm">
+      {{ item().notes ? item().notes : 'No notes recorded for this item.' }}
+    </p>
+
+    <!-- Item Audit History -->
+    <div
+      class="pt-3 border-t border-surface-200 dark:border-surface-800 text-xs text-surface-400 space-y-1">
+      @if (item().createdBy) {
+        <div class="flex items-center gap-1.5">
+          <i class="pi pi-user text-[11px]"></i>
+          <span
+            >Added by
+            <strong class="text-surface-600 dark:text-surface-300">{{
+              item().createdBy?.username
+                ? '@' + item().createdBy?.username
+                : item().createdBy?.fullName
+            }}</strong></span
+          >
+          @if (item().createdAt) {
+            <span>on {{ item().createdAt | date: 'mediumDate' }}</span>
+          }
+        </div>
+      }
+      @if (item().updatedBy && item().updatedAt) {
+        <div class="flex items-center gap-1.5">
+          <i class="pi pi-history text-[11px]"></i>
+          <span
+            >Updated by
+            <strong class="text-surface-600 dark:text-surface-300">{{
+              item().updatedBy?.username
+                ? '@' + item().updatedBy?.username
+                : item().updatedBy?.fullName
+            }}</strong>
+            on {{ item().updatedAt | date: 'mediumDate' }}</span
+          >
+        </div>
+      }
+    </div>
+  </div>
   <ng-template pTemplate="footer">
     <p-button
       label="Close"

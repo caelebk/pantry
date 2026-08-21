@@ -320,32 +320,48 @@
 
                     <!-- Item Name & Freshness / Stock Badge -->
                     <td class="py-3.5 px-4 font-bold text-surface-900 dark:text-white">
-                      <div class="flex items-center gap-2">
-                        <span
-                          class="truncate max-w-[200px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"
-                          [class.line-through]="isOutOfStockItem(item)"
-                          >{{ item.name }}</span
-                        >
-                        @if (isOutOfStockItem(item)) {
+                      <div class="space-y-0.5">
+                        <div class="flex items-center gap-2">
                           <span
-                            class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20 shrink-0">
-                            🫙 Out of Stock
-                          </span>
-                        } @else if (isExpiredItem(item)) {
-                          <span
-                            class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
-                            🚨 Expired
-                          </span>
-                        } @else if (isExpiringSoonItem(item)) {
-                          <span
-                            class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
-                            ⚠️ Expiring Soon
-                          </span>
-                        } @else {
-                          <span
-                            class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
-                            ✨ Fresh
-                          </span>
+                            class="truncate max-w-[200px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors"
+                            [class.line-through]="isOutOfStockItem(item)"
+                            >{{ item.name }}</span
+                          >
+                          @if (isOutOfStockItem(item)) {
+                            <span
+                              class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20 shrink-0">
+                              🫙 Out of Stock
+                            </span>
+                          } @else if (isExpiredItem(item)) {
+                            <span
+                              class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
+                              🚨 Expired
+                            </span>
+                          } @else if (isExpiringSoonItem(item)) {
+                            <span
+                              class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                              ⚠️ Expiring Soon
+                            </span>
+                          } @else {
+                            <span
+                              class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                              ✨ Fresh
+                            </span>
+                          }
+                        </div>
+                        @if (item.createdBy?.username || item.createdBy?.fullName) {
+                          <div
+                            class="text-[10px] font-normal text-surface-400 dark:text-surface-500 flex items-center gap-1">
+                            <i class="pi pi-user text-[9px]"></i>
+                            <span
+                              >Added by
+                              {{
+                                item.createdBy?.username
+                                  ? '@' + item.createdBy?.username
+                                  : item.createdBy?.fullName
+                              }}</span
+                            >
+                          </div>
                         }
                       </div>
                     </td>
@@ -621,6 +637,325 @@
         [locations]="locations"
         [ingredients]="ingredients"></pantry-add-item-form>
     </div>
+  </p-dialog>
+
+  <!-- Quick Restock Modal Dialog -->
+  <p-dialog
+    [visible]="displayRestockModal()"
+    (visibleChange)="displayRestockModal.set($event)"
+    [modal]="true"
+    [dismissableMask]="true"
+    [style]="{ width: '90vw', maxWidth: '480px' }"
+    [header]="
+      restockItem()
+        ? 'Restock: ' + restockItem()?.name
+        : 'Quick Restock (' + restockItems().length + ' Items)'
+    ">
+    @if (restockItem(); as item) {
+      <!-- Single Item Restock Form -->
+      <div class="space-y-5 pt-2">
+        <!-- Item Overview Header Pill -->
+        <div
+          class="p-3.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div
+              class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+              <i class="pi pi-box text-base"></i>
+            </div>
+            <div>
+              <div class="font-extrabold text-surface-900 dark:text-white text-sm">
+                {{ item.name }}
+              </div>
+              <div
+                class="text-[11px] text-surface-500 dark:text-surface-400 flex items-center gap-1.5">
+                <span
+                  >Current:
+                  <strong
+                    >{{ item.quantity }} {{ item.unit.shortName || item.unit.name }}</strong
+                  ></span
+                >
+                <span>•</span>
+                <span>{{ item.location.name }}</span>
+              </div>
+            </div>
+          </div>
+          <span
+            class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+            +{{ restockAmount() }} {{ item.unit.shortName || item.unit.name }}
+          </span>
+        </div>
+
+        <!-- Amount to Restock -->
+        <div>
+          <label
+            class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300 mb-1.5">
+            Restock Quantity ({{ item.unit.name }}) <span class="text-rose-500">*</span>
+          </label>
+          <div class="relative flex items-center">
+            <input
+              type="number"
+              min="0.1"
+              step="1"
+              [ngModel]="restockAmount()"
+              (ngModelChange)="restockAmount.set($event)"
+              class="w-full h-[42px] px-4 pr-16 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm font-bold focus:ring-2 focus:ring-primary-500/50 outline-none transition-all"
+              placeholder="1" />
+            <span class="absolute right-3.5 text-xs font-bold text-surface-400 pointer-events-none">
+              {{ item.unit.shortName || item.unit.name }}
+            </span>
+          </div>
+          <div
+            class="mt-1 text-[11px] text-surface-500 dark:text-surface-400 flex items-center justify-between">
+            <span
+              >New total will be:
+              <strong class="text-surface-800 dark:text-surface-200"
+                >{{ item.quantity + (restockAmount() || 0) }}
+                {{ item.unit.shortName || item.unit.name }}</strong
+              ></span
+            >
+          </div>
+        </div>
+
+        <!-- Storage Location -->
+        <div>
+          <label
+            class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300 mb-1.5">
+            Storage Location <span class="text-rose-500">*</span>
+          </label>
+          <select
+            [ngModel]="restockLocationId()"
+            (ngModelChange)="restockLocationId.set($event)"
+            class="w-full h-[42px] px-3.5 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm font-medium focus:ring-2 focus:ring-primary-500/50 outline-none transition-all cursor-pointer">
+            @for (loc of locations; track loc.id) {
+              <option [value]="loc.id">{{ loc.name }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Expiration Date -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label
+              class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300">
+              Expiration Date
+            </label>
+            @if (restockExpirationDate()) {
+              <button
+                type="button"
+                (click)="clearRestockExpiry()"
+                class="text-[11px] text-rose-500 hover:underline cursor-pointer">
+                Clear Expiration
+              </button>
+            }
+          </div>
+          <input
+            type="date"
+            [ngModel]="restockExpirationDate()"
+            (ngModelChange)="restockExpirationDate.set($event)"
+            class="w-full h-[42px] px-3.5 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm font-medium focus:ring-2 focus:ring-primary-500/50 outline-none transition-all" />
+          <!-- Quick Expiry Date Preset Chips -->
+          <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+            <span class="text-[10px] text-surface-400 uppercase font-semibold">Quick Set:</span>
+            <button
+              type="button"
+              (click)="setRestockExpiryDays(7)"
+              class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-700 transition-colors cursor-pointer">
+              +7 Days
+            </button>
+            <button
+              type="button"
+              (click)="setRestockExpiryDays(14)"
+              class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-700 transition-colors cursor-pointer">
+              +14 Days
+            </button>
+            <button
+              type="button"
+              (click)="setRestockExpiryDays(30)"
+              class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-700 transition-colors cursor-pointer">
+              +1 Month
+            </button>
+          </div>
+        </div>
+
+        <!-- Purchase Date Notice -->
+        <div
+          class="p-2.5 rounded-xl bg-surface-100 dark:bg-surface-800/80 border border-surface-200/80 dark:border-surface-700/80 text-[11px] text-surface-500 dark:text-surface-400 flex items-center gap-2">
+          <i class="pi pi-calendar-plus text-primary-500 text-xs"></i>
+          <span>Purchase date will automatically be updated to today on restock.</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-2.5 pt-2">
+          <button
+            type="button"
+            (click)="displayRestockModal.set(false)"
+            class="px-4 py-2 rounded-xl text-surface-600 dark:text-surface-300 text-xs font-semibold hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button
+            type="button"
+            (click)="onConfirmRestock()"
+            [disabled]="isRestocking() || !restockAmount() || restockAmount() <= 0"
+            class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer disabled:opacity-40 flex items-center gap-1.5">
+            @if (isRestocking()) {
+              <i class="pi pi-spin pi-spinner text-xs"></i>
+              <span>Restocking...</span>
+            } @else {
+              <i class="pi pi-check text-xs"></i>
+              <span>Confirm Restock</span>
+            }
+          </button>
+        </div>
+      </div>
+    } @else if (restockItems().length > 1) {
+      <!-- Multiple Items Bulk Restock Form -->
+      <div class="space-y-5 pt-2">
+        <!-- Multiple Items Overview Pill -->
+        <div
+          class="p-3.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/20 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div
+                class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                <i class="pi pi-clone text-base"></i>
+              </div>
+              <div>
+                <div class="font-extrabold text-surface-900 dark:text-white text-sm">
+                  Restock {{ restockItems().length }} Selected Items
+                </div>
+                <div class="text-[11px] text-surface-500 dark:text-surface-400">
+                  Bulk restock selected pantry items
+                </div>
+              </div>
+            </div>
+            <span
+              class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+              +{{ restockAmount() }} each
+            </span>
+          </div>
+          <div class="flex flex-wrap gap-1 pt-1 max-h-24 overflow-y-auto">
+            @for (it of restockItems(); track it.id) {
+              <span
+                class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700/80">
+                {{ it.name }} (+{{ it.quantity }} {{ it.unit.shortName || it.unit.name }})
+              </span>
+            }
+          </div>
+        </div>
+
+        <!-- Quantity to add to each item -->
+        <div>
+          <label
+            class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300 mb-1.5">
+            Quantity to Add to Each Item <span class="text-rose-500">*</span>
+          </label>
+          <div class="relative flex items-center">
+            <input
+              type="number"
+              min="0.1"
+              step="1"
+              [ngModel]="restockAmount()"
+              (ngModelChange)="restockAmount.set($event)"
+              class="w-full h-[42px] px-4 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm font-bold focus:ring-2 focus:ring-primary-500/50 outline-none transition-all"
+              placeholder="1" />
+          </div>
+        </div>
+
+        <!-- Storage Location Option -->
+        <div>
+          <label
+            class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300 mb-1.5">
+            Storage Location
+          </label>
+          <select
+            [ngModel]="restockLocationId()"
+            (ngModelChange)="restockLocationId.set($event)"
+            class="w-full h-[42px] px-3.5 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm font-medium focus:ring-2 focus:ring-primary-500/50 outline-none transition-all cursor-pointer">
+            <option [value]="0">Keep each item's current location</option>
+            @for (loc of locations; track loc.id) {
+              <option [value]="loc.id">Move all to {{ loc.name }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Expiration Date (Optional) -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label
+              class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300">
+              Expiration Date (Optional)
+            </label>
+            @if (restockExpirationDate()) {
+              <button
+                type="button"
+                (click)="clearRestockExpiry()"
+                class="text-[11px] text-rose-500 hover:underline cursor-pointer">
+                Clear
+              </button>
+            }
+          </div>
+          <input
+            type="date"
+            [ngModel]="restockExpirationDate()"
+            (ngModelChange)="restockExpirationDate.set($event)"
+            class="w-full h-[42px] px-3.5 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm font-medium focus:ring-2 focus:ring-primary-500/50 outline-none transition-all" />
+          <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+            <span class="text-[10px] text-surface-400 uppercase font-semibold">Quick Set:</span>
+            <button
+              type="button"
+              (click)="setRestockExpiryDays(7)"
+              class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-700 transition-colors cursor-pointer">
+              +7 Days
+            </button>
+            <button
+              type="button"
+              (click)="setRestockExpiryDays(14)"
+              class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-700 transition-colors cursor-pointer">
+              +14 Days
+            </button>
+            <button
+              type="button"
+              (click)="setRestockExpiryDays(30)"
+              class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-700 transition-colors cursor-pointer">
+              +1 Month
+            </button>
+          </div>
+          <p class="text-[11px] text-surface-400 dark:text-surface-500 mt-1">
+            Leave blank to preserve each item's current expiration date.
+          </p>
+        </div>
+
+        <!-- Purchase Date Notice -->
+        <div
+          class="p-2.5 rounded-xl bg-surface-100 dark:bg-surface-800/80 border border-surface-200/80 dark:border-surface-700/80 text-[11px] text-surface-500 dark:text-surface-400 flex items-center gap-2">
+          <i class="pi pi-calendar-plus text-primary-500 text-xs"></i>
+          <span>Purchase date will automatically be updated to today for all restocked items.</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-2.5 pt-2">
+          <button
+            type="button"
+            (click)="displayRestockModal.set(false)"
+            class="px-4 py-2 rounded-xl text-surface-600 dark:text-surface-300 text-xs font-semibold hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button
+            type="button"
+            (click)="onConfirmRestock()"
+            [disabled]="isRestocking() || !restockAmount() || restockAmount() <= 0"
+            class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 transition-all cursor-pointer disabled:opacity-40 flex items-center gap-1.5">
+            @if (isRestocking()) {
+              <i class="pi pi-spin pi-spinner text-xs"></i>
+              <span>Restocking...</span>
+            } @else {
+              <i class="pi pi-check text-xs"></i>
+              <span>Confirm Restock</span>
+            }
+          </button>
+        </div>
+      </div>
+    }
   </p-dialog>
 
   <!-- Confirmation Dialog -->

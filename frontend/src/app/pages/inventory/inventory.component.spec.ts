@@ -162,9 +162,16 @@ describe('InventoryComponent', () => {
     expect(lastItem.quantity).toBe(0);
   });
 
-  it('should quick restock item by incrementing quantity', () => {
+  it('should open restock dialog on quick restock and update quantity and purchaseDate on confirm', () => {
     mockItemService.updateItem.and.returnValue(of({} as IngredientItemDTO));
-    component.onQuickRestockItem(mockItemEmpty);
+    component.toggleSelectItem(mockItemEmpty.id);
+    component.onBulkRestock();
+
+    expect(component.displayRestockModal()).toBeTrue();
+    expect(component.restockItem()).toEqual(mockItemEmpty);
+    expect(component.restockAmount()).toBe(1);
+
+    component.onConfirmRestock();
 
     expect(mockItemService.updateItem).toHaveBeenCalledWith(
       jasmine.objectContaining({
@@ -173,6 +180,42 @@ describe('InventoryComponent', () => {
         purchaseDate: jasmine.any(Date),
       }),
     );
+    expect(component.displayRestockModal()).toBeFalse();
+  });
+
+  it('should open restock dialog on multi-item bulk restock and update all selected items', () => {
+    mockItemService.updateItem.and.returnValue(of({} as IngredientItemDTO));
+    component.toggleSelectItem(mockItem1.id);
+    component.toggleSelectItem(mockItem2.id);
+    component.onBulkRestock();
+
+    expect(component.displayRestockModal()).toBeTrue();
+    expect(component.restockItem()).toBeNull();
+    expect(component.restockItems().length).toBe(2);
+
+    component.onConfirmRestock();
+
+    expect(mockItemService.updateItem).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        id: mockItem1.id,
+        purchaseDate: jasmine.any(Date),
+      }),
+    );
+    expect(mockItemService.updateItem).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        id: mockItem2.id,
+        purchaseDate: jasmine.any(Date),
+      }),
+    );
+    expect(component.displayRestockModal()).toBeFalse();
+  });
+
+  it('should support quick expiry presets in restock dialog', () => {
+    component.setRestockExpiryDays(7);
+    expect(component.restockExpirationDate()).toBeTruthy();
+
+    component.clearRestockExpiry();
+    expect(component.restockExpirationDate()).toBe('');
   });
 
   it('should add single item to shopping list', () => {

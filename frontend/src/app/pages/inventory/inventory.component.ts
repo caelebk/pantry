@@ -129,6 +129,15 @@ export class InventoryComponent implements OnInit {
   public selectedCategory: IngredientGroupModel | null = null;
   public isLoading = signal(true);
 
+  // Quick Restock Modal Dialog State
+  public displayRestockModal = signal(false);
+  public restockItem = signal<Item | null>(null);
+  public restockItems = signal<Item[]>([]);
+  public restockAmount = signal<number>(1);
+  public restockLocationId = signal<number | null>(null);
+  public restockExpirationDate = signal<string>('');
+  public isRestocking = signal(false);
+
   public viewMode: 'table' | 'grid' = 'table';
   public sortDirection: 'asc' | 'desc' = 'asc';
 
@@ -666,24 +675,116 @@ export class InventoryComponent implements OnInit {
     });
   }
 
-  public onQuickRestockItem(item: Item, event?: Event): void {
+  public openRestockDialog(item: Item, event?: Event): void {
     if (event) {
       event.stopPropagation();
     }
-    const newQty = item.quantity > 0 ? item.quantity + 1 : 1;
-    const updatedItem = { ...item, quantity: newQty, purchaseDate: new Date() };
-    this.inventoryService.updateItem(updatedItem).subscribe({
-      next: () => {
+    this.restockItem.set(item);
+    this.restockItems.set([item]);
+    this.restockAmount.set(1);
+    this.restockLocationId.set(item.location.id);
+    this.restockExpirationDate.set(
+      item.expirationDate ? new Date(item.expirationDate).toISOString().substring(0, 10) : '',
+    );
+    this.displayRestockModal.set(true);
+  }
+
+  public onQuickRestockItem(item: Item, event?: Event): void {
+    this.openRestockDialog(item, event);
+  }
+
+  public setRestockExpiryDays(days: number): void {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    this.restockExpirationDate.set(d.toISOString().substring(0, 10));
+  }
+
+  public clearRestockExpiry(): void {
+    this.restockExpirationDate.set('');
+  }
+
+  public onConfirmRestock(): void {
+    const items =
+      this.restockItems().length > 0
+        ? this.restockItems()
+        : this.restockItem()
+          ? [this.restockItem()!]
+          : [];
+
+    if (items.length === 0) return;
+
+    const amount = Number(this.restockAmount());
+    if (isNaN(amount) || amount <= 0) {
+      this.toastService.showError(
+        'Please enter a valid restock quantity greater than 0.',
+        'Validation Error',
+      );
+      return;
+    }
+
+    const locId = Number(this.restockLocationId() || 0);
+    const selectedLocation = locId > 0 ? this.locations.find((l) => l.id === locId) : undefined;
+
+    let expDate: Date | undefined = undefined;
+    const hasExpDateInput = !!this.restockExpirationDate();
+    if (hasExpDateInput) {
+      expDate = new Date(this.restockExpirationDate() + 'T00:00:00');
+    }
+
+    this.isRestocking.set(true);
+    let completed = 0;
+    let failed = 0;
+
+    items.forEach((item) => {
+      const currentQty = item.quantity > 0 ? Number(item.quantity) : 0;
+      const updatedItem: Item = {
+        ...item,
+        quantity: currentQty + amount,
+        purchaseDate: new Date(), // Always update purchase date on restock!
+        location: selectedLocation || item.location,
+        expirationDate: hasExpDateInput ? expDate : item.expirationDate,
+      };
+
+      this.inventoryService.updateItem(updatedItem).subscribe({
+        next: () => {
+          completed++;
+          if (completed + failed === items.length) {
+            this.finishRestock(completed, failed, amount, items);
+          }
+        },
+        error: (err) => {
+          failed++;
+          console.error('Restock error for item', item.id, err);
+          if (completed + failed === items.length) {
+            this.finishRestock(completed, failed, amount, items);
+          }
+        },
+      });
+    });
+  }
+
+  private finishRestock(completed: number, failed: number, amount: number, items: Item[]): void {
+    this.isRestocking.set(false);
+    this.displayRestockModal.set(false);
+
+    if (completed > 0) {
+      if (items.length === 1) {
         this.toastService.showSuccess(
-          `Restocked "${item.name}" (${newQty} ${item.unit.shortName}).`,
+          `Restocked "${items[0].name}" (+${amount} ${items[0].unit.shortName || items[0].unit.name}). Purchase date updated.`,
           'Item Restocked',
         );
-        this.initParameters();
-      },
-      error: () => {
-        this.toastService.showError(`Failed to restock "${item.name}".`, 'Error');
-      },
-    });
+      } else {
+        this.toastService.showSuccess(
+          `Restocked ${completed} item(s). Purchase date updated.`,
+          'Bulk Action Complete',
+        );
+      }
+      this.clearSelection();
+      this.initParameters();
+    }
+    if (failed > 0) {
+      this.toastService.showError(`Failed to restock ${failed} item(s).`, 'Error');
+    }
   }
 
   public onAddToShoppingList(item: Item, event?: Event): void {
@@ -750,23 +851,25 @@ export class InventoryComponent implements OnInit {
     if (ids.length === 0) return;
 
     const selectedItems = this.items.filter((item) => ids.includes(item.id));
-    let completed = 0;
-    selectedItems.forEach((item) => {
-      const updatedItem = { ...item, quantity: item.quantity > 0 ? item.quantity + 1 : 1 };
-      this.inventoryService.updateItem(updatedItem).subscribe({
-        next: () => {
-          completed++;
-          if (completed === selectedItems.length) {
-            this.toastService.showSuccess(
-              `Restocked ${completed} item(s).`,
-              'Bulk Action Complete',
-            );
-            this.clearSelection();
-            this.initParameters();
-          }
-        },
-      });
-    });
+    this.restockItems.set(selectedItems);
+    this.restockAmount.set(1);
+    this.restockExpirationDate.set('');
+
+    if (selectedItems.length === 1) {
+      const singleItem = selectedItems[0];
+      this.restockItem.set(singleItem);
+      this.restockLocationId.set(singleItem.location.id);
+      this.restockExpirationDate.set(
+        singleItem.expirationDate
+          ? new Date(singleItem.expirationDate).toISOString().substring(0, 10)
+          : '',
+      );
+    } else {
+      this.restockItem.set(null);
+      this.restockLocationId.set(0);
+    }
+
+    this.displayRestockModal.set(true);
   }
 
   public onBulkDelete(): void {
