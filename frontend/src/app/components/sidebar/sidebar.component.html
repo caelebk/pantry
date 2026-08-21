@@ -169,12 +169,6 @@
 
           <div class="my-1.5 border-t border-surface-200/70 dark:border-white/10"></div>
 
-          <!-- User Email Header -->
-          <div
-            class="px-2.5 py-1 text-[11px] font-medium text-surface-400 dark:text-surface-400 truncate">
-            {{ authService.currentUser()?.email || 'Workspaces' }}
-          </div>
-
           <!-- Workspaces List -->
           @for (k of authService.userKitchens(); track k.id) {
             <button
