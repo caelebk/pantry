@@ -279,7 +279,7 @@ import { ToastService } from '../../../services/toast.service';
               }
             </div>
 
-            <!-- Password Field -->
+            <!-- Password Field with Strength Meter -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
                 <label
@@ -309,12 +309,114 @@ import { ToastService } from '../../../services/toast.service';
                     "></i>
                 </button>
               </div>
+
+              <!-- Real-time Password Strength Criteria Indicator -->
+              @if (passwordValue()) {
+                <div
+                  class="mt-2.5 p-3 rounded-xl bg-surface-100/80 dark:bg-surface-800/60 border border-surface-200/80 dark:border-surface-700/80 space-y-2">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-bold text-surface-600 dark:text-surface-300"
+                      >Password Strength:</span
+                    >
+                    <span
+                      class="font-extrabold uppercase"
+                      [ngClass]="{
+                        'text-rose-500': passwordScore() <= 2,
+                        'text-amber-500': passwordScore() === 3 || passwordScore() === 4,
+                        'text-emerald-500': passwordScore() === 5,
+                      }">
+                      {{ passwordScore() <= 2 ? 'Weak' : passwordScore() <= 4 ? 'Good' : 'Strong' }}
+                    </span>
+                  </div>
+                  <!-- Progress bar -->
+                  <div
+                    class="w-full h-1.5 rounded-full bg-surface-200 dark:bg-surface-700 overflow-hidden">
+                    <div
+                      class="h-full transition-all duration-300 rounded-full"
+                      [style.width.%]="(passwordScore() / 5) * 100"
+                      [ngClass]="{
+                        'bg-rose-500': passwordScore() <= 2,
+                        'bg-amber-500': passwordScore() === 3 || passwordScore() === 4,
+                        'bg-emerald-500': passwordScore() === 5,
+                      }"></div>
+                  </div>
+                  <!-- Individual criteria -->
+                  <div class="grid grid-cols-2 gap-1 pt-1 text-[10px]">
+                    <div
+                      class="flex items-center gap-1.5"
+                      [ngClass]="
+                        hasMinLength()
+                          ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                          : 'text-surface-400'
+                      ">
+                      <i
+                        [class]="
+                          hasMinLength() ? 'pi pi-check text-[10px]' : 'pi pi-circle text-[8px]'
+                        "></i>
+                      <span>8+ Characters</span>
+                    </div>
+                    <div
+                      class="flex items-center gap-1.5"
+                      [ngClass]="
+                        hasUpperCase()
+                          ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                          : 'text-surface-400'
+                      ">
+                      <i
+                        [class]="
+                          hasUpperCase() ? 'pi pi-check text-[10px]' : 'pi pi-circle text-[8px]'
+                        "></i>
+                      <span>Uppercase (A-Z)</span>
+                    </div>
+                    <div
+                      class="flex items-center gap-1.5"
+                      [ngClass]="
+                        hasLowerCase()
+                          ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                          : 'text-surface-400'
+                      ">
+                      <i
+                        [class]="
+                          hasLowerCase() ? 'pi pi-check text-[10px]' : 'pi pi-circle text-[8px]'
+                        "></i>
+                      <span>Lowercase (a-z)</span>
+                    </div>
+                    <div
+                      class="flex items-center gap-1.5"
+                      [ngClass]="
+                        hasNumber()
+                          ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                          : 'text-surface-400'
+                      ">
+                      <i
+                        [class]="
+                          hasNumber() ? 'pi pi-check text-[10px]' : 'pi pi-circle text-[8px]'
+                        "></i>
+                      <span>Number (0-9)</span>
+                    </div>
+                    <div
+                      class="flex items-center gap-1.5 col-span-2"
+                      [ngClass]="
+                        hasSpecial()
+                          ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                          : 'text-surface-400'
+                      ">
+                      <i
+                        [class]="
+                          hasSpecial() ? 'pi pi-check text-[10px]' : 'pi pi-circle text-[8px]'
+                        "></i>
+                      <span>Special Character (!@#$%^&*...)</span>
+                    </div>
+                  </div>
+                </div>
+              }
+
               @if (signupForm.get('password')?.touched && signupForm.get('password')?.invalid) {
                 <div
                   id="password-error"
                   role="alert"
                   class="text-xs text-rose-500 dark:text-rose-400 mt-1">
-                  Password must be at least 8 characters.
+                  Please meet all password requirements above.
                 </div>
               }
             </div>
@@ -322,8 +424,8 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Submit Button -->
             <button
               type="submit"
-              [disabled]="isSubmitting()"
-              class="w-full h-[42px] rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 active:scale-[0.99] text-white font-semibold text-sm shadow-md shadow-orange-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 cursor-pointer">
+              [disabled]="isSubmitting() || signupForm.invalid"
+              class="w-full h-[42px] rounded-xl bg-primary-600 hover:bg-primary-700 active:scale-[0.99] text-white font-semibold text-sm shadow-md shadow-primary-600/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 cursor-pointer">
               @if (isSubmitting()) {
                 <i class="pi pi-spin pi-spinner text-sm"></i>
                 <span>Creating Account...</span>
@@ -358,12 +460,62 @@ export class SignupComponent implements OnInit {
   readonly isDarkMode = signal(true);
   readonly errorMessage = signal<string | null>(null);
 
+  // Strong password regex validator requiring uppercase, lowercase, number, special char, min 8
+  private static strongPasswordValidator(control: import('@angular/forms').AbstractControl) {
+    const val = control.value || '';
+    if (!val) return null;
+    const hasUpper = /[A-Z]/.test(val);
+    const hasLower = /[a-z]/.test(val);
+    const hasNum = /[0-9]/.test(val);
+    const hasSpecial = /[^a-zA-Z0-9\s]/.test(val);
+    const hasMinLength = val.length >= 8;
+
+    if (hasUpper && hasLower && hasNum && hasSpecial && hasMinLength) {
+      return null;
+    }
+    return { strongPassword: true };
+  }
+
   readonly signupForm = this.fb.group({
     fullName: ['', [Validators.required]],
     username: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]{3,30}$/)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [Validators.required, SignupComponent.strongPasswordValidator]],
   });
+
+  get passwordValue(): () => string {
+    return () => this.signupForm.get('password')?.value || '';
+  }
+
+  hasMinLength(): boolean {
+    return this.passwordValue().length >= 8;
+  }
+
+  hasUpperCase(): boolean {
+    return /[A-Z]/.test(this.passwordValue());
+  }
+
+  hasLowerCase(): boolean {
+    return /[a-z]/.test(this.passwordValue());
+  }
+
+  hasNumber(): boolean {
+    return /[0-9]/.test(this.passwordValue());
+  }
+
+  hasSpecial(): boolean {
+    return /[^a-zA-Z0-9\s]/.test(this.passwordValue());
+  }
+
+  passwordScore(): number {
+    let score = 0;
+    if (this.hasMinLength()) score++;
+    if (this.hasUpperCase()) score++;
+    if (this.hasLowerCase()) score++;
+    if (this.hasNumber()) score++;
+    if (this.hasSpecial()) score++;
+    return score;
+  }
 
   ngOnInit() {
     this.isDarkMode.set(document.documentElement.classList.contains('dark'));

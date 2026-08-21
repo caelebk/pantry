@@ -138,7 +138,31 @@ Deno.test('Auth Routes Integration - Full Authentication & Session Lifecycle', a
     assertEquals(refreshBody.status, 'success');
     assertExists(refreshBody.data.accessToken);
 
-    // 5. POST /api/v1/auth/logout
+    // 5. POST /api/v1/auth/resend-verification
+    const resendRes = await app.request('/api/v1/auth/resend-verification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: testEmail }),
+    });
+    assertEquals(resendRes.status, 200);
+    const resendBody = await resendRes.json();
+    assertEquals(resendBody.status, 'success');
+
+    // Fetch newly issued verification token from DB for test verification
+    const tokenRow = db.prepare(
+      `SELECT token_hash FROM email_verification_tokens WHERE user_id = ? AND used_at IS NULL ORDER BY created_at DESC LIMIT 1;`,
+    ).get(signupBody.data.user.id) as { token_hash: string } | undefined;
+    assertExists(tokenRow);
+
+    // Invalid token check (400)
+    const invalidVerifyRes = await app.request('/api/v1/auth/verify-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: 'invalid-nonexistent-token' }),
+    });
+    assertEquals(invalidVerifyRes.status, 400);
+
+    // 6. POST /api/v1/auth/logout
     const logoutRes = await app.request('/api/v1/auth/logout', {
       method: 'POST',
       headers: {

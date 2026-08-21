@@ -4,23 +4,28 @@ import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { config } from '../config/env.ts';
 import { errorResponse, successResponse } from '../utils/response.ts';
 import {
-  validateChangePasswordRequest,
-  validateLoginRequest,
-  validateSignupRequest,
-  validateUpdateProfileRequest,
-} from '../validators/auth.validator.ts';
-import {
   changeUserPassword,
   getUserProfile,
   loginUser,
   logoutUserSession,
   refreshUserSession,
+  resendEmailVerification,
   signupUser,
   updateUserProfile,
+  verifyUserEmail,
 } from '../services/auth.service.ts';
 import { getUserActiveSessions, revokeAllSessionsForUser } from '../services/session.service.ts';
 import { AuthContextVars, authMiddleware } from '../middleware/auth.ts';
+import { rateLimitMiddleware } from '../middleware/rate-limit.ts';
 import { hashToken } from '../utils/crypto.ts';
+import {
+  validateChangePasswordRequest,
+  validateLoginRequest,
+  validateResendVerificationRequest,
+  validateSignupRequest,
+  validateUpdateProfileRequest,
+  validateVerifyEmailRequest,
+} from '../validators/auth.validator.ts';
 
 export const authRoutes = new Hono<{ Variables: AuthContextVars }>();
 
@@ -45,7 +50,7 @@ function clearRefreshCookie(c: Context) {
 }
 
 // 1. POST /api/v1/auth/signup
-authRoutes.post('/signup', async (c) => {
+authRoutes.post('/signup', rateLimitMiddleware(10, 15), async (c) => {
   try {
     const body = await c.req.json();
     const validation = validateSignupRequest(body);
@@ -76,7 +81,7 @@ authRoutes.post('/signup', async (c) => {
 });
 
 // 2. POST /api/v1/auth/login
-authRoutes.post('/login', async (c) => {
+authRoutes.post('/login', rateLimitMiddleware(5, 15), async (c) => {
   try {
     const body = await c.req.json();
     const validation = validateLoginRequest(body);
@@ -100,8 +105,54 @@ authRoutes.post('/login', async (c) => {
   }
 });
 
-// 3. POST /api/v1/auth/refresh
-authRoutes.post('/refresh', async (c) => {
+// 3. POST /api/v1/auth/verify-email
+authRoutes.post('/verify-email', rateLimitMiddleware(10, 15), async (c) => {
+  try {
+    const body = await c.req.json();
+    const validation = validateVerifyEmailRequest(body);
+    if (!validation.isValid) {
+      return c.json(errorResponse('Validation failed', validation.errors), 400);
+    }
+
+    const result = await verifyUserEmail(body.token);
+    return c.json(successResponse(result, result.message), 200);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Email verification failed';
+    if (msg === 'INVALID_TOKEN') {
+      return c.json(errorResponse('Invalid or unrecognized verification token.'), 400);
+    }
+    if (msg === 'TOKEN_ALREADY_USED') {
+      return c.json(errorResponse('This verification link has already been used.'), 400);
+    }
+    if (msg === 'TOKEN_EXPIRED') {
+      return c.json(
+        errorResponse('Verification link has expired. Please request a new one.'),
+        400,
+      );
+    }
+    return c.json(errorResponse(msg), 500);
+  }
+});
+
+// 4. POST /api/v1/auth/resend-verification
+authRoutes.post('/resend-verification', rateLimitMiddleware(5, 15), async (c) => {
+  try {
+    const body = await c.req.json();
+    const validation = validateResendVerificationRequest(body);
+    if (!validation.isValid) {
+      return c.json(errorResponse('Validation failed', validation.errors), 400);
+    }
+
+    const result = await resendEmailVerification(body.email);
+    return c.json(successResponse(result, result.message), 200);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Failed to resend verification';
+    return c.json(errorResponse(msg), 500);
+  }
+});
+
+// 5. POST /api/v1/auth/refresh
+authRoutes.post('/refresh', rateLimitMiddleware(20, 15), async (c) => {
   const refreshToken = getCookie(c, COOKIE_NAME) || getCookie(c, 'pantry_refresh') ||
     getCookie(c, '__Host-pantry_refresh');
   if (!refreshToken) {
@@ -194,7 +245,7 @@ authRoutes.patch('/me/profile', authMiddleware, async (c) => {
 });
 
 // 7. PUT /api/v1/me/password
-authRoutes.put('/me/password', authMiddleware, async (c) => {
+authRoutes.put('/me/password', authMiddleware, rateLimitMiddleware(5, 15), async (c) => {
   try {
     const user = c.get('user');
     const body = await c.req.json();

@@ -20,7 +20,7 @@ export class SubstitutionService {
    *   2. Same Ingredient Category (broader match)
    * Only returns ingredients that have unexpired ingredient items in stock.
    */
-  getSubstitutions(ingredientId: string): Promise<SubstitutionSuggestion[]> {
+  getSubstitutions(ingredientId: string, kitchenId?: string): Promise<SubstitutionSuggestion[]> {
     const db = getDB();
 
     // 1. Get the source ingredient's group and ingredient category
@@ -39,9 +39,10 @@ export class SubstitutionService {
 
     if (!source) return Promise.resolve([]);
 
-    // 2. Find all OTHER ingredients that have unexpired stock in ingredient_items
+    // 2. Find all OTHER ingredients that have unexpired stock in ingredient_items within active kitchen
     //    Join ingredients -> ingredient_items -> units to compute base quantity
-    const candidates = db.prepare(`
+    const whereKitchen = kitchenId ? 'AND it.kitchen_id = ?' : '';
+    const sql = `
       SELECT
         ing.id as ingredient_id,
         ing.name as ingredient_name,
@@ -55,11 +56,15 @@ export class SubstitutionService {
       JOIN ingredient_groups ig ON ing.ingredient_group_id = ig.id
       LEFT JOIN units u ON it.unit_id = u.id
       WHERE ing.id != ?
+        ${whereKitchen}
         AND (it.expiration_date IS NULL OR datetime(it.expiration_date) >= datetime('now'))
       GROUP BY ing.id
       HAVING available_base_qty > 0
       ORDER BY ing.name
-    `).all(ingredientId) as {
+    `;
+
+    const stmt = db.prepare(sql);
+    const candidates = (kitchenId ? stmt.all(ingredientId, kitchenId) : stmt.all(ingredientId)) as {
       ingredient_id: string;
       ingredient_name: string;
       ingredient_group_id: number;

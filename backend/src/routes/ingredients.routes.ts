@@ -205,7 +205,7 @@ ingredients.get('/:id/substitutions', async (c: Context) => {
       return c.json(errorResponse(IngredientMessages.NOT_FOUND), HttpStatusCode.NOT_FOUND);
     }
 
-    const substitutions = await substitutionService.getSubstitutions(id);
+    const substitutions = await substitutionService.getSubstitutions(id, activeKitchenId);
     return c.json(successResponse(substitutions), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(

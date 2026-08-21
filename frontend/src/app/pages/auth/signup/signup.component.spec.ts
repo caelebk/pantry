@@ -57,20 +57,36 @@ describe('SignupComponent', () => {
     expect(mockAuthService.signup).not.toHaveBeenCalled();
   });
 
+  it('should invalidate form if password is weak', () => {
+    component.signupForm.setValue({
+      fullName: 'Gordon Ramsey',
+      username: 'gordon_ramsay',
+      email: 'gordon@pantry.app',
+      password: 'weakpassword',
+    });
+    expect(component.signupForm.valid).toBe(false);
+    expect(component.hasSpecial()).toBe(false);
+    expect(component.hasUpperCase()).toBe(false);
+    expect(component.hasNumber()).toBe(false);
+  });
+
   it('should submit valid registration and navigate on success', () => {
     component.signupForm.setValue({
       fullName: 'Gordon Ramsey',
       username: 'gordon_ramsay',
       email: 'gordon@pantry.app',
-      password: 'securepassword123',
+      password: 'StrongPassword123!',
     });
+    expect(component.signupForm.valid).toBe(true);
+    expect(component.passwordScore()).toBe(5);
+
     component.onSubmit();
 
     expect(mockAuthService.signup).toHaveBeenCalledWith({
       fullName: 'Gordon Ramsey',
       username: 'gordon_ramsay',
       email: 'gordon@pantry.app',
-      password: 'securepassword123',
+      password: 'StrongPassword123!',
     });
     expect(mockToastService.showSuccess).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/']);
@@ -84,7 +100,7 @@ describe('SignupComponent', () => {
       fullName: 'Gordon Ramsey',
       username: 'gordon_ramsay',
       email: 'gordon@pantry.app',
-      password: 'securepassword123',
+      password: 'StrongPassword123!',
     });
     component.onSubmit();
 

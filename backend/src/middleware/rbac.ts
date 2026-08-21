@@ -10,6 +10,17 @@ export function requireKitchenRole(allowedRoles: ('owner' | 'editor' | 'viewer')
       return c.json(errorResponse('Authentication required.'), 401);
     }
 
+    if (user.globalRole === 'admin') {
+      await next();
+      return;
+    }
+
+    const contextRole = c.get('kitchenRole');
+    if (contextRole && allowedRoles.includes(contextRole)) {
+      await next();
+      return;
+    }
+
     // Determine target kitchen ID from path parameter :kitchenId or header X-Kitchen-Id or primaryKitchenId
     const paramKitchenId = c.req.param('kitchenId');
     const headerKitchenId = c.req.header('X-Kitchen-Id');
@@ -22,7 +33,10 @@ export function requireKitchenRole(allowedRoles: ('owner' | 'editor' | 'viewer')
 
     const role = getUserKitchenRole(user.userId, kitchenId);
     if (!role || !allowedRoles.includes(role)) {
-      return c.json(errorResponse('Insufficient kitchen permissions for this workspace.'), 403);
+      return c.json(
+        errorResponse('Insufficient kitchen permissions for this workspace action.'),
+        403,
+      );
     }
 
     await next();

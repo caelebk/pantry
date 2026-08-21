@@ -26,14 +26,20 @@ export function startCronJobs() {
       const deletedSessions = typeof sessionResult === 'number' ? sessionResult : 0;
       console.log(`Deleted ${deletedSessions} expired/revoked sessions.`);
 
-      // 2. Delete old rate limit tracking rows (older than 1 hour)
+      // 2. Delete expired rate limit tracking rows
       const rateLimitResult = db.prepare(`
         DELETE FROM auth_rate_limits
-        WHERE window_start < datetime('now', '-1 hour');
+        WHERE expires_at <= datetime('now');
       `).run();
 
       const deletedRateLimits = typeof rateLimitResult === 'number' ? rateLimitResult : 0;
       console.log(`Deleted ${deletedRateLimits} old rate limit records.`);
+
+      // 3. Delete expired or used email verification tokens older than 7 days
+      db.prepare(`
+        DELETE FROM email_verification_tokens
+        WHERE expires_at < datetime('now', '-7 days') OR used_at < datetime('now', '-7 days');
+      `).run();
 
       db.exec('COMMIT');
     } catch (error) {

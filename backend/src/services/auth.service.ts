@@ -3,6 +3,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
   hashPassword,
+  hashToken,
   JWTPayload,
   verifyPassword,
 } from '../utils/crypto.ts';
@@ -140,9 +141,21 @@ export async function signupUser(
       themePreference: 'system',
       locale: 'en',
       primaryKitchenId: kitchen.id,
+      emailVerified: false,
       createdAt,
       updatedAt,
     };
+
+    // Create Email Verification Token
+    const verificationToken = generateRefreshToken();
+    const tokenHash = await hashToken(verificationToken);
+    const insertTokenQuery = `
+      INSERT INTO email_verification_tokens (id, user_id, token_hash, expires_at, created_at)
+      VALUES (hex(randomblob(16)), ?, ?, datetime('now', '+24 hours'), datetime('now'));
+    `;
+    const tokenStmt = db.prepare(insertTokenQuery);
+    tokenStmt.run(userId, tokenHash);
+    tokenStmt.finalize();
 
     return {
       authResponse: {
@@ -169,7 +182,7 @@ export async function loginUser(
 
   // Find User & Credential (Search either email or username)
   const userQuery = `
-    SELECT u.id, u.email, u.username, u.global_role, c.secret_hash, p.full_name, p.theme_preference, p.locale, u.primary_kitchen_id, u.created_at, u.updated_at
+    SELECT u.id, u.email, u.username, u.global_role, c.secret_hash, p.full_name, p.theme_preference, p.locale, u.primary_kitchen_id, u.email_verified, u.email_verified_at, u.created_at, u.updated_at
     FROM users u
     JOIN credentials c ON u.id = c.user_id AND c.type = 'password'
     JOIN profiles p ON u.id = p.user_id
@@ -196,6 +209,8 @@ export async function loginUser(
     themePref,
     locale,
     primaryKitchenId,
+    emailVerified,
+    emailVerifiedAt,
     createdAt,
     updatedAt,
   ] = rows[0] as [
@@ -208,6 +223,8 @@ export async function loginUser(
     string,
     string,
     string,
+    number,
+    string | null,
     string,
     string,
   ];
@@ -250,6 +267,8 @@ export async function loginUser(
     themePreference: themePref,
     locale,
     primaryKitchenId: activeKitchenId,
+    emailVerified: Boolean(emailVerified),
+    emailVerifiedAt: emailVerifiedAt ?? undefined,
     createdAt,
     updatedAt,
   };
@@ -344,7 +363,7 @@ export async function logoutUserSession(refreshToken: string): Promise<void> {
 export function getUserProfile(userId: string): { user: UserDTO; memberships: KitchenDTO[] } {
   const db = getDB();
   const query = `
-    SELECT u.id, u.email, u.username, u.global_role, p.full_name, p.avatar_url, p.theme_preference, p.locale, u.created_at, u.updated_at, u.primary_kitchen_id
+    SELECT u.id, u.email, u.username, u.global_role, p.full_name, p.avatar_url, p.theme_preference, p.locale, u.created_at, u.updated_at, u.primary_kitchen_id, u.email_verified, u.email_verified_at
     FROM users u
     JOIN profiles p ON u.id = p.user_id
     WHERE u.id = ? AND u.status = 'active';
@@ -370,6 +389,8 @@ export function getUserProfile(userId: string): { user: UserDTO; memberships: Ki
     crAt,
     upAt,
     primaryKitchenId,
+    emailVerified,
+    emailVerifiedAt,
   ] = rows[0] as [
     string,
     string,
@@ -382,6 +403,8 @@ export function getUserProfile(userId: string): { user: UserDTO; memberships: Ki
     string,
     string,
     string,
+    number,
+    string | null,
   ];
 
   const memberships = getUserKitchens(userId);
@@ -397,6 +420,8 @@ export function getUserProfile(userId: string): { user: UserDTO; memberships: Ki
       locale,
       globalRole,
       primaryKitchenId: primaryKitchenId || memberships[0]?.id,
+      emailVerified: Boolean(emailVerified),
+      emailVerifiedAt: emailVerifiedAt ?? undefined,
       createdAt: crAt,
       updatedAt: upAt,
     },
@@ -474,6 +499,10 @@ export async function changeUserPassword(
     throw new Error('INVALID_CURRENT_PASSWORD');
   }
 
+  if (request.currentPassword === request.newPassword) {
+    throw new Error('SAME_AS_CURRENT_PASSWORD');
+  }
+
   const newHash = await hashPassword(request.newPassword);
   const updateQuery = `
     UPDATE credentials
@@ -487,4 +516,101 @@ export async function changeUserPassword(
 
   // Revoke other sessions on password change
   revokeAllSessionsForUser(userId);
+}
+
+export async function verifyUserEmail(
+  token: string,
+): Promise<{ success: boolean; message: string }> {
+  const db = getDB();
+  const tokenHash = await hashToken(token.trim());
+
+  const tokenQuery = `
+    SELECT id, user_id, expires_at, used_at
+    FROM email_verification_tokens
+    WHERE token_hash = ?;
+  `;
+  const stmt = db.prepare(tokenQuery);
+  const rows = stmt.values(tokenHash);
+  stmt.finalize();
+
+  if (rows.length === 0) {
+    throw new Error('INVALID_TOKEN');
+  }
+
+  const [tokenId, userId, expiresAt, usedAt] = rows[0] as [string, string, string, string | null];
+
+  if (usedAt) {
+    throw new Error('TOKEN_ALREADY_USED');
+  }
+
+  if (new Date(expiresAt) < new Date()) {
+    throw new Error('TOKEN_EXPIRED');
+  }
+
+  db.exec('BEGIN TRANSACTION;');
+  try {
+    const markTokenUsed =
+      `UPDATE email_verification_tokens SET used_at = datetime('now') WHERE id = ?;`;
+    const mStmt = db.prepare(markTokenUsed);
+    mStmt.run(tokenId);
+    mStmt.finalize();
+
+    const verifyUser = `
+      UPDATE users
+      SET email_verified = 1, email_verified_at = datetime('now'), updated_at = datetime('now')
+      WHERE id = ?;
+    `;
+    const uStmt = db.prepare(verifyUser);
+    uStmt.run(userId);
+    uStmt.finalize();
+
+    db.exec('COMMIT;');
+    return { success: true, message: 'Email verified successfully.' };
+  } catch (err) {
+    db.exec('ROLLBACK;');
+    throw err;
+  }
+}
+
+export async function resendEmailVerification(
+  email: string,
+): Promise<{ success: boolean; message: string }> {
+  const db = getDB();
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const userQuery =
+    `SELECT id, email_verified FROM users WHERE email_normalized = ? AND status = 'active';`;
+  const stmt = db.prepare(userQuery);
+  const rows = stmt.values(normalizedEmail);
+  stmt.finalize();
+
+  if (rows.length > 0) {
+    const [userId, emailVerified] = rows[0] as [string, number];
+
+    if (!emailVerified) {
+      // Invalidate existing unused tokens
+      const invalidateQuery =
+        `UPDATE email_verification_tokens SET used_at = datetime('now') WHERE user_id = ? AND used_at IS NULL;`;
+      const invStmt = db.prepare(invalidateQuery);
+      invStmt.run(userId);
+      invStmt.finalize();
+
+      // Issue new token
+      const verificationToken = generateRefreshToken();
+      const tokenHash = await hashToken(verificationToken);
+      const insertQuery = `
+        INSERT INTO email_verification_tokens (id, user_id, token_hash, expires_at, created_at)
+        VALUES (hex(randomblob(16)), ?, ?, datetime('now', '+24 hours'), datetime('now'));
+      `;
+      const insStmt = db.prepare(insertQuery);
+      insStmt.run(userId, tokenHash);
+      insStmt.finalize();
+    }
+  }
+
+  // Always return generic success to prevent email enumeration
+  return {
+    success: true,
+    message: 'If an account exists with this email, a verification link has been sent.',
+  };
 }

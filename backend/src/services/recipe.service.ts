@@ -53,10 +53,14 @@ export class RecipeService {
         return Promise.resolve([]);
       }
 
-      // Batch fetch all ingredients for all recipes
+      // Batch fetch ingredients for recipes in this kitchen
       const allIngredients = db.prepare(`
-        SELECT * FROM recipe_ingredients ORDER BY ingredient_order ASC, created_at ASC
-      `).all() as RecipeIngredientRow[];
+        SELECT ri.* 
+        FROM recipe_ingredients ri
+        JOIN recipes r ON ri.recipe_id = r.id
+        WHERE r.kitchen_id = ?
+        ORDER BY ri.ingredient_order ASC, ri.created_at ASC
+      `).all(kitchenId) as RecipeIngredientRow[];
 
       const ingredientsMap = new Map<string, RecipeIngredientDTO[]>();
       for (const r of allIngredients) {
@@ -74,10 +78,14 @@ export class RecipeService {
         ingredientsMap.set(r.recipe_id, list);
       }
 
-      // Batch fetch all steps for all recipes
+      // Batch fetch steps for recipes in this kitchen
       const allSteps = db.prepare(`
-        SELECT * FROM recipe_steps ORDER BY step_number ASC
-      `).all() as RecipeStepRow[];
+        SELECT rs.* 
+        FROM recipe_steps rs
+        JOIN recipes r ON rs.recipe_id = r.id
+        WHERE r.kitchen_id = ?
+        ORDER BY rs.step_number ASC
+      `).all(kitchenId) as RecipeStepRow[];
 
       const stepsMap = new Map<string, RecipeStepDTO[]>();
       for (const s of allSteps) {

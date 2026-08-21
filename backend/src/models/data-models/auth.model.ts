@@ -8,6 +8,8 @@ export interface UserDTO {
   themePreference?: string;
   locale?: string;
   primaryKitchenId?: string;
+  emailVerified?: boolean;
+  emailVerifiedAt?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -24,6 +26,14 @@ export interface LoginRequest {
   username?: string;
   identifier?: string;
   password: string;
+}
+
+export interface VerifyEmailRequest {
+  token: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
 }
 
 export interface AuthResponseDTO {

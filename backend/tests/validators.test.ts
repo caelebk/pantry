@@ -97,3 +97,85 @@ Deno.test('Recipe Validator - isValidUpdateRecipeDTO', () => {
   assertEquals(isValidUpdateRecipeDTO({ name: '' }), false);
   assertEquals(isValidUpdateRecipeDTO({ cookTime: -10 }), false);
 });
+
+import {
+  validateChangePasswordRequest,
+  validatePasswordStrength,
+  validateSignupRequest,
+  validateVerifyEmailRequest,
+} from '../src/validators/auth.validator.ts';
+
+Deno.test('Auth Validator - validatePasswordStrength', () => {
+  // Valid strong passwords
+  assertEquals(validatePasswordStrength('P@ssword123!').isValid, true);
+  assertEquals(validatePasswordStrength('SuperSecure#99').isValid, true);
+
+  // Too short (< 8 chars)
+  assertEquals(validatePasswordStrength('Sh0rt!').isValid, false);
+
+  // Missing uppercase
+  assertEquals(validatePasswordStrength('lowercase123!').isValid, false);
+
+  // Missing lowercase
+  assertEquals(validatePasswordStrength('UPPERCASE123!').isValid, false);
+
+  // Missing number
+  assertEquals(validatePasswordStrength('NoNumbersHere!').isValid, false);
+
+  // Missing special symbol
+  assertEquals(validatePasswordStrength('NoSpecialChars123').isValid, false);
+
+  // Common weak password rejection
+  assertEquals(validatePasswordStrength('password123').isValid, false);
+  assertEquals(validatePasswordStrength('12345678').isValid, false);
+
+  // Contains username or email prefix
+  assertEquals(validatePasswordStrength('ChefGordon123!', 'chefgordon').isValid, false);
+  assertEquals(validatePasswordStrength('ChefGordon123!', 'chefgordon@pantry.app').isValid, false);
+});
+
+Deno.test('Auth Validator - validateSignupRequest & validateVerifyEmailRequest', () => {
+  const validSignup = {
+    email: 'chef@pantry.app',
+    username: 'masterchef',
+    password: 'StrongPassword123!',
+    fullName: 'Master Chef',
+  };
+  assertEquals(validateSignupRequest(validSignup).isValid, true);
+
+  // Weak password in signup rejected
+  assertEquals(
+    validateSignupRequest({ ...validSignup, password: 'weak' }).isValid,
+    false,
+  );
+
+  // Email verification request
+  assertEquals(validateVerifyEmailRequest({ token: 'abcdef123456' }).isValid, true);
+  assertEquals(validateVerifyEmailRequest({ token: '' }).isValid, false);
+  assertEquals(validateVerifyEmailRequest({}).isValid, false);
+
+  // Change password request
+  assertEquals(
+    validateChangePasswordRequest({
+      currentPassword: 'OldPassword123!',
+      newPassword: 'NewStrongPassword456!',
+    }).isValid,
+    true,
+  );
+  // Same current and new password rejected
+  assertEquals(
+    validateChangePasswordRequest({
+      currentPassword: 'SamePassword123!',
+      newPassword: 'SamePassword123!',
+    }).isValid,
+    false,
+  );
+  // Weak new password rejected
+  assertEquals(
+    validateChangePasswordRequest({
+      currentPassword: 'OldPassword123!',
+      newPassword: 'weak',
+    }).isValid,
+    false,
+  );
+});

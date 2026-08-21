@@ -13,7 +13,20 @@ import api from './routes/index.ts';
 const app = new Hono();
 
 // Apply global security and operational middleware
-app.use('*', secureHeaders());
+app.use(
+  '*',
+  secureHeaders({
+    xFrameOptions: 'DENY',
+    xContentTypeOptions: 'nosniff',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    strictTransportSecurity: 'max-age=31536000; includeSubDomains; preload',
+    permissionsPolicy: {
+      camera: [],
+      microphone: [],
+      geolocation: [],
+    },
+  }),
+);
 app.use('*', cors);
 app.use('*', logger);
 app.use(
