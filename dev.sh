@@ -13,6 +13,15 @@ cleanup() {
 # Catch the SIGINT (Ctrl+C) and SIGTERM signals
 trap cleanup SIGINT SIGTERM
 
+echo "🔍 Checking database migrations..."
+if (cd backend && deno task db:migrate); then
+    echo "✅ Database migrations checked and up to date."
+    echo ""
+else
+    echo "❌ Database migration failed! Aborting startup."
+    exit 1
+fi
+
 echo "🚀 Starting backend (Deno) in background..."
 (cd backend && deno task dev) &
 
