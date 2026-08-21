@@ -11,6 +11,12 @@ interface IngredientGroupJoinRow {
   name: string;
   ingredient_category_id: number | null;
   ingredient_category_name: string | null;
+  created_at?: string;
+  updated_at?: string;
+  created_by_username?: string | null;
+  created_by_full_name?: string | null;
+  updated_by_username?: string | null;
+  updated_by_full_name?: string | null;
 }
 
 export class IngredientGroupService {
@@ -21,9 +27,15 @@ export class IngredientGroupService {
     try {
       const db = getDB();
       const rows = db.prepare(`
-        SELECT ig.*, ic.name as ingredient_category_name
+        SELECT ig.*, ic.name as ingredient_category_name,
+               u_c.username as created_by_username, p_c.full_name as created_by_full_name,
+               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name
         FROM ingredient_groups ig
         LEFT JOIN ingredient_categories ic ON ig.ingredient_category_id = ic.id
+        LEFT JOIN users u_c ON ig.created_by = u_c.id
+        LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
+        LEFT JOIN users u_u ON ig.updated_by = u_u.id
+        LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
         WHERE ig.kitchen_id = ?
         ORDER BY ig.name
       `).all(kitchenId) as IngredientGroupJoinRow[];
@@ -41,9 +53,15 @@ export class IngredientGroupService {
     try {
       const db = getDB();
       const row = db.prepare(`
-        SELECT ig.*, ic.name as ingredient_category_name
+        SELECT ig.*, ic.name as ingredient_category_name,
+               u_c.username as created_by_username, p_c.full_name as created_by_full_name,
+               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name
         FROM ingredient_groups ig
         LEFT JOIN ingredient_categories ic ON ig.ingredient_category_id = ic.id
+        LEFT JOIN users u_c ON ig.created_by = u_c.id
+        LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
+        LEFT JOIN users u_u ON ig.updated_by = u_u.id
+        LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
         WHERE ig.id = ? AND ig.kitchen_id = ?
       `).get(id, kitchenId) as IngredientGroupJoinRow | undefined;
       return Promise.resolve(row ? this.mapRowToDTO(row) : null);
@@ -138,12 +156,30 @@ export class IngredientGroupService {
     }
   }
 
-  private mapRowToDTO(row: IngredientGroupJoinRow): IngredientGroupDTO {
+  private mapRowToDTO(
+    row: IngredientGroupJoinRow & { created_by?: string | null; updated_by?: string | null },
+  ): IngredientGroupDTO {
     return {
       id: row.id,
       name: row.name,
       ingredientCategoryId: row.ingredient_category_id ?? undefined,
       ingredientCategoryName: row.ingredient_category_name ?? undefined,
+      createdAt: row.created_at ? new Date(row.created_at) : undefined,
+      updatedAt: row.updated_at ? new Date(row.updated_at) : undefined,
+      createdBy: row.created_by
+        ? {
+          id: row.created_by,
+          username: row.created_by_username || undefined,
+          fullName: row.created_by_full_name || undefined,
+        }
+        : undefined,
+      updatedBy: row.updated_by
+        ? {
+          id: row.updated_by,
+          username: row.updated_by_username || undefined,
+          fullName: row.updated_by_full_name || undefined,
+        }
+        : undefined,
 
       // Legacy Aliases
       nutrientGroupId: row.ingredient_category_id ?? undefined,

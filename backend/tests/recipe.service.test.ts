@@ -7,6 +7,15 @@ function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec('PRAGMA foreign_keys = OFF');
   db.exec(`
+    CREATE TABLE users (
+      id TEXT PRIMARY KEY,
+      email TEXT NOT NULL,
+      username TEXT
+    );
+    CREATE TABLE profiles (
+      user_id TEXT PRIMARY KEY,
+      full_name TEXT NOT NULL
+    );
     CREATE TABLE difficulties (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL

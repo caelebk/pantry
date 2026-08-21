@@ -54,6 +54,45 @@
             {{ recipe.description }}
           </p>
         }
+
+        <!-- Author & Timestamps Metadata -->
+        <div
+          class="flex items-center gap-3 text-xs text-surface-500 dark:text-surface-400 mt-2 flex-wrap">
+          <div class="flex items-center gap-1.5">
+            <i class="pi pi-user text-xs text-primary-500"></i>
+            <span>
+              {{ 'audit.createdBy' | transloco }}
+              <strong class="text-surface-700 dark:text-surface-200">
+                {{
+                  recipe.createdBy?.username
+                    ? '@' + recipe.createdBy?.username
+                    : recipe.createdBy?.fullName || 'Chef'
+                }}
+              </strong>
+            </span>
+            @if (recipe.createdAt) {
+              <span>on {{ recipe.createdAt | date: 'mediumDate' }}</span>
+            }
+          </div>
+
+          @if (recipe.updatedAt && recipe.updatedBy) {
+            <span class="text-surface-300 dark:text-surface-600">•</span>
+            <div class="flex items-center gap-1.5">
+              <i class="pi pi-history text-xs text-surface-400"></i>
+              <span>
+                {{ 'audit.updatedBy' | transloco }}
+                <strong class="text-surface-700 dark:text-surface-200">
+                  {{
+                    recipe.updatedBy.username
+                      ? '@' + recipe.updatedBy.username
+                      : recipe.updatedBy.fullName || 'Chef'
+                  }}
+                </strong>
+                on {{ recipe.updatedAt | date: 'mediumDate' }}
+              </span>
+            </div>
+          }
+        </div>
       </div>
 
       <!-- Action Buttons -->

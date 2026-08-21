@@ -1,6 +1,4 @@
-/**
- * Ingredient Item Data Models
- */
+import { UserAuditDTO } from './audit.model.ts';
 
 // Full response object
 export interface IngredientItemDTO {
@@ -16,6 +14,8 @@ export interface IngredientItemDTO {
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
+  createdBy?: UserAuditDTO;
+  updatedBy?: UserAuditDTO;
 }
 
 // Creation DTO - omit system fields

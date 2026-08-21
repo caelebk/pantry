@@ -1,3 +1,4 @@
+import { UserAudit } from '@models/audit.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
 
@@ -12,6 +13,10 @@ export interface IngredientItem {
   expirationDate?: Date;
   location: Location;
   notes: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  createdBy?: UserAudit;
+  updatedBy?: UserAudit;
 }
 
 export interface IngredientItemDTO {
@@ -25,6 +30,10 @@ export interface IngredientItemDTO {
   expirationDate?: string | null;
   locationId: number;
   notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: UserAudit;
+  updatedBy?: UserAudit;
 }
 
 export interface UpdateIngredientItemDTO {

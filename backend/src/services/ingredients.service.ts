@@ -16,9 +16,23 @@ export class IngredientsService {
   getAllIngredients(kitchenId: string): Promise<IngredientDTO[]> {
     try {
       const db = getDB();
-      const rows = db.prepare('SELECT * FROM ingredients WHERE kitchen_id = ?').all(
-        kitchenId,
-      ) as IngredientRow[];
+      const rows = db.prepare(`
+        SELECT i.*,
+               u_c.username as created_by_username, p_c.full_name as created_by_full_name,
+               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name
+        FROM ingredients i
+        LEFT JOIN users u_c ON i.created_by = u_c.id
+        LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
+        LEFT JOIN users u_u ON i.updated_by = u_u.id
+        LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
+        WHERE i.kitchen_id = ?
+        ORDER BY i.name ASC
+      `).all(kitchenId) as (IngredientRow & {
+        created_by_username?: string | null;
+        created_by_full_name?: string | null;
+        updated_by_username?: string | null;
+        updated_by_full_name?: string | null;
+      })[];
       return Promise.resolve(rows.map(this.mapIngredientRowToIngredient));
     } catch (error: unknown) {
       console.error('Error finding ingredients:', error);
@@ -34,11 +48,23 @@ export class IngredientsService {
   getIngredientById(id: string, kitchenId: string): Promise<IngredientDTO | null> {
     try {
       const db = getDB();
-      const row = db.prepare('SELECT * FROM ingredients WHERE id = ? AND kitchen_id = ?').get(
-        id,
-        kitchenId,
-      ) as
-        | IngredientRow
+      const row = db.prepare(`
+        SELECT i.*,
+               u_c.username as created_by_username, p_c.full_name as created_by_full_name,
+               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name
+        FROM ingredients i
+        LEFT JOIN users u_c ON i.created_by = u_c.id
+        LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
+        LEFT JOIN users u_u ON i.updated_by = u_u.id
+        LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
+        WHERE i.id = ? AND i.kitchen_id = ?
+      `).get(id, kitchenId) as
+        | (IngredientRow & {
+          created_by_username?: string | null;
+          created_by_full_name?: string | null;
+          updated_by_username?: string | null;
+          updated_by_full_name?: string | null;
+        })
         | undefined;
       return Promise.resolve(row ? this.mapIngredientRowToIngredient(row) : null);
     } catch (error: unknown) {
@@ -220,7 +246,14 @@ export class IngredientsService {
     }
   }
 
-  private mapIngredientRowToIngredient(row: IngredientRow): IngredientDTO {
+  private mapIngredientRowToIngredient(
+    row: IngredientRow & {
+      created_by_username?: string | null;
+      created_by_full_name?: string | null;
+      updated_by_username?: string | null;
+      updated_by_full_name?: string | null;
+    },
+  ): IngredientDTO {
     const groupId = row.ingredient_group_id ?? row.category_id ?? undefined;
     return {
       id: row.id,
@@ -230,6 +263,20 @@ export class IngredientsService {
       defaultUnitId: row.default_unit_id ? row.default_unit_id : undefined,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
+      createdBy: row.created_by
+        ? {
+          id: row.created_by,
+          username: row.created_by_username || undefined,
+          fullName: row.created_by_full_name || undefined,
+        }
+        : undefined,
+      updatedBy: row.updated_by
+        ? {
+          id: row.updated_by,
+          username: row.updated_by_username || undefined,
+          fullName: row.updated_by_full_name || undefined,
+        }
+        : undefined,
     };
   }
 }

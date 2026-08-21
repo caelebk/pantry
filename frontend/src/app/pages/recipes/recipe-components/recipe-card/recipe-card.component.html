@@ -53,6 +53,26 @@
             {{ recipe.description }}
           </p>
         }
+
+        <!-- Creator & Timestamp Metadata -->
+        <div
+          class="flex items-center gap-1.5 text-[11px] text-surface-400 dark:text-surface-500 pt-0.5">
+          <i class="pi pi-user text-[10px]"></i>
+          <span>
+            by
+            <span class="font-medium text-surface-600 dark:text-surface-300">
+              {{
+                recipe.createdBy?.username
+                  ? '@' + recipe.createdBy?.username
+                  : recipe.createdBy?.fullName || 'Chef'
+              }}
+            </span>
+          </span>
+          @if (recipe.createdAt) {
+            <span>•</span>
+            <span>{{ recipe.createdAt | date: 'mediumDate' }}</span>
+          }
+        </div>
       </div>
 
       <!-- Action Buttons: Delete -->

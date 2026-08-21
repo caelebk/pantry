@@ -19,6 +19,13 @@ export interface ShoppingListItemRow {
   source: string;
   recipe_name: string | null;
   created_at: string;
+  updated_at?: string;
+  created_by?: string | null;
+  updated_by?: string | null;
+  created_by_username?: string | null;
+  created_by_full_name?: string | null;
+  updated_by_username?: string | null;
+  updated_by_full_name?: string | null;
   ingredient_name?: string | null;
   ingredient_group_name?: string | null;
   ingredient_category_name?: string | null;
@@ -264,22 +271,40 @@ export class ShoppingListBackendService {
       source: (row.source as 'low_stock' | 'recipe_plan' | 'manual') || 'manual',
       recipeName: row.recipe_name || undefined,
       createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      createdBy: row.created_by
+        ? {
+          id: row.created_by,
+          username: row.created_by_username || undefined,
+          fullName: row.created_by_full_name || undefined,
+        }
+        : undefined,
+      updatedBy: row.updated_by
+        ? {
+          id: row.updated_by,
+          username: row.updated_by_username || undefined,
+          fullName: row.updated_by_full_name || undefined,
+        }
+        : undefined,
     };
   }
 
   private selectSql(predicate: string): string {
-    if (!this.supportsLinkColumns()) {
-      return `SELECT sli.* FROM shopping_list_items sli ${predicate}`;
-    }
     return `SELECT sli.*, i.name AS ingredient_name, ig.name AS ingredient_group_name,
       ic.name AS ingredient_category_name, u.short_name AS ingredient_unit_short_name,
-      s.name AS canonical_store_name
+      s.name AS canonical_store_name,
+      u_c.username AS created_by_username, p_c.full_name AS created_by_full_name,
+      u_u.username AS updated_by_username, p_u.full_name AS updated_by_full_name
       FROM shopping_list_items sli
       LEFT JOIN ingredients i ON i.id = sli.ingredient_id
       LEFT JOIN ingredient_groups ig ON ig.id = i.ingredient_group_id
       LEFT JOIN ingredient_categories ic ON ic.id = ig.ingredient_category_id
       LEFT JOIN units u ON u.id = i.default_unit_id
       LEFT JOIN stores s ON s.id = sli.store_id
+      LEFT JOIN users u_c ON sli.created_by = u_c.id
+      LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
+      LEFT JOIN users u_u ON sli.updated_by = u_u.id
+      LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
       ${predicate}`;
   }
 

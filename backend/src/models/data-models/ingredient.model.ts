@@ -1,6 +1,4 @@
-/**
- * Ingredient Data Models
- */
+import { UserAuditDTO } from './audit.model.ts';
 
 // Full response object
 export interface IngredientDTO {
@@ -12,6 +10,8 @@ export interface IngredientDTO {
   defaultUnitId?: number;
   createdAt?: Date;
   updatedAt?: Date;
+  createdBy?: UserAuditDTO;
+  updatedBy?: UserAuditDTO;
 }
 
 // Creation DTO - omit system fields

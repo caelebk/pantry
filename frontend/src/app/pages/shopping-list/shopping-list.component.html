@@ -377,14 +377,34 @@
 
                   <!-- Item Name Column -->
                   <td class="py-2.5 px-4 font-bold text-surface-900 dark:text-white">
-                    <div class="flex items-center gap-2">
-                      <span
-                        [class.line-through]="item.checked"
-                        [class.text-surface-400]="item.checked"
-                        [class.dark:text-surface-500]="item.checked"
-                        class="truncate max-w-[180px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                        {{ item.name }}
-                      </span>
+                    <div class="space-y-0.5">
+                      <div class="flex items-center gap-2">
+                        <span
+                          [class.line-through]="item.checked"
+                          [class.text-surface-400]="item.checked"
+                          [class.dark:text-surface-500]="item.checked"
+                          class="truncate max-w-[180px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                          {{ item.name }}
+                        </span>
+                      </div>
+                      @if (item.createdBy?.username || item.createdBy?.fullName) {
+                        <div
+                          class="text-[10px] font-normal text-surface-400 dark:text-surface-500 flex items-center gap-1">
+                          <i class="pi pi-user text-[9px]"></i>
+                          <span
+                            >Added by
+                            {{
+                              item.createdBy?.username
+                                ? '@' + item.createdBy?.username
+                                : item.createdBy?.fullName
+                            }}</span
+                          >
+                          @if (item.createdAt) {
+                            <span>•</span>
+                            <span>{{ item.createdAt | date: 'shortDate' }}</span>
+                          }
+                        </div>
+                      }
                     </div>
                   </td>
 

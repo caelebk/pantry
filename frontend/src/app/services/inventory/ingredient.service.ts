@@ -52,6 +52,8 @@ export class IngredientService {
               defaultUnit: dto.defaultUnitId ? unitMap.get(dto.defaultUnitId) : undefined,
               createdAt: dto.createdAt ? new Date(dto.createdAt) : undefined,
               updatedAt: dto.updatedAt ? new Date(dto.updatedAt) : undefined,
+              createdBy: dto.createdBy,
+              updatedBy: dto.updatedBy,
             };
           });
         }),

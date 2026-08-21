@@ -6,8 +6,45 @@ import { shoppingListBackendService } from '../src/services/shopping-list.servic
 function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec(`
+    CREATE TABLE users (
+      id TEXT PRIMARY KEY,
+      email TEXT NOT NULL,
+      username TEXT
+    );
+    CREATE TABLE profiles (
+      user_id TEXT PRIMARY KEY,
+      full_name TEXT NOT NULL
+    );
+    CREATE TABLE ingredient_categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL
+    );
+    CREATE TABLE ingredient_groups (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      ingredient_category_id INTEGER
+    );
+    CREATE TABLE units (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      short_name TEXT NOT NULL
+    );
+    CREATE TABLE ingredients (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      ingredient_group_id INTEGER,
+      default_unit_id INTEGER
+    );
+    CREATE TABLE stores (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      name_normalized TEXT NOT NULL,
+      kitchen_id TEXT NOT NULL
+    );
     CREATE TABLE shopping_list_items (
       id TEXT PRIMARY KEY,
+      ingredient_id TEXT,
+      store_id TEXT,
       name TEXT NOT NULL,
       category TEXT NOT NULL DEFAULT 'General',
       quantity REAL NOT NULL DEFAULT 1,
@@ -20,8 +57,9 @@ function createTestDB(): Database {
       kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
       created_by TEXT,
       updated_by TEXT,
-      created_at TEXT DEFAULT (datetime('now'))
-    )
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
   `);
   return db;
 }

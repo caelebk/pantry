@@ -18,7 +18,7 @@
       "morning": "Good morning",
       "afternoon": "Good afternoon",
       "evening": "Good evening",
-      "chef": "Chef 👋"
+      "chef": "Chef"
     },
     "hero": {
       "freshness": "Freshness Index",
@@ -394,6 +394,10 @@
     "signup": "Create Account",
     "logout": "Log Out",
     "email": "Email Address",
+    "username": "Username",
+    "emailOrUsername": "Email or Username",
+    "emailOrUsernamePlaceholder": "chef@pantry.app or headchef",
+    "loginHint": "Tip: You can log in using either your email address or your username.",
     "password": "Password",
     "fullName": "Full Name",
     "rememberMe": "Keep me logged in",
@@ -403,14 +407,25 @@
     "signUpNow": "Sign Up",
     "signInNow": "Sign In",
     "welcomeBack": "Welcome Back",
-    "welcomeSubtitle": "Sign in to access your kitchen workspace",
+    "welcomeSubtitle": "Sign in with your email or username to access your workspace",
     "createAccountTitle": "Create Account",
     "createAccountSubtitle": "Get started with your kitchen workspace"
+  },
+  "audit": {
+    "createdBy": "Created by",
+    "updatedBy": "Updated by",
+    "addedBy": "Added by",
+    "by": "by",
+    "justNow": "just now",
+    "edited": "Edited",
+    "created": "Created",
+    "lastUpdated": "Last updated"
   },
   "profile": {
     "title": "Chef Profile & Account Settings",
     "subtitle": "Manage your personal details, theme preferences, and active device sessions",
     "personalInfo": "Personal Information",
+    "username": "Username",
     "themePreferences": "Theme & Language",
     "activeSessions": "Active Security Sessions",
     "changePassword": "Security & Password",

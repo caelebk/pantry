@@ -1,3 +1,5 @@
+import { UserAudit } from '@models/audit.model';
+
 export interface ShoppingItem {
   id: string;
   ingredientId?: string;
@@ -11,6 +13,10 @@ export interface ShoppingItem {
   storeId?: string;
   source?: 'manual' | 'low_stock' | 'recipe_plan';
   recipeName?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: UserAudit;
+  updatedBy?: UserAudit;
 }
 
 export interface AddShoppingItemDTO {

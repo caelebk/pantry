@@ -9,4 +9,6 @@ export interface IngredientRow {
   default_unit_id: number | null;
   created_at: string;
   updated_at: string;
+  created_by: string | null;
+  updated_by: string | null;
 }

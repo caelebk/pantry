@@ -1,12 +1,14 @@
-/**
- * Ingredient Group Data Models
- */
+import { UserAuditDTO } from './audit.model.ts';
 
 export interface IngredientGroupDTO {
   id: number;
   name: string;
   ingredientCategoryId?: number;
   ingredientCategoryName?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  createdBy?: UserAuditDTO;
+  updatedBy?: UserAuditDTO;
 
   // Legacy Aliases
   nutrientGroupId?: number;

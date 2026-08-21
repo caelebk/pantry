@@ -25,9 +25,23 @@ export class IngredientItemService {
   getAllIngredientItems(kitchenId: string): Promise<IngredientItemDTO[]> {
     try {
       const db = getDB();
-      const rows = db.prepare(
-        'SELECT * FROM ingredient_items WHERE kitchen_id = ? ORDER BY created_at DESC',
-      ).all(kitchenId) as IngredientItemRow[];
+      const rows = db.prepare(`
+        SELECT ii.*,
+               u_c.username as created_by_username, p_c.full_name as created_by_full_name,
+               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name
+        FROM ingredient_items ii
+        LEFT JOIN users u_c ON ii.created_by = u_c.id
+        LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
+        LEFT JOIN users u_u ON ii.updated_by = u_u.id
+        LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
+        WHERE ii.kitchen_id = ?
+        ORDER BY ii.created_at DESC
+      `).all(kitchenId) as (IngredientItemRow & {
+        created_by_username?: string | null;
+        created_by_full_name?: string | null;
+        updated_by_username?: string | null;
+        updated_by_full_name?: string | null;
+      })[];
       return Promise.resolve(rows.map(this.mapItemRowToItem));
     } catch (error: unknown) {
       console.error('Error fetching all ingredient items:', error);
@@ -44,11 +58,23 @@ export class IngredientItemService {
     }
     try {
       const db = getDB();
-      const row = db.prepare('SELECT * FROM ingredient_items WHERE id = ? AND kitchen_id = ?').get(
-        id,
-        kitchenId,
-      ) as
-        | IngredientItemRow
+      const row = db.prepare(`
+        SELECT ii.*,
+               u_c.username as created_by_username, p_c.full_name as created_by_full_name,
+               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name
+        FROM ingredient_items ii
+        LEFT JOIN users u_c ON ii.created_by = u_c.id
+        LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
+        LEFT JOIN users u_u ON ii.updated_by = u_u.id
+        LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
+        WHERE ii.id = ? AND ii.kitchen_id = ?
+      `).get(id, kitchenId) as
+        | (IngredientItemRow & {
+          created_by_username?: string | null;
+          created_by_full_name?: string | null;
+          updated_by_username?: string | null;
+          updated_by_full_name?: string | null;
+        })
         | undefined;
       return Promise.resolve(row ? this.mapItemRowToItem(row) : null);
     } catch (error: unknown) {
@@ -305,7 +331,14 @@ export class IngredientItemService {
     return Promise.resolve(candidates.sort((a, b) => b.score - a.score));
   }
 
-  private mapItemRowToItem(row: IngredientItemRow): IngredientItemDTO {
+  private mapItemRowToItem(
+    row: IngredientItemRow & {
+      created_by_username?: string | null;
+      created_by_full_name?: string | null;
+      updated_by_username?: string | null;
+      updated_by_full_name?: string | null;
+    },
+  ): IngredientItemDTO {
     return {
       id: row.id,
       ingredientId: row.ingredient_id ? row.ingredient_id : undefined,
@@ -319,6 +352,20 @@ export class IngredientItemService {
       notes: row.notes ? row.notes : undefined,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
+      createdBy: row.created_by
+        ? {
+          id: row.created_by,
+          username: row.created_by_username || undefined,
+          fullName: row.created_by_full_name || undefined,
+        }
+        : undefined,
+      updatedBy: row.updated_by
+        ? {
+          id: row.updated_by,
+          username: row.updated_by_username || undefined,
+          fullName: row.updated_by_full_name || undefined,
+        }
+        : undefined,
     };
   }
 }

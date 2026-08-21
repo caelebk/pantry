@@ -7,6 +7,15 @@ import { ingredientGroupService } from '../src/services/ingredient-group.service
 function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec(`
+    CREATE TABLE users (
+      id TEXT PRIMARY KEY,
+      email TEXT NOT NULL,
+      username TEXT
+    );
+    CREATE TABLE profiles (
+      user_id TEXT PRIMARY KEY,
+      full_name TEXT NOT NULL
+    );
     CREATE TABLE ingredient_categories (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
@@ -19,6 +28,8 @@ function createTestDB(): Database {
       name TEXT NOT NULL,
       ingredient_category_id INTEGER REFERENCES ingredient_categories(id),
       kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
       created_by TEXT,
       updated_by TEXT
     );

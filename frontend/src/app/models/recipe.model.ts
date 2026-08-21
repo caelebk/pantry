@@ -16,6 +16,8 @@ export interface RecipeStepDTO {
   textareaHeight?: number;
 }
 
+import { UserAudit } from '@models/audit.model';
+
 export interface Recipe {
   id: string;
   name: string;
@@ -31,6 +33,8 @@ export interface Recipe {
   steps?: RecipeStepDTO[];
   createdAt?: Date;
   updatedAt?: Date;
+  createdBy?: UserAudit;
+  updatedBy?: UserAudit;
 }
 
 export interface CreateRecipeDTO {

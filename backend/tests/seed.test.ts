@@ -26,6 +26,8 @@ function createFullSchema(db: Database) {
       id TEXT PRIMARY KEY,
       email TEXT NOT NULL UNIQUE,
       email_normalized TEXT NOT NULL UNIQUE,
+      username TEXT,
+      username_normalized TEXT UNIQUE,
       status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'pending_verification')),
       global_role TEXT NOT NULL DEFAULT 'user' CHECK (global_role IN ('user', 'admin')),
       primary_kitchen_id TEXT,

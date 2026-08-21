@@ -28,6 +28,10 @@ export function mapItemDTOToItem(
     expirationDate: itemDTO.expirationDate ? new Date(itemDTO.expirationDate) : undefined,
     location: location,
     notes: itemDTO.notes || '',
+    createdAt: itemDTO.createdAt ? new Date(itemDTO.createdAt) : undefined,
+    updatedAt: itemDTO.updatedAt ? new Date(itemDTO.updatedAt) : undefined,
+    createdBy: itemDTO.createdBy,
+    updatedBy: itemDTO.updatedBy,
   };
 }
 

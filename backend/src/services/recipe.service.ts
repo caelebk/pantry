@@ -30,12 +30,24 @@ export class RecipeService {
     try {
       const db = getDB();
       const rows = db.prepare(`
-          SELECT r.*, d.name as difficulty_name
+          SELECT r.*, d.name as difficulty_name,
+                 u_c.username as created_by_username, p_c.full_name as created_by_full_name,
+                 u_u.username as updated_by_username, p_u.full_name as updated_by_full_name
           FROM recipes r
           LEFT JOIN difficulties d ON r.difficulty_id = d.id
+          LEFT JOIN users u_c ON r.created_by = u_c.id
+          LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
+          LEFT JOIN users u_u ON r.updated_by = u_u.id
+          LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
           WHERE r.kitchen_id = ?
           ORDER BY r.created_at DESC
-        `).all(kitchenId) as (RecipeRow & { difficulty_name: string | null })[];
+        `).all(kitchenId) as (RecipeRow & {
+        difficulty_name: string | null;
+        created_by_username?: string | null;
+        created_by_full_name?: string | null;
+        updated_by_username?: string | null;
+        updated_by_full_name?: string | null;
+      })[];
 
       if (rows.length === 0) {
         return Promise.resolve([]);
@@ -111,11 +123,25 @@ export class RecipeService {
     try {
       const db = getDB();
       const row = db.prepare(`
-        SELECT r.*, d.name as difficulty_name
+        SELECT r.*, d.name as difficulty_name,
+               u_c.username as created_by_username, p_c.full_name as created_by_full_name,
+               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name
         FROM recipes r
         LEFT JOIN difficulties d ON r.difficulty_id = d.id
+        LEFT JOIN users u_c ON r.created_by = u_c.id
+        LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
+        LEFT JOIN users u_u ON r.updated_by = u_u.id
+        LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
         WHERE r.id = ? AND r.kitchen_id = ?
-      `).get(id, kitchenId) as (RecipeRow & { difficulty_name: string | null }) | undefined;
+      `).get(id, kitchenId) as
+        | (RecipeRow & {
+          difficulty_name: string | null;
+          created_by_username?: string | null;
+          created_by_full_name?: string | null;
+          updated_by_username?: string | null;
+          updated_by_full_name?: string | null;
+        })
+        | undefined;
 
       if (!row) return Promise.resolve(null);
 
@@ -445,7 +471,13 @@ export class RecipeService {
   }
 
   private mapRowToDTO(
-    row: RecipeRow & { difficulty_name?: string | null },
+    row: RecipeRow & {
+      difficulty_name?: string | null;
+      created_by_username?: string | null;
+      created_by_full_name?: string | null;
+      updated_by_username?: string | null;
+      updated_by_full_name?: string | null;
+    },
     ingredients: RecipeIngredientDTO[],
     steps: RecipeStepDTO[],
   ): RecipeDTO {
@@ -463,6 +495,20 @@ export class RecipeService {
       steps,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
+      createdBy: row.created_by
+        ? {
+          id: row.created_by,
+          username: row.created_by_username || undefined,
+          fullName: row.created_by_full_name || undefined,
+        }
+        : undefined,
+      updatedBy: row.updated_by
+        ? {
+          id: row.updated_by,
+          username: row.updated_by_username || undefined,
+          fullName: row.updated_by_full_name || undefined,
+        }
+        : undefined,
     };
   }
 }

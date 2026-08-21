@@ -22,6 +22,8 @@ export interface RecipeStepDTO {
   textareaHeight?: number | null;
 }
 
+import { UserAuditDTO } from './audit.model.ts';
+
 export interface RecipeDTO {
   id: string; // UUID
   name: string;
@@ -36,6 +38,8 @@ export interface RecipeDTO {
   steps?: RecipeStepDTO[];
   createdAt: Date;
   updatedAt: Date;
+  createdBy?: UserAuditDTO;
+  updatedBy?: UserAuditDTO;
 }
 
 // Alias Recipe to RecipeDTO for compatibility

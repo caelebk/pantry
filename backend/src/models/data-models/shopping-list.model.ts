@@ -1,3 +1,5 @@
+import { UserAuditDTO } from './audit.model.ts';
+
 export interface ShoppingListItemDTO {
   id: string;
   ingredientId?: string;
@@ -12,6 +14,9 @@ export interface ShoppingListItemDTO {
   source: 'low_stock' | 'recipe_plan' | 'manual';
   recipeName?: string;
   createdAt?: string;
+  updatedAt?: string;
+  createdBy?: UserAuditDTO;
+  updatedBy?: UserAuditDTO;
 }
 
 export interface CreateShoppingListItemDTO {

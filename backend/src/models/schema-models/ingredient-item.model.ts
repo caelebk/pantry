@@ -15,6 +15,8 @@ export interface IngredientItemRow {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  created_by: string | null;
+  updated_by: string | null;
 }
 
 // Legacy Alias

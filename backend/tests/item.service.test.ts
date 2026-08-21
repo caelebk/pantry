@@ -10,6 +10,15 @@ function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec('PRAGMA foreign_keys = OFF');
   db.exec(`
+    CREATE TABLE users (
+      id TEXT PRIMARY KEY,
+      email TEXT NOT NULL,
+      username TEXT
+    );
+    CREATE TABLE profiles (
+      user_id TEXT PRIMARY KEY,
+      full_name TEXT NOT NULL
+    );
     CREATE TABLE ingredients (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -58,12 +67,14 @@ function seedMockItem(db: Database): ItemRow {
     expiration_date: mockDate.toISOString(),
     opened_date: null,
     purchase_date: mockDate.toISOString(),
-    notes: 'Test notes',
+    notes: 'Some notes',
     created_at: mockDate.toISOString(),
     updated_at: mockDate.toISOString(),
+    created_by: null,
+    updated_by: null,
   };
   db.prepare(
-    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, opened_date, purchase_date, notes, created_at, updated_at, created_by, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
   ).run(
     row.id,
     row.ingredient_id,
@@ -77,6 +88,8 @@ function seedMockItem(db: Database): ItemRow {
     row.notes,
     row.created_at,
     row.updated_at,
+    row.created_by,
+    row.updated_by,
   );
   return row;
 }

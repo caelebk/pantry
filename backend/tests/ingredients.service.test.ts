@@ -8,6 +8,15 @@ function createTestDB(): Database {
   const db = new Database(':memory:');
   db.exec('PRAGMA foreign_keys = OFF');
   db.exec(`
+    CREATE TABLE users (
+      id TEXT PRIMARY KEY,
+      email TEXT NOT NULL,
+      username TEXT
+    );
+    CREATE TABLE profiles (
+      user_id TEXT PRIMARY KEY,
+      full_name TEXT NOT NULL
+    );
     CREATE TABLE ingredients (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -40,18 +49,20 @@ function createTestDB(): Database {
   return db;
 }
 
-const mockDate = new Date();
+const _mockDate = new Date();
 const mockId = '123e4567-e89b-12d3-a456-426614174000';
 
 function seedMockIngredient(db: Database): IngredientRow {
   const row: IngredientRow = {
-    id: mockId,
-    name: 'Test Ingredient',
+    id: '123e4567-e89b-12d3-a456-426614174000',
+    name: 'Flour',
     ingredient_group_id: 1,
     category_id: 1,
     default_unit_id: 1,
-    created_at: mockDate.toISOString(),
-    updated_at: mockDate.toISOString(),
+    created_at: '2023-01-01T00:00:00.000Z',
+    updated_at: '2023-01-01T00:00:00.000Z',
+    created_by: null,
+    updated_by: null,
   };
   db.prepare(
     'INSERT INTO ingredients (id, name, ingredient_group_id, default_unit_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',

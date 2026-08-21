@@ -153,8 +153,8 @@ export async function seedDatabase(
       let demoUserId: string | null = null;
       if (seedData.users && seedData.users.length > 0) {
         const insertUser = db.prepare(
-          `INSERT INTO users (id, email, email_normalized, status, global_role, primary_kitchen_id)
-           VALUES (?, ?, ?, 'active', ?, ?)`,
+          `INSERT INTO users (id, email, email_normalized, username, username_normalized, status, global_role, primary_kitchen_id)
+           VALUES (?, ?, ?, ?, ?, 'active', ?, ?)`,
         );
         const insertProfile = db.prepare(
           `INSERT INTO profiles (user_id, full_name, theme_preference, locale)
@@ -173,12 +173,17 @@ export async function seedDatabase(
           const uId = u.id || crypto.randomUUID();
           if (!demoUserId) demoUserId = uId;
           const normalizedEmail = u.email.trim().toLowerCase();
+          const username = (u as { username?: string }).username ||
+            u.email.split('@')[0];
+          const normalizedUsername = username.trim().toLowerCase();
           const hashed = await hashPassword(u.password || 'password123');
 
           insertUser.run(
             uId,
             u.email,
             normalizedEmail,
+            username,
+            normalizedUsername,
             u.globalRole || 'admin',
             DEFAULT_KITCHEN_ID,
           );
