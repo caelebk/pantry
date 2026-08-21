@@ -1301,35 +1301,47 @@ p-inputnumber {
   border-color: rgba(148, 163, 184, 0.2);
 }
 
-/* ── Standardized Progress Bar Track Pill Contract ───────────── */
+/* ── Standardized Minimalist Glass Progress Bar Track Pill ───── */
 .progress-track {
   position: relative;
   width: 100%;
   border-radius: 9999px;
   overflow: hidden;
-  background-color: var(--color-surface-200, #e2e8f0);
-  border: 1px solid rgba(203, 213, 225, 0.8);
-  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  background-color: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.03);
 }
 
 :where(.dark, .dark *) .progress-track {
-  background-color: rgba(30, 41, 59, 0.95);
-  border-color: rgba(71, 85, 105, 0.7);
-  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.25),
+    0 1px 2px rgba(255, 255, 255, 0.02);
 }
 
 .p-progressbar {
   border-radius: 9999px !important;
-  background-color: var(--color-surface-200, #e2e8f0) !important;
-  border: 1px solid rgba(203, 213, 225, 0.8) !important;
-  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.03) !important;
   overflow: hidden !important;
 }
 
 :where(.dark, .dark *) .p-progressbar {
-  background-color: rgba(30, 41, 59, 0.95) !important;
-  border-color: rgba(71, 85, 105, 0.7) !important;
-  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.5) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.25),
+    0 1px 2px rgba(255, 255, 255, 0.02) !important;
 }
 
 /* ── Standardized Button Contract Classes ───────────────────── */

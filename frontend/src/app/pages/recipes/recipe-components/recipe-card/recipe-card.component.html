@@ -144,14 +144,14 @@
             }}%)
           </span>
         </div>
-        <div class="progress-track h-2">
+        <div class="progress-track h-1.5">
           <div
             [class]="
               ingredientStats.isFullyMakeable
-                ? 'bg-emerald-500 h-full rounded-full transition-all duration-500 shadow-xs'
+                ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-full transition-all duration-500 shadow-xs'
                 : ingredientStats.availableCount > 0
-                  ? 'bg-amber-500 h-full rounded-full transition-all duration-500 shadow-xs'
-                  : 'bg-rose-500 h-full rounded-full transition-all duration-500 shadow-xs'
+                  ? 'bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full transition-all duration-500 shadow-xs'
+                  : 'bg-gradient-to-r from-rose-500 to-rose-400 h-full rounded-full transition-all duration-500 shadow-xs'
             "
             [style.width.%]="ingredientStats.percentage"></div>
         </div>

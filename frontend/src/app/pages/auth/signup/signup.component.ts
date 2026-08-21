@@ -329,14 +329,15 @@ import { ToastService } from '../../../services/toast.service';
                     </span>
                   </div>
                   <!-- Progress bar -->
-                  <div class="progress-track h-2">
+                  <div class="progress-track h-1.5">
                     <div
                       class="h-full transition-all duration-300 rounded-full shadow-xs"
                       [style.width.%]="(passwordScore() / 5) * 100"
                       [ngClass]="{
-                        'bg-rose-500': passwordScore() <= 2,
-                        'bg-amber-500': passwordScore() === 3 || passwordScore() === 4,
-                        'bg-emerald-500': passwordScore() === 5,
+                        'bg-gradient-to-r from-rose-500 to-rose-400': passwordScore() <= 2,
+                        'bg-gradient-to-r from-amber-500 to-amber-400':
+                          passwordScore() === 3 || passwordScore() === 4,
+                        'bg-gradient-to-r from-emerald-500 to-emerald-400': passwordScore() === 5,
                       }"></div>
                   </div>
                   <!-- Individual criteria -->
