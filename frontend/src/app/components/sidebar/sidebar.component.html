@@ -104,7 +104,7 @@
     </div>
   </div>
 
-  <!-- Kitchen Workspace Switcher Row -->
+  <!-- Kitchen Workspace Switcher Row (Notion Style) -->
   @if (authService.userKitchens().length > 0) {
     <div class="relative z-30 border-b border-surface-200/50 dark:border-white/10 px-3 py-2">
       <button
@@ -117,18 +117,14 @@
         class="w-full flex items-center justify-between p-2 rounded-xl text-surface-700 dark:text-surface-300 hover:text-surface-950 dark:hover:text-white hover:bg-surface-200/50 dark:hover:bg-white/5 transition-all text-left group/switcher cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40">
         <div class="flex items-center gap-2.5 min-w-0">
           <div
-            class="w-7 h-7 rounded-lg bg-surface-200/70 dark:bg-white/10 text-surface-600 dark:text-surface-200 flex items-center justify-center shrink-0 group-hover/switcher:bg-primary-500/15 group-hover/switcher:text-primary-500 transition-colors">
-            <i class="pi pi-building text-xs"></i>
+            class="w-6 h-6 rounded-md bg-surface-200/80 dark:bg-white/10 text-surface-800 dark:text-surface-200 flex items-center justify-center font-bold text-xs shrink-0 group-hover/switcher:bg-primary-500/15 group-hover/switcher:text-primary-500 transition-colors">
+            {{ (authService.activeKitchen()?.name || 'P').charAt(0).toUpperCase() }}
           </div>
           @if (!isCollapsed()) {
             <div class="truncate">
               <div
                 class="text-xs font-semibold text-surface-900 dark:text-surface-100 truncate leading-tight group-hover/switcher:text-primary-500 transition-colors">
                 {{ authService.activeKitchen()?.name || 'Main Kitchen' }}
-              </div>
-              <div
-                class="text-[10px] text-surface-400 dark:text-surface-500 capitalize truncate leading-tight mt-0.5">
-                {{ authService.activeKitchen()?.role || 'member' }}
               </div>
             </div>
           }
@@ -140,83 +136,85 @@
         }
       </button>
 
-      <!-- Dropdown Floating Kitchen Menu -->
+      <!-- Dropdown Floating Kitchen Menu (Notion Style) -->
       @if (kitchenMenuOpen()) {
         <div
           (click)="$event.stopPropagation()"
-          [class.left-3]="!isCollapsed()"
-          [class.right-3]="!isCollapsed()"
+          [class.left-2]="!isCollapsed()"
+          [class.right-2]="!isCollapsed()"
           [class.left-full]="isCollapsed()"
           [class.top-0]="isCollapsed()"
           [class.ml-2]="isCollapsed()"
-          [class.w-60]="isCollapsed()"
-          class="absolute top-full mt-1.5 p-1.5 bg-white dark:bg-[#131b2e] border border-surface-200/90 dark:border-slate-700/80 rounded-2xl shadow-2xl shadow-slate-950/20 dark:shadow-black/70 z-50 max-h-72 overflow-y-auto space-y-0.5">
-          <div
-            class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-surface-400 dark:text-slate-400 uppercase flex items-center justify-between">
-            <span>Workspaces</span>
-            <span
-              class="text-[9px] px-1.5 py-0.2 rounded-md bg-surface-100 dark:bg-slate-800 text-surface-600 dark:text-slate-300 font-semibold">
-              {{ authService.userKitchens().length }}
-            </span>
+          [class.w-64]="isCollapsed()"
+          class="absolute top-full mt-1 p-1.5 bg-white dark:bg-[#202020] border border-surface-200 dark:border-[#2f2f2f] rounded-xl shadow-2xl shadow-black/50 z-50 max-h-80 overflow-y-auto">
+          <!-- Active Workspace Profile Header -->
+          <div class="px-2.5 py-2 flex items-center gap-2.5">
+            <div
+              class="w-8 h-8 rounded-lg bg-surface-200/80 dark:bg-white/10 text-surface-800 dark:text-surface-100 flex items-center justify-center font-bold text-sm shrink-0">
+              {{ (authService.activeKitchen()?.name || 'P').charAt(0).toUpperCase() }}
+            </div>
+            <div class="min-w-0 flex-1">
+              <div
+                class="text-xs font-semibold text-surface-900 dark:text-surface-100 truncate leading-tight">
+                {{ authService.activeKitchen()?.name || 'Main Kitchen' }}
+              </div>
+              <div
+                class="text-[11px] text-surface-400 dark:text-surface-400 capitalize truncate leading-tight mt-0.5">
+                {{ authService.activeKitchen()?.role || 'Owner' }} ·
+                {{ authService.activeKitchen()?.memberCount || 1 }}
+                {{ authService.activeKitchen()?.memberCount === 1 ? 'member' : 'members' }}
+              </div>
+            </div>
           </div>
 
+          <div class="my-1.5 border-t border-surface-200/70 dark:border-white/10"></div>
+
+          <!-- User Email Header -->
+          <div
+            class="px-2.5 py-1 text-[11px] font-medium text-surface-400 dark:text-surface-400 truncate">
+            {{ authService.currentUser()?.email || 'Workspaces' }}
+          </div>
+
+          <!-- Workspaces List -->
           @for (k of authService.userKitchens(); track k.id) {
             <button
               type="button"
               (click)="selectKitchen(k)"
-              [class.bg-primary-500/10]="authService.activeKitchen()?.id === k.id"
-              [class.text-primary-600]="authService.activeKitchen()?.id === k.id"
-              [class.dark:bg-primary-500/15]="authService.activeKitchen()?.id === k.id"
-              [class.dark:text-primary-400]="authService.activeKitchen()?.id === k.id"
-              [class.font-semibold]="authService.activeKitchen()?.id === k.id"
-              [class.text-surface-700]="authService.activeKitchen()?.id !== k.id"
-              [class.dark:text-slate-300]="authService.activeKitchen()?.id !== k.id"
-              [class.hover:bg-surface-100]="authService.activeKitchen()?.id !== k.id"
-              [class.dark:hover:bg-slate-800/80]="authService.activeKitchen()?.id !== k.id"
-              [class.hover:text-surface-900]="authService.activeKitchen()?.id !== k.id"
-              [class.dark:hover:text-white]="authService.activeKitchen()?.id !== k.id"
-              class="w-full text-left px-2.5 py-2 rounded-xl text-xs flex items-center justify-between transition-all cursor-pointer group/opt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30">
-              <div class="flex items-center gap-2.5 min-w-0">
+              class="w-full text-left px-2 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors cursor-pointer group/item hover:bg-surface-100 dark:hover:bg-white/5 focus-visible:outline-none focus-visible:bg-surface-100 dark:focus-visible:bg-white/5">
+              <div class="flex items-center gap-2 min-w-0">
                 <div
-                  [class.bg-primary-500/20]="authService.activeKitchen()?.id === k.id"
-                  [class.text-primary-600]="authService.activeKitchen()?.id === k.id"
-                  [class.dark:text-primary-400]="authService.activeKitchen()?.id === k.id"
-                  [class.bg-surface-100]="authService.activeKitchen()?.id !== k.id"
-                  [class.dark:bg-slate-800]="authService.activeKitchen()?.id !== k.id"
-                  [class.text-surface-500]="authService.activeKitchen()?.id !== k.id"
-                  [class.dark:text-slate-400]="authService.activeKitchen()?.id !== k.id"
-                  class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 text-[10px] transition-colors">
-                  <i class="pi pi-building"></i>
+                  class="w-5 h-5 rounded-md bg-surface-200/80 dark:bg-white/10 text-surface-700 dark:text-surface-300 flex items-center justify-center text-[10px] font-bold shrink-0">
+                  {{ k.name.charAt(0).toUpperCase() }}
                 </div>
-                <div class="truncate">
-                  <div class="text-xs truncate leading-tight">
-                    {{ k.name }}
-                  </div>
-                  <div
-                    class="text-[10px] text-surface-400 dark:text-slate-500 capitalize truncate leading-tight mt-0.5">
-                    {{ k.role || 'member' }}
-                  </div>
-                </div>
+                <span
+                  [class.font-semibold]="authService.activeKitchen()?.id === k.id"
+                  [class.font-normal]="authService.activeKitchen()?.id !== k.id"
+                  class="text-xs text-surface-800 dark:text-surface-200 group-hover/item:text-surface-950 dark:group-hover/item:text-white truncate">
+                  {{ k.name }}
+                </span>
+                @if (k.role && k.role !== 'owner') {
+                  <span
+                    class="text-[10px] px-1.5 py-0.2 rounded bg-surface-200/60 dark:bg-white/10 text-surface-500 dark:text-surface-400 capitalize">
+                    {{ k.role }}
+                  </span>
+                }
               </div>
               @if (authService.activeKitchen()?.id === k.id) {
                 <i
-                  class="pi pi-check text-xs text-primary-500 dark:text-primary-400 shrink-0 ml-2"></i>
+                  class="pi pi-check text-xs text-surface-900 dark:text-white font-bold shrink-0 ml-2"></i>
               }
             </button>
           }
 
-          <div class="my-1 border-t border-surface-200/60 dark:border-slate-800"></div>
+          <div class="my-1.5 border-t border-surface-200/70 dark:border-white/10"></div>
 
           <!-- Add Kitchen Action -->
           <button
             type="button"
             (click)="openAddKitchenDialog($event)"
-            class="w-full text-left px-2.5 py-2 rounded-xl text-xs flex items-center gap-2.5 text-surface-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-surface-100 dark:hover:bg-slate-800/80 transition-all cursor-pointer font-medium group/add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30">
-            <div
-              class="w-6 h-6 rounded-lg border border-dashed border-surface-300 dark:border-slate-700 group-hover/add:border-primary-500/60 flex items-center justify-center text-[10px] text-surface-500 dark:text-slate-400 group-hover/add:text-primary-500 group-hover/add:bg-primary-500/10 transition-colors shrink-0">
-              <i class="pi pi-plus"></i>
-            </div>
-            <span class="truncate text-xs font-medium">Add Kitchen Workspace</span>
+            class="w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2.5 text-xs text-surface-600 dark:text-surface-400 hover:text-surface-950 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-white/5 transition-colors cursor-pointer group/add focus-visible:outline-none focus-visible:bg-surface-100 dark:focus-visible:bg-white/5">
+            <i class="pi pi-plus text-xs text-surface-500 dark:text-surface-400 shrink-0"></i>
+            <span class="font-normal truncate">Add a kitchen</span>
           </button>
         </div>
       }
