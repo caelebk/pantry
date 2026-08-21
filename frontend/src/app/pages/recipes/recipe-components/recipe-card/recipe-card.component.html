@@ -144,14 +144,14 @@
             }}%)
           </span>
         </div>
-        <div class="w-full bg-surface-200 dark:bg-surface-800 h-1.5 rounded-full overflow-hidden">
+        <div class="progress-track h-2">
           <div
             [class]="
               ingredientStats.isFullyMakeable
-                ? 'bg-emerald-500 h-full rounded-full transition-all duration-500'
+                ? 'bg-emerald-500 h-full rounded-full transition-all duration-500 shadow-xs'
                 : ingredientStats.availableCount > 0
-                  ? 'bg-amber-500 h-full rounded-full transition-all duration-500'
-                  : 'bg-rose-500 h-full rounded-full transition-all duration-500'
+                  ? 'bg-amber-500 h-full rounded-full transition-all duration-500 shadow-xs'
+                  : 'bg-rose-500 h-full rounded-full transition-all duration-500 shadow-xs'
             "
             [style.width.%]="ingredientStats.percentage"></div>
         </div>

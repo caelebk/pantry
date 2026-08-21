@@ -137,6 +137,16 @@
 | `.badge-primary` | Ingredient groups & taxonomy links | `bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20` |
 | `.badge-indigo` | Ingredient categories & info pills | `bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20` |
 
+### 3.4 Progress Bar & Pill Track Contract (`.progress-track`)
+All progress bars (shelf-life expiration tracks, recipe makeability matchers, location distributions, password strength meters, shopping checklist completion) MUST use the `.progress-track` pill container:
+- **Light Mode:** High-contrast slate track (`surface-200`) with subtle border (`surface-300`) and inner depth shadow.
+- **Dark Mode:** Deep contrast pill background (`surface-800/95`) with distinct border (`surface-600/70`) and inset shadow (`box-shadow: inset 0 1px 3px rgba(0,0,0,0.5)`), ensuring the track pill is clearly outlined and visible against dark glass cards even at 0% progress.
+```html
+<div class="progress-track h-2">
+  <div class="h-full rounded-full bg-emerald-500 transition-all duration-500 shadow-xs" [style.width.%]="progress()"></div>
+</div>
+```
+
 ---
 
 ## 📐 4. Elevation & Glassmorphism Tiers

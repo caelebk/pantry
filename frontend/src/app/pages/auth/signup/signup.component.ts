@@ -329,10 +329,9 @@ import { ToastService } from '../../../services/toast.service';
                     </span>
                   </div>
                   <!-- Progress bar -->
-                  <div
-                    class="w-full h-1.5 rounded-full bg-surface-200 dark:bg-surface-700 overflow-hidden">
+                  <div class="progress-track h-2">
                     <div
-                      class="h-full transition-all duration-300 rounded-full"
+                      class="h-full transition-all duration-300 rounded-full shadow-xs"
                       [style.width.%]="(passwordScore() / 5) * 100"
                       [ngClass]="{
                         'bg-rose-500': passwordScore() <= 2,
