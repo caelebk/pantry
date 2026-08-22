@@ -42,7 +42,17 @@ Use this skill when designing, building, auditing, or refining user interfaces, 
   - **Unselected / Pristine States**: Show clear, subtle dashed helper text (`<i class="pi pi-info-circle"></i> Select an ingredient first`).
 - **Contrast & Legibility**: Ensure body text and badge labels pass WCAG AA contrast against both light (`text-surface-700` / `text-surface-900`) and dark (`dark:text-surface-300` / `dark:text-white`) backgrounds.
 
-### 5. Domain Taxonomy Adherence
+### 5. Canonical UI Primitives (`@ui`)
+Always import and reuse shared components from `@ui` (`src/app/components/ui`):
+- `SearchInputComponent` (`<pantry-search-input>`): Standardized 42px search field with clear action.
+- `SpinnerComponent` (`<pantry-spinner>`): Semantic loading spinner (`xs`, `sm`, `md`, `lg`).
+- `EmptyStateComponent` (`<pantry-empty-state>`): Standard empty view with title, description, and action.
+- `BadgeComponent` (`<pantry-badge>`): Standardized freshness, location, and metadata badges.
+- `SkeletonComponent` (`<pantry-skeleton>`): Harmonized placeholder loaders.
+- `FormFieldComponent` (`<pantry-form-field>`): Encapsulates label, asterisk, hint, and error.
+- `CardComponent` (`<pantry-card>`): Standardized glass/sub-card containers.
+
+### 6. Domain Taxonomy Adherence
 Always present UI labels using the strict 4-tier domain hierarchy:
 1. `Ingredient Category` (Tier 1)
 2. `Ingredient Group` (Tier 2)
@@ -51,11 +61,29 @@ Always present UI labels using the strict 4-tier domain hierarchy:
 
 ---
 
+## 📋 Mandatory UI Change Impact Report
+
+For every UI task, include this compact report in your completion response:
+```markdown
+### Design-System Impact Report
+- **Canonical components used:** (e.g. `pantry-search-input`, `pantry-spinner`, `pantry-badge`)
+- **Tokens used or changed:** (e.g. `navy-900`, `primary-600`, `surface-100`)
+- **New variants introduced:** (e.g. none / documented in `docs/design-system.md`)
+- **Page-specific overrides:** (e.g. none)
+- **Accessibility states verified:** (e.g. keyboard focus, ARIA labels, light/dark contrast)
+- **Responsive states verified:** (e.g. mobile 375px, desktop 1280px)
+- **Other screens affected:** (e.g. none / inventory & recipes search bars)
+- **Validation performed:** `npm run validate:design-system`
+```
+
+---
+
 ## 🛠️ Verification Checklist for UI Changes
-- [ ] Grid column label headers wrapped in `<div class="flex items-center justify-between h-6 mb-1.5">`.
+- [ ] Consult `docs/design-system.md` and `docs/design-system-index.md`.
+- [ ] Reuse canonical UI primitives from `@ui`.
+- [ ] Standard button contracts (`.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, `.btn-icon`) applied.
+- [ ] Grid column label headers wrapped in `<div class="flex items-center justify-between h-6 mb-1.5">` or `<pantry-form-field>`.
 - [ ] Adjacent form controls share identical explicit height (`h-[42px]`).
 - [ ] Light and Dark mode contrast verified for custom badges and glass cards.
 - [ ] Transloco i18n keys used for user-facing label text (`frontend/public/i18n/en.json`).
-- [ ] ESLint check passed (`npm run lint`).
-- [ ] Prettier formatting check passed (`npm run format`).
-- [ ] Production build compiled successfully (`npm run build`).
+- [ ] Design system validation passed (`npm run validate:design-system`).
