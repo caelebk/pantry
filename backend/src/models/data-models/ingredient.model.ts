@@ -6,7 +6,6 @@ export interface IngredientDTO {
   name: string;
   ingredientGroupId?: number;
   ingredientGroupName?: string;
-  categoryId?: number; // Legacy alias fallback
   defaultUnitId?: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -18,7 +17,6 @@ export interface IngredientDTO {
 export interface CreateIngredientDTO {
   name: string;
   ingredientGroupId?: number;
-  categoryId?: number; // Legacy alias fallback
   defaultUnitId: number;
 }
 

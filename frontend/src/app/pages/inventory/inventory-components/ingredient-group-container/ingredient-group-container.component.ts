@@ -52,7 +52,7 @@ export class IngredientGroupContainerComponent {
   // Computed options for the dropdowns
   nutrientSelectOptions = computed<{ id: number; name: string; icon: string }[]>(() => {
     return this.nutrientGroups().map((ng) => {
-      const cat = ng.category || ng.nutrientType;
+      const cat = ng.category;
       return {
         id: cat ? cat.id : -1,
         name: cat ? cat.name : 'Unknown',
@@ -116,7 +116,7 @@ export class IngredientGroupContainerComponent {
 
     if (selectedNtIds && selectedNtIds.length > 0) {
       groups = groups.filter((ng) => {
-        const cat = ng.category || ng.nutrientType;
+        const cat = ng.category;
         return cat && selectedNtIds.includes(cat.id);
       });
     }
@@ -188,7 +188,7 @@ export class IngredientGroupContainerComponent {
 
   // Helpers
   getCategoryId(ng: IngredientCategoryCluster): number {
-    const cat = ng.category || ng.nutrientType;
+    const cat = ng.category;
     return cat ? cat.id : -1;
   }
 
@@ -199,7 +199,7 @@ export class IngredientGroupContainerComponent {
   expandAll() {
     const allNtIds = new Set(
       this.nutrientGroups().map((ng) => {
-        const cat = ng.category || ng.nutrientType;
+        const cat = ng.category;
         return cat ? cat.id : -1;
       }),
     );

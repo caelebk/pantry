@@ -27,7 +27,7 @@ ingredientGroups.get('/', async (c: Context) => {
     return c.json(successResponse(groups), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
-      errorResponse(IngredientGroupMessages.DB_RETRIEVE_CATEGORIES_ERROR),
+      errorResponse(IngredientGroupMessages.DB_RETRIEVE_GROUPS_ERROR),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
@@ -51,7 +51,7 @@ ingredientGroups.get('/:id', async (c: Context) => {
     return c.json(successResponse(group), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
-      errorResponse(IngredientGroupMessages.DB_RETRIEVE_CATEGORY_ERROR),
+      errorResponse(IngredientGroupMessages.DB_RETRIEVE_GROUP_ERROR),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
@@ -79,7 +79,7 @@ ingredientGroups.post('/', async (c: Context) => {
     return c.json(successResponse(created), HttpStatusCode.CREATED);
   } catch (_error: unknown) {
     return c.json(
-      errorResponse(IngredientGroupMessages.DB_CREATE_CATEGORY_ERROR),
+      errorResponse(IngredientGroupMessages.DB_CREATE_GROUP_ERROR),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
@@ -110,7 +110,7 @@ ingredientGroups.put('/:id', async (c: Context) => {
     return c.json(successResponse(updated), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
-      errorResponse(IngredientGroupMessages.DB_UPDATE_CATEGORY_ERROR),
+      errorResponse(IngredientGroupMessages.DB_UPDATE_GROUP_ERROR),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
@@ -134,7 +134,7 @@ ingredientGroups.delete('/:id', async (c: Context) => {
     return c.json(successResponse(true), HttpStatusCode.OK);
   } catch (_error: unknown) {
     return c.json(
-      errorResponse(IngredientGroupMessages.DB_DELETE_CATEGORY_ERROR),
+      errorResponse(IngredientGroupMessages.DB_DELETE_GROUP_ERROR),
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }

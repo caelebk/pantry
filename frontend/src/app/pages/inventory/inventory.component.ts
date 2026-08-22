@@ -402,9 +402,7 @@ export class InventoryComponent implements OnInit {
 
     // 1. Group categories by ingredientCategoryId using all fetched nutrientTypes
     this.nutrientTypes.forEach((nt) => {
-      const categoriesForNt = this.categories.filter(
-        (c) => (c.ingredientCategoryId ?? c.nutrientGroupId) === nt.id,
-      );
+      const categoriesForNt = this.categories.filter((c) => c.ingredientCategoryId === nt.id);
       const categoryGroupsInNt: IngredientGroupCluster[] = [];
 
       categoriesForNt.forEach((cat) => {
@@ -424,7 +422,6 @@ export class InventoryComponent implements OnInit {
       if (!hasSearchOrCategoryFilter || categoryGroupsInNt.length > 0) {
         result.push({
           category: nt,
-          nutrientType: nt,
           ingredientGroups: categoryGroupsInNt,
           categoryGroups: categoryGroupsInNt.sort((a, b) =>
             (a.group || a.category!).name.localeCompare((b.group || b.category!).name),
@@ -456,8 +453,8 @@ export class InventoryComponent implements OnInit {
     }
 
     return result.sort((a, b) => {
-      const catA = a.category || a.nutrientType!;
-      const catB = b.category || b.nutrientType!;
+      const catA = a.category;
+      const catB = b.category;
       if (catA.id === -1) return 1;
       if (catB.id === -1) return -1;
       return catA.name.localeCompare(catB.name);

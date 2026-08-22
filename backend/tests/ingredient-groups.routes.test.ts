@@ -23,7 +23,7 @@ const mockCategory: IngredientGroupDTO = {
 const mockIngredient: IngredientDTO = {
   id: '123e4567-e89b-12d3-a456-426614174000',
   name: 'Test Ingredient',
-  categoryId: 1,
+  ingredientGroupId: 1,
   defaultUnitId: 1,
 };
 

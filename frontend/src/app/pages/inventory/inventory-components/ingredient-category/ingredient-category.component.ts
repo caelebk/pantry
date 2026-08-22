@@ -39,8 +39,7 @@ export class IngredientCategoryComponent {
 
   get nutrientType() {
     return (
-      this.nutrientGroup?.category ||
-      this.nutrientGroup?.nutrientType || {
+      this.nutrientGroup?.category || {
         id: -1,
         name: 'Unclassified',
         icon: '📦',

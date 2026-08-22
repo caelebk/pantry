@@ -59,8 +59,8 @@ export class EditIngredientGroupPageComponent implements OnInit {
 
     this.ingredientGroupService.getIngredientGroupById(id).subscribe({
       next: (group) => {
-        const catId = group.ingredientCategoryId ?? group.nutrientGroupId;
-        const catName = group.ingredientCategoryName ?? group.nutrientGroupName ?? '';
+        const catId = group.ingredientCategoryId;
+        const catName = group.ingredientCategoryName ?? '';
         this.groupForm.patchValue({
           name: group.name,
           ingredientCategory: catId ? { id: catId, name: catName } : null,

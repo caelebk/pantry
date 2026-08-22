@@ -9,24 +9,14 @@ export interface IngredientGroupDTO {
   updatedAt?: Date;
   createdBy?: UserAuditDTO;
   updatedBy?: UserAuditDTO;
-
-  // Legacy Aliases
-  nutrientGroupId?: number;
-  nutrientGroupName?: string;
-  nutrientTypeId?: number;
-  nutrientTypeName?: string;
 }
 
 export interface CreateIngredientGroupDTO {
   name: string;
   ingredientCategoryId?: number;
-  nutrientGroupId?: number;
-  nutrientTypeId?: number;
 }
 
 export interface UpdateIngredientGroupDTO {
   name?: string;
   ingredientCategoryId?: number;
-  nutrientGroupId?: number;
-  nutrientTypeId?: number;
 }

@@ -15,7 +15,7 @@ Deno.test('Ingredient Validator - isValidCreateIngredientDTO', () => {
   assertEquals(isValidCreateIngredientDTO({ name: '', defaultUnitId: 1 }), false);
   assertEquals(isValidCreateIngredientDTO({ name: 'Salt', defaultUnitId: 0 }), false);
   assertEquals(
-    isValidCreateIngredientDTO({ name: 'Salt', defaultUnitId: 1, categoryId: -5 }),
+    isValidCreateIngredientDTO({ name: 'Salt', defaultUnitId: 1, ingredientGroupId: -5 }),
     false,
   );
 });

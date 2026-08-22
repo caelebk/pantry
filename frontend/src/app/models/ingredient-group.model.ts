@@ -9,13 +9,4 @@ export interface IngredientGroup {
   updatedAt?: Date;
   createdBy?: UserAudit;
   updatedBy?: UserAudit;
-
-  // Legacy Aliases
-  nutrientGroupId?: number;
-  nutrientGroupName?: string;
-  nutrientTypeId?: number;
-  nutrientTypeName?: string;
 }
-
-// Legacy Alias
-export type Category = IngredientGroup;

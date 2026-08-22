@@ -16,14 +16,9 @@ export interface IngredientGroupCluster {
 
 export interface IngredientCategoryCluster {
   category: IngredientCategory;
-  nutrientType?: IngredientCategory;
   ingredientGroups: IngredientGroupCluster[];
   categoryGroups?: IngredientGroupCluster[];
 }
-
-// Legacy Aliases
-export type NutrientGroup = IngredientCategoryCluster;
-export type NutrientGroupCluster = IngredientCategoryCluster;
 
 export interface SubstitutionSuggestion {
   ingredient: Ingredient;

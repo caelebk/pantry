@@ -9,13 +9,11 @@ import { shareReplay, tap } from 'rxjs/operators';
 export interface CreateIngredientGroupDTO {
   name: string;
   ingredientCategoryId?: number;
-  nutrientGroupId?: number;
 }
 
 export interface UpdateIngredientGroupDTO {
   name?: string;
   ingredientCategoryId?: number;
-  nutrientGroupId?: number;
 }
 
 @Injectable({
@@ -68,6 +66,3 @@ export class IngredientGroupService {
     );
   }
 }
-
-// Legacy Alias
-export { IngredientGroupService as CategoryService };

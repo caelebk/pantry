@@ -42,7 +42,7 @@ export class IngredientGroupService {
       return Promise.resolve(rows.map(this.mapRowToDTO));
     } catch (error: unknown) {
       console.error('Error finding ingredient groups:', error);
-      throw new Error(IngredientGroupMessages.DB_RETRIEVE_CATEGORIES_ERROR);
+      throw new Error(IngredientGroupMessages.DB_RETRIEVE_GROUPS_ERROR);
     }
   }
 
@@ -67,7 +67,7 @@ export class IngredientGroupService {
       return Promise.resolve(row ? this.mapRowToDTO(row) : null);
     } catch (error: unknown) {
       console.error('Error finding ingredient group by ID:', error);
-      throw new Error(IngredientGroupMessages.DB_RETRIEVE_CATEGORY_ERROR);
+      throw new Error(IngredientGroupMessages.DB_RETRIEVE_GROUP_ERROR);
     }
   }
 
@@ -81,12 +81,10 @@ export class IngredientGroupService {
   ): Promise<IngredientGroupDTO> {
     try {
       const db = getDB();
-      const categoryId = dto.ingredientCategoryId ?? dto.nutrientGroupId ?? dto.nutrientTypeId ??
-        null;
       db.prepare(`
         INSERT INTO ingredient_groups (name, ingredient_category_id, kitchen_id, created_by, updated_by)
         VALUES (?, ?, ?, ?, ?)
-      `).run(dto.name, categoryId, kitchenId, userId, userId);
+      `).run(dto.name, dto.ingredientCategoryId ?? null, kitchenId, userId, userId);
       const lastInsertId = db.lastInsertRowId;
 
       const created = await this.getIngredientGroupById(Number(lastInsertId), kitchenId);
@@ -96,7 +94,7 @@ export class IngredientGroupService {
       return created;
     } catch (error: unknown) {
       console.error('Error creating ingredient group:', error);
-      throw new Error('Failed to create ingredient group');
+      throw new Error(IngredientGroupMessages.DB_CREATE_GROUP_ERROR);
     }
   }
 
@@ -117,10 +115,6 @@ export class IngredientGroupService {
       const name = dto.name !== undefined ? dto.name : existing.name;
       const categoryId = dto.ingredientCategoryId !== undefined
         ? dto.ingredientCategoryId
-        : dto.nutrientGroupId !== undefined
-        ? dto.nutrientGroupId
-        : dto.nutrientTypeId !== undefined
-        ? dto.nutrientTypeId
         : existing.ingredientCategoryId ?? null;
 
       db.prepare(`
@@ -132,7 +126,7 @@ export class IngredientGroupService {
       return await this.getIngredientGroupById(id, kitchenId);
     } catch (error: unknown) {
       console.error('Error updating ingredient group:', error);
-      throw new Error('Failed to update ingredient group');
+      throw new Error(IngredientGroupMessages.DB_UPDATE_GROUP_ERROR);
     }
   }
 
@@ -152,7 +146,7 @@ export class IngredientGroupService {
       return true;
     } catch (error: unknown) {
       console.error('Error deleting ingredient group:', error);
-      throw new Error('Failed to delete ingredient group');
+      throw new Error(IngredientGroupMessages.DB_DELETE_GROUP_ERROR);
     }
   }
 
@@ -180,12 +174,6 @@ export class IngredientGroupService {
           fullName: row.updated_by_full_name || undefined,
         }
         : undefined,
-
-      // Legacy Aliases
-      nutrientGroupId: row.ingredient_category_id ?? undefined,
-      nutrientGroupName: row.ingredient_category_name ?? undefined,
-      nutrientTypeId: row.ingredient_category_id ?? undefined,
-      nutrientTypeName: row.ingredient_category_name ?? undefined,
     };
   }
 }

@@ -87,7 +87,7 @@ export class IngredientsService {
       const db = getDB();
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
-      const groupId = ingredient.ingredientGroupId ?? ingredient.categoryId ?? null;
+      const groupId = ingredient.ingredientGroupId ?? null;
 
       db.prepare(
         'INSERT INTO ingredients (id, name, ingredient_group_id, default_unit_id, kitchen_id, created_at, updated_at, created_by, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -128,7 +128,7 @@ export class IngredientsService {
   ): Promise<IngredientDTO | null> {
     try {
       const db = getDB();
-      const groupId = ingredient.ingredientGroupId ?? ingredient.categoryId ?? null;
+      const groupId = ingredient.ingredientGroupId ?? null;
 
       db.prepare(
         'UPDATE ingredients SET name = COALESCE(?, name), ingredient_group_id = COALESCE(?, ingredient_group_id), default_unit_id = COALESCE(?, default_unit_id), updated_by = ? WHERE id = ? AND kitchen_id = ?',
@@ -254,12 +254,10 @@ export class IngredientsService {
       updated_by_full_name?: string | null;
     },
   ): IngredientDTO {
-    const groupId = row.ingredient_group_id ?? row.category_id ?? undefined;
     return {
       id: row.id,
       name: row.name,
-      ingredientGroupId: groupId,
-      categoryId: groupId,
+      ingredientGroupId: row.ingredient_group_id ?? undefined,
       defaultUnitId: row.default_unit_id ? row.default_unit_id : undefined,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),

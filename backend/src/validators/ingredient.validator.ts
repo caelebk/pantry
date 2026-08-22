@@ -11,7 +11,6 @@ export function isValidCreateIngredientDTO(data: Partial<CreateIngredientDTO>): 
   if (!data) return false;
   if (!isNonEmptyString(data.name || '')) return false;
 
-  if (data.categoryId !== undefined && !isPositiveNumber(data.categoryId)) return false;
   if (data.ingredientGroupId !== undefined && !isPositiveNumber(data.ingredientGroupId)) {
     return false;
   }
@@ -29,7 +28,9 @@ export function isValidUpdateIngredientDTO(data: Partial<UpdateIngredientDTO>): 
   // Assuming strict requirements similar to Create for now, or just validating properties if they exist.
 
   if (data.name !== undefined && !isNonEmptyString(data.name)) return false;
-  if (data.categoryId !== undefined && !isPositiveNumber(data.categoryId)) return false;
+  if (data.ingredientGroupId !== undefined && !isPositiveNumber(data.ingredientGroupId)) {
+    return false;
+  }
   if (data.defaultUnitId !== undefined && !isPositiveNumber(data.defaultUnitId)) return false;
 
   return true;

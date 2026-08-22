@@ -5,7 +5,3 @@ export interface IngredientCategory {
   color?: string;
   description?: string;
 }
-
-// Legacy Aliases
-export type NutrientGroup = IngredientCategory;
-export type NutrientType = IngredientCategory;

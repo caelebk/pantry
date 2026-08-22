@@ -57,7 +57,6 @@ function seedMockIngredient(db: Database): IngredientRow {
     id: '123e4567-e89b-12d3-a456-426614174000',
     name: 'Flour',
     ingredient_group_id: 1,
-    category_id: 1,
     default_unit_id: 1,
     created_at: '2023-01-01T00:00:00.000Z',
     updated_at: '2023-01-01T00:00:00.000Z',

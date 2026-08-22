@@ -28,14 +28,4 @@ export class IngredientCategoryService {
       .get<ApiResponse<IngredientCategory>>(`${this.apiUrl}/${id}`)
       .pipe(mapResponseData<IngredientCategory>());
   }
-
-  getNutrientTypes(): Observable<IngredientCategory[]> {
-    return this.getIngredientCategories();
-  }
-
-  getNutrientTypeById(id: number): Observable<IngredientCategory> {
-    return this.getIngredientCategoryById(id);
-  }
 }
-
-export { IngredientCategoryService as NutrientTypeService };

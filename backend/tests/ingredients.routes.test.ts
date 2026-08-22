@@ -18,7 +18,7 @@ function createRequest(path: string, method: string, body?: unknown) {
 const mockIngredient: IngredientDTO = {
   id: '123e4567-e89b-12d3-a456-426614174000',
   name: 'Test Ingredient',
-  categoryId: 1,
+  ingredientGroupId: 1,
   defaultUnitId: 1,
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -110,7 +110,7 @@ Deno.test('Ingredients API - POST /api/v1/ingredients - success', async () => {
 
     const newIngredient: Partial<IngredientDTO> = {
       name: 'Test Ingredient',
-      categoryId: 1,
+      ingredientGroupId: 1,
       defaultUnitId: 1,
     };
 
@@ -138,7 +138,7 @@ Deno.test('Ingredients API - POST /api/v1/ingredients - service error', async ()
   try {
     const app = new Hono();
     app.route('/api/v1/ingredients', ingredients);
-    const validBody = { name: 'Test', categoryId: 1, defaultUnitId: 1 };
+    const validBody = { name: 'Test', ingredientGroupId: 1, defaultUnitId: 1 };
     const res = await app.request(createRequest('/api/v1/ingredients', 'POST', validBody));
     assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
   } finally {

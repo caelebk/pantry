@@ -145,9 +145,7 @@ export class IngredientGroupsPageComponent implements OnInit {
     const result: IngredientCategoryCluster[] = [];
 
     categoriesList.forEach((cat) => {
-      const groupsForCat = groupsList.filter(
-        (g) => (g.ingredientCategoryId ?? g.nutrientGroupId) === cat.id,
-      );
+      const groupsForCat = groupsList.filter((g) => g.ingredientCategoryId === cat.id);
       const categoryGroupsInCat: IngredientGroupCluster[] = [];
 
       groupsForCat.forEach((grp) => {
