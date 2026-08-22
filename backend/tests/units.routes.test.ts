@@ -18,14 +18,14 @@ const _mockUnit: UnitDTO = {
   toBaseFactor: 1,
 };
 
-Deno.test('Units API - GET /api/units - success', async () => {
+Deno.test('Units API - GET /api/v1/units - success', async () => {
   const originalGetAll = unitService.getAllUnits;
   unitService.getAllUnits = () => Promise.resolve([_mockUnit]);
 
   try {
     const app = new Hono();
-    app.route('/api/units', units);
-    const res = await app.request(createRequest('/api/units', 'GET'));
+    app.route('/api/v1/units', units);
+    const res = await app.request(createRequest('/api/v1/units', 'GET'));
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.length, 1);
@@ -34,14 +34,14 @@ Deno.test('Units API - GET /api/units - success', async () => {
   }
 });
 
-Deno.test('Units API - GET /api/units/:id - success', async () => {
+Deno.test('Units API - GET /api/v1/units/:id - success', async () => {
   const originalGetById = unitService.getUnitById;
   unitService.getUnitById = () => Promise.resolve(_mockUnit);
 
   try {
     const app = new Hono();
-    app.route('/api/units', units);
-    const res = await app.request(createRequest('/api/units/1', 'GET'));
+    app.route('/api/v1/units', units);
+    const res = await app.request(createRequest('/api/v1/units/1', 'GET'));
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.id, 1);
@@ -50,37 +50,37 @@ Deno.test('Units API - GET /api/units/:id - success', async () => {
   }
 });
 
-Deno.test('Units API - GET /api/units/:id - not found', async () => {
+Deno.test('Units API - GET /api/v1/units/:id - not found', async () => {
   const originalGetById = unitService.getUnitById;
   unitService.getUnitById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
-    app.route('/api/units', units);
-    const res = await app.request(createRequest('/api/units/999', 'GET'));
+    app.route('/api/v1/units', units);
+    const res = await app.request(createRequest('/api/v1/units/999', 'GET'));
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
     unitService.getUnitById = originalGetById;
   }
 });
 
-Deno.test('Units API - GET /api/units/:id - invalid id', async () => {
+Deno.test('Units API - GET /api/v1/units/:id - invalid id', async () => {
   const app = new Hono();
-  app.route('/api/units', units);
-  const res = await app.request(createRequest('/api/units/abc', 'GET'));
+  app.route('/api/v1/units', units);
+  const res = await app.request(createRequest('/api/v1/units/abc', 'GET'));
   assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
 });
 
-Deno.test('Units API - GET /api/units/convert - success', async () => {
+Deno.test('Units API - GET /api/v1/units/convert - success', async () => {
   const originalConvert = unitService.convert;
   unitService.convert = () => Promise.resolve(500);
 
   try {
     const app = new Hono();
-    app.route('/api/units', units);
+    app.route('/api/v1/units', units);
 
     const res = await app.request(
-      createRequest('/api/units/convert?quantity=10&from=1&to=2', 'GET'),
+      createRequest('/api/v1/units/convert?quantity=10&from=1&to=2', 'GET'),
     );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
@@ -90,28 +90,28 @@ Deno.test('Units API - GET /api/units/convert - success', async () => {
   }
 });
 
-Deno.test('Units API - GET /api/units/convert - invalid failure', async () => {
+Deno.test('Units API - GET /api/v1/units/convert - invalid failure', async () => {
   const app = new Hono();
-  app.route('/api/units', units);
+  app.route('/api/v1/units', units);
 
   // Missing parameters
-  const res = await app.request(createRequest('/api/units/convert?quantity=10', 'GET'));
+  const res = await app.request(createRequest('/api/v1/units/convert?quantity=10', 'GET'));
   assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
 
   // Invalid parameters (string instead of number)
-  const res2 = await app.request(createRequest('/api/units/convert?quantity=ten', 'GET'));
+  const res2 = await app.request(createRequest('/api/v1/units/convert?quantity=ten', 'GET'));
   assertEquals(res2.status, HttpStatusCode.BAD_REQUEST);
 });
 
-Deno.test('Units API - GET /api/units/convert - service error', async () => {
+Deno.test('Units API - GET /api/v1/units/convert - service error', async () => {
   const originalConvert = unitService.convert;
   unitService.convert = () => Promise.reject(new Error('Random Error'));
 
   try {
     const app = new Hono();
-    app.route('/api/units', units);
+    app.route('/api/v1/units', units);
     const res = await app.request(
-      createRequest('/api/units/convert?quantity=10&from=1&to=2', 'GET'),
+      createRequest('/api/v1/units/convert?quantity=10&from=1&to=2', 'GET'),
     );
     assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
   } finally {

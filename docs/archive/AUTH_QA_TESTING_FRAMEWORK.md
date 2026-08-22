@@ -1,3 +1,6 @@
+> [!WARNING]
+> ARCHIVED 2026-08-21: companion QA framework for the completed auth implementation. Historical reference only.
+
 # Comprehensive QA Testing & Regression Prevention Framework
 ## User Authentication, Authorization, User Profiles & Shared Kitchens
 

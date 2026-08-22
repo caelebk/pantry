@@ -1,3 +1,6 @@
+> [!WARNING]
+> ARCHIVED 2026-08-21: superseded by docs/design-system.md (canonical source of truth).
+
 # 🎨 Pantry Authoritative Design System Manifest & Architecture Specification
 
 **Version:** 2.0.0  

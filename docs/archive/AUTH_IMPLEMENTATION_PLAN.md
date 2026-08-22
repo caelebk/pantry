@@ -1,3 +1,6 @@
+> [!WARNING]
+> ARCHIVED 2026-08-21: Auth v1.5.1 is fully implemented (migrations 0011-0015). Kept for historical reference only.
+
 # Master Implementation Plan: User Authentication, Authorization & Profile System
 
 > **Status:** ✅ Core System Fully Functional & Remediated (v1.5.1 Production Ready)  

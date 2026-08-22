@@ -6,8 +6,11 @@ services:
     container_name: pantry_backend
     volumes:
       - pantry_db_data:/app/data
+    # NOTE: the backend reads `ENVIRONMENT` (not DENO_ENV) — see backend/src/config/env.ts.
+    # In production it hard-fails unless JWT_SECRET is set to a unique 32+ char value,
+    # so provide it when deploying, e.g.:  JWT_SECRET=... docker compose up
     environment:
-      - DENO_ENV=production
+      - ENVIRONMENT=production
       - DB_PATH=/app/data/pantry.db
       - PORT=8000
     # Inline shell script: checks if sqlite DB exists, runs migrations & seeds if missing, then starts the API

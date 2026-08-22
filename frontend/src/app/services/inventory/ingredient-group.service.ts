@@ -23,7 +23,7 @@ export interface UpdateIngredientGroupDTO {
 })
 export class IngredientGroupService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = '/api/ingredient-groups';
+  private readonly apiUrl = '/api/v1/ingredient-groups';
   private groupsCache$?: Observable<IngredientGroup[]>;
 
   getIngredientGroups(): Observable<IngredientGroup[]> {

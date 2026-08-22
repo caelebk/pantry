@@ -11,11 +11,11 @@ const mockRecipe: RecipeDTO = {
   updatedAt: new Date(),
 };
 
-Deno.test('Recipes API - GET /api/recipes - success', async () => {
+Deno.test('Recipes API - GET /api/v1/recipes - success', async () => {
   const originalGetAll = recipeService.getAllRecipes;
   recipeService.getAllRecipes = () => Promise.resolve([mockRecipe]);
 
-  const res = await app.request('/api/recipes');
+  const res = await app.request('/api/v1/recipes');
   assertEquals(res.status, 200);
 
   const json = await res.json();
@@ -26,11 +26,11 @@ Deno.test('Recipes API - GET /api/recipes - success', async () => {
   recipeService.getAllRecipes = originalGetAll;
 });
 
-Deno.test('Recipes API - GET /api/recipes/available - success', async () => {
+Deno.test('Recipes API - GET /api/v1/recipes/available - success', async () => {
   const originalAvailable = recipeService.getAvailableRecipes;
   recipeService.getAvailableRecipes = () => Promise.resolve([mockRecipe]);
 
-  const res = await app.request('/api/recipes/available');
+  const res = await app.request('/api/v1/recipes/available');
   assertEquals(res.status, 200);
 
   const json = await res.json();
@@ -40,12 +40,12 @@ Deno.test('Recipes API - GET /api/recipes/available - success', async () => {
   recipeService.getAvailableRecipes = originalAvailable;
 });
 
-Deno.test('Recipes API - GET /api/recipes/:id - success', async () => {
+Deno.test('Recipes API - GET /api/v1/recipes/:id - success', async () => {
   const originalGetById = recipeService.getRecipeById;
   recipeService.getRecipeById = (id) =>
     id === mockRecipe.id ? Promise.resolve(mockRecipe) : Promise.resolve(null);
 
-  const res = await app.request(`/api/recipes/${mockRecipe.id}`);
+  const res = await app.request(`/api/v1/recipes/${mockRecipe.id}`);
   assertEquals(res.status, 200);
 
   const json = await res.json();
@@ -55,21 +55,21 @@ Deno.test('Recipes API - GET /api/recipes/:id - success', async () => {
   recipeService.getRecipeById = originalGetById;
 });
 
-Deno.test('Recipes API - GET /api/recipes/:id - not found', async () => {
+Deno.test('Recipes API - GET /api/v1/recipes/:id - not found', async () => {
   const originalGetById = recipeService.getRecipeById;
   recipeService.getRecipeById = () => Promise.resolve(null);
 
-  const res = await app.request('/api/recipes/123e4567-e89b-12d3-a456-426614174999');
+  const res = await app.request('/api/v1/recipes/123e4567-e89b-12d3-a456-426614174999');
   assertEquals(res.status, 404);
 
   recipeService.getRecipeById = originalGetById;
 });
 
-Deno.test('Recipes API - POST /api/recipes - success', async () => {
+Deno.test('Recipes API - POST /api/v1/recipes - success', async () => {
   const originalCreate = recipeService.createRecipe;
   recipeService.createRecipe = (dto) => Promise.resolve({ ...mockRecipe, name: dto.name });
 
-  const res = await app.request('/api/recipes', {
+  const res = await app.request('/api/v1/recipes', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name: 'New Recipe' }),
@@ -83,14 +83,14 @@ Deno.test('Recipes API - POST /api/recipes - success', async () => {
   recipeService.createRecipe = originalCreate;
 });
 
-Deno.test('Recipes API - DELETE /api/recipes/:id - success', async () => {
+Deno.test('Recipes API - DELETE /api/v1/recipes/:id - success', async () => {
   const originalGetById = recipeService.getRecipeById;
   const originalDelete = recipeService.deleteRecipe;
 
   recipeService.getRecipeById = () => Promise.resolve(mockRecipe);
   recipeService.deleteRecipe = () => Promise.resolve(true);
 
-  const res = await app.request(`/api/recipes/${mockRecipe.id}`, {
+  const res = await app.request(`/api/v1/recipes/${mockRecipe.id}`, {
     method: 'DELETE',
   });
   assertEquals(res.status, 200);

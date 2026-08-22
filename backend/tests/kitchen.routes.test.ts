@@ -1,9 +1,10 @@
+import { initMigratedDB } from './helpers/test-db-path.ts';
 import { assertEquals } from '@std/assert';
 import app from '../src/app.ts';
-import { closeDB, initDB } from '../src/db/client.ts';
+import { closeDB } from '../src/db/client.ts';
 
 Deno.test('Kitchen Routes Integration - Shared Kitchen Workspaces & RBAC', async () => {
-  const db = initDB();
+  const db = initMigratedDB();
   db.exec('DELETE FROM auth_rate_limits;');
   try {
     const ownerEmail = `owner_${Date.now()}@pantry.app`;

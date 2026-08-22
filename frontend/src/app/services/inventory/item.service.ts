@@ -26,7 +26,7 @@ export class ItemService {
   private readonly http = inject(HttpClient);
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
-  private readonly apiUrl = '/api/ingredient-items';
+  private readonly apiUrl = '/api/v1/ingredient-items';
   private ingredientItemsCache$?: Observable<IngredientItem[]>;
 
   getSimilarIngredientItems(name: string, minScore = 0.45): Observable<ItemSimilarityCandidate[]> {

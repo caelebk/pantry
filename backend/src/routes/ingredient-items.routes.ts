@@ -18,9 +18,11 @@ import {
 } from '../validators/item.validator.ts';
 
 import { authMiddleware } from '../middleware/auth.ts';
+import { requireEditorForMutations } from '../middleware/rbac.ts';
 
 const ingredientItems = new Hono();
 ingredientItems.use('*', authMiddleware);
+ingredientItems.use('*', requireEditorForMutations);
 
 /**
  * GET /api/ingredient-items

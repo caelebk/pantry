@@ -34,7 +34,7 @@ describe('IngredientCategoryService', () => {
   it('should fetch all ingredient categories', async () => {
     const promise = firstValueFrom(service.getIngredientCategories());
 
-    const req = httpMock.expectOne('/api/ingredient-categories');
+    const req = httpMock.expectOne('/api/v1/ingredient-categories');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: mockCategories });
 
@@ -46,23 +46,12 @@ describe('IngredientCategoryService', () => {
   it('should fetch ingredient category by id', async () => {
     const promise = firstValueFrom(service.getIngredientCategoryById(1));
 
-    const req = httpMock.expectOne('/api/ingredient-categories/1');
+    const req = httpMock.expectOne('/api/v1/ingredient-categories/1');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: mockCategories[0] });
 
     const category = await promise;
     expect(category.id).toBe(1);
     expect(category.name).toBe('Protein & Dairy');
-  });
-
-  it('should support legacy alias getNutrientGroups', async () => {
-    const promise = firstValueFrom(service.getNutrientGroups());
-
-    const req = httpMock.expectOne('/api/ingredient-categories');
-    expect(req.request.method).toBe('GET');
-    req.flush({ status: 'success', data: mockCategories });
-
-    const res = await promise;
-    expect(res.length).toBe(2);
   });
 });

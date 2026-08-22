@@ -41,7 +41,7 @@ describe('RecipeService', () => {
   it('should fetch recipes', async () => {
     const promise = firstValueFrom(service.getRecipes());
 
-    const req = httpMock.expectOne('/api/recipes');
+    const req = httpMock.expectOne('/api/v1/recipes');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: [mockRecipe] });
 
@@ -53,7 +53,7 @@ describe('RecipeService', () => {
   it('should fetch available recipes', async () => {
     const promise = firstValueFrom(service.getAvailableRecipes());
 
-    const req = httpMock.expectOne('/api/recipes/available');
+    const req = httpMock.expectOne('/api/v1/recipes/available');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: [mockRecipe] });
 
@@ -64,7 +64,7 @@ describe('RecipeService', () => {
   it('should fetch recipe by id', async () => {
     const promise = firstValueFrom(service.getRecipeById('rec-1'));
 
-    const req = httpMock.expectOne('/api/recipes/rec-1');
+    const req = httpMock.expectOne('/api/v1/recipes/rec-1');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: mockRecipe });
 
@@ -75,7 +75,7 @@ describe('RecipeService', () => {
   it('should delete recipe', async () => {
     const promise = firstValueFrom(service.deleteRecipe('rec-1'));
 
-    const req = httpMock.expectOne('/api/recipes/rec-1');
+    const req = httpMock.expectOne('/api/v1/recipes/rec-1');
     expect(req.request.method).toBe('DELETE');
     req.flush({ status: 'success', data: true });
 

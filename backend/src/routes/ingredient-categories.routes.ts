@@ -4,9 +4,11 @@ import { errorResponse, HttpStatusCode, successResponse } from '../utils/respons
 import { isPositiveNumber } from '../utils/validators.ts';
 
 import { authMiddleware } from '../middleware/auth.ts';
+import { requireEditorForMutations } from '../middleware/rbac.ts';
 
 const ingredientCategories = new Hono();
 ingredientCategories.use('*', authMiddleware);
+ingredientCategories.use('*', requireEditorForMutations);
 
 /**
  * GET /api/ingredient-categories

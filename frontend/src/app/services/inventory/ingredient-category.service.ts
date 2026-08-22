@@ -11,7 +11,7 @@ import { shareReplay } from 'rxjs/operators';
 })
 export class IngredientCategoryService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = '/api/ingredient-categories';
+  private readonly apiUrl = '/api/v1/ingredient-categories';
   private categoriesCache$?: Observable<IngredientCategory[]>;
 
   getIngredientCategories(): Observable<IngredientCategory[]> {
@@ -27,15 +27,6 @@ export class IngredientCategoryService {
     return this.http
       .get<ApiResponse<IngredientCategory>>(`${this.apiUrl}/${id}`)
       .pipe(mapResponseData<IngredientCategory>());
-  }
-
-  // Legacy Aliases
-  getNutrientGroups(): Observable<IngredientCategory[]> {
-    return this.getIngredientCategories();
-  }
-
-  getNutrientGroupById(id: number): Observable<IngredientCategory> {
-    return this.getIngredientCategoryById(id);
   }
 
   getNutrientTypes(): Observable<IngredientCategory[]> {

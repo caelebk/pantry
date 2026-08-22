@@ -85,6 +85,36 @@ All frontend modifications MUST strictly comply with the centralized design syst
 
 ---
 
+## ✅ Runtime Reality (verified 2026-08-21)
+
+Facts that override older documentation (README, stale plans):
+
+1. **Frontend unit tests run on Vitest** (`npm run test` → `vitest run`). Do **not** use `ng test` — the `test` architect target in `angular.json` still references a removed Karma config.
+2. **Deno 2.x is required** (lockfile v4, CI uses 2.x). Ignore any "Deno v1.37+" references.
+3. **Root `docker-compose.yml` is the only working full-stack setup.** `frontend/docker-compose.yml` has no backend service, so its `/api` proxy fails — do not follow old instructions pointing there.
+4. **Transloco dictionaries live at `frontend/public/i18n/*.json`.**
+5. **Backend route integration tests must not touch the dev database** — set `DB_PATH` to a temp file when running them manually.
+
+## 🧾 Known-Debt Register
+
+These are *recognized* inconsistencies. Do not silently "fix" them as side effects of unrelated tasks; fix them deliberately via their tracked work:
+
+| Debt | Location | Status |
+| :--- | :--- | :--- |
+| Legacy API aliases mounted alongside `/api/v1` | `backend/src/routes/index.ts` | **Resolved 2026-08-22** — all endpoints unified under `/api/v1`; frontend updated in step |
+| Missing per-domain validators for meal-plans, stores, shopping-list | `backend/src/routes/` | Pending Phase-2 security work |
+| Sentinel-string errors instead of typed `AppError` throws | `auth.service.ts`, `kitchen.service.ts` + matching routes | Existing convention until unified |
+| `@ui` canonical primitives partially adopted (raw skeleton/spinner markup persists) | `frontend/src/app/pages/` | Migration in progress |
+| Inventory-domain writes lacked role checks; `kitchen_id` columns lacked FKs | domain routers · migrations 0011–0012 | **Resolved 2026-08-22** — `requireEditorForMutations` wired everywhere (`tests/rbac.routes.test.ts`); migration `0016_add_kitchen_foreign_keys.sql` adds FKs + NOT NULL |
+
+**Failure baseline:** expected-green commands are `cd backend && deno task test`,
+`deno lint && deno fmt --check`, `cd frontend && npm run test && npm run lint &&
+npm run build`. Known-broken/known-incomplete: `ng test`, frontend e2e without a
+backend running on `localhost:8000`. If these fail, they are pre-existing — report,
+don't rabbit-hole.
+
+---
+
 ## 🤖 Specialized Coding Agents & Skill Mapping
 
 Agents operating in this workspace adopt specialized roles mapped to `.agents/skills/`:

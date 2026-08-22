@@ -35,7 +35,7 @@ describe('IngredientGroupService', () => {
   it('should fetch all ingredient groups', async () => {
     const promise = firstValueFrom(service.getIngredientGroups());
 
-    const req = httpMock.expectOne('/api/ingredient-groups');
+    const req = httpMock.expectOne('/api/v1/ingredient-groups');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: [mockGroup] });
 
@@ -49,7 +49,7 @@ describe('IngredientGroupService', () => {
       service.createIngredientGroup({ name: 'Poultry', ingredientCategoryId: 1 }),
     );
 
-    const req = httpMock.expectOne('/api/ingredient-groups');
+    const req = httpMock.expectOne('/api/v1/ingredient-groups');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ name: 'Poultry', ingredientCategoryId: 1 });
     req.flush({ status: 'success', data: mockGroup });
@@ -61,7 +61,7 @@ describe('IngredientGroupService', () => {
   it('should delete ingredient group', async () => {
     const promise = firstValueFrom(service.deleteIngredientGroup(1));
 
-    const req = httpMock.expectOne('/api/ingredient-groups/1');
+    const req = httpMock.expectOne('/api/v1/ingredient-groups/1');
     expect(req.request.method).toBe('DELETE');
     req.flush({ status: 'success', data: true });
 

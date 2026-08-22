@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class StoreService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = '/api/stores';
+  private readonly apiUrl = '/api/v1/stores';
 
   getStores(): Observable<Store[]> {
     return this.http.get<ApiResponse<Store[]>>(this.apiUrl).pipe(mapResponseData<Store[]>());

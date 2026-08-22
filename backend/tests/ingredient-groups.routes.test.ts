@@ -27,15 +27,15 @@ const mockIngredient: IngredientDTO = {
   defaultUnitId: 1,
 };
 
-Deno.test('Categories API - GET /api/categories - success', async () => {
+Deno.test('Categories API - GET /api/v1/ingredient-groups - success', async () => {
   const originalGetAll = ingredientGroupService.getAllIngredientGroups;
   ingredientGroupService.getAllIngredientGroups = () => Promise.resolve([mockCategory]);
 
   try {
     const app = new Hono();
-    app.route('/api/ingredientGroups', ingredientGroups);
+    app.route('/api/v1/ingredient-groups', ingredientGroups);
 
-    const res = await app.request(createRequest('/api/ingredientGroups', 'GET'));
+    const res = await app.request(createRequest('/api/v1/ingredient-groups', 'GET'));
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.length, 1);
@@ -45,31 +45,31 @@ Deno.test('Categories API - GET /api/categories - success', async () => {
   }
 });
 
-Deno.test('Categories API - GET /api/ingredientGroups - service error', async () => {
+Deno.test('Categories API - GET /api/v1/ingredient-groups - service error', async () => {
   const originalGetAll = ingredientGroupService.getAllIngredientGroups;
   ingredientGroupService.getAllIngredientGroups = () => Promise.reject(new Error('Fail'));
 
   try {
     const app = new Hono();
-    app.route('/api/ingredientGroups', ingredientGroups);
-    const res = await app.request(createRequest('/api/ingredientGroups', 'GET'));
+    app.route('/api/v1/ingredient-groups', ingredientGroups);
+    const res = await app.request(createRequest('/api/v1/ingredient-groups', 'GET'));
     assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
   } finally {
     ingredientGroupService.getAllIngredientGroups = originalGetAll;
   }
 });
 
-Deno.test('Categories API - GET /api/ingredientGroups/:id - success', async () => {
+Deno.test('Categories API - GET /api/v1/ingredient-groups/:id - success', async () => {
   const originalGetById = ingredientGroupService.getIngredientGroupById;
   ingredientGroupService.getIngredientGroupById = (id) =>
     Promise.resolve(id === mockCategory.id ? mockCategory : null);
 
   try {
     const app = new Hono();
-    app.route('/api/ingredientGroups', ingredientGroups);
+    app.route('/api/v1/ingredient-groups', ingredientGroups);
 
     const res = await app.request(
-      createRequest(`/api/ingredientGroups/${mockCategory.id}`, 'GET'),
+      createRequest(`/api/v1/ingredient-groups/${mockCategory.id}`, 'GET'),
     );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
@@ -79,29 +79,29 @@ Deno.test('Categories API - GET /api/ingredientGroups/:id - success', async () =
   }
 });
 
-Deno.test('Categories API - GET /api/ingredientGroups/:id - not found', async () => {
+Deno.test('Categories API - GET /api/v1/ingredient-groups/:id - not found', async () => {
   const originalGetById = ingredientGroupService.getIngredientGroupById;
   ingredientGroupService.getIngredientGroupById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
-    app.route('/api/ingredientGroups', ingredientGroups);
+    app.route('/api/v1/ingredient-groups', ingredientGroups);
 
-    const res = await app.request(createRequest('/api/ingredientGroups/999', 'GET'));
+    const res = await app.request(createRequest('/api/v1/ingredient-groups/999', 'GET'));
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
     ingredientGroupService.getIngredientGroupById = originalGetById;
   }
 });
 
-Deno.test('Categories API - GET /api/ingredientGroups/:id - invalid id', async () => {
+Deno.test('Categories API - GET /api/v1/ingredient-groups/:id - invalid id', async () => {
   const app = new Hono();
-  app.route('/api/ingredientGroups', ingredientGroups);
-  const res = await app.request(createRequest('/api/ingredientGroups/abc', 'GET'));
+  app.route('/api/v1/ingredient-groups', ingredientGroups);
+  const res = await app.request(createRequest('/api/v1/ingredient-groups/abc', 'GET'));
   assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
 });
 
-Deno.test('Categories API - GET /api/ingredientGroups/:id/ingredients - success', async () => {
+Deno.test('Categories API - GET /api/v1/ingredient-groups/:id/ingredients - success', async () => {
   const originalGetCategoryById = ingredientGroupService.getIngredientGroupById;
   const originalGetIngredients = ingredientService.getIngredientsByGroup;
 
@@ -112,10 +112,10 @@ Deno.test('Categories API - GET /api/ingredientGroups/:id/ingredients - success'
 
   try {
     const app = new Hono();
-    app.route('/api/ingredientGroups', ingredientGroups);
+    app.route('/api/v1/ingredient-groups', ingredientGroups);
 
     const res = await app.request(
-      createRequest(`/api/ingredientGroups/${mockCategory.id}/ingredients`, 'GET'),
+      createRequest(`/api/v1/ingredient-groups/${mockCategory.id}/ingredients`, 'GET'),
     );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
@@ -127,29 +127,31 @@ Deno.test('Categories API - GET /api/ingredientGroups/:id/ingredients - success'
   }
 });
 
-Deno.test('Categories API - GET /api/ingredientGroups/:id/ingredients - category not found', async () => {
+Deno.test('Categories API - GET /api/v1/ingredient-groups/:id/ingredients - category not found', async () => {
   const originalGetCategoryById = ingredientGroupService.getIngredientGroupById;
   ingredientGroupService.getIngredientGroupById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
-    app.route('/api/ingredientGroups', ingredientGroups);
+    app.route('/api/v1/ingredient-groups', ingredientGroups);
 
-    const res = await app.request(createRequest('/api/ingredientGroups/999/ingredients', 'GET'));
+    const res = await app.request(
+      createRequest('/api/v1/ingredient-groups/999/ingredients', 'GET'),
+    );
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
     ingredientGroupService.getIngredientGroupById = originalGetCategoryById;
   }
 });
 
-Deno.test('Categories API - GET /api/ingredientGroups/:id/ingredients - invalid id', async () => {
+Deno.test('Categories API - GET /api/v1/ingredient-groups/:id/ingredients - invalid id', async () => {
   const app = new Hono();
-  app.route('/api/ingredientGroups', ingredientGroups);
-  const res = await app.request(createRequest('/api/ingredientGroups/abc/ingredients', 'GET'));
+  app.route('/api/v1/ingredient-groups', ingredientGroups);
+  const res = await app.request(createRequest('/api/v1/ingredient-groups/abc/ingredients', 'GET'));
   assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
 });
 
-Deno.test('Categories API - GET /api/ingredientGroups/:id/ingredients - service error', async () => {
+Deno.test('Categories API - GET /api/v1/ingredient-groups/:id/ingredients - service error', async () => {
   const originalGetCategoryById = ingredientGroupService.getIngredientGroupById;
   ingredientGroupService.getIngredientGroupById = () => Promise.resolve(mockCategory);
 
@@ -159,9 +161,9 @@ Deno.test('Categories API - GET /api/ingredientGroups/:id/ingredients - service 
 
   try {
     const app = new Hono();
-    app.route('/api/ingredientGroups', ingredientGroups);
+    app.route('/api/v1/ingredient-groups', ingredientGroups);
     const res = await app.request(
-      createRequest(`/api/ingredientGroups/${mockCategory.id}/ingredients`, 'GET'),
+      createRequest(`/api/v1/ingredient-groups/${mockCategory.id}/ingredients`, 'GET'),
     );
     assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
   } finally {

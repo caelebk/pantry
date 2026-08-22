@@ -12,7 +12,7 @@ import { map, shareReplay } from 'rxjs/operators';
 })
 export class UnitService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = '/api/units';
+  private readonly apiUrl = '/api/v1/units';
   private unitsCache$?: Observable<Unit[]>;
 
   getUnits(): Observable<Unit[]> {

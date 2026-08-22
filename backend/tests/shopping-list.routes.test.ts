@@ -16,11 +16,11 @@ const mockShoppingItem: ShoppingListItemDTO = {
   createdAt: new Date().toISOString(),
 };
 
-Deno.test('Shopping List API - GET /api/shopping-list - success', async () => {
+Deno.test('Shopping List API - GET /api/v1/shopping-list - success', async () => {
   const originalGetAll = shoppingListBackendService.getAllItems;
   shoppingListBackendService.getAllItems = (_kitchenId) => Promise.resolve([mockShoppingItem]);
 
-  const res = await app.request('/api/shopping-list');
+  const res = await app.request('/api/v1/shopping-list');
   assertEquals(res.status, 200);
 
   const json = await res.json();
@@ -31,12 +31,12 @@ Deno.test('Shopping List API - GET /api/shopping-list - success', async () => {
   shoppingListBackendService.getAllItems = originalGetAll;
 });
 
-Deno.test('Shopping List API - POST /api/shopping-list - success', async () => {
+Deno.test('Shopping List API - POST /api/v1/shopping-list - success', async () => {
   const originalCreate = shoppingListBackendService.createItem;
   shoppingListBackendService.createItem = (dto, _kitchenId) =>
     Promise.resolve({ ...mockShoppingItem, name: dto.name });
 
-  const res = await app.request('/api/shopping-list', {
+  const res = await app.request('/api/v1/shopping-list', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name: 'Eggs', quantity: 12 }),
@@ -50,8 +50,8 @@ Deno.test('Shopping List API - POST /api/shopping-list - success', async () => {
   shoppingListBackendService.createItem = originalCreate;
 });
 
-Deno.test('Shopping List API - POST /api/shopping-list - invalid item name', async () => {
-  const res = await app.request('/api/shopping-list', {
+Deno.test('Shopping List API - POST /api/v1/shopping-list - invalid item name', async () => {
+  const res = await app.request('/api/v1/shopping-list', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name: '   ' }),
@@ -59,14 +59,14 @@ Deno.test('Shopping List API - POST /api/shopping-list - invalid item name', asy
   assertEquals(res.status, 400);
 });
 
-Deno.test('Shopping List API - POST /api/shopping-list/bulk - success', async () => {
+Deno.test('Shopping List API - POST /api/v1/shopping-list/bulk - success', async () => {
   const originalBulk = shoppingListBackendService.createMultipleItems;
   shoppingListBackendService.createMultipleItems = (items, _kitchenId) =>
     Promise.resolve(
       items.map((i, idx) => ({ ...mockShoppingItem, id: `sl-${idx}`, name: i.name })),
     );
 
-  const res = await app.request('/api/shopping-list/bulk', {
+  const res = await app.request('/api/v1/shopping-list/bulk', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify([{ name: 'Apples' }, { name: 'Bananas' }]),
@@ -80,12 +80,12 @@ Deno.test('Shopping List API - POST /api/shopping-list/bulk - success', async ()
   shoppingListBackendService.createMultipleItems = originalBulk;
 });
 
-Deno.test('Shopping List API - PUT /api/shopping-list/:id - success', async () => {
+Deno.test('Shopping List API - PUT /api/v1/shopping-list/:id - success', async () => {
   const originalUpdate = shoppingListBackendService.updateItem;
   shoppingListBackendService.updateItem = (id, _kitchenId, body) =>
     Promise.resolve({ ...mockShoppingItem, id, checked: body.checked ?? false });
 
-  const res = await app.request(`/api/shopping-list/${mockShoppingItem.id}`, {
+  const res = await app.request(`/api/v1/shopping-list/${mockShoppingItem.id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ checked: true }),
@@ -99,11 +99,11 @@ Deno.test('Shopping List API - PUT /api/shopping-list/:id - success', async () =
   shoppingListBackendService.updateItem = originalUpdate;
 });
 
-Deno.test('Shopping List API - DELETE /api/shopping-list/checked - success', async () => {
+Deno.test('Shopping List API - DELETE /api/v1/shopping-list/checked - success', async () => {
   const originalDeleteChecked = shoppingListBackendService.deleteCheckedItems;
   shoppingListBackendService.deleteCheckedItems = (_kitchenId) => Promise.resolve(3);
 
-  const res = await app.request('/api/shopping-list/checked', {
+  const res = await app.request('/api/v1/shopping-list/checked', {
     method: 'DELETE',
   });
   assertEquals(res.status, 200);
@@ -115,11 +115,11 @@ Deno.test('Shopping List API - DELETE /api/shopping-list/checked - success', asy
   shoppingListBackendService.deleteCheckedItems = originalDeleteChecked;
 });
 
-Deno.test('Shopping List API - DELETE /api/shopping-list/:id - success', async () => {
+Deno.test('Shopping List API - DELETE /api/v1/shopping-list/:id - success', async () => {
   const originalDeleteItem = shoppingListBackendService.deleteItem;
   shoppingListBackendService.deleteItem = (_id, _kitchenId) => Promise.resolve(true);
 
-  const res = await app.request(`/api/shopping-list/${mockShoppingItem.id}`, {
+  const res = await app.request(`/api/v1/shopping-list/${mockShoppingItem.id}`, {
     method: 'DELETE',
   });
   assertEquals(res.status, 200);

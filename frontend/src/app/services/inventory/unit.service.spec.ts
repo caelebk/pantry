@@ -34,7 +34,7 @@ describe('UnitService', () => {
   it('should fetch all units', async () => {
     const promise = firstValueFrom(service.getUnits());
 
-    const req = httpMock.expectOne('/api/units');
+    const req = httpMock.expectOne('/api/v1/units');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: mockUnits });
 
@@ -46,7 +46,7 @@ describe('UnitService', () => {
   it('should convert units via API endpoint', async () => {
     const promise = firstValueFrom(service.convertUnits(1000, 1, 2));
 
-    const req = httpMock.expectOne('/api/units/convert?quantity=1000&fromUnit=1&toUnit=2');
+    const req = httpMock.expectOne('/api/v1/units/convert?quantity=1000&fromUnit=1&toUnit=2');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: 1 });
 

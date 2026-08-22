@@ -10,9 +10,11 @@ import {
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 
 import { authMiddleware } from '../middleware/auth.ts';
+import { requireEditorForMutations } from '../middleware/rbac.ts';
 
 const shoppingList = new Hono();
 shoppingList.use('*', authMiddleware);
+shoppingList.use('*', requireEditorForMutations);
 
 // GET /api/shopping-list - Get all shopping list items
 shoppingList.get('/', async (c: Context) => {

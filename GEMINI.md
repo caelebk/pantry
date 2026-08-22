@@ -1,8 +1,8 @@
 # GEMINI.md - Repository Guidelines for Gemini AI Models
 
 > [!IMPORTANT]
-> The single canonical source of truth for all workspace rules, agent guidelines, TDD workflows, domain taxonomy, and modular skills is located in [.agents/AGENTS.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/AGENTS.md).
-> All Gemini models must read and strictly follow [.agents/AGENTS.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/AGENTS.md).
+> The single canonical source of truth for all workspace rules, agent guidelines, TDD workflows, domain taxonomy, and modular skills is located in [.agents/AGENTS.md](.agents/AGENTS.md).
+> All Gemini models must read and strictly follow [.agents/AGENTS.md](.agents/AGENTS.md).
 
 ---
 
@@ -33,4 +33,4 @@ All tasks must pass this strict 3-step verification before completion:
 [ Ingredient Category ] (Tier 1) ──> [ Ingredient Group ] (Tier 2) ──> [ Ingredient ] (Tier 3) ──> [ Ingredient Item ] (Tier 4)
 ```
 
-For full details, agent roles, and specialized skills, see [.agents/AGENTS.md](file:///c:/Users/ckoha/OneDrive/Desktop/personal_github/pantry/.agents/AGENTS.md).
+For full details, agent roles, and specialized skills, see [.agents/AGENTS.md](.agents/AGENTS.md).

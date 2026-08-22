@@ -34,7 +34,7 @@ describe('LocationService', () => {
   it('should fetch all locations', async () => {
     const promise = firstValueFrom(service.getLocations());
 
-    const req = httpMock.expectOne('/api/locations');
+    const req = httpMock.expectOne('/api/v1/locations');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: mockLocations });
 
