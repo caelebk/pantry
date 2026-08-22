@@ -20,6 +20,7 @@ describe('AppComponent', () => {
 
   const mockAuthService = {
     currentUser: signal(null),
+    activeKitchen: signal(null),
     userKitchens: signal([]),
     activeKitchenId: signal(null),
     logout: vi.fn(),

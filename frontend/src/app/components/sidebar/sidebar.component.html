@@ -1,14 +1,20 @@
 <!-- Mobile Top Header Bar -->
 <div
   class="md:hidden sticky top-0 z-50 glass-header px-4 h-16 flex items-center justify-between transition-colors duration-300">
-  <div class="flex items-center gap-3">
+  <div class="flex items-center gap-3 min-w-0">
     <div
-      class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary-500/20">
+      class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary-500/20 shrink-0">
       <span class="material-symbols-outlined text-[20px]">skillet</span>
     </div>
-    <h1 class="text-lg font-bold tracking-tight text-surface-900 dark:text-surface-100">
-      {{ 'app.name' | transloco }}
-    </h1>
+    <div class="min-w-0">
+      <h1
+        class="text-sm font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight truncate">
+        {{ authService.activeKitchen()?.name || ('app.name' | transloco) }}
+      </h1>
+      <span class="text-[11px] font-medium text-surface-500 dark:text-surface-400 leading-none">
+        {{ 'app.name' | transloco }}
+      </span>
+    </div>
   </div>
   <div class="flex items-center gap-2">
     <button
@@ -80,140 +86,130 @@
   [class.md:w-20]="isCollapsed()"
   [class.md:w-64]="!isCollapsed()"
   class="fixed md:static top-0 left-0 z-50 md:z-auto h-screen md:h-full w-64 md:translate-x-0 transition-[width,transform] duration-300 ease-in-out flex flex-col glass-sidebar shrink-0 group">
-  <!-- Sidebar Header / Logo -->
-  <div
-    [class.justify-center]="isCollapsed()"
-    class="p-4 md:p-5 flex items-center border-b border-surface-200/50 dark:border-white/10 h-18">
-    <div class="flex items-center gap-3">
-      <div
-        class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md shadow-primary-500/25 transition-all duration-200 hover:scale-105 shrink-0">
-        <span class="material-symbols-outlined text-[22px]">skillet</span>
-      </div>
-      @if (!isCollapsed()) {
-        <div class="hidden md:block overflow-hidden transition-all duration-300">
-          <h1
-            class="text-lg font-bold tracking-tight text-surface-900 dark:text-surface-100 leading-tight whitespace-nowrap">
-            {{ 'app.name' | transloco }}
-          </h1>
-          <span
-            class="text-[11px] font-medium text-surface-500 dark:text-surface-400 whitespace-nowrap"
-            >{{ 'sidebar.subTitle' | transloco }}</span
-          >
-        </div>
-      }
-    </div>
-  </div>
-
-  <!-- Kitchen Workspace Switcher Row (Notion Style) -->
-  @if (authService.userKitchens().length > 0) {
-    <div class="relative z-30 border-b border-surface-200/50 dark:border-white/10 px-3 py-2">
-      <button
-        type="button"
-        (click)="toggleKitchenMenu($event)"
-        aria-haspopup="true"
-        [attr.aria-expanded]="kitchenMenuOpen()"
-        [attr.title]="authService.activeKitchen()?.name || 'Workspace'"
-        [class.justify-center]="isCollapsed()"
-        class="w-full flex items-center justify-between p-2 rounded-xl text-surface-700 dark:text-surface-300 hover:text-surface-950 dark:hover:text-white hover:bg-surface-200/50 dark:hover:bg-white/5 transition-all text-left group/switcher cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div
-            class="w-6 h-6 rounded-md bg-surface-200/80 dark:bg-white/10 text-surface-800 dark:text-surface-200 flex items-center justify-center font-bold text-xs shrink-0 group-hover/switcher:bg-primary-500/15 group-hover/switcher:text-primary-500 transition-colors">
-            {{ (authService.activeKitchen()?.name || 'P').charAt(0).toUpperCase() }}
-          </div>
-          @if (!isCollapsed()) {
-            <div class="truncate">
-              <div
-                class="text-xs font-semibold text-surface-900 dark:text-surface-100 truncate leading-tight group-hover/switcher:text-primary-500 transition-colors">
-                {{ authService.activeKitchen()?.name || 'Main Kitchen' }}
-              </div>
-            </div>
-          }
-        </div>
-        @if (!isCollapsed()) {
-          <i
-            [class.rotate-180]="kitchenMenuOpen()"
-            class="pi pi-chevron-down text-[10px] text-surface-400 group-hover/switcher:text-surface-600 dark:group-hover/switcher:text-surface-300 transition-transform duration-200 shrink-0 ml-1"></i>
-        }
-      </button>
-
-      <!-- Dropdown Floating Kitchen Menu (Notion Style) -->
-      @if (kitchenMenuOpen()) {
+  <!-- Combined Sidebar Header & Kitchen Switcher -->
+  <div class="relative z-30 border-b border-surface-200/50 dark:border-white/10 p-3">
+    <button
+      type="button"
+      (click)="toggleKitchenMenu($event)"
+      aria-haspopup="true"
+      [attr.aria-expanded]="kitchenMenuOpen()"
+      [attr.title]="authService.activeKitchen()?.name || ('app.name' | transloco)"
+      [class.justify-center]="isCollapsed()"
+      [class.p-1.5]="isCollapsed()"
+      [class.p-2]="!isCollapsed()"
+      class="w-full flex items-center justify-between rounded-2xl text-surface-700 dark:text-surface-300 hover:text-surface-950 dark:hover:text-white hover:bg-surface-200/60 dark:hover:bg-white/5 transition-all text-left group/switcher cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40">
+      <div class="flex items-center gap-3 min-w-0">
+        <!-- Pantry Logo Icon -->
         <div
-          (click)="$event.stopPropagation()"
-          [class.left-2]="!isCollapsed()"
-          [class.right-2]="!isCollapsed()"
-          [class.left-full]="isCollapsed()"
-          [class.top-0]="isCollapsed()"
-          [class.ml-2]="isCollapsed()"
-          [class.w-64]="isCollapsed()"
-          class="absolute top-full mt-1 p-1.5 bg-white dark:bg-[#202020] border border-surface-200 dark:border-[#2f2f2f] rounded-xl shadow-2xl shadow-black/50 z-50 max-h-80 overflow-y-auto">
-          <!-- Active Workspace Profile Header -->
-          <div class="px-2.5 py-2 flex items-center gap-2.5">
-            <div
-              class="w-8 h-8 rounded-lg bg-surface-200/80 dark:bg-white/10 text-surface-800 dark:text-surface-100 flex items-center justify-center font-bold text-sm shrink-0">
-              {{ (authService.activeKitchen()?.name || 'P').charAt(0).toUpperCase() }}
-            </div>
-            <div class="min-w-0 flex-1">
-              <div
-                class="text-xs font-semibold text-surface-900 dark:text-surface-100 truncate leading-tight">
-                {{ authService.activeKitchen()?.name || 'Main Kitchen' }}
-              </div>
-              <div
-                class="text-[11px] text-surface-400 dark:text-surface-400 capitalize truncate leading-tight mt-0.5">
-                {{ authService.activeKitchen()?.role || 'Owner' }} ·
-                {{ authService.activeKitchen()?.memberCount || 1 }}
-                {{ authService.activeKitchen()?.memberCount === 1 ? 'member' : 'members' }}
-              </div>
+          class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md shadow-primary-500/25 transition-all duration-200 group-hover/switcher:scale-105 shrink-0">
+          <span class="material-symbols-outlined text-[22px]">skillet</span>
+        </div>
+
+        @if (!isCollapsed()) {
+          <div class="min-w-0 flex-1 overflow-hidden transition-all duration-300">
+            <!-- Kitchen Title (Combined with App Title) -->
+            <h1
+              class="text-sm font-bold tracking-tight text-surface-900 dark:text-surface-100 truncate leading-tight group-hover/switcher:text-primary-500 transition-colors">
+              {{ authService.activeKitchen()?.name || ('app.name' | transloco) }}
+            </h1>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span
+                class="text-[11px] font-medium text-surface-500 dark:text-surface-400 truncate whitespace-nowrap">
+                {{ 'app.name' | transloco }}
+              </span>
+              @if (authService.activeKitchen()?.role) {
+                <span class="text-surface-300 dark:text-surface-600 text-[10px]">·</span>
+                <span
+                  class="text-[10px] font-medium text-surface-400 dark:text-surface-500 capitalize truncate">
+                  {{ authService.activeKitchen()?.role }}
+                </span>
+              }
             </div>
           </div>
+        }
+      </div>
 
-          <div class="my-1.5 border-t border-surface-200/70 dark:border-white/10"></div>
+      @if (!isCollapsed()) {
+        <i
+          [class.rotate-180]="kitchenMenuOpen()"
+          class="pi pi-chevron-down text-xs text-surface-400 group-hover/switcher:text-surface-600 dark:group-hover/switcher:text-surface-300 transition-transform duration-200 shrink-0 ml-1.5"></i>
+      }
+    </button>
 
-          <!-- Workspaces List -->
+    <!-- Dropdown Floating Kitchen Menu (Notion / Linear Style) -->
+    @if (kitchenMenuOpen()) {
+      <div
+        (click)="$event.stopPropagation()"
+        [class.left-3]="!isCollapsed()"
+        [class.right-3]="!isCollapsed()"
+        [class.left-full]="isCollapsed()"
+        [class.top-2]="isCollapsed()"
+        [class.ml-2]="isCollapsed()"
+        [class.w-64]="isCollapsed()"
+        class="absolute top-full mt-1 p-1.5 bg-[#141C2E] text-white border border-white/15 dark:border-white/10 rounded-2xl shadow-2xl shadow-black/60 z-50 max-h-80 overflow-y-auto">
+        <!-- Active Workspace Header -->
+        <div class="px-2.5 py-2 flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-[18px] text-white shrink-0">skillet</span>
+          <div class="min-w-0 flex-1">
+            <div class="text-xs font-semibold text-white truncate leading-tight">
+              {{ authService.activeKitchen()?.name || ('app.name' | transloco) }}
+            </div>
+            <div class="text-[11px] text-slate-400 capitalize truncate leading-tight mt-0.5">
+              {{ authService.activeKitchen()?.role || 'Owner' }} ·
+              {{ authService.activeKitchen()?.memberCount || 1 }}
+              {{ authService.activeKitchen()?.memberCount === 1 ? 'member' : 'members' }}
+            </div>
+          </div>
+        </div>
+
+        <div class="my-1.5 border-t border-white/10"></div>
+
+        <!-- Workspaces List: Minimalist white pantry logos with no background -->
+        <div class="space-y-0.5">
           @for (k of authService.userKitchens(); track k.id) {
             <button
               type="button"
               (click)="selectKitchen(k)"
-              class="w-full text-left px-2 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors cursor-pointer group/item hover:bg-surface-100 dark:hover:bg-white/5 focus-visible:outline-none focus-visible:bg-surface-100 dark:focus-visible:bg-white/5">
-              <div class="flex items-center gap-2 min-w-0">
-                <div
-                  class="w-5 h-5 rounded-md bg-surface-200/80 dark:bg-white/10 text-surface-700 dark:text-surface-300 flex items-center justify-center text-[10px] font-bold shrink-0">
-                  {{ k.name.charAt(0).toUpperCase() }}
-                </div>
+              [class.bg-white/15]="authService.activeKitchen()?.id === k.id"
+              class="w-full text-left px-2 py-1.5 rounded-xl text-xs flex items-center justify-between transition-colors cursor-pointer group/item hover:bg-white/10 focus-visible:outline-none focus-visible:bg-white/10">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="material-symbols-outlined text-[16px] text-white shrink-0">
+                  skillet
+                </span>
                 <span
                   [class.font-semibold]="authService.activeKitchen()?.id === k.id"
                   [class.font-normal]="authService.activeKitchen()?.id !== k.id"
-                  class="text-xs text-surface-800 dark:text-surface-200 group-hover/item:text-surface-950 dark:group-hover/item:text-white truncate">
+                  class="text-xs text-slate-200 group-hover/item:text-white truncate">
                   {{ k.name }}
                 </span>
                 @if (k.role && k.role !== 'owner') {
                   <span
-                    class="text-[10px] px-1.5 py-0.2 rounded bg-surface-200/60 dark:bg-white/10 text-surface-500 dark:text-surface-400 capitalize">
+                    class="text-[10px] px-1.5 py-0.2 rounded bg-white/10 text-slate-300 capitalize">
                     {{ k.role }}
                   </span>
                 }
               </div>
               @if (authService.activeKitchen()?.id === k.id) {
-                <i
-                  class="pi pi-check text-xs text-surface-900 dark:text-white font-bold shrink-0 ml-2"></i>
+                <i class="pi pi-check text-xs text-white font-bold shrink-0 ml-2"></i>
               }
             </button>
           }
-
-          <div class="my-1.5 border-t border-surface-200/70 dark:border-white/10"></div>
-
-          <!-- Add Kitchen Action -->
-          <button
-            type="button"
-            (click)="openAddKitchenDialog($event)"
-            class="w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2.5 text-xs text-surface-600 dark:text-surface-400 hover:text-surface-950 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-white/5 transition-colors cursor-pointer group/add focus-visible:outline-none focus-visible:bg-surface-100 dark:focus-visible:bg-white/5">
-            <i class="pi pi-plus text-xs text-surface-500 dark:text-surface-400 shrink-0"></i>
-            <span class="font-normal truncate">Add a kitchen</span>
-          </button>
         </div>
-      }
-    </div>
-  }
+
+        <div class="my-1.5 border-t border-white/10"></div>
+
+        <!-- Add Kitchen Action -->
+        <button
+          type="button"
+          (click)="openAddKitchenDialog($event)"
+          class="w-full text-left px-2 py-1.5 rounded-xl flex items-center gap-2.5 text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer group/add focus-visible:outline-none focus-visible:bg-white/10">
+          <i
+            class="pi pi-plus text-xs text-slate-400 group-hover/add:text-white shrink-0 ml-0.5"></i>
+          <span class="font-normal truncate">Add a kitchen</span>
+        </button>
+      </div>
+    }
+  </div>
 
   <!-- Sidebar Navigation Menu -->
   <nav class="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">

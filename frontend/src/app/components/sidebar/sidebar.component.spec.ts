@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { NavigationEnd, Router, Event as RouterEvent } from '@angular/router';
+import { provideTransloco } from '@jsverse/transloco';
 import { of, Subject } from 'rxjs';
 import { vi } from 'vitest';
 import { KitchenService } from '../../core/services/kitchen.service';
@@ -20,6 +21,9 @@ describe('SidebarComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideTransloco({
+          config: { availableLangs: ['en'], defaultLang: 'en' },
+        }),
         { provide: Router, useValue: mockRouter },
       ],
     });
@@ -149,5 +153,37 @@ describe('SidebarComponent', () => {
     expect(spy).toHaveBeenCalledWith('Beach House', 'Summer home');
     expect(component.showAddKitchenDialog()).toBe(false);
     expect(component.newKitchenName()).toBe('');
+  });
+
+  it('should render active kitchen name in header when available', () => {
+    const fixture = TestBed.createComponent(SidebarComponent);
+    const comp = fixture.componentInstance;
+    comp.authService.activeKitchen.set({
+      id: 'k-1',
+      name: 'Gourmet Studio',
+      role: 'owner',
+      isPrimary: true,
+      memberCount: 3,
+    });
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Gourmet Studio');
+  });
+
+  it('should display skillet pantry logo in kitchen dropdown list', () => {
+    const fixture = TestBed.createComponent(SidebarComponent);
+    const comp = fixture.componentInstance;
+    comp.authService.userKitchens.set([
+      { id: 'k-1', name: 'Kitchen A', role: 'owner', isPrimary: true, memberCount: 1 },
+      { id: 'k-2', name: 'Kitchen B', role: 'editor', isPrimary: false, memberCount: 2 },
+    ]);
+    comp.kitchenMenuOpen.set(true);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const skilletIcons = compiled.querySelectorAll('.material-symbols-outlined');
+    const skilletTexts = Array.from(skilletIcons).map((el) => el.textContent?.trim());
+    expect(skilletTexts.filter((t) => t === 'skillet').length).toBeGreaterThanOrEqual(3);
   });
 });
