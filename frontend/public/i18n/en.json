@@ -141,7 +141,6 @@
       "searchPlaceholder": "Search items...",
       "categoryPlaceholder": "Filter by Ingredient Group"
     },
-
     "notificationService": {
       "itemAddedHeader": "Added: ",
       "itemAddedDescription": "Item successfully added.",
@@ -252,7 +251,10 @@
       "easy": "Easy",
       "medium": "Medium",
       "hard": "Hard"
-    }
+    },
+    "cancelButton": "Cancel",
+    "saveRecipe": "Save Recipe",
+    "updateRecipe": "Update Recipe"
   },
   "itemCard": {
     "category": "Category:",
@@ -521,7 +523,8 @@
       "cancel": "Cancel",
       "save": "Save Changes",
       "add": "Add to Shopping List",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "newStorePlaceholder": "New store name..."
     }
   },
   "stores": {
