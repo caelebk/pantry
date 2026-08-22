@@ -14,6 +14,9 @@
 4. **Standardize Buttons**: Use `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, or `.btn-icon`. Avoid ad-hoc inline Tailwind button strings.
 5. **Always add `appendTo="body"` to PrimeNG popovers**: `p-select`, `p-dialog`, and `p-datepicker` must specify `appendTo="body"` to avoid clipping.
 6. **Required Validation Command**: Run `npm run validate:design-system` before finishing any frontend task.
+7. **Transloco is mandatory for new templates**: every page/component template must render user-facing
+   strings via Transloco keys from `public/i18n/en.json` (RULE-04 §3). Enforced by `npm run lint:i18n`
+   (ratchet — the debt allowlist in `tools/check-i18n.mjs` may only shrink).
 
 ---
 

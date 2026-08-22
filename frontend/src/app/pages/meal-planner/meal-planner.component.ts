@@ -14,6 +14,7 @@ import { DayOfWeek, MealType } from '@models/meal-planner.model';
 import { Recipe } from '@models/recipe.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
+import { SkeletonComponent } from '@ui';
 import { AuthService } from '../../core/services/auth.service';
 import { DailyFocusComponent } from './daily-focus/daily-focus.component';
 import { WeeklyViewComponent } from './weekly-view/weekly-view.component';
@@ -23,7 +24,14 @@ export type PlannerSubTab = 'calendar' | 'daily';
 @Component({
   selector: 'pantry-meal-planner',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule, WeeklyViewComponent, DailyFocusComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslocoModule,
+    WeeklyViewComponent,
+    DailyFocusComponent,
+    SkeletonComponent,
+  ],
   templateUrl: './meal-planner.component.html',
   styleUrl: './meal-planner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

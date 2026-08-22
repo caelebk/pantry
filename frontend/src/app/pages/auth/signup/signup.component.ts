@@ -426,7 +426,7 @@ import { ToastService } from '../../../services/toast.service';
             <button
               type="submit"
               [disabled]="isSubmitting() || signupForm.invalid"
-              class="w-full h-[42px] rounded-xl bg-primary-600 hover:bg-primary-700 active:scale-[0.99] text-white font-semibold text-sm shadow-md shadow-primary-600/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 cursor-pointer">
+              class="btn-primary w-full h-[42px] mt-2 disabled:opacity-50 disabled:cursor-not-allowed">
               @if (isSubmitting()) {
                 <i class="pi pi-spin pi-spinner text-sm"></i>
                 <span>Creating Account...</span>

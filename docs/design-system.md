@@ -230,6 +230,9 @@ These are the only sanctioned deviations. Each is allowlisted in
 | Location | Pattern | Why it remains |
 | :--- | :--- | :--- |
 | `ingredient-category.component.html` | Raw hex fallback `#ea580c` for data-driven category colors | Colors come from backend data; hex concatenation builds tints dynamically. A token cannot express arbitrary data values. |
+| `ingredient-categories-page.component.html` | Raw hex fallback `#8b5cf6` for data-driven group colors | Same data-driven tinting as above; violet-500 is the fallback for missing group color data. |
+| `app.component.html` (hero SVG) | Literal gradient stops `#38bdf8`/`#60a5fa`/`#3b82f6`/`#0ea5e9` | Decorative hero artwork; SVG `stop-color` attributes have no Tailwind token equivalent. |
+| `inventory.component.html` + `ingredients-page.component.html` (pagination dot) | 2px emerald `animate-pulse` dot next to the pagination summary | Live-status indicator, not a loading skeleton — `<pantry-skeleton>` is semantically wrong here. |
 | `add-recipe-form.component.html` (difficulty selector) | emerald/amber/rose bordered state buttons | Segmented state selector where selection branches are the visual state; not a badge pill or standard action button. |
 | `daily-focus.component.html` (status tile) | emerald/rose pill ternary inside a 40px icon tile | Composite status tile (icon + text), not a badge. |
 

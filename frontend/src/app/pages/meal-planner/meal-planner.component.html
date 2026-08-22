@@ -63,7 +63,7 @@
   <!-- Dynamic Views -->
   <div class="panel-reveal panel-delay-2">
     @if (mealPlannerService.isLoading()) {
-      <div class="glass-card rounded-2xl h-96 animate-pulse" aria-busy="true"></div>
+      <pantry-skeleton variant="card" height="384px"></pantry-skeleton>
     } @else if (activeSubTab() === 'calendar') {
       <pantry-weekly-view [meals]="plannedMeals()" (addMealRequested)="openAddModal($event)">
       </pantry-weekly-view>

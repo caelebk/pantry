@@ -40,11 +40,13 @@
 
 ## 4. Automated Guardrails
 
-`npm run lint:design-system` scans all page/component templates and fails on: raw `<select>`,
-`animate-spin` spinners, inline primary-button strings, inline badge pills, and hardcoded brand
-hexes. Sanctioned exceptions live in the `ALLOWLIST` of `frontend/tools/check-design-system.mjs`
-and must be mirrored in `docs/design-system.md §8`. Run the full gate with
-`npm run validate:design-system` (prettier → eslint → guardrails → vitest → build).
+`npm run lint:design-system` scans all page/component templates (including `.ts` inline
+templates and the app shell) and fails on: raw `<select>`, `animate-spin` spinners,
+`animate-pulse` skeletons, inline primary-button strings, inline badge pills, and hardcoded
+brand hexes (`#141c2e`, `#ea580c`, `#0d1322`, `#8b5cf6`). Sanctioned exceptions live in the
+`ALLOWLIST` of `frontend/tools/check-design-system.mjs` and must be mirrored in
+`docs/design-system.md §8`. Run the full gate with `npm run validate:design-system`
+(prettier → eslint → guardrails → vitest → build).
 
 ---
 

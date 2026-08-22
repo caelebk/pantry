@@ -3,6 +3,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
+import { BadgeComponent } from '@ui';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ToastService } from '../../../services/toast.service';
@@ -10,7 +11,7 @@ import { ToastService } from '../../../services/toast.service';
 @Component({
   selector: 'pantry-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslocoModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslocoModule, BadgeComponent],
   template: `
     <div
       class="relative min-h-screen w-full flex animated-gradient-bg text-surface-900 dark:text-surface-50 font-sans transition-colors duration-300 overflow-hidden">
@@ -137,10 +138,7 @@ import { ToastService } from '../../../services/toast.service';
                 <i class="pi pi-building text-primary-500 text-sm"></i>
                 Kitchen Inventory
               </span>
-              <span
-                class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-bold"
-                >Synced</span
-              >
+              <pantry-badge variant="fresh" size="sm" [dot]="true">Synced</pantry-badge>
             </div>
             <div
               class="flex items-center justify-between p-2.5 rounded-xl bg-white/60 dark:bg-surface-800/60 border border-surface-200/50 dark:border-surface-700/50">
@@ -148,10 +146,7 @@ import { ToastService } from '../../../services/toast.service';
                 class="text-xs font-semibold text-surface-900 dark:text-surface-100 flex items-center gap-2">
                 <span>🥩</span> Wagyu Ribeye
               </span>
-              <span
-                class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-semibold border border-amber-500/20"
-                >Exp. 2 days</span
-              >
+              <pantry-badge variant="expiring" size="sm">Exp. 2 days</pantry-badge>
             </div>
           </div>
         </div>
