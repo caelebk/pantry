@@ -50,7 +50,7 @@ The core domain relies on a 3-tier ingredient taxonomy and physical stock batch 
 ### ⚙️ Technology Stack
 
 #### Backend (`/backend`)
-- **Runtime:** [Deno](https://deno.land/) (v1.37+)
+- **Runtime:** [Deno](https://deno.land/) (2.x)
 - **Framework:** [Hono](https://hono.dev/) - Ultra-fast web standard based framework
 - **Database:** Embedded SQLite (via `@db/sqlite`) running in **WAL mode** with foreign key enforcement (`pantry.db`)
 - **Architecture:** Controller/Route Handlers -> Domain Validators -> Service Layer -> SQLite Database Client
@@ -62,7 +62,7 @@ The core domain relies on a 3-tier ingredient taxonomy and physical stock batch 
 - **Styling:** [TailwindCSS v4](https://tailwindcss.com/) with PostCSS & SCSS Glassmorphism Theme System (`glass-card`, dynamic palettes)
 - **UI Components:** [PrimeNG 20](https://primeng.org/) & PrimeIcons
 - **Internationalization:** [Transloco](https://ngneat.github.io/transloco/) (`@jsverse/transloco`)
-- **Testing & E2E:** Karma + Jasmine (Unit tests), Playwright (E2E testing), ESLint & Prettier
+- **Testing & E2E:** Vitest (unit tests), Playwright (E2E testing), ESLint & Prettier
 
 #### Infrastructure & Deployment
 - **Docker & Nginx:** Production containerization for the Angular frontend using a multi-stage Docker build served via Nginx.
@@ -75,11 +75,7 @@ The core domain relies on a 3-tier ingredient taxonomy and physical stock batch 
 ```
 pantry/
 ├── backend/                        # Deno + Hono API Server
-│   ├── migrations/                 # Sequential SQL migration files
-│   │   ├── 0001_initial_schema.sql
-│   │   ├── 0002_nutrient_types.sql
-│   │   ├── 0003_meal_plans_and_shopping_list.sql
-│   │   └── 0004_redesign_ingredient_hierarchy.sql
+│   ├── migrations/                 # Sequential SQL migration files (0001–0015)
 │   ├── scripts/                    # DB migration, reset, and seed scripts
 │   │   ├── migrate_db.ts
 │   │   ├── reset_db.ts
@@ -113,7 +109,7 @@ pantry/
     │   │   ├── services/           # HTTP services connecting to REST backend
     │   │   ├── app.component.ts    # Main app layout
     │   │   └── app.routes.ts       # Application routing
-    │   ├── assets/                 # i18n translation files & images
+    │   ├── assets/                     # Images (i18n dictionaries live in public/i18n/)
     │   └── styles.scss             # Global design system & theme CSS
     ├── nginx.conf                  # Nginx configuration for Docker production build
     ├── Dockerfile                  # Multi-stage Angular build Dockerfile
@@ -126,9 +122,8 @@ pantry/
 
 ### Prerequisites
 
-- [Deno](https://deno.land/) (v1.37+)
+- [Deno](https://deno.land/) (2.x)
 - [Node.js](https://nodejs.org/) (v20+ LTS) & NPM
-- Angular CLI (`npm install -g @angular/cli`)
 
 ---
 
@@ -199,7 +194,7 @@ pantry/
 | :--- | :--- |
 | `npm start` | Start Angular development server (`ng serve`) |
 | `npm run build` | Build production bundle (`ng build`) |
-| `npm run test` | Run unit tests with Karma/Jasmine |
+| `npm run test` | Run unit tests with Vitest |
 | `npm run e2e` | Run end-to-end tests with Playwright |
 | `npm run lint` | Run ESLint check |
 | `npm run format` | Format files with Prettier |
@@ -208,11 +203,14 @@ pantry/
 
 ## 🐳 Docker Deployment
 
-To build and serve the production Angular app via Docker & Nginx:
+The **root** `docker-compose.yml` runs the full stack (API + frontend). The backend
+reads `ENVIRONMENT=production` in this setup and will refuse to start unless a secure
+`JWT_SECRET` is provided:
 
 ```bash
-cd frontend
-docker compose up --build -d
+JWT_SECRET=<unique-secret-32+-chars> docker compose up --build -d
 ```
 
-The application will be served on port `4200`.
+The application will be served on port `4200`, with `/api` proxied to the backend on
+port `8000`. Note: `frontend/docker-compose.yml` exists for image builds only — it has
+no backend service and its API proxy will not resolve.
