@@ -56,6 +56,8 @@ export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'stat
 
 import { SkeletonModule } from 'primeng/skeleton';
 
+import { SearchInputComponent } from '@ui';
+
 @Component({
   selector: 'pantry-inventory',
   standalone: true,
@@ -70,6 +72,7 @@ import { SkeletonModule } from 'primeng/skeleton';
     SelectModule,
     DialogModule,
     SkeletonModule,
+    SearchInputComponent,
   ],
   providers: [ConfirmationService],
   templateUrl: './inventory.component.html',

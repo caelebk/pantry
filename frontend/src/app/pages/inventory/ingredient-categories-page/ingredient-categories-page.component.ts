@@ -7,10 +7,12 @@ import { IngredientGroupService } from '@services/inventory/ingredient-group.ser
 import { ToastService } from '@services/toast.service';
 import { forkJoin } from 'rxjs';
 
+import { EmptyStateComponent, SpinnerComponent } from '@ui';
+
 @Component({
   selector: 'pantry-ingredient-categories-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SpinnerComponent, EmptyStateComponent],
   templateUrl: './ingredient-categories-page.component.html',
 })
 export class IngredientCategoriesPageComponent implements OnInit {

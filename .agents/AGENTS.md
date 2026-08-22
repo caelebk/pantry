@@ -74,6 +74,15 @@ NEVER declare a task resolved, a bug fixed, or a feature complete without perfor
 2. **Automated Test Suite:** Run tests to confirm zero regressions (`cd backend && deno task test` and `cd frontend && npm run test`).
 3. **Build Compilation:** Run production build checks to guarantee full type safety and template compilation (`cd frontend && npm run build`).
 
+### RULE-07: Design System Compliance & Canonical UI Primitives
+All frontend modifications MUST strictly comply with the centralized design system:
+1. **Source of Truth:** Consult `docs/design-system.md` and `docs/design-system-index.md` before making UI changes.
+2. **Canonical `@ui` Primitives:** Always reuse canonical components from `@ui` (`SearchInputComponent`, `SpinnerComponent`, `EmptyStateComponent`, `BadgeComponent`, `SkeletonComponent`, `FormFieldComponent`, `CardComponent`). Never hand-roll local copies of search inputs, loading spinners, empty states, or skeletons.
+3. **Button Contract:** Standardize all button elements using `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, or `.btn-icon`. Avoid long arbitrary inline Tailwind button strings.
+4. **Dropdown Contract:** Use PrimeNG `p-select` with `appendTo="body"`. Never introduce raw unstyled `<select>` elements or hand-coded `<ul><li>` popup menus.
+5. **Design System Validation:** Run `cd frontend && npm run validate:design-system` on all UI tasks.
+6. **UI Impact Report:** Every frontend change must include a compact `Design-system impact` report in the final response.
+
 ---
 
 ## 🤖 Specialized Coding Agents & Skill Mapping
@@ -101,3 +110,4 @@ Agents operating in this workspace adopt specialized roles mapped to `.agents/sk
 - **Frontend Test Suite:** `cd frontend && npm run test`
 - **Frontend Build Check:** `cd frontend && npm run build`
 - **Frontend Lint & Format:** `cd frontend && npm run lint && npm run format`
+- **Frontend Design System Validation:** `cd frontend && npm run validate:design-system`

@@ -25,6 +25,8 @@ interface ReconcileItemRow {
   newQuantity: number;
 }
 
+import { SpinnerComponent } from '@ui';
+
 @Component({
   selector: 'pantry-unit-reconciliation-page',
   standalone: true,
@@ -35,6 +37,7 @@ interface ReconcileItemRow {
     TableModule,
     ButtonModule,
     TranslocoModule,
+    SpinnerComponent,
   ],
   templateUrl: './unit-reconciliation-page.component.html',
 })

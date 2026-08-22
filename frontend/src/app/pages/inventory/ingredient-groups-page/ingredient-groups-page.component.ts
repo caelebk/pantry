@@ -13,10 +13,12 @@ import { ItemService } from '@services/inventory/item.service';
 import { ToastService } from '@services/toast.service';
 import { IngredientGroupContainerComponent } from '../inventory-components/ingredient-group-container/ingredient-group-container.component';
 
+import { SpinnerComponent } from '@ui';
+
 @Component({
   selector: 'pantry-ingredient-groups-page',
   standalone: true,
-  imports: [CommonModule, IngredientGroupContainerComponent],
+  imports: [CommonModule, IngredientGroupContainerComponent, SpinnerComponent],
   templateUrl: './ingredient-groups-page.component.html',
 })
 export class IngredientGroupsPageComponent implements OnInit {

@@ -15,12 +15,13 @@ import { SubstitutionSuggestion } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 
 import { ChangeDetectionStrategy } from '@angular/core';
+import { EmptyStateComponent, SpinnerComponent } from '@ui';
 import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'pantry-recipe-detail',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, DialogModule],
+  imports: [CommonModule, TranslocoModule, DialogModule, SpinnerComponent, EmptyStateComponent],
   templateUrl: './recipe-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

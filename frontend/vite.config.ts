@@ -11,6 +11,7 @@ export default defineConfig(() => ({
       '@services': resolve(__dirname, './src/app/services'),
       '@utility': resolve(__dirname, './src/app/utility'),
       '@components': resolve(__dirname, './src/app/components'),
+      '@ui': resolve(__dirname, './src/app/components/ui'),
     },
   },
   test: {
