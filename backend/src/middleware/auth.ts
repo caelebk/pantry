@@ -3,6 +3,7 @@ import { JWTPayload, verifyAccessToken } from '../utils/crypto.ts';
 import { errorResponse } from '../utils/response.ts';
 import { config } from '../config/env.ts';
 import { getDB } from '../db/client.ts';
+import { applyTestAuthIdentity, isAuthExemptPath, TEST_AUTH_ENABLED } from './test-auth.ts';
 
 export type AuthContextVars = {
   user: JWTPayload;
@@ -11,24 +12,17 @@ export type AuthContextVars = {
 };
 
 export async function authMiddleware(c: Context<{ Variables: AuthContextVars }>, next: Next) {
+  const authHeader = c.req.header('Authorization');
+
+  // Test-only bypass — double-gated in test-auth.ts, never active outside `deno task test`
   if (
-    Deno.env.get('NODE_ENV') === 'test' &&
-    !c.req.path.match(/\/(auth|me)(\/|$)/) &&
-    !c.req.header('Authorization')
+    !authHeader && TEST_AUTH_ENABLED && !isAuthExemptPath(c.req.path)
   ) {
-    c.set('user', {
-      userId: 'test-user-id',
-      email: 'test@pantry.app',
-      primaryKitchenId: 'test-kitchen-id',
-      globalRole: 'user',
-    });
-    c.set('activeKitchenId', c.req.header('X-Kitchen-Id') || 'test-kitchen-id');
-    c.set('kitchenRole', 'owner');
+    applyTestAuthIdentity(c);
     await next();
     return;
   }
 
-  const authHeader = c.req.header('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return c.json(errorResponse('Authentication required. Missing Bearer token.'), 401);
   }
