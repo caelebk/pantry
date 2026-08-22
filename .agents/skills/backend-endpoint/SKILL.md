@@ -9,39 +9,32 @@ Use this skill when implementing new backend API routes or modifying existing HT
 
 ## Architecture Layers
 
-Each backend feature follows a strict 5-layer separation:
+Dependency direction (enforced — never skip a layer):
 
 ```
-Request ──> [ Route Handler ] ──> [ Validator ] ──> [ Service (DB Query) ] ──> Response DTO
-                 │                                        │
-           (src/routes/)                           (src/services/)
+Request ──> [ Route Handler ] ──> [ Validator ] ──> [ Service (DB Query) ] ──> db/client.ts
 ```
 
 ### 1. Models (`src/models/`)
-Define explicit TypeScript interfaces for database records and API request/response DTOs:
-```ts
-export interface CreateIngredientItemRequest {
-  ingredientId: string;
-  quantity: number;
-  unit: string;
-  expirationDate?: string;
-  location?: 'fridge' | 'pantry' | 'freezer';
-}
-```
+Define explicit TypeScript interfaces in `data-models/` (API DTOs) and `schema-models/`
+(DB row shapes). Never use `any`.
 
 ### 2. Validators (`src/validators/`)
-Use Hono validator functions or custom validation logic:
+Pure input-shape checks — no DB access:
 - Check required parameters and valid formats.
 - Return structured `400 Bad Request` responses on error.
 
 ### 3. Services (`src/services/`)
-- Obtain database handle via `import { getDb } from "../db/client.ts"`.
+- Obtain database handle via `import { getDB } from "../db/client.ts"`.
 - Use parameterized prepared SQL statements to prevent SQL injection.
-- Enforce foreign keys and handle database errors cleanly.
+- **Tenancy rule (critical):** every domain query MUST filter by `kitchen_id`
+  using `WHERE id = ? AND kitchen_id = ?` with `activeKitchenId` from context.
 
 ### 4. Routes (`src/routes/`)
-- Register Hono router instances in `main.ts` or sub-routers.
+- Mount domain routers in `src/routes/index.ts` under `/api/v1/<domain>`; apply
+  `authMiddleware` + `requireEditorForMutations` on every domain router.
 - Return standard JSON envelopes with explicit HTTP status codes (`200`, `201`, `400`, `404`, `500`).
+- Users without an active kitchen must get an explicit `400`, never a silent empty query.
 
 ### 5. Testing (`tests/`)
 - Add tests in `backend/tests/<feature>.test.ts`.

@@ -12,6 +12,7 @@
 - **Backend Lint & Format:** `cd backend && deno lint && deno fmt`
 - **Frontend Build & Test:** `cd frontend && npm run test && npm run build`
 - **Frontend Lint & Format:** `cd frontend && npm run lint && npm run format`
+- **Frontend Design System Validation (mandatory on UI tasks):** `cd frontend && npm run validate:design-system`
 
 ---
 

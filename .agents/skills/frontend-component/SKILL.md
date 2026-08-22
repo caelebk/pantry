@@ -36,7 +36,10 @@ Ensure domain labels strictly reflect the 4-tier domain terminology:
 - Tier 4: `Ingredient Item`
 
 ## Testing Checklist
-- [ ] Angular unit test spec updated (`*.spec.ts`).
+- [ ] Angular unit test spec updated (`*.spec.ts`, Vitest — never Karma/Jasmine).
 - [ ] Run `npm run lint` for ESLint check.
 - [ ] Run `npm run format` for Prettier code formatting.
-- [ ] Run `npm run test` for Karma/Jasmine verification.
+- [ ] Run `npm run test` (Vitest) for verification.
+- [ ] Run `npm run validate:design-system` on any UI change (RULE-07 §5) and include a
+      `Design-system impact` report in the final response.
+- [ ] Reuse canonical `@ui` primitives; add transloco keys for all new user-facing strings.

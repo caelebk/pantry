@@ -26,9 +26,10 @@ Direction: `routes → validators → services → db/client.ts`. Never skip a l
    SQL strings (RULE-03 §1).
 3. **Migrations:** New schema changes = new sequential file in `migrations/`. Never edit an applied
    migration. Verify with a scratch DB: `DB_PATH=$(mktemp -d)/scratch.db deno task db:migrate`.
-4. **Errors:** Current convention is sentinel-string errors translated to status codes in route
-   handlers (`'EMAIL_ALREADY_EXISTS'` etc. — see the known-debt register in `.agents/AGENTS.md`).
-   Follow it for consistency; typed `AppError` exists but is not yet adopted.
+4. **Errors:** Services throw typed `AppError(statusCode, clientSafeMessage)` from
+   `src/middleware/errorHandler.ts`. Route catch blocks translate `instanceof AppError` to its
+   status/message; unexpected errors return a generic 500 fallback — never leak internals to
+   clients.
 5. **Tests:**
    - Service tests: `setDB(new Database(':memory:'))` — fully isolated.
    - Route tests that need a real schema: import `initMigratedDB` from `./helpers/test-db-path.ts`
@@ -37,13 +38,17 @@ Direction: `routes → validators → services → db/client.ts`. Never skip a l
 
 ## Verification Commands
 
-| Purpose                 | Command (from `backend/`)                                                                                              |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Full suite              | `deno task test`                                                                                                       |
-| Single test file        | `deno test --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi --unstable-cron tests/<file>` |
-| Lint / format           | `deno lint && deno fmt --check`                                                                                        |
-| Type check              | `deno check main.ts`                                                                                                   |
-| Scratch migration check | `DB_PATH=$(mktemp -d)/s.db deno task db:migrate && deno task db:seed`                                                  |
+| Purpose                 | Command (from `backend/`)                                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full suite              | `deno task test`                                                                                                                                        |
+| Single test file        | `ENABLE_TEST_AUTH=1 NODE_ENV=test deno test --allow-env --allow-net --allow-read --allow-write --allow-ffi --unstable-ffi --unstable-cron tests/<file>` |
+| Lint / format           | `deno lint && deno fmt --check`                                                                                                                         |
+| Type check              | `deno check main.ts`                                                                                                                                    |
+| Scratch migration check | `DB_PATH=$(mktemp -d)/s.db deno task db:migrate && deno task db:seed`                                                                                   |
+
+Route tests rely on a double-gated synthetic identity (`ENABLE_TEST_AUTH=1` **and** `NODE_ENV=test`,
+see `src/middleware/test-auth.ts`) — production never satisfies both, so authentication cannot
+silently disappear there.
 
 Known-incomplete: rate limiting is disabled under test and therefore untested. RBAC:
 inventory-domain mutations require `editor`/`owner` — enforced via `requireEditorForMutations`

@@ -10,7 +10,8 @@ Use this skill when conducting code reviews, auditing pull requests, checking fo
 ## Code Review Audit Checklist
 
 ### 1. Security & Vulnerability Analysis
-- **SQL Injection Prevention:** Ensure all database queries in `backend/src/services/` use prepared parameterized statements with `getDb()`. No raw string interpolation into SQL queries.
+- **SQL Injection Prevention:** Ensure all database queries in `backend/src/services/` use prepared parameterized statements with `getDB()`. No raw string interpolation into SQL queries.
+- **Tenancy Isolation:** Verify every domain query filters by `kitchen_id` (`WHERE id = ? AND kitchen_id = ?`) — cross-kitchen data leaks are critical findings.
 - **XSS & Input Sanitization:** Verify that user inputs are validated via `backend/src/validators/` before service processing.
 - **Secrets Management:** Ensure passwords, API keys, or sensitive credentials are never hardcoded into source files or commit histories.
 
@@ -23,7 +24,7 @@ Check that code strictly adheres to the 4-tier domain hierarchy:
 - **Flag Errors:** Reject legacy terms like "Nutrient Group", "Nutrient Type", "Master Ingredient", or generic "Item" when referring to physical stock.
 
 ### 3. Architecture & Code Quality
-- **Backend (Deno + Hono):** Verify clean 5-layer separation (`routes` -> `validators` -> `services` -> `models` -> `db/client.ts`).
+- **Backend (Deno + Hono):** Verify dependency direction `routes` -> `validators` -> `services` -> `db/client.ts`, with `models/data-models/` + `models/schema-models/` as typed DTO contracts (see `backend/AGENTS.md`).
 - **Frontend (Angular 20):** Ensure components use Standalone architecture (`standalone: true`), PrimeNG 20 controls, Tailwind v4 + `.glass-card` styling, and Transloco i18n keys.
 - **Type Safety:** Ensure explicit TypeScript interfaces are used without relying on `any`.
 

@@ -10,8 +10,8 @@ Use this skill when updating project documentation, writing API specs, updating 
 ## Core Documentation Artifacts & Guidelines
 
 ### 1. Repository Core Docs
-- **`README.md` & `GEMINI.md`:** Maintain quick start commands, CLI reference tables, architecture overview, and 4-tier domain hierarchy rules.
-- **`DATABASE_SETUP.md`:** Keep SQLite schema definitions, seed instructions, and migration steps accurate.
+- **All agent entry points (`CLAUDE.md`, `GEMINI.md`, `OPENCODE.md`, `PI.md`, `.cursorrules`, `.windsurfrules`, `.github/copilot-instructions.md`) plus `README.md`:** Keep them as thin bridges to `.agents/AGENTS.md`; when commands change, update `.agents/AGENTS.md` first and mirror only where entry points duplicate them.
+- **`backend/DATABASE_SETUP.md`:** Keep SQLite schema definitions, seed instructions, and migration steps accurate.
 
 ### 2. Codebase Documentation & Comments
 - **Docstrings & JSDoc:** Preserve existing docstrings. Add concise JSDoc comments to complex service methods and API route handlers.
@@ -19,5 +19,5 @@ Use this skill when updating project documentation, writing API specs, updating 
 
 ### 3. Documentation Integrity Rules
 - Use GitHub Flavored Markdown with clean code block syntax highlighting.
-- Use exact clickable file links with `file://` scheme when referencing files.
+- Use repo-relative Markdown links (e.g. `[AGENTS.md](.agents/AGENTS.md)`) when referencing files. Never use absolute `file:///Users/...` URLs — they break on other machines and CI.
 - Keep documentation synchronized with implementation code during schema or API contract updates.

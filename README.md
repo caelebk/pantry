@@ -2,6 +2,12 @@
 
 A comprehensive full-stack inventory management application designed to track pantry items, manage ingredient taxonomies, organize recipes, plan meals, and generate shopping lists.
 
+> [!NOTE]
+> AI coding agents (Claude Code, Gemini CLI, OpenCode, Cursor, Copilot, etc.) MUST read
+> [`.agents/AGENTS.md`](.agents/AGENTS.md) first — it is the canonical source of workspace rules,
+> domain taxonomy, verification commands, and skill definitions. Directory-specific conventions
+> live in [`backend/AGENTS.md`](backend/AGENTS.md) and [`frontend/AGENTS.md`](frontend/AGENTS.md).
+
 ---
 
 ## 🏗️ System Architecture & Tech Stack
@@ -38,12 +44,12 @@ graph TD
 
 ### 🗄️ Database & Taxonomy Architecture
 
-The core domain relies on a 3-tier ingredient taxonomy and physical stock batch management:
+The core domain relies on a 4-tier ingredient taxonomy and physical stock batch management:
 
 1. **Ingredient Category** *(Tier 1)*: Broad nutritional classification (e.g. *Protein & Dairy*, *Fiber & Produce*, *Carbs & Grains*, *Quick Foods*, *Fats & Oils*).
 2. **Ingredient Group** *(Tier 2)*: Specific sub-categories (e.g. *Meat*, *Seafood*, *Beans*, *Vegetables*, *Fruits*, *Grains*, *Pasta*, *Snacks*, *Sweets*).
-3. **Ingredient** *(Tier 3)*: Master ingredient definition (e.g. *Chicken Breast*, *Jasmine Rice*, *Apple*) with default unit and group link.
-4. **Ingredient Item (Batch)**: Physical stock instance in a storage location (e.g. *Fridge*, *Freezer*, *Pantry*) tracking expiration date, quantity, purchase date, and status.
+3. **Ingredient** *(Tier 3)*: Canonical ingredient definition (e.g. *Chicken Breast*, *Jasmine Rice*, *Apple*) with default unit and group link.
+4. **Ingredient Item** *(Tier 4)*: Physical stock instance in a storage location (e.g. *Fridge*, *Freezer*, *Pantry*) tracking expiration date, quantity, purchase date, and status.
 
 ---
 
@@ -75,7 +81,7 @@ The core domain relies on a 3-tier ingredient taxonomy and physical stock batch 
 ```
 pantry/
 ├── backend/                        # Deno + Hono API Server
-│   ├── migrations/                 # Sequential SQL migration files (0001–0015)
+│   ├── migrations/                 # Sequential SQL migration files (0001–0016)
 │   ├── scripts/                    # DB migration, reset, and seed scripts
 │   │   ├── migrate_db.ts
 │   │   ├── reset_db.ts

@@ -24,6 +24,7 @@ All tasks must pass this strict 3-step verification before completion:
 3. **Ensure Build Compiles:**
    - Frontend Build: `cd frontend && npm run build`
    - Formatting & Linting: `cd backend && deno lint && deno fmt` and `cd frontend && npm run format && npm run lint`
+   - UI tasks: `cd frontend && npm run validate:design-system` (RULE-07 §5)
 
 ---
 

@@ -48,7 +48,7 @@ Write the unit/integration tests before writing implementation code:
   - Run `deno task test` to **confirm that tests fail as expected** (Red).
 
 - **Frontend Tests (`frontend/src/app/.../*.spec.ts`):**
-  - Create component/service specs using Jasmine/Karma.
+  - Create component/service specs using Vitest (`*.spec.ts`).
   - Mock external services and verify template rendering and signal/state updates.
   - Run `npm run test` to confirm test failures (Red).
 

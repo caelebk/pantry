@@ -17,6 +17,10 @@ All model-specific entry point files bridge directly to this file (`.agents/AGEN
 - `.windsurfrules` (Windsurf IDE entry point)
 - `.github/copilot-instructions.md` (GitHub Copilot entry point)
 
+Directory-scoped conventions extend this file — read them when working in those trees:
+- [`backend/AGENTS.md`](../../backend/AGENTS.md) (Deno/Hono layout, tenancy rule, SQL safety, test strategy)
+- [`frontend/AGENTS.md`](../../frontend/AGENTS.md) (Angular standards, design-system contracts, i18n rules)
+
 **Any AI assistant loading this repository MUST inspect `.agents/AGENTS.md` and trigger appropriate skills in `.agents/skills/`.**
 
 ---
@@ -89,7 +93,9 @@ All frontend modifications MUST strictly comply with the centralized design syst
 
 Facts that override older documentation (README, stale plans):
 
-1. **Frontend unit tests run on Vitest** (`npm run test` → `vitest run`). Do **not** use `ng test` — the `test` architect target in `angular.json` still references a removed Karma config.
+1. **Frontend unit tests run on Vitest** (`npm run test` → `vitest run`). The `ng test`
+   architect target (`@analogjs/vitest-angular:test`) also runs Vitest and is verified green
+   (verified 2026-08-22); either entry point is acceptable — do not reintroduce Karma/Jasmine specs.
 2. **Deno 2.x is required** (lockfile v4, CI uses 2.x). Ignore any "Deno v1.37+" references.
 3. **Root `docker-compose.yml` is the only working full-stack setup.** `frontend/docker-compose.yml` has no backend service, so its `/api` proxy fails — do not follow old instructions pointing there.
 4. **Transloco dictionaries live at `frontend/public/i18n/*.json`.**
@@ -103,15 +109,15 @@ These are *recognized* inconsistencies. Do not silently "fix" them as side effec
 | :--- | :--- | :--- |
 | Legacy API aliases mounted alongside `/api/v1` | `backend/src/routes/index.ts` | **Resolved 2026-08-22** — all endpoints unified under `/api/v1`; frontend updated in step |
 | Missing per-domain validators for meal-plans, stores, shopping-list | `backend/src/routes/` | Pending Phase-2 security work |
-| Sentinel-string errors instead of typed `AppError` throws | `auth.service.ts`, `kitchen.service.ts` + matching routes | Existing convention until unified |
+| Sentinel-string errors instead of typed `AppError` throws | `auth.service.ts`, `kitchen.service.ts` + matching routes | **Resolved 2026-08-22** — services throw typed `AppError(status, clientSafeMessage)`; routes translate via `instanceof AppError`, unexpected errors never leak internals |
 | `@ui` canonical primitives partially adopted (raw skeleton/spinner markup persists) | `frontend/src/app/pages/` | **Resolved 2026-08-22** — migration completed on `feat/design-system-completion`; guardrails (`npm run lint:design-system`) now block regressions |
 | Inventory-domain writes lacked role checks; `kitchen_id` columns lacked FKs | domain routers · migrations 0011–0012 | **Resolved 2026-08-22** — `requireEditorForMutations` wired everywhere (`tests/rbac.routes.test.ts`); migration `0016_add_kitchen_foreign_keys.sql` adds FKs + NOT NULL |
 
 **Failure baseline:** expected-green commands are `cd backend && deno task test`,
-`deno lint && deno fmt --check`, `cd frontend && npm run test && npm run lint &&
-npm run build`. Known-broken/known-incomplete: `ng test`, frontend e2e without a
-backend running on `localhost:8000`. If these fail, they are pre-existing — report,
-don't rabbit-hole.
+`cd backend && deno lint && deno fmt --check`, `cd frontend && npm run test &&
+npm run lint && npm run build`. Known-broken/known-incomplete: frontend e2e
+without a backend running on `localhost:8000`. If these fail, they are
+pre-existing — report, don't rabbit-hole.
 
 ---
 
@@ -121,13 +127,16 @@ Agents operating in this workspace adopt specialized roles mapped to `.agents/sk
 
 | Agent Role | Primary Responsibilities | Skill Reference |
 | :--- | :--- | :--- |
-| **UI/UX Design Specialist** | Consistent themeing, element height & baseline alignment, minimalism, contrast, visual hierarchy | [.agents/skills/ui-ux-design/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/ui-ux-design/SKILL.md) |
-| **Code Reviewer** | Security audit, taxonomy compliance, test coverage, code quality reviews | [.agents/skills/code-reviewer/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/code-reviewer/SKILL.md) |
-| **Refactoring Specialist** | Safe code simplification, decoupling, DRY enforcement, design token adoption | [.agents/skills/refactoring-specialist/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/refactoring-specialist/SKILL.md) |
-| **Bug Investigator** | Log inspection, stack trace analysis, TDD bug reproduction, root cause fixes | [.agents/skills/bug-investigator/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/bug-investigator/SKILL.md) |
-| **Documentation Architect** | API specs, DB schema docs, README updates, Transloco i18n keys | [.agents/skills/documentation-architect/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/documentation-architect/SKILL.md) |
-| **QA Specialist** | Pre-commit verification suites, formatting, linting, regression testing | [.agents/skills/quality-assurance/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/quality-assurance/SKILL.md) |
-| **TDD Specialist** | Requirement discovery, red/green testing loops, assertion verification | [.agents/skills/test-driven-development/SKILL.md](file:///Users/caelebkoharjo/Desktop/github/pantry/.agents/skills/test-driven-development/SKILL.md) |
+| **Backend Endpoint Engineer** | New REST endpoints, validation rules, service design, route tests | [.agents/skills/backend-endpoint/SKILL.md](skills/backend-endpoint/SKILL.md) |
+| **Frontend Component Engineer** | Angular standalone components, PrimeNG + Tailwind, Transloco i18n | [.agents/skills/frontend-component/SKILL.md](skills/frontend-component/SKILL.md) |
+| **Domain Model Migration** | DB schema changes, SQL migrations, seeders, cross-stack DTO types | [.agents/skills/domain-model-migration/SKILL.md](skills/domain-model-migration/SKILL.md) |
+| **UI/UX Design Specialist** | Consistent themeing, element height & baseline alignment, minimalism, contrast, visual hierarchy | [.agents/skills/ui-ux-design/SKILL.md](skills/ui-ux-design/SKILL.md) |
+| **Code Reviewer** | Security audit, taxonomy compliance, test coverage, code quality reviews | [.agents/skills/code-reviewer/SKILL.md](skills/code-reviewer/SKILL.md) |
+| **Refactoring Specialist** | Safe code simplification, decoupling, DRY enforcement, design token adoption | [.agents/skills/refactoring-specialist/SKILL.md](skills/refactoring-specialist/SKILL.md) |
+| **Bug Investigator** | Log inspection, stack trace analysis, TDD bug reproduction, root cause fixes | [.agents/skills/bug-investigator/SKILL.md](skills/bug-investigator/SKILL.md) |
+| **Documentation Architect** | API specs, DB schema docs, README updates, Transloco i18n keys | [.agents/skills/documentation-architect/SKILL.md](skills/documentation-architect/SKILL.md) |
+| **QA Specialist** | Pre-commit verification suites, formatting, linting, regression testing | [.agents/skills/quality-assurance/SKILL.md](skills/quality-assurance/SKILL.md) |
+| **TDD Specialist** | Requirement discovery, red/green testing loops, assertion verification | [.agents/skills/test-driven-development/SKILL.md](skills/test-driven-development/SKILL.md) |
 
 ---
 
@@ -141,3 +150,4 @@ Agents operating in this workspace adopt specialized roles mapped to `.agents/sk
 - **Frontend Build Check:** `cd frontend && npm run build`
 - **Frontend Lint & Format:** `cd frontend && npm run lint && npm run format`
 - **Frontend Design System Validation:** `cd frontend && npm run validate:design-system`
+- **Frontend i18n Guardrail:** `cd frontend && npm run lint:i18n`
