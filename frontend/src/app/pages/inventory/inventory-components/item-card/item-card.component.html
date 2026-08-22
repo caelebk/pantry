@@ -24,20 +24,13 @@
             {{ item().name }}
           </h4>
           @if (expired()) {
-            <span
-              class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
-              🚨 Expired
-            </span>
+            <pantry-badge variant="expired" size="sm" class="shrink-0">🚨 Expired</pantry-badge>
           } @else if (expiringSoon()) {
-            <span
-              class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+            <pantry-badge variant="expiring" size="sm" class="shrink-0">
               ⚠️ Expiring Soon
-            </span>
+            </pantry-badge>
           } @else {
-            <span
-              class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
-              ✨ Fresh
-            </span>
+            <pantry-badge variant="fresh" size="sm" class="shrink-0">✨ Fresh</pantry-badge>
           }
         </div>
 
@@ -82,21 +75,24 @@
         <button
           type="button"
           (click)="showNote()"
-          class="p-1.5 rounded-lg text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 transition-all duration-150 cursor-pointer"
+          class="btn-icon-sm"
+          aria-label="View notes"
           title="View Notes">
           <i class="pi pi-info-circle text-xs"></i>
         </button>
         <button
           type="button"
           (click)="showEdit($event)"
-          class="p-1.5 rounded-lg text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white dark:hover:bg-surface-700 transition-all duration-150 cursor-pointer"
+          class="btn-icon-sm"
+          aria-label="Edit item"
           title="Edit Item">
           <i class="pi pi-pencil text-xs"></i>
         </button>
         <button
           type="button"
           (click)="delete.next()"
-          class="p-1.5 rounded-lg text-surface-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all duration-150 cursor-pointer"
+          class="btn-icon-sm"
+          aria-label="Delete item"
           title="Delete Item">
           <i class="pi pi-trash text-xs"></i>
         </button>

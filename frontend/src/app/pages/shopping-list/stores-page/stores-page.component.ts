@@ -5,12 +5,13 @@ import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Store } from '@models/store.model';
 import { StoreService } from '@services/store.service';
+import { BadgeComponent } from '@ui';
 import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'pantry-stores-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, TranslocoPipe],
+  imports: [CommonModule, FormsModule, InputTextModule, TranslocoPipe, BadgeComponent],
   templateUrl: './stores-page.component.html',
 })
 export class StoresPageComponent implements OnInit {

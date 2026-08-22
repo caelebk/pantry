@@ -6,13 +6,21 @@ import { IngredientCategory } from '@models/ingredient-category.model';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { ToastService } from '@services/toast.service';
+import { FormFieldComponent, SpinnerComponent } from '@ui';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'pantry-edit-ingredient-group-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, InputTextModule, SelectModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    SelectModule,
+    FormFieldComponent,
+    SpinnerComponent,
+  ],
   templateUrl: './edit-ingredient-group-page.component.html',
 })
 export class EditIngredientGroupPageComponent implements OnInit {

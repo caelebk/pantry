@@ -107,7 +107,8 @@ import { Toast, ToastService } from '../../services/toast.service';
           <button
             type="button"
             (click)="dismiss(toast.id)"
-            class="text-surface-400 hover:text-surface-600 dark:hover:text-white p-1 rounded-lg transition-colors cursor-pointer shrink-0">
+            aria-label="Dismiss notification"
+            class="btn-icon-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

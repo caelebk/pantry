@@ -15,13 +15,20 @@ import { SubstitutionSuggestion } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 
 import { ChangeDetectionStrategy } from '@angular/core';
-import { EmptyStateComponent, SpinnerComponent } from '@ui';
+import { BadgeComponent, BadgeVariant, EmptyStateComponent, SpinnerComponent } from '@ui';
 import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'pantry-recipe-detail',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, DialogModule, SpinnerComponent, EmptyStateComponent],
+  imports: [
+    CommonModule,
+    TranslocoModule,
+    DialogModule,
+    SpinnerComponent,
+    EmptyStateComponent,
+    BadgeComponent,
+  ],
   templateUrl: './recipe-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -169,14 +176,14 @@ export class RecipeDetailComponent implements OnInit {
     }
   }
 
-  get difficultyClass(): string {
+  get difficultyVariant(): BadgeVariant {
     const text = this.difficultyText.toLowerCase();
     if (text.includes('easy')) {
-      return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
+      return 'fresh';
     } else if (text.includes('medium')) {
-      return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
+      return 'expiring';
     } else {
-      return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20';
+      return 'expired';
     }
   }
 

@@ -9,13 +9,14 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { IngredientGroupCluster } from '@models/inventory.models';
+import { BadgeComponent } from '@ui';
 
 import { Item } from '@models/items.model';
 
 @Component({
   selector: 'pantry-ingredient-group',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BadgeComponent],
   templateUrl: './ingredient-group.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

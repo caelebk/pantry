@@ -8,7 +8,9 @@ export type BadgeVariant =
   | 'primary'
   | 'neutral'
   | 'location'
-  | 'outline';
+  | 'outline'
+  | 'indigo'
+  | 'purple';
 export type BadgeSize = 'sm' | 'md';
 
 @Component({
@@ -33,6 +35,8 @@ export class BadgeComponent {
   size = input<BadgeSize>('md');
   icon = input<string>();
   dot = input<boolean>(false);
+  /** Animates the dot (live status indicators, e.g. real-time stock counts). */
+  live = input<boolean>(false);
 
   badgeClasses = computed(() => {
     const sizeMap: Record<BadgeSize, string> = {
@@ -53,6 +57,8 @@ export class BadgeComponent {
         'bg-surface-100 dark:bg-surface-800/80 text-surface-800 dark:text-surface-200 border border-surface-200 dark:border-white/10 font-semibold',
       outline:
         'bg-transparent text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700',
+      indigo: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20',
+      purple: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20',
     };
 
     return `inline-flex items-center justify-center border transition-colors ${sizeMap[this.size()]} ${variantMap[this.variant()]}`;
@@ -67,8 +73,11 @@ export class BadgeComponent {
       neutral: 'bg-surface-400',
       location: 'bg-primary-500',
       outline: 'bg-surface-400',
+      indigo: 'bg-indigo-500',
+      purple: 'bg-purple-500',
     };
-    return `w-1.5 h-1.5 rounded-full ${dotMap[this.variant()]}`;
+    const liveClass = this.live() ? ' animate-pulse' : '';
+    return `w-1.5 h-1.5 rounded-full ${dotMap[this.variant()]}${liveClass}`;
   });
 
   iconSizeClass = computed(() => (this.size() === 'sm' ? 'text-[10px]' : 'text-xs'));

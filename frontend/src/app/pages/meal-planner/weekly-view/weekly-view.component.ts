@@ -11,13 +11,14 @@ import {
 } from '@angular/core';
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
+import { BadgeComponent } from '@ui';
 
 export type WeeklyLayoutMode = 'grid' | 'timeline';
 
 @Component({
   selector: 'pantry-weekly-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BadgeComponent],
   templateUrl: './weekly-view.component.html',
   styleUrl: './weekly-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

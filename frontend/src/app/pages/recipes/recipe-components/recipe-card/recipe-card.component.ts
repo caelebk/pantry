@@ -8,11 +8,12 @@ import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
 
 import { ChangeDetectionStrategy } from '@angular/core';
+import { BadgeComponent, BadgeVariant } from '@ui';
 
 @Component({
   selector: 'pantry-recipe-card',
   standalone: true,
-  imports: [CommonModule, TranslocoModule],
+  imports: [CommonModule, TranslocoModule, BadgeComponent],
   templateUrl: './recipe-card.component.html',
   styles: [':host { display: block; }'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,14 +63,14 @@ export class RecipeCardComponent {
     }
   }
 
-  get difficultyClass(): string {
+  get difficultyVariant(): BadgeVariant {
     const text = this.difficultyText.toLowerCase();
     if (text.includes('easy')) {
-      return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
+      return 'fresh';
     } else if (text.includes('medium')) {
-      return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
+      return 'expiring';
     } else {
-      return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20';
+      return 'expired';
     }
   }
 

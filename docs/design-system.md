@@ -1,9 +1,10 @@
 # Pantry Design System Specification
 
-**Version:** 1.0.0  
+**Version:** 2.0.0  
 **Author:** Frontend Architecture & Design Systems Team  
 **Scope:** Canonical Design Language, UI Primitives, Tokens, and Component Contracts for the Pantry Application  
-**Package Alias:** `@ui` (`src/app/components/ui`)
+**Package Alias:** `@ui` (`src/app/components/ui`)  
+**Component Gallery:** `/design-system` route (dev builds only) — living examples of every primitive state
 
 ---
 
@@ -111,11 +112,13 @@ import {
 
 ### 3.4 `BadgeComponent` (`pantry-badge`)
 - **Use For:** Inventory freshness status (`fresh`, `expiring`, `expired`), item locations, tags.
-- **Inputs:** `variant: input<'fresh' | 'expiring' | 'expired' | 'primary' | 'neutral' | 'location' | 'outline'>`, `size: input<'sm' | 'md'>`, `icon: input<string>`, `dot: input<boolean>`.
+- **Inputs:** `variant: input<'fresh' | 'expiring' | 'expired' | 'primary' | 'neutral' | 'location' | 'outline' | 'indigo' | 'purple'>`, `size: input<'sm' | 'md'>`, `icon: input<string>`, `dot: input<boolean>`, `live: input<boolean>`.
+- **`live`:** animates the dot (`animate-pulse`) for real-time status indicators (e.g. live stock counts). Use sparingly — only where data updates continuously.
 
 ```html
 <pantry-badge variant="fresh" [dot]="true">Fresh</pantry-badge>
 <pantry-badge variant="location" icon="pi pi-map-marker">Pantry Shelf A</pantry-badge>
+<pantry-badge variant="fresh" [dot]="true" [live]="true">12/15 In Stock</pantry-badge>
 ```
 
 ### 3.5 `SkeletonComponent` (`pantry-skeleton`)
@@ -178,36 +181,86 @@ All dropdowns and selects in Pantry MUST conform to this uniform contract:
 ## 5. Standard Button Contract (`.btn-*`)
 
 Always use standardized CSS utility classes for button actions:
-- `.btn-primary`: Primary CTA (`#ea580c`, 42px height, 12px radius, bold text, shadow-md).
+- `.btn-primary`: Primary CTA (`primary-600`, 42px height, 12px radius, bold text, shadow-md).
 - `.btn-secondary`: Neutral bordered action button.
-- `.btn-danger`: Destructive / delete action button (`#e11d48`).
+- `.btn-danger`: Destructive / delete action button (rose tinted).
 - `.btn-ghost`: Borderless subtle text button.
-- `.btn-icon`: Square `42x42px` icon-only button.
+- `.btn-icon`: Square `42x42px` icon-only bordered button.
+- `.btn-icon-sm`: Compact `32x32px` icon-only variant for dense contexts (table rows, card headers). **Must always carry an accessible name** (`aria-label`). Do not invent further sizes.
+
+Layout classes (`w-full`, margins, positioning) compose freely with the contract classes; visual styling must not be re-declared inline.
 
 ---
 
-## 6. How Future Changes Work
+## 6. Theming & Dark Mode
+
+Dark mode is owned by `ThemeService` (`src/app/core/services/theme.service.ts`) — the single
+writer of the `.dark` class on `<html>`. The app shell syncs it with the signed-in user's
+`themePreference`; standalone surfaces (auth pages) read/toggle through the same service.
+Never manipulate `documentElement.classList` for theming elsewhere. `index.html` applies the
+default dark class pre-boot to prevent a light-mode flash.
+
+---
+
+## 7. How Future Changes Work
 
 When modifying global design attributes, make edits at the centralized source of truth:
 
 | To Change... | File Location | Mechanism |
 | :--- | :--- | :--- |
-| **All Dropdowns** | `src/styles.scss` (lines 650–790) | Adjust `.p-select`, `.p-multiselect` height, radius, background, or panel styles. |
-| **All Buttons** | `src/styles.scss` (lines 1350–1495) | Adjust `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, `.btn-icon`. |
-| **Global Border Radius** | `src/styles.scss` & `tailwind.config.js` | Adjust `rounded-xl` (`0.75rem`), `rounded-2xl` (`1rem`). |
-| **Brand Primary Colors** | `src/app/app.config.ts` & `src/styles.scss` | Update `MyPreset` primary palette and `@theme` `--color-primary-*`. |
-| **Deep Navy Popovers** | `src/styles.scss` & `tailwind.config.js` | Update `--color-navy-900` (`#141c2e`). |
+| **All Dropdowns** | `src/styles.scss` (PrimeNG form-control block) | Adjust `.p-select`, `.p-multiselect`, overlay/option styles. Every `p-select` in the app inherits automatically. |
+| **All Buttons** | `src/styles.scss` (Button Contract Classes) | Adjust `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, `.btn-icon`, `.btn-icon-sm`. |
+| **Global Border Radius** | `src/styles.scss` | Control radius lives in the PrimeNG override block (`border-radius: 0.75rem`); card radius in `.glass-card` consumers / `pantry-card`. |
+| **Brand Primary Colors** | `src/app/app.config.ts` + `src/styles.scss` `@theme` | Update `MyPreset` primary palette and `@theme` `--color-primary-*` together. |
+| **Deep Navy Popovers** | `src/styles.scss` `@theme` | Update `--color-navy-900`; consume via `bg-navy-900`. Never hardcode `#141c2e`. |
+| **Dark Mode Behavior** | `src/app/core/services/theme.service.ts` | Single owner of the `.dark` class; user-preference resolution lives here. |
 | **Search Inputs** | `src/app/components/ui/search-input/` | Edit canonical `SearchInputComponent`. |
 | **Loading Spinners** | `src/app/components/ui/spinner/` | Edit canonical `SpinnerComponent`. |
 | **Empty States** | `src/app/components/ui/empty-state/` | Edit canonical `EmptyStateComponent`. |
-| **Page-Specific Variants** | Page Component SCSS / Template | Wrap canonical primitive with an explicit variant prop or scoped container. |
+| **Badges** | `src/app/components/ui/badge/` | Edit canonical `BadgeComponent` (variants/sizes/live dot). |
+| **Page-Specific Variants** | Canonical component first | Add an explicit, typed variant prop to the primitive. Only fall back to a scoped container override when a prop genuinely doesn't fit — and document it below. |
 
 ---
 
-## 7. Migration & Deprecation Policy
+## 8. Documented Exceptions
+
+These are the only sanctioned deviations. Each is allowlisted in
+`frontend/tools/check-design-system.mjs` and must keep its reason recorded here:
+
+| Location | Pattern | Why it remains |
+| :--- | :--- | :--- |
+| `ingredient-category.component.html` | Raw hex fallback `#ea580c` for data-driven category colors | Colors come from backend data; hex concatenation builds tints dynamically. A token cannot express arbitrary data values. |
+| `add-recipe-form.component.html` (difficulty selector) | emerald/amber/rose bordered state buttons | Segmented state selector where selection branches are the visual state; not a badge pill or standard action button. |
+| `daily-focus.component.html` (status tile) | emerald/rose pill ternary inside a 40px icon tile | Composite status tile (icon + text), not a badge. |
+
+Anything else that trips the guardrails is a regression: fix with the canonical pattern.
+
+**Requesting a new exception:** add an entry to `ALLOWLIST` in `tools/check-design-system.mjs`
+*and* a row above explaining why no canonical variant fits. Both are required; unexplained
+allowlist entries will be rejected in review.
+
+---
+
+## 9. Enforcement
+
+1. `npm run lint:design-system` — guardrail script scanning all page/component templates for:
+   raw `<select>`, hand-rolled spinners (`animate-spin`), inline primary-button strings,
+   inline badge pills (`bg-{tone}-500/10 text-…`), and hardcoded brand hexes.
+2. `npm run validate:design-system` — full gate: prettier → eslint → design-system guardrails
+   → vitest → production build.
+3. Component specs in `src/app/components/ui/*/` cover each primitive's variants and states.
+4. The `/design-system` route (dev only) renders every primitive in its key states for manual
+   visual inspection at any viewport.
+
+---
+
+## 10. Migration & Deprecation Policy
 
 1. **Never copy raw SVG spinners or pulse divs into page templates.** Always use `<pantry-spinner>` or `<pantry-skeleton>`.
 2. **Never hand-roll search bars.** Always use `<pantry-search-input>`.
-3. **Never hard-code custom Tailwind button styles for standard buttons.** Always use `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, or `.btn-icon`.
-4. **Never create local unstyled `<select>` or custom combobox overlays.** Always use PrimeNG `p-select` or `p-autoComplete` with `appendTo="body"`.
-5. **Always validate design system changes** with `npm run validate:design-system`.
+3. **Never hard-code custom Tailwind button styles for standard buttons.** Always use the `.btn-*` contract.
+4. **Never create local unstyled `<select>` or custom combobox overlays.** Always use PrimeNG `p-select` (with `[filter]="true"` for type-to-filter needs) with `appendTo="body"`.
+5. **Never write inline badge pills.** Always use `<pantry-badge>`; request a new variant rather than inventing markup.
+6. **Never hardcode brand hexes** (`#ea580c`, `#141c2e`) — use tokens (`primary-*`, `navy-900`).
+7. When replacing a pattern, migrate every caller, then remove dead styles — do not leave parallel "temporary" implementations.
+8. Always validate design-system changes with `npm run validate:design-system`.

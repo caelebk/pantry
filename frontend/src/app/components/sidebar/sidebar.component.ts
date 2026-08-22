@@ -16,6 +16,7 @@ import { DialogModule } from 'primeng/dialog';
 import { filter, map } from 'rxjs/operators';
 import { Tab } from '../tabs/tabs.model';
 
+import { FormFieldComponent } from '@ui';
 import { AuthService } from '../../core/services/auth.service';
 import { KitchenService } from '../../core/services/kitchen.service';
 import { ToastService } from '../../services/toast.service';
@@ -23,7 +24,7 @@ import { ToastService } from '../../services/toast.service';
 @Component({
   selector: 'pantry-sidebar',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, DialogModule],
+  imports: [CommonModule, TranslocoModule, DialogModule, FormFieldComponent],
   templateUrl: './sidebar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

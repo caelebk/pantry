@@ -11,26 +11,17 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-2.5 shrink-0 self-start sm:self-auto">
-      <button
-        type="button"
-        (click)="goToStoreManagement()"
-        class="inline-flex items-center gap-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 border border-surface-200 dark:border-surface-700 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
+      <button type="button" (click)="goToStoreManagement()" class="btn-secondary">
         <i class="pi pi-map-marker text-sm text-primary-500"></i>
         <span>{{ 'shoppingList.actions.manageStores' | transloco }}</span>
       </button>
 
-      <button
-        type="button"
-        (click)="autoFillFromMealPlanner()"
-        class="inline-flex items-center gap-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 border border-surface-200 dark:border-surface-700 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
+      <button type="button" (click)="autoFillFromMealPlanner()" class="btn-secondary">
         <i class="pi pi-sync text-sm text-primary-500"></i>
         <span>{{ 'shoppingList.actions.syncMealPlan' | transloco }}</span>
       </button>
 
-      <button
-        type="button"
-        (click)="goToAddItemPage()"
-        class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-md shadow-primary-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
+      <button type="button" (click)="goToAddItemPage()" class="btn-primary">
         <i class="pi pi-plus text-sm font-bold"></i>
         <span>{{ 'shoppingList.actions.addItem' | transloco }}</span>
       </button>
@@ -176,10 +167,7 @@
         </div>
 
         @if (checkedCount() > 0) {
-          <button
-            type="button"
-            (click)="goToRestock()"
-            class="inline-flex h-[42px] items-center gap-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 dark:border-emerald-500/30 px-3.5 text-xs sm:text-sm font-bold shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
+          <button type="button" (click)="goToRestock()" class="btn-secondary">
             <i class="pi pi-box text-sm"></i>
             <span>{{ 'shoppingList.actions.restockPantry' | transloco }}</span>
           </button>
@@ -213,18 +201,12 @@
           </p>
           <div class="mt-6 flex gap-2.5">
             @if (hasActiveFilters()) {
-              <button
-                type="button"
-                (click)="clearFilters()"
-                class="inline-flex h-[42px] items-center gap-2 px-4 rounded-xl border border-surface-200 dark:border-surface-700 text-sm font-bold text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all cursor-pointer">
+              <button type="button" (click)="clearFilters()" class="btn-secondary">
                 <i class="pi pi-filter-slash text-sm"></i>
                 <span>{{ 'shoppingList.actions.clearFilters' | transloco }}</span>
               </button>
             } @else {
-              <button
-                type="button"
-                (click)="goToAddItemPage()"
-                class="inline-flex h-[42px] items-center gap-2 px-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-sm font-bold text-white shadow-md shadow-primary-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
+              <button type="button" (click)="goToAddItemPage()" class="btn-primary">
                 <i class="pi pi-plus text-sm font-bold"></i>
                 <span>{{ 'shoppingList.actions.addItem' | transloco }}</span>
               </button>
@@ -396,10 +378,9 @@
                   <!-- Category Column -->
                   <td class="py-2.5 px-4 text-surface-600 dark:text-surface-300">
                     @if (item.category) {
-                      <span
-                        class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-700">
+                      <pantry-badge variant="neutral" size="sm">
                         {{ item.category }}
-                      </span>
+                      </pantry-badge>
                     } @else {
                       <span class="text-surface-400 dark:text-surface-500 italic text-[11px]">
                         {{ 'shoppingList.table.uncategorized' | transloco }}
@@ -559,18 +540,12 @@
           <span>{{ 'shoppingList.actions.markBought' | transloco }}</span>
         </button>
 
-        <button
-          type="button"
-          (click)="restockSelected()"
-          class="inline-flex h-[34px] items-center gap-1.5 rounded-xl bg-primary-600 hover:bg-primary-500 px-3 text-xs font-bold text-white shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+        <button type="button" (click)="restockSelected()" class="btn-primary">
           <i class="pi pi-box text-xs"></i>
           <span>{{ 'shoppingList.actions.restockPantry' | transloco }}</span>
         </button>
 
-        <button
-          type="button"
-          (click)="deleteSelected()"
-          class="inline-flex h-[34px] items-center gap-1.5 rounded-xl bg-rose-600/80 hover:bg-rose-600 px-3 text-xs font-bold text-white shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+        <button type="button" (click)="deleteSelected()" class="btn-danger">
           <i class="pi pi-trash text-xs"></i>
           <span>{{ 'shoppingList.actions.delete' | transloco }}</span>
         </button>
@@ -578,7 +553,7 @@
         <button
           type="button"
           (click)="clearSelection()"
-          class="inline-flex h-[34px] items-center justify-center rounded-xl px-2.5 text-xs font-medium text-surface-400 hover:text-white hover:bg-surface-800 dark:hover:bg-surface-700 transition-all cursor-pointer"
+          class="btn-icon-sm"
           [attr.aria-label]="'shoppingList.actions.clearSelection' | transloco">
           <i class="pi pi-times text-xs"></i>
         </button>

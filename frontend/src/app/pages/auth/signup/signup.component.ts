@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../../core/services/auth.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { ToastService } from '../../../services/toast.service';
 
 @Component({
@@ -454,10 +455,11 @@ export class SignupComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private toastService = inject(ToastService);
+  private themeService = inject(ThemeService);
 
   readonly showPassword = signal(false);
   readonly isSubmitting = signal(false);
-  readonly isDarkMode = signal(true);
+  readonly isDarkMode = computed(() => this.themeService.darkMode());
   readonly errorMessage = signal<string | null>(null);
 
   // Strong password regex validator requiring uppercase, lowercase, number, special char, min 8
@@ -518,12 +520,11 @@ export class SignupComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.isDarkMode.set(document.documentElement.classList.contains('dark'));
+    this.themeService.initializeFromDocument();
   }
 
   toggleTheme() {
-    const isDarkNow = document.documentElement.classList.toggle('dark');
-    this.isDarkMode.set(isDarkNow);
+    this.themeService.toggle();
   }
 
   togglePasswordVisibility() {

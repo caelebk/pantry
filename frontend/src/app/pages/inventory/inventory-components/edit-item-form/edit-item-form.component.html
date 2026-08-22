@@ -13,12 +13,7 @@
         </div>
       </ng-template>
       <div class="space-y-3 pt-1">
-        <div>
-          <label
-            class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
-            for="edit-ingredient">
-            Ingredient <span class="text-rose-500 ml-0.5">*</span>
-          </label>
+        <pantry-form-field [label]="'Ingredient'" forId="edit-ingredient" [required]="true">
           <p-select
             inputId="edit-ingredient"
             [options]="ingredients"
@@ -27,9 +22,9 @@
             [filter]="true"
             filterBy="name"
             placeholder="Search and select ingredient..."
-            class="w-full !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700"
+            class="w-full"
             appendTo="body"></p-select>
-        </div>
+        </pantry-form-field>
 
         @if (editItemForm.controls.ingredient.value; as selectedIng) {
           <div
@@ -49,19 +44,17 @@
       </div>
     </p-panel>
 
-    <div>
-      <label
-        class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
-        for="edit-name"
-        >{{ 'addItemForm.itemName' | transloco }}<span class="text-rose-500">*</span></label
-      >
+    <pantry-form-field
+      [label]="'addItemForm.itemName' | transloco"
+      forId="edit-name"
+      [required]="true">
       <input
         pInputText
         id="edit-name"
         formControlName="name"
         [placeholder]="'addItemForm.itemNamePlaceholder' | transloco"
         class="w-full !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white" />
-    </div>
+    </pantry-form-field>
 
     <div>
       <span
@@ -99,24 +92,17 @@
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <div>
-        <div class="flex items-center justify-between h-6 mb-1.5">
-          <label
-            class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider"
-            for="edit-quantity">
-            {{ 'addItemForm.quantity' | transloco }}
-            <span class="text-rose-500">*</span>
-          </label>
-        </div>
+      <pantry-form-field
+        [label]="'addItemForm.quantity' | transloco"
+        forId="edit-quantity"
+        [required]="true">
         <p-inputnumber
           inputId="edit-quantity"
           formControlName="quantity"
           class="w-full"
-          styleClass="w-full !h-[42px]"
-          inputStyleClass="w-full !h-[42px] !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl"
           [min]="1"
           [showButtons]="true"></p-inputnumber>
-      </div>
+      </pantry-form-field>
       <div>
         <div class="flex items-center justify-between h-6 mb-1.5">
           <span
@@ -149,60 +135,41 @@
       </div>
     </div>
 
-    <div>
-      <label
-        class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
-        for="edit-purchaseDate">
-        {{ 'addItemForm.purchaseDate' | transloco }}
-        <span class="text-rose-500">*</span>
-      </label>
+    <pantry-form-field
+      [label]="'addItemForm.purchaseDate' | transloco"
+      forId="edit-purchaseDate"
+      [required]="true">
       <p-datepicker
         inputId="edit-purchaseDate"
         formControlName="purchaseDate"
         class="w-full"
-        inputStyleClass="w-full !h-[42px] !px-3.5 !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-l-xl text-sm font-medium"
         [showIcon]="true"
         appendTo="body"></p-datepicker>
-    </div>
-    <div>
-      <label
-        class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
-        for="edit-expirationDate">
-        {{ 'addItemForm.expirationDate' | transloco }}
-        <span class="text-rose-500">*</span>
-      </label>
+    </pantry-form-field>
+    <pantry-form-field
+      [label]="'addItemForm.expirationDate' | transloco"
+      forId="edit-expirationDate"
+      [required]="true">
       <p-datepicker
         inputId="edit-expirationDate"
         formControlName="expirationDate"
         class="w-full"
-        inputStyleClass="w-full !h-[42px] !px-3.5 !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-l-xl text-sm font-medium"
         [showIcon]="true"
         [showButtonBar]="true"
         appendTo="body"></p-datepicker>
-    </div>
+    </pantry-form-field>
 
     <div class="flex flex-col gap-4">
-      <div>
-        <label
-          class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
-          for="edit-openedDate">
-          {{ 'addItemForm.openedDate' | transloco }}
-        </label>
+      <pantry-form-field [label]="'addItemForm.openedDate' | transloco" forId="edit-openedDate">
         <p-datepicker
           inputId="edit-openedDate"
           formControlName="openedDate"
           class="w-full"
-          inputStyleClass="w-full !h-[42px] !px-3.5 !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-l-xl text-sm font-medium"
           [showIcon]="true"
           [showButtonBar]="true"
           appendTo="body"></p-datepicker>
-      </div>
-      <div>
-        <label
-          class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
-          for="edit-notes">
-          {{ 'addItemForm.notes' | transloco }}
-        </label>
+      </pantry-form-field>
+      <pantry-form-field [label]="'addItemForm.notes' | transloco" forId="edit-notes">
         <textarea
           pTextarea
           id="edit-notes"
@@ -210,13 +177,10 @@
           rows="3"
           [placeholder]="'addItemForm.notesPlaceholder' | transloco"
           class="w-full !bg-surface-50 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white"></textarea>
-      </div>
+      </pantry-form-field>
     </div>
 
-    <button
-      type="submit"
-      [disabled]="!editItemForm.valid"
-      class="w-full bg-primary-600 text-white font-medium py-2.5 rounded-md hover:bg-primary-700 transition-colors shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-600">
+    <button type="submit" [disabled]="!editItemForm.valid" class="btn-primary w-full">
       {{ 'addItemForm.updateButton' | transloco }}
     </button>
   </form>

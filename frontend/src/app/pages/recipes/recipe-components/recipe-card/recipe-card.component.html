@@ -17,22 +17,20 @@
           </h4>
 
           <!-- Difficulty Badge -->
-          <span
-            [class]="
-              'px-2.5 py-0.5 rounded-full text-xs font-semibold border shrink-0 ' + difficultyClass
-            ">
+          <pantry-badge class="shrink-0" [variant]="difficultyVariant">
             {{ difficultyText }}
-          </span>
+          </pantry-badge>
 
           <!-- Availability Badge -->
           @if (ingredientStats.totalCount > 0) {
-            <span
-              [class]="
+            <pantry-badge
+              class="shrink-0"
+              [variant]="
                 ingredientStats.isFullyMakeable
-                  ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 flex items-center gap-1 shrink-0'
+                  ? 'fresh'
                   : ingredientStats.availableCount > 0
-                    ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 flex items-center gap-1 shrink-0'
-                    : 'px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 flex items-center gap-1 shrink-0'
+                    ? 'expiring'
+                    : 'expired'
               ">
               @if (ingredientStats.isFullyMakeable) {
                 <span>✓ Ready to Cook</span>
@@ -44,7 +42,7 @@
                   Available</span
                 >
               }
-            </span>
+            </pantry-badge>
           }
         </div>
 
@@ -213,22 +211,13 @@
               </div>
 
               @if (!avail.isAvailable) {
-                <span
-                  class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
-                  Missing
-                </span>
+                <pantry-badge variant="expired" size="sm" class="shrink-0">Missing</pantry-badge>
               } @else if (expInfo.expiringSoon) {
-                <span
-                  class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/40 shrink-0 flex items-center gap-0.5">
-                  <span>{{
-                    expInfo.minDays! <= 0 ? 'Exp. today' : expInfo.minDays! + 'd left'
-                  }}</span>
-                </span>
+                <pantry-badge variant="expiring" size="sm" class="shrink-0">
+                  {{ expInfo.minDays! <= 0 ? 'Exp. today' : expInfo.minDays! + 'd left' }}
+                </pantry-badge>
               } @else {
-                <span
-                  class="text-[9px] font-medium px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
-                  Stock
-                </span>
+                <pantry-badge variant="fresh" size="sm" class="shrink-0">Stock</pantry-badge>
               }
             </li>
           }

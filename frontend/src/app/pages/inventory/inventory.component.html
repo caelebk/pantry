@@ -11,9 +11,7 @@
     </div>
 
     <div class="flex items-center gap-3">
-      <button
-        (click)="openAddModal()"
-        class="px-5 py-3 cursor-pointer inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl shadow-md shadow-primary-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+      <button (click)="openAddModal()" class="btn-primary">
         <i class="pi pi-plus text-base font-bold"></i>
         <span>Add New Item</span>
       </button>
@@ -118,7 +116,7 @@
             optionValue="id"
             appendTo="body"
             placeholder="Select Location"
-            styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
+            styleClass="text-xs font-bold">
             <ng-template pTemplate="selectedItem" let-selected>
               @if (selected) {
                 <div
@@ -140,7 +138,8 @@
             <button
               type="button"
               (click)="selectedLocationId = null; resetPagination()"
-              class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+              class="btn-icon"
+              aria-label="Reset location filter"
               title="Reset location filter">
               <i class="pi pi-times text-xs font-bold"></i>
             </button>
@@ -319,25 +318,21 @@
                             >{{ item.name }}</span
                           >
                           @if (isOutOfStockItem(item)) {
-                            <span
-                              class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20 shrink-0">
+                            <pantry-badge variant="neutral" size="sm" class="shrink-0">
                               🫙 Out of Stock
-                            </span>
+                            </pantry-badge>
                           } @else if (isExpiredItem(item)) {
-                            <span
-                              class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0">
+                            <pantry-badge variant="expired" size="sm" class="shrink-0">
                               🚨 Expired
-                            </span>
+                            </pantry-badge>
                           } @else if (isExpiringSoonItem(item)) {
-                            <span
-                              class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                            <pantry-badge variant="expiring" size="sm" class="shrink-0">
                               ⚠️ Expiring Soon
-                            </span>
+                            </pantry-badge>
                           } @else {
-                            <span
-                              class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                            <pantry-badge variant="fresh" size="sm" class="shrink-0">
                               ✨ Fresh
-                            </span>
+                            </pantry-badge>
                           }
                         </div>
                         @if (item.createdBy?.username || item.createdBy?.fullName) {
@@ -474,16 +469,18 @@
         <div class="flex flex-wrap items-center gap-3">
           <!-- Rows Per Page Selector -->
           <div class="flex items-center gap-1.5 text-xs">
-            <span class="text-surface-500 font-medium hidden md:inline">Per page:</span>
-            <select
+            <label for="inventory-page-size" class="text-surface-500 font-medium hidden md:inline"
+              >Per page:</label
+            >
+            <p-select
+              inputId="inventory-page-size"
               [ngModel]="pageSize"
               (ngModelChange)="onPageSizeChange($event)"
-              class="h-8 px-2 bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-lg text-xs font-bold text-surface-800 dark:text-surface-200 focus:outline-none focus:ring-1 focus:ring-primary-500 cursor-pointer">
-              <option [value]="10">10</option>
-              <option [value]="15">15</option>
-              <option [value]="25">25</option>
-              <option [value]="50">50</option>
-            </select>
+              [options]="pageSizeOptions"
+              appendTo="body"
+              ariaLabel="Items per page"
+              styleClass="text-xs font-bold">
+            </p-select>
           </div>
 
           <!-- Page Number Navigation Buttons -->
@@ -493,7 +490,8 @@
               type="button"
               (click)="goToPage(1)"
               [disabled]="currentPage === 1"
-              class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              class="btn-icon-sm"
+              aria-label="First Page"
               title="First Page">
               <i class="pi pi-angle-double-left text-xs"></i>
             </button>
@@ -503,7 +501,8 @@
               type="button"
               (click)="goToPage(currentPage - 1)"
               [disabled]="currentPage === 1"
-              class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              class="btn-icon-sm"
+              aria-label="Previous Page"
               title="Previous Page">
               <i class="pi pi-angle-left text-xs"></i>
             </button>
@@ -531,7 +530,8 @@
               type="button"
               (click)="goToPage(currentPage + 1)"
               [disabled]="currentPage >= totalPages"
-              class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              class="btn-icon-sm"
+              aria-label="Next Page"
               title="Next Page">
               <i class="pi pi-angle-right text-xs"></i>
             </button>
@@ -541,7 +541,8 @@
               type="button"
               (click)="goToPage(totalPages)"
               [disabled]="currentPage >= totalPages"
-              class="w-8 h-8 rounded-lg flex items-center justify-center border border-surface-200/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-300 hover:bg-surface-200/60 dark:hover:bg-surface-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              class="btn-icon-sm"
+              aria-label="Last Page"
               title="Last Page">
               <i class="pi pi-angle-double-right text-xs"></i>
             </button>
@@ -564,12 +565,10 @@
           <div class="flex items-center justify-center gap-3">
             <button
               (click)="searchQuery = ''; selectedLocationId = null; selectedStatusFilter = 'all'"
-              class="px-4 py-2 bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-200 font-semibold text-xs rounded-xl transition-all cursor-pointer">
+              class="btn-secondary">
               Reset Filters
             </button>
-            <button
-              (click)="openAddModal()"
-              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-sm">
+            <button (click)="openAddModal()" class="btn-primary">
               <i class="pi pi-plus text-xs font-bold"></i>
               <span>Add New Item</span>
             </button>
@@ -670,20 +669,21 @@
               </div>
             </div>
           </div>
-          <span
-            class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
-            +{{ restockAmount() }} {{ item.unit.shortName || item.unit.name }}
-          </span>
+          <pantry-badge variant="fresh"
+            >+{{ restockAmount() }} {{ item.unit.shortName || item.unit.name }}</pantry-badge
+          >
         </div>
 
         <!-- Amount to Restock -->
         <div>
           <label
+            for="restock-quantity"
             class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300 mb-1.5">
             Restock Quantity ({{ item.unit.name }}) <span class="text-rose-500">*</span>
           </label>
           <div class="relative flex items-center">
             <input
+              id="restock-quantity"
               type="number"
               min="0.1"
               step="1"
@@ -708,20 +708,17 @@
         </div>
 
         <!-- Storage Location -->
-        <div>
-          <label
-            class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300 mb-1.5">
-            Storage Location <span class="text-rose-500">*</span>
-          </label>
-          <select
+        <pantry-form-field [label]="'Storage Location'" forId="restock-location" [required]="true">
+          <p-select
+            inputId="restock-location"
             [ngModel]="restockLocationId()"
             (ngModelChange)="restockLocationId.set($event)"
-            class="w-full h-[42px] px-3.5 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm font-medium focus:ring-2 focus:ring-primary-500/50 outline-none transition-all cursor-pointer">
-            @for (loc of locations; track loc.id) {
-              <option [value]="loc.id">{{ loc.name }}</option>
-            }
-          </select>
-        </div>
+            [options]="locations"
+            optionLabel="name"
+            optionValue="id"
+            appendTo="body">
+          </p-select>
+        </pantry-form-field>
 
         <!-- Expiration Date -->
         <div>
@@ -777,10 +774,7 @@
 
         <!-- Actions -->
         <div class="flex items-center justify-end gap-2.5 pt-2">
-          <button
-            type="button"
-            (click)="displayRestockModal.set(false)"
-            class="px-4 py-2 rounded-xl text-surface-600 dark:text-surface-300 text-xs font-semibold hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+          <button type="button" (click)="displayRestockModal.set(false)" class="btn-ghost text-xs">
             Cancel
           </button>
           <button
@@ -819,10 +813,7 @@
                 </div>
               </div>
             </div>
-            <span
-              class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
-              +{{ restockAmount() }} each
-            </span>
+            <pantry-badge variant="fresh">+{{ restockAmount() }} each</pantry-badge>
           </div>
           <div class="flex flex-wrap gap-1 pt-1 max-h-24 overflow-y-auto">
             @for (it of restockItems(); track it.id) {
@@ -835,39 +826,33 @@
         </div>
 
         <!-- Quantity to add to each item -->
-        <div>
-          <label
-            class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300 mb-1.5">
-            Quantity to Add to Each Item <span class="text-rose-500">*</span>
-          </label>
-          <div class="relative flex items-center">
-            <input
-              type="number"
-              min="0.1"
-              step="1"
-              [ngModel]="restockAmount()"
-              (ngModelChange)="restockAmount.set($event)"
-              class="w-full h-[42px] px-4 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm font-bold focus:ring-2 focus:ring-primary-500/50 outline-none transition-all"
-              placeholder="1" />
-          </div>
-        </div>
+        <pantry-form-field
+          [label]="'Quantity to Add to Each Item'"
+          forId="bulk-restock-quantity"
+          [required]="true">
+          <input
+            id="bulk-restock-quantity"
+            type="number"
+            min="0.1"
+            step="1"
+            [ngModel]="restockAmount()"
+            (ngModelChange)="restockAmount.set($event)"
+            class="w-full h-[42px] px-4 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm font-bold focus:ring-2 focus:ring-primary-500/50 outline-none transition-all"
+            placeholder="1" />
+        </pantry-form-field>
 
         <!-- Storage Location Option -->
-        <div>
-          <label
-            class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300 mb-1.5">
-            Storage Location
-          </label>
-          <select
+        <pantry-form-field [label]="'Storage Location'" forId="bulk-restock-location">
+          <p-select
+            inputId="bulk-restock-location"
             [ngModel]="restockLocationId()"
             (ngModelChange)="restockLocationId.set($event)"
-            class="w-full h-[42px] px-3.5 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm font-medium focus:ring-2 focus:ring-primary-500/50 outline-none transition-all cursor-pointer">
-            <option [value]="0">Keep each item's current location</option>
-            @for (loc of locations; track loc.id) {
-              <option [value]="loc.id">Move all to {{ loc.name }}</option>
-            }
-          </select>
-        </div>
+            [options]="bulkRestockLocationOptions"
+            optionLabel="name"
+            optionValue="id"
+            appendTo="body">
+          </p-select>
+        </pantry-form-field>
 
         <!-- Expiration Date (Optional) -->
         <div>
@@ -925,10 +910,7 @@
 
         <!-- Actions -->
         <div class="flex items-center justify-end gap-2.5 pt-2">
-          <button
-            type="button"
-            (click)="displayRestockModal.set(false)"
-            class="px-4 py-2 rounded-xl text-surface-600 dark:text-surface-300 text-xs font-semibold hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+          <button type="button" (click)="displayRestockModal.set(false)" class="btn-ghost text-xs">
             Cancel
           </button>
           <button
@@ -967,16 +949,8 @@
                 {{ message.message }}
               </p>
               <div class="flex gap-3 justify-end">
-                <button
-                  (click)="onReject()"
-                  class="px-4 py-2 text-sm font-medium text-surface-700 dark:text-surface-300 bg-white/60 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-700 rounded-xl hover:bg-white dark:hover:bg-surface-800 transition-all">
-                  Cancel
-                </button>
-                <button
-                  (click)="onAccept()"
-                  class="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-xl hover:bg-rose-700 transition-all shadow-sm shadow-rose-500/20">
-                  Remove Item
-                </button>
+                <button (click)="onReject()" class="btn-secondary">Cancel</button>
+                <button (click)="onAccept()" class="btn-danger">Remove Item</button>
               </div>
             </div>
           </div>
@@ -1050,7 +1024,7 @@
   <button
     (click)="scrollToTop()"
     @fadeInOut
-    class="fixed bottom-8 right-8 p-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl shadow-lg shadow-primary-600/25 transition-all duration-300 z-50 cursor-pointer hover:scale-110 active:scale-95"
+    class="btn-icon !border-transparent bg-primary-600 !text-white hover:!bg-primary-700 hover:!text-white shadow-lg shadow-primary-600/25 fixed bottom-8 right-8 z-50 hover:scale-110 active:scale-95"
     aria-label="Scroll to top">
     <i class="pi pi-arrow-up text-lg"></i>
   </button>

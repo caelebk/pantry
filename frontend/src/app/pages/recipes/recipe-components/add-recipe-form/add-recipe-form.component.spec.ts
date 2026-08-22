@@ -123,66 +123,42 @@ describe('AddRecipeFormComponent', () => {
     component.addIngredientRow();
     const row = component.recipeIngredients[0];
 
-    component.selectIngredient(row, mockIngredient);
+    component.onIngredientChange(row, mockIngredient.id);
     expect(row.ingredientId).toBe('ing-1');
     expect(row.unitId).toBe(mockUnitTbsp.id);
     expect(component.recipeIngredients.length).toBe(2);
   });
 
-  it('should close ingredient dropdown when clicking outside or pressing Escape key', () => {
+  it('should resolve ingredient display names from the master ingredient map', () => {
     component.recipeIngredients = [];
     component.addIngredientRow();
     const row = component.recipeIngredients[0];
-    row.dropdownOpen = true;
 
-    const dummyOutsideElement = document.createElement('div');
-    component.onDocumentClick({ target: dummyOutsideElement } as unknown as MouseEvent);
-    expect(row.dropdownOpen).toBeFalse();
+    expect(component.getIngredientName(row.ingredientId)).toBe('');
 
-    row.dropdownOpen = true;
-    component.onEscapeKey();
-    expect(row.dropdownOpen).toBeFalse();
+    row.ingredientId = mockIngredient.id;
+    expect(component.getIngredientName(row.ingredientId)).toBe('Olive Oil');
   });
 
   it('should reorder ingredients up and down correctly', () => {
     component.recipeIngredients = [
-      { ingredientId: 'ing-1', quantity: 1, unitId: 1, searchFilter: 'Salt', dropdownOpen: false },
-      {
-        ingredientId: 'ing-2',
-        quantity: 2,
-        unitId: 2,
-        searchFilter: 'Pepper',
-        dropdownOpen: false,
-      },
+      { id: 'row-1', ingredientId: 'ing-1', quantity: 1, unitId: 1 },
+      { id: 'row-2', ingredientId: 'ing-2', quantity: 2, unitId: 2 },
     ];
 
     component.moveIngredientDown(0);
-    expect(component.recipeIngredients[0].searchFilter).toBe('Pepper');
-    expect(component.recipeIngredients[1].searchFilter).toBe('Salt');
+    expect(component.recipeIngredients[0].ingredientId).toBe('ing-2');
+    expect(component.recipeIngredients[1].ingredientId).toBe('ing-1');
 
     component.moveIngredientUp(1);
-    expect(component.recipeIngredients[0].searchFilter).toBe('Salt');
-    expect(component.recipeIngredients[1].searchFilter).toBe('Pepper');
+    expect(component.recipeIngredients[0].ingredientId).toBe('ing-1');
+    expect(component.recipeIngredients[1].ingredientId).toBe('ing-2');
   });
 
   it('should support drag and drop reordering for ingredients and steps', () => {
     component.recipeIngredients = [
-      {
-        id: '1',
-        ingredientId: 'ing-1',
-        quantity: 1,
-        unitId: 1,
-        searchFilter: 'Salt',
-        dropdownOpen: false,
-      },
-      {
-        id: '2',
-        ingredientId: 'ing-2',
-        quantity: 2,
-        unitId: 2,
-        searchFilter: 'Pepper',
-        dropdownOpen: false,
-      },
+      { id: '1', ingredientId: 'ing-1', quantity: 1, unitId: 1 },
+      { id: '2', ingredientId: 'ing-2', quantity: 2, unitId: 2 },
     ];
 
     const mockDragEvent = {
@@ -203,8 +179,8 @@ describe('AddRecipeFormComponent', () => {
 
     component.onIngredientDragOver(mockDragEvent, 1);
     component.onIngredientDrop(mockDragEvent, 1);
-    expect(component.recipeIngredients[0].searchFilter).toBe('Pepper');
-    expect(component.recipeIngredients[1].searchFilter).toBe('Salt');
+    expect(component.recipeIngredients[0].ingredientId).toBe('ing-2');
+    expect(component.recipeIngredients[1].ingredientId).toBe('ing-1');
     expect(component.draggedIngredientIndex).toBeNull();
 
     component.recipeSteps = [
@@ -225,17 +201,17 @@ describe('AddRecipeFormComponent', () => {
   it('should open quick create ingredient dialog and create a new ingredient with customizable default unit', () => {
     component.recipeIngredients = [];
     component.addIngredientRow();
-    component.recipeIngredients[0].searchFilter = 'Garlic';
+    component.recipeIngredients[0].ingredientId = mockIngredient.id;
 
     component.openQuickCreateIngredient(0);
     expect(component.displayQuickCreateDialog()).toBeTrue();
-    expect(component.newIngredientName()).toBe('Garlic');
+    expect(component.newIngredientName()).toBe('Olive Oil');
 
     component.newIngredientDefaultUnit.set(mockUnitGrams);
     component.submitQuickCreateIngredient();
 
     expect(mockIngredientService.createIngredient).toHaveBeenCalledWith({
-      name: 'Garlic',
+      name: 'Olive Oil',
       ingredientGroupId: undefined,
       defaultUnitId: mockUnitGrams.id,
     });
@@ -250,11 +226,10 @@ describe('AddRecipeFormComponent', () => {
     component.cookTime = 20;
     component.recipeIngredients = [
       {
+        id: 'row-1',
         ingredientId: 'ing-1',
         quantity: 2,
         unitId: mockUnitTbsp.id,
-        searchFilter: 'Olive Oil',
-        dropdownOpen: false,
       },
     ];
     component.recipeSteps = [{ instructionText: 'Cook chicken in oil', timerSeconds: null }];

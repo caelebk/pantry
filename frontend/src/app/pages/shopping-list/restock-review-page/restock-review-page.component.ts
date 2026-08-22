@@ -13,11 +13,17 @@ import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
+import { BadgeComponent } from '@ui';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+
+export interface MatchCandidateOption {
+  label: string;
+  value: string;
+}
 
 export interface RestockDraftItem {
   shoppingId: string;
@@ -41,7 +47,14 @@ export interface RestockDraftItem {
 @Component({
   selector: 'pantry-restock-review-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, SelectModule, DatePickerModule, InputNumberModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SelectModule,
+    DatePickerModule,
+    InputNumberModule,
+    BadgeComponent,
+  ],
   templateUrl: './restock-review-page.component.html',
   styleUrl: './restock-review-page.component.scss',
 })
@@ -272,6 +285,13 @@ export class RestockReviewPageComponent implements OnInit {
       const matched = this.getMatchedItem(draft);
       this.updateUnitLockForDraft(draft, matched || null);
     }
+  }
+
+  matchOptions(draft: RestockDraftItem): MatchCandidateOption[] {
+    return draft.matchCandidates.map((c) => ({
+      value: c.item.id,
+      label: `${c.item.name} (${c.item.quantity} ${c.item.unit.name} in ${c.item.location.name}) - ${Math.round(c.score * 100)}% match`,
+    }));
   }
 
   getMatchedItem(draft: RestockDraftItem): IngredientItem | undefined {

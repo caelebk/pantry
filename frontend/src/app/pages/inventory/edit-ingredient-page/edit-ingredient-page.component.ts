@@ -8,13 +8,21 @@ import { IngredientGroupService } from '@services/inventory/ingredient-group.ser
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
+import { FormFieldComponent, SpinnerComponent } from '@ui';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'pantry-edit-ingredient-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, InputTextModule, SelectModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    SelectModule,
+    FormFieldComponent,
+    SpinnerComponent,
+  ],
   templateUrl: './edit-ingredient-page.component.html',
 })
 export class EditIngredientPageComponent implements OnInit {

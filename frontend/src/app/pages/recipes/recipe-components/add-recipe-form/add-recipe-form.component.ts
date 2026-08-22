@@ -1,14 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  HostListener,
-  inject,
-  OnInit,
-  Output,
-  signal,
-} from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -16,6 +7,7 @@ import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import { CreateRecipeDTO } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
+import { FormFieldComponent } from '@ui';
 import { IngredientGroupService } from '../../../../services/inventory/ingredient-group.service';
 import { IngredientService } from '../../../../services/inventory/ingredient.service';
 import { UnitService } from '../../../../services/inventory/unit.service';
@@ -27,8 +19,6 @@ interface FormIngredientRow {
   ingredientId: string;
   quantity: number;
   unitId: number | null;
-  searchFilter: string;
-  dropdownOpen: boolean;
 }
 
 interface FormStepRow {
@@ -58,6 +48,7 @@ import { TextareaModule } from 'primeng/textarea';
     InputNumberModule,
     DialogModule,
     ButtonModule,
+    FormFieldComponent,
   ],
   templateUrl: './add-recipe-form.component.html',
 })
@@ -71,26 +62,6 @@ export class AddRecipeFormComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly elementRef = inject(ElementRef);
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement | null;
-    if (target && !target.closest('.ingredient-search-container')) {
-      this.recipeIngredients.forEach((row) => (row.dropdownOpen = false));
-    }
-  }
-
-  @HostListener('document:keydown.escape')
-  onEscapeKey(): void {
-    this.recipeIngredients.forEach((row) => (row.dropdownOpen = false));
-  }
-
-  onInputBlur(row: FormIngredientRow): void {
-    setTimeout(() => {
-      row.dropdownOpen = false;
-    }, 200);
-  }
 
   availableIngredients: Ingredient[] = [];
   availableUnits: Unit[] = [];
@@ -181,8 +152,6 @@ export class AddRecipeFormComponent implements OnInit {
             ingredientId: ing.ingredientId,
             quantity: ing.quantity,
             unitId: ing.unitId || null,
-            searchFilter: this.ingredientMap.get(ing.ingredientId)?.name || '',
-            dropdownOpen: false,
           }));
         } else {
           this.addIngredientRow();
@@ -243,8 +212,6 @@ export class AddRecipeFormComponent implements OnInit {
       ingredientId: '',
       quantity: 1,
       unitId: null,
-      searchFilter: '',
-      dropdownOpen: false,
     });
   }
 
@@ -304,28 +271,25 @@ export class AddRecipeFormComponent implements OnInit {
     this.recipeIngredients[index + 1] = temp;
   }
 
-  getFilteredIngredients(search: string): Ingredient[] {
-    const term = search.toLowerCase().trim();
-    if (!term) return this.availableIngredients;
-    return this.availableIngredients.filter((ing) => ing.name.toLowerCase().includes(term));
-  }
-
   getUnitShortName(unitId: number | null): string {
     if (!unitId) return '';
     const unit = this.availableUnits.find((u) => u.id === Number(unitId));
     return unit ? unit.shortName || unit.name : '';
   }
 
-  selectIngredient(row: FormIngredientRow, ing: Ingredient): void {
+  getIngredientName(ingredientId: string): string {
+    return this.ingredientMap.get(ingredientId)?.name || '';
+  }
+
+  onIngredientChange(row: FormIngredientRow, ingredientId: string): void {
     const isLastRow = this.recipeIngredients[this.recipeIngredients.length - 1] === row;
-    row.ingredientId = ing.id;
-    row.searchFilter = ing.name;
-    row.dropdownOpen = false;
-    if (ing.defaultUnit) {
+    row.ingredientId = ingredientId;
+    const ing = this.ingredientMap.get(ingredientId);
+    if (ing?.defaultUnit) {
       row.unitId = ing.defaultUnit.id;
     }
 
-    if (isLastRow) {
+    if (isLastRow && ingredientId !== '') {
       this.addIngredientRow();
     }
   }
@@ -335,7 +299,7 @@ export class AddRecipeFormComponent implements OnInit {
     this.activeRowIndexForQuickCreate = rowIndex !== undefined ? rowIndex : null;
     let initialName = '';
     if (rowIndex !== undefined && this.recipeIngredients[rowIndex]) {
-      initialName = this.recipeIngredients[rowIndex].searchFilter.trim();
+      initialName = this.getIngredientName(this.recipeIngredients[rowIndex].ingredientId);
     }
     this.newIngredientName.set(initialName);
     this.newIngredientGroup.set(null);
@@ -381,9 +345,7 @@ export class AddRecipeFormComponent implements OnInit {
                 this.activeRowIndexForQuickCreate === this.recipeIngredients.length - 1;
               const row = this.recipeIngredients[this.activeRowIndexForQuickCreate];
               row.ingredientId = created.id;
-              row.searchFilter = name;
               row.unitId = defaultUnit.id;
-              row.dropdownOpen = false;
 
               if (isLastRow) {
                 this.addIngredientRow();
@@ -492,7 +454,7 @@ export class AddRecipeFormComponent implements OnInit {
     for (const row of this.recipeIngredients) {
       if (row.ingredientId && (Number(row.quantity) <= 0 || isNaN(Number(row.quantity)))) {
         this.validationErrors.push(
-          `Ingredient "${row.searchFilter || 'item'}" must have a quantity greater than 0.`,
+          `Ingredient "${this.getIngredientName(row.ingredientId) || 'item'}" must have a quantity greater than 0.`,
         );
       }
     }

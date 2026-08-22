@@ -22,6 +22,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { Tab } from './components/tabs/tabs.model';
 import { ToastContainerComponent } from './components/toast-container/toast-container.component';
 import { AuthService } from './core/services/auth.service';
+import { ThemeService } from './core/services/theme.service';
 
 import { routeTransition } from '@utility/animationUtility/animations';
 
@@ -80,11 +81,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroyRef = inject(DestroyRef);
   private platformId = inject(PLATFORM_ID);
   private authService = inject(AuthService);
+  private themeService = inject(ThemeService);
   private ngZone = inject(NgZone);
 
   Tab = Tab; // Expose enum to template
   title = 'Pantry';
-  darkMode = signal(true);
+  darkMode = this.themeService.darkMode;
   currentTab = signal<Tab>(Tab.Home);
   isAuthRoute = signal(false);
 
@@ -107,21 +109,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       () => {
         const user = this.authService.currentUser();
         if (user && user.themePreference) {
-          let isDark = true;
-          if (user.themePreference === 'dark') {
-            isDark = true;
-          } else if (user.themePreference === 'light') {
-            isDark = false;
-          } else {
-            isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          }
-
-          this.darkMode.set(isDark);
-          if (isDark) {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
+          this.themeService.syncFromUserPreference(user.themePreference);
         }
       },
       { allowSignalWrites: true },
@@ -129,18 +117,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleTheme() {
-    this.darkMode.update((val) => !val);
-    if (this.darkMode()) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    this.themeService.toggle();
   }
 
   ngOnInit() {
-    if (this.darkMode()) {
-      document.documentElement.classList.add('dark');
-    }
+    this.themeService.apply(this.themeService.darkMode());
 
     const defaultW =
       isPlatformBrowser(this.platformId) && typeof window !== 'undefined'

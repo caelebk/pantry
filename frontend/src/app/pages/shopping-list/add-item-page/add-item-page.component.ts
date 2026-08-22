@@ -13,6 +13,7 @@ import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { StoreService } from '@services/store.service';
+import { FormFieldComponent } from '@ui';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -27,6 +28,7 @@ import { SelectModule } from 'primeng/select';
     InputTextModule,
     SelectModule,
     InputNumberModule,
+    FormFieldComponent,
   ],
   templateUrl: './add-item-page.component.html',
   styleUrl: './add-item-page.component.scss',
