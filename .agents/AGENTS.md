@@ -101,10 +101,11 @@ These are *recognized* inconsistencies. Do not silently "fix" them as side effec
 
 | Debt | Location | Status |
 | :--- | :--- | :--- |
-| Legacy API aliases mounted alongside `/api/v1` (incl. `/nutrient-groups`, `/nutrient-types`, `/items`, `/categories`) | `backend/src/routes/index.ts` | Pending deprecation — RULE-02 does not yet apply to these legacy paths |
+| Legacy API aliases mounted alongside `/api/v1` | `backend/src/routes/index.ts` | **Resolved 2026-08-22** — all endpoints unified under `/api/v1`; frontend updated in step |
 | Missing per-domain validators for meal-plans, stores, shopping-list | `backend/src/routes/` | Pending Phase-2 security work |
 | Sentinel-string errors instead of typed `AppError` throws | `auth.service.ts`, `kitchen.service.ts` + matching routes | Existing convention until unified |
 | `@ui` canonical primitives partially adopted (raw skeleton/spinner markup persists) | `frontend/src/app/pages/` | Migration in progress |
+| Inventory-domain writes lacked role checks; `kitchen_id` columns lacked FKs | domain routers · migrations 0011–0012 | **Resolved 2026-08-22** — `requireEditorForMutations` wired everywhere (`tests/rbac.routes.test.ts`); migration `0016_add_kitchen_foreign_keys.sql` adds FKs + NOT NULL |
 
 **Failure baseline:** expected-green commands are `cd backend && deno task test`,
 `deno lint && deno fmt --check`, `cd frontend && npm run test && npm run lint &&
