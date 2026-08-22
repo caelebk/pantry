@@ -5,9 +5,11 @@ import { errorResponse, HttpStatusCode, successResponse } from '../utils/respons
 import { isPositiveNumber } from '../utils/validators.ts';
 
 import { authMiddleware } from '../middleware/auth.ts';
+import { requireEditorForMutations } from '../middleware/rbac.ts';
 
 const units = new Hono();
 units.use('*', authMiddleware);
+units.use('*', requireEditorForMutations);
 
 /**
  * GET /api/units

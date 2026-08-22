@@ -5,9 +5,11 @@ import { errorResponse, HttpStatusCode, successResponse } from '../utils/respons
 import { isPositiveNumber } from '../utils/validators.ts';
 
 import { authMiddleware } from '../middleware/auth.ts';
+import { requireEditorForMutations } from '../middleware/rbac.ts';
 
 const locations = new Hono();
 locations.use('*', authMiddleware);
+locations.use('*', requireEditorForMutations);
 
 /**
  * GET /api/locations

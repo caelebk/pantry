@@ -12,9 +12,11 @@ import { isValidUUID } from '../utils/validators.ts';
 import { isValidCreateRecipeDTO, isValidUpdateRecipeDTO } from '../validators/recipe.validator.ts';
 
 import { authMiddleware } from '../middleware/auth.ts';
+import { requireEditorForMutations } from '../middleware/rbac.ts';
 
 const recipes = new Hono();
 recipes.use('*', authMiddleware);
+recipes.use('*', requireEditorForMutations);
 
 // GET /api/recipes - Get all recipes
 recipes.get('/', async (c: Context) => {

@@ -11,9 +11,11 @@ import { errorResponse, HttpStatusCode, successResponse } from '../utils/respons
 import { isPositiveNumber } from '../utils/validators.ts';
 
 import { authMiddleware } from '../middleware/auth.ts';
+import { requireEditorForMutations } from '../middleware/rbac.ts';
 
 const ingredientGroups = new Hono();
 ingredientGroups.use('*', authMiddleware);
+ingredientGroups.use('*', requireEditorForMutations);
 
 /**
  * GET /api/ingredient-groups

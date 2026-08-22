@@ -4,9 +4,11 @@ import { mealPlanService } from '../services/meal-plan.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 
 import { authMiddleware } from '../middleware/auth.ts';
+import { requireEditorForMutations } from '../middleware/rbac.ts';
 
 const mealPlans = new Hono();
 mealPlans.use('*', authMiddleware);
+mealPlans.use('*', requireEditorForMutations);
 
 // GET /api/meal-plans - Get all planned meals
 mealPlans.get('/', async (c: Context) => {

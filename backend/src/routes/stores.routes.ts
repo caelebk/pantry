@@ -2,10 +2,12 @@ import { Context, Hono } from 'hono';
 import { CreateStoreDTO, UpdateStoreDTO } from '../models/data-models/store.model.ts';
 import { storeService } from '../services/store.service.ts';
 import { authMiddleware } from '../middleware/auth.ts';
+import { requireEditorForMutations } from '../middleware/rbac.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 
 const stores = new Hono();
 stores.use('*', authMiddleware);
+stores.use('*', requireEditorForMutations);
 
 stores.get('/', async (c: Context) => {
   const kitchenId = c.get('activeKitchenId') || '';

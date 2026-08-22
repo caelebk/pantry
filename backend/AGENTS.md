@@ -45,5 +45,7 @@ Direction: `routes → validators → services → db/client.ts`. Never skip a l
 | Type check              | `deno check main.ts`                                                                                                   |
 | Scratch migration check | `DB_PATH=$(mktemp -d)/s.db deno task db:migrate && deno task db:seed`                                                  |
 
-Known-incomplete: rate limiting is disabled under test; RBAC denial paths are not covered by tests
-yet (see known-debt register before adding coverage).
+Known-incomplete: rate limiting is disabled under test and therefore untested.
+RBAC: inventory-domain mutations require `editor`/`owner` — enforced via
+`requireEditorForMutations` mounted in every domain router; denial paths are
+covered by `tests/rbac.routes.test.ts`.
