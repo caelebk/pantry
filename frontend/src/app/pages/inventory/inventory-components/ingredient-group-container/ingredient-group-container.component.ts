@@ -11,6 +11,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
 import { IngredientCategoryComponent } from '../ingredient-category/ingredient-category.component';
 
+import { SearchInputComponent } from '@ui';
+
 @Component({
   selector: 'pantry-ingredient-group-container',
   standalone: true,
@@ -23,6 +25,7 @@ import { IngredientCategoryComponent } from '../ingredient-category/ingredient-c
     SelectModule,
     MultiSelectModule,
     IngredientCategoryComponent,
+    SearchInputComponent,
   ],
   templateUrl: './ingredient-group-container.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

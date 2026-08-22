@@ -30,6 +30,8 @@ import { AuthService } from '../../../core/services/auth.service';
 
 export type StatusFilterOption = 'all' | 'in-stock' | 'out-of-stock';
 
+import { EmptyStateComponent, SearchInputComponent } from '@ui';
+
 @Component({
   selector: 'pantry-ingredients-page',
   standalone: true,
@@ -41,6 +43,8 @@ export type StatusFilterOption = 'all' | 'in-stock' | 'out-of-stock';
     SkeletonModule,
     TableModule,
     TranslocoModule,
+    SearchInputComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './ingredients-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
