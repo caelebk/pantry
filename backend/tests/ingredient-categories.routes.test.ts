@@ -16,15 +16,15 @@ const mockCategory: IngredientCategoryDTO = {
   color: '#ef4444',
 };
 
-Deno.test('IngredientCategories API - GET /api/ingredient-categories - success', async () => {
+Deno.test('IngredientCategories API - GET /api/v1/ingredient-categories - success', async () => {
   const originalGetAll = ingredientCategoryService.getAllIngredientCategories;
   ingredientCategoryService.getAllIngredientCategories = () => Promise.resolve([mockCategory]);
 
   try {
     const app = new Hono();
-    app.route('/api/ingredient-categories', ingredientCategories);
+    app.route('/api/v1/ingredient-categories', ingredientCategories);
 
-    const res = await app.request(createRequest('/api/ingredient-categories', 'GET'));
+    const res = await app.request(createRequest('/api/v1/ingredient-categories', 'GET'));
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.length, 1);
@@ -34,17 +34,17 @@ Deno.test('IngredientCategories API - GET /api/ingredient-categories - success',
   }
 });
 
-Deno.test('IngredientCategories API - GET /api/ingredient-categories/:id - success', async () => {
+Deno.test('IngredientCategories API - GET /api/v1/ingredient-categories/:id - success', async () => {
   const originalGetById = ingredientCategoryService.getIngredientCategoryById;
   ingredientCategoryService.getIngredientCategoryById = (id) =>
     Promise.resolve(id === mockCategory.id ? mockCategory : null);
 
   try {
     const app = new Hono();
-    app.route('/api/ingredient-categories', ingredientCategories);
+    app.route('/api/v1/ingredient-categories', ingredientCategories);
 
     const res = await app.request(
-      createRequest(`/api/ingredient-categories/${mockCategory.id}`, 'GET'),
+      createRequest(`/api/v1/ingredient-categories/${mockCategory.id}`, 'GET'),
     );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();

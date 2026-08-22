@@ -50,7 +50,7 @@ describe('ShoppingListService', () => {
 
     // Constructor HTTP load (since effect will run)
     TestBed.flushEffects();
-    const initReq = httpMock.expectOne('/api/shopping-list');
+    const initReq = httpMock.expectOne('/api/v1/shopping-list');
     initReq.flush({ status: 'success', data: [mockShoppingItem] });
   });
 
@@ -67,7 +67,7 @@ describe('ShoppingListService', () => {
   it('should add item', () => {
     service.addItem({ name: 'Eggs', category: 'Dairy', quantity: 12 });
 
-    const req = httpMock.expectOne('/api/shopping-list');
+    const req = httpMock.expectOne('/api/v1/shopping-list');
     expect(req.request.method).toBe('POST');
     req.flush({ status: 'success', data: { ...mockShoppingItem, id: 'sl-2', name: 'Eggs' } });
 
@@ -78,7 +78,7 @@ describe('ShoppingListService', () => {
   it('should toggle item checked state', () => {
     service.toggleItem('sl-1');
 
-    const req = httpMock.expectOne('/api/shopping-list/sl-1');
+    const req = httpMock.expectOne('/api/v1/shopping-list/sl-1');
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual({ checked: true });
     req.flush({ status: 'success', data: { ...mockShoppingItem, checked: true } });
@@ -89,11 +89,11 @@ describe('ShoppingListService', () => {
   it('should clear checked items', () => {
     // First set item to checked in signal
     service.toggleItem('sl-1');
-    const req1 = httpMock.expectOne('/api/shopping-list/sl-1');
+    const req1 = httpMock.expectOne('/api/v1/shopping-list/sl-1');
     req1.flush({ status: 'success', data: { ...mockShoppingItem, checked: true } });
 
     service.clearChecked();
-    const req2 = httpMock.expectOne('/api/shopping-list/checked');
+    const req2 = httpMock.expectOne('/api/v1/shopping-list/checked');
     expect(req2.request.method).toBe('DELETE');
     req2.flush({ status: 'success', data: { count: 1 } });
 

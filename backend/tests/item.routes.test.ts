@@ -1,7 +1,7 @@
 import { assertEquals } from '@std/assert';
 import { Hono } from 'hono';
 import { CreateItemDTO, ItemDTO } from '../src/models/data-models/item.model.ts';
-import items from '../src/routes/items.routes.ts';
+import items from '../src/routes/ingredient-items.routes.ts';
 import { ingredientItemService } from '../src/services/ingredient-item.service.ts';
 import { HttpStatusCode } from '../src/utils/response.ts';
 
@@ -29,16 +29,16 @@ const mockItem: ItemDTO = {
   updatedAt: new Date(),
 };
 
-Deno.test('Items API - GET /api/items - success', async () => {
+Deno.test('Items API - GET /api/v1/ingredient-items - success', async () => {
   // Mock service
   const originalGetAllItems = ingredientItemService.getAllIngredientItems;
   ingredientItemService.getAllIngredientItems = () => Promise.resolve([mockItem]);
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
 
-    const res = await app.request(createRequest('/api/items', 'GET'));
+    const res = await app.request(createRequest('/api/v1/ingredient-items', 'GET'));
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.length, 1);
@@ -48,30 +48,30 @@ Deno.test('Items API - GET /api/items - success', async () => {
   }
 });
 
-Deno.test('Items API - GET /api/items - service error', async () => {
+Deno.test('Items API - GET /api/v1/ingredient-items - service error', async () => {
   const originalGetAllItems = ingredientItemService.getAllIngredientItems;
   ingredientItemService.getAllIngredientItems = () => Promise.reject(new Error('DB Fail'));
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
-    const res = await app.request(createRequest('/api/items', 'GET'));
+    app.route('/api/v1/ingredient-items', items);
+    const res = await app.request(createRequest('/api/v1/ingredient-items', 'GET'));
     assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
   } finally {
     ingredientItemService.getAllIngredientItems = originalGetAllItems;
   }
 });
 
-Deno.test('Items API - GET /api/items/:id - success', async () => {
+Deno.test('Items API - GET /api/v1/ingredient-items/:id - success', async () => {
   const originalGetItemById = ingredientItemService.getIngredientItemById;
   ingredientItemService.getIngredientItemById = (id) =>
     Promise.resolve(id === mockItem.id ? mockItem : null);
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
 
-    const res = await app.request(createRequest(`/api/items/${mockItem.id}`, 'GET'));
+    const res = await app.request(createRequest(`/api/v1/ingredient-items/${mockItem.id}`, 'GET'));
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.id, mockItem.id);
@@ -80,36 +80,36 @@ Deno.test('Items API - GET /api/items/:id - success', async () => {
   }
 });
 
-Deno.test('Items API - GET /api/items/:id - not found', async () => {
+Deno.test('Items API - GET /api/v1/ingredient-items/:id - not found', async () => {
   const originalGetItemById = ingredientItemService.getIngredientItemById;
   ingredientItemService.getIngredientItemById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
 
     const validUuid = '123e4567-e89b-12d3-a456-426614174999';
-    const res = await app.request(createRequest(`/api/items/${validUuid}`, 'GET'));
+    const res = await app.request(createRequest(`/api/v1/ingredient-items/${validUuid}`, 'GET'));
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
     ingredientItemService.getIngredientItemById = originalGetItemById;
   }
 });
 
-Deno.test('Items API - GET /api/items/:id - invalid id', async () => {
+Deno.test('Items API - GET /api/v1/ingredient-items/:id - invalid id', async () => {
   const app = new Hono();
-  app.route('/api/items', items);
-  const res = await app.request(createRequest('/api/items/invalid-uuid', 'GET'));
+  app.route('/api/v1/ingredient-items', items);
+  const res = await app.request(createRequest('/api/v1/ingredient-items/invalid-uuid', 'GET'));
   assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
 });
 
-Deno.test('Items API - POST /api/items - success', async () => {
+Deno.test('Items API - POST /api/v1/ingredient-items - success', async () => {
   const originalCreateItem = ingredientItemService.createIngredientItem;
   ingredientItemService.createIngredientItem = (_data) => Promise.resolve(mockItem);
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
 
     const newItem: CreateItemDTO = {
       label: 'Test Item',
@@ -122,7 +122,7 @@ Deno.test('Items API - POST /api/items - success', async () => {
       openedDate: undefined,
     };
 
-    const res = await app.request(createRequest('/api/items', 'POST', newItem));
+    const res = await app.request(createRequest('/api/v1/ingredient-items', 'POST', newItem));
     assertEquals(res.status, HttpStatusCode.CREATED);
     const body = await res.json();
     assertEquals(body.data.id, mockItem.id);
@@ -131,21 +131,23 @@ Deno.test('Items API - POST /api/items - success', async () => {
   }
 });
 
-Deno.test('Items API - POST /api/items - invalid body', async () => {
+Deno.test('Items API - POST /api/v1/ingredient-items - invalid body', async () => {
   const app = new Hono();
-  app.route('/api/items', items);
+  app.route('/api/v1/ingredient-items', items);
   // Missing label and quantity
-  const res = await app.request(createRequest('/api/items', 'POST', { notes: 'only notes' }));
+  const res = await app.request(
+    createRequest('/api/v1/ingredient-items', 'POST', { notes: 'only notes' }),
+  );
   assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
 });
 
-Deno.test('Items API - POST /api/items - service error', async () => {
+Deno.test('Items API - POST /api/v1/ingredient-items - service error', async () => {
   const originalCreateItem = ingredientItemService.createIngredientItem;
   ingredientItemService.createIngredientItem = () => Promise.reject(new Error('DB Fail'));
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
     const newItem = {
       label: 'Test',
       quantity: 1,
@@ -154,14 +156,14 @@ Deno.test('Items API - POST /api/items - service error', async () => {
       purchaseDate: new Date(),
       expirationDate: new Date(),
     };
-    const res = await app.request(createRequest('/api/items', 'POST', newItem));
+    const res = await app.request(createRequest('/api/v1/ingredient-items', 'POST', newItem));
     assertEquals(res.status, HttpStatusCode.INTERNAL_SERVER_ERROR);
   } finally {
     ingredientItemService.createIngredientItem = originalCreateItem;
   }
 });
 
-Deno.test('Items API - PUT /api/items/:id - success', async () => {
+Deno.test('Items API - PUT /api/v1/ingredient-items/:id - success', async () => {
   const originalGetItemById = ingredientItemService.getIngredientItemById;
   const originalUpdateItem = ingredientItemService.updateIngredientItem;
 
@@ -171,9 +173,11 @@ Deno.test('Items API - PUT /api/items/:id - success', async () => {
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
     const updateData = { label: 'Updated Only' };
-    const res = await app.request(createRequest(`/api/items/${mockItem.id}`, 'PUT', updateData));
+    const res = await app.request(
+      createRequest(`/api/v1/ingredient-items/${mockItem.id}`, 'PUT', updateData),
+    );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.label, 'Updated Only');
@@ -183,15 +187,15 @@ Deno.test('Items API - PUT /api/items/:id - success', async () => {
   }
 });
 
-Deno.test('Items API - PUT /api/items/:id - not found', async () => {
+Deno.test('Items API - PUT /api/v1/ingredient-items/:id - not found', async () => {
   const originalUpdateItem = ingredientItemService.updateIngredientItem;
   ingredientItemService.updateIngredientItem = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
     const res = await app.request(
-      createRequest(`/api/items/${mockItem.id}`, 'PUT', { label: 'Update' }),
+      createRequest(`/api/v1/ingredient-items/${mockItem.id}`, 'PUT', { label: 'Update' }),
     );
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
@@ -199,16 +203,19 @@ Deno.test('Items API - PUT /api/items/:id - not found', async () => {
   }
 });
 
-Deno.test('Items API - PUT /api/items/:id with quantity 0 (clear stock) - success', async () => {
+Deno.test('Items API - PUT /api/v1/ingredient-items/:id with quantity 0 (clear stock) - success', async () => {
   const originalUpdateItem = ingredientItemService.updateIngredientItem;
   ingredientItemService.updateIngredientItem = () =>
     Promise.resolve({ ...mockItem, quantity: 0, expirationDate: undefined });
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
     const res = await app.request(
-      createRequest(`/api/items/${mockItem.id}`, 'PUT', { quantity: 0, expirationDate: null }),
+      createRequest(`/api/v1/ingredient-items/${mockItem.id}`, 'PUT', {
+        quantity: 0,
+        expirationDate: null,
+      }),
     );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
@@ -218,16 +225,16 @@ Deno.test('Items API - PUT /api/items/:id with quantity 0 (clear stock) - succes
   }
 });
 
-Deno.test('Items API - PUT /api/items/:id - invalid id', async () => {
+Deno.test('Items API - PUT /api/v1/ingredient-items/:id - invalid id', async () => {
   const app = new Hono();
-  app.route('/api/items', items);
+  app.route('/api/v1/ingredient-items', items);
   const res = await app.request(
-    createRequest('/api/items/invalid-uuid', 'PUT', { label: 'Update' }),
+    createRequest('/api/v1/ingredient-items/invalid-uuid', 'PUT', { label: 'Update' }),
   );
   assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
 });
 
-Deno.test('Items API - DELETE /api/items/:id - success', async () => {
+Deno.test('Items API - DELETE /api/v1/ingredient-items/:id - success', async () => {
   const originalGetItemById = ingredientItemService.getIngredientItemById;
   const originalDeleteItemById = ingredientItemService.deleteIngredientItemById;
 
@@ -236,9 +243,11 @@ Deno.test('Items API - DELETE /api/items/:id - success', async () => {
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
 
-    const res = await app.request(createRequest(`/api/items/${mockItem.id}`, 'DELETE'));
+    const res = await app.request(
+      createRequest(`/api/v1/ingredient-items/${mockItem.id}`, 'DELETE'),
+    );
     assertEquals(res.status, HttpStatusCode.OK);
   } finally {
     ingredientItemService.getIngredientItemById = originalGetItemById;
@@ -246,29 +255,29 @@ Deno.test('Items API - DELETE /api/items/:id - success', async () => {
   }
 });
 
-Deno.test('Items API - DELETE /api/items/:id - invalid id', async () => {
+Deno.test('Items API - DELETE /api/v1/ingredient-items/:id - invalid id', async () => {
   const app = new Hono();
-  app.route('/api/items', items);
-  const res = await app.request(createRequest('/api/items/invalid-uuid', 'DELETE'));
+  app.route('/api/v1/ingredient-items', items);
+  const res = await app.request(createRequest('/api/v1/ingredient-items/invalid-uuid', 'DELETE'));
   assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
 });
 
-Deno.test('Items API - DELETE /api/items/:id - not found', async () => {
+Deno.test('Items API - DELETE /api/v1/ingredient-items/:id - not found', async () => {
   const originalGetItemById = ingredientItemService.getIngredientItemById;
   ingredientItemService.getIngredientItemById = () => Promise.resolve(null);
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
     const validUuid = '123e4567-e89b-12d3-a456-426614174999';
-    const res = await app.request(createRequest(`/api/items/${validUuid}`, 'DELETE'));
+    const res = await app.request(createRequest(`/api/v1/ingredient-items/${validUuid}`, 'DELETE'));
     assertEquals(res.status, HttpStatusCode.NOT_FOUND);
   } finally {
     ingredientItemService.getIngredientItemById = originalGetItemById;
   }
 });
 
-Deno.test('Items API - GET /api/items/similarity - success with candidates', async () => {
+Deno.test('Items API - GET /api/v1/ingredient-items/similarity - success with candidates', async () => {
   const originalFindSimilarItems = ingredientItemService.findSimilarItems;
   ingredientItemService.findSimilarItems = (name, _threshold) =>
     Promise.resolve([
@@ -281,10 +290,10 @@ Deno.test('Items API - GET /api/items/similarity - success with candidates', asy
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
 
     const res = await app.request(
-      createRequest('/api/items/similarity?name=Test&threshold=0.5', 'GET'),
+      createRequest('/api/v1/ingredient-items/similarity?name=Test&threshold=0.5', 'GET'),
     );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
@@ -295,15 +304,17 @@ Deno.test('Items API - GET /api/items/similarity - success with candidates', asy
   }
 });
 
-Deno.test('Items API - GET /api/items/similarity - empty query returns empty candidates', async () => {
+Deno.test('Items API - GET /api/v1/ingredient-items/similarity - empty query returns empty candidates', async () => {
   const originalFindSimilarItems = ingredientItemService.findSimilarItems;
   ingredientItemService.findSimilarItems = () => Promise.resolve([]);
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
 
-    const res = await app.request(createRequest('/api/items/similarity?name=', 'GET'));
+    const res = await app.request(
+      createRequest('/api/v1/ingredient-items/similarity?name=', 'GET'),
+    );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
     assertEquals(body.data.length, 0);
@@ -312,16 +323,16 @@ Deno.test('Items API - GET /api/items/similarity - empty query returns empty can
   }
 });
 
-Deno.test('Items API - POST /api/items/bulk-clear-stock - success', async () => {
+Deno.test('Items API - POST /api/v1/ingredient-items/bulk-clear-stock - success', async () => {
   const originalBulkClearStock = ingredientItemService.bulkClearStock;
   ingredientItemService.bulkClearStock = (ids) => Promise.resolve(ids.length);
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
 
     const res = await app.request(
-      createRequest('/api/items/bulk-clear-stock', 'POST', { ids: [mockItem.id] }),
+      createRequest('/api/v1/ingredient-items/bulk-clear-stock', 'POST', { ids: [mockItem.id] }),
     );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();
@@ -331,16 +342,16 @@ Deno.test('Items API - POST /api/items/bulk-clear-stock - success', async () => 
   }
 });
 
-Deno.test('Items API - POST /api/items/bulk-delete - success', async () => {
+Deno.test('Items API - POST /api/v1/ingredient-items/bulk-delete - success', async () => {
   const originalBulkDelete = ingredientItemService.bulkDeleteIngredientItems;
   ingredientItemService.bulkDeleteIngredientItems = (ids) => Promise.resolve(ids.length);
 
   try {
     const app = new Hono();
-    app.route('/api/items', items);
+    app.route('/api/v1/ingredient-items', items);
 
     const res = await app.request(
-      createRequest('/api/items/bulk-delete', 'POST', { ids: [mockItem.id] }),
+      createRequest('/api/v1/ingredient-items/bulk-delete', 'POST', { ids: [mockItem.id] }),
     );
     assertEquals(res.status, HttpStatusCode.OK);
     const body = await res.json();

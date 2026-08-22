@@ -25,7 +25,7 @@ export class IngredientService {
   private readonly http = inject(HttpClient);
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly unitService = inject(UnitService);
-  private readonly apiUrl = '/api/ingredients';
+  private readonly apiUrl = '/api/v1/ingredients';
   private ingredientsCache$?: Observable<Ingredient[]>;
 
   getIngredients(): Observable<Ingredient[]> {

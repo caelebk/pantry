@@ -12,7 +12,7 @@ import { map, shareReplay } from 'rxjs/operators';
 })
 export class LocationService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = '/api/locations';
+  private readonly apiUrl = '/api/v1/locations';
   private locationsCache$?: Observable<Location[]>;
 
   getLocations(): Observable<Location[]> {

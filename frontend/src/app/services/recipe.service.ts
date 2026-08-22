@@ -11,7 +11,7 @@ import { shareReplay, tap } from 'rxjs/operators';
 })
 export class RecipeService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = '/api/recipes';
+  private readonly apiUrl = '/api/v1/recipes';
 
   private recipesCache$?: Observable<Recipe[]>;
   private availableRecipesCache$?: Observable<Recipe[]>;

@@ -14,7 +14,7 @@ export class ShoppingListService {
   private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = '/api/shopping-list';
+  private readonly apiUrl = '/api/v1/shopping-list';
 
   private readonly itemsSignal = signal<ShoppingItem[]>([]);
   readonly items = this.itemsSignal.asReadonly();

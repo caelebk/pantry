@@ -62,7 +62,7 @@ describe('MealPlannerService', () => {
 
     // Handle constructor GET request
     TestBed.flushEffects();
-    const initReq = httpMock.expectOne('/api/meal-plans');
+    const initReq = httpMock.expectOne('/api/v1/meal-plans');
     initReq.flush({ status: 'success', data: [mockMeal] });
   });
 
@@ -87,7 +87,7 @@ describe('MealPlannerService', () => {
   it('should toggle cooked status', () => {
     service.toggleCooked('mp-1');
 
-    const req = httpMock.expectOne('/api/meal-plans/mp-1');
+    const req = httpMock.expectOne('/api/v1/meal-plans/mp-1');
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual({ cooked: true });
     req.flush({ status: 'success', data: { ...mockMeal, cooked: true } });

@@ -56,7 +56,7 @@ describe('IngredientService', () => {
     const first = firstValueFrom(service.getIngredients());
     const second = firstValueFrom(service.getIngredients());
 
-    const req = httpMock.expectOne('/api/ingredients');
+    const req = httpMock.expectOne('/api/v1/ingredients');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: [] });
 
@@ -67,7 +67,7 @@ describe('IngredientService', () => {
   it('should fetch ingredients and map group & unit references', async () => {
     const promise = firstValueFrom(service.getIngredients());
 
-    const req = httpMock.expectOne('/api/ingredients');
+    const req = httpMock.expectOne('/api/v1/ingredients');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: [mockIngredientDTO] });
 
@@ -81,7 +81,7 @@ describe('IngredientService', () => {
   it('should create new ingredient', async () => {
     const promise = firstValueFrom(service.createIngredient({ name: 'Salt', defaultUnitId: 1 }));
 
-    const req = httpMock.expectOne('/api/ingredients');
+    const req = httpMock.expectOne('/api/v1/ingredients');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ name: 'Salt', defaultUnitId: 1 });
     req.flush({ status: 'success', data: { ...mockIngredientDTO, name: 'Salt' } });
@@ -94,7 +94,7 @@ describe('IngredientService', () => {
     const items = [{ id: 'item-1', quantity: 2 }];
     const promise = firstValueFrom(service.reconcileIngredientUnit('ing-1', 2, items));
 
-    const req = httpMock.expectOne('/api/ingredients/ing-1/reconcile-units');
+    const req = httpMock.expectOne('/api/v1/ingredients/ing-1/reconcile-units');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ newDefaultUnitId: 2, items });
     req.flush({ status: 'success', data: mockIngredientDTO });

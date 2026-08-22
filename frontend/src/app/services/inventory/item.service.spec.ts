@@ -51,7 +51,7 @@ describe('ItemService', () => {
     const first = firstValueFrom(service.getIngredientItems());
     const second = firstValueFrom(service.getIngredientItems());
 
-    const req = httpMock.expectOne('/api/ingredient-items');
+    const req = httpMock.expectOne('/api/v1/ingredient-items');
     expect(req.request.method).toBe('GET');
     req.flush({ status: 'success', data: [] });
 
@@ -83,7 +83,7 @@ describe('ItemService', () => {
 
     const req = httpMock.expectOne(
       (request) =>
-        request.url === '/api/ingredient-items/similarity' &&
+        request.url === '/api/v1/ingredient-items/similarity' &&
         request.params.get('name') === 'Olive Oil' &&
         request.params.get('minScore') === '0.45',
     );
@@ -106,7 +106,7 @@ describe('ItemService', () => {
 
     const promise = firstValueFrom(service.bulkClearStock(mockIds));
 
-    const req = httpMock.expectOne('/api/ingredient-items/bulk-clear-stock');
+    const req = httpMock.expectOne('/api/v1/ingredient-items/bulk-clear-stock');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ ids: mockIds });
     req.flush(mockApiResponse);
@@ -124,7 +124,7 @@ describe('ItemService', () => {
 
     const promise = firstValueFrom(service.bulkDeleteItems(mockIds));
 
-    const req = httpMock.expectOne('/api/ingredient-items/bulk-delete');
+    const req = httpMock.expectOne('/api/v1/ingredient-items/bulk-delete');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ ids: mockIds });
     req.flush(mockApiResponse);
