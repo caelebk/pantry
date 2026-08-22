@@ -15,6 +15,7 @@ import {
   updateKitchen,
 } from '../services/kitchen.service.ts';
 import { AuthContextVars, authMiddleware } from '../middleware/auth.ts';
+import { AppError } from '../middleware/errorHandler.ts';
 import { requireKitchenRole } from '../middleware/rbac.ts';
 
 export const kitchenRoutes = new Hono<{ Variables: AuthContextVars }>();
@@ -117,13 +118,10 @@ kitchenRoutes.post('/:kitchenId/members', requireKitchenRole(['owner']), async (
     const member = addKitchenMember(kitchenId, body.email.trim(), body.role);
     return c.json(successResponse(member, 'Kitchen member added successfully'), 201);
   } catch (error: unknown) {
+    if (error instanceof AppError) {
+      return c.json(errorResponse(error.message), error.statusCode as 400 | 409);
+    }
     const msg = error instanceof Error ? error.message : 'Failed to add kitchen member';
-    if (msg.includes('does not exist')) {
-      return c.json(errorResponse(msg), 400);
-    }
-    if (msg.includes('already a member')) {
-      return c.json(errorResponse(msg), 409);
-    }
     return c.json(errorResponse(msg), 500);
   }
 });

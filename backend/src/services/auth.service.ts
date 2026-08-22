@@ -1,4 +1,5 @@
 import { getDB } from '../db/client.ts';
+import { AppError } from '../middleware/errorHandler.ts';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -48,7 +49,7 @@ export async function signupUser(
     dupEmailStmt.finalize();
 
     if (dupEmailRows.length > 0) {
-      throw new Error('EMAIL_ALREADY_EXISTS');
+      throw new AppError(409, 'An account with this email address already exists.');
     }
 
     const dupUserQuery = `SELECT id FROM users WHERE username_normalized = ?;`;
@@ -57,7 +58,7 @@ export async function signupUser(
     dupUserStmt.finalize();
 
     if (dupUserRows.length > 0) {
-      throw new Error('USERNAME_ALREADY_EXISTS');
+      throw new AppError(409, 'This username is already taken. Please choose another one.');
     }
 
     // 2. Create User record
@@ -196,7 +197,7 @@ export async function loginUser(
   if (rows.length === 0) {
     // Constant-time execution for missing identifier
     await verifyPassword(DUMMY_HASH, request.password);
-    throw new Error('INVALID_CREDENTIALS');
+    throw new AppError(401, 'Invalid email, username, or password.');
   }
 
   const [
@@ -231,7 +232,7 @@ export async function loginUser(
 
   const isValidPassword = await verifyPassword(secretHash, request.password);
   if (!isValidPassword) {
-    throw new Error('INVALID_CREDENTIALS');
+    throw new AppError(401, 'Invalid email, username, or password.');
   }
 
   // Fallback to first kitchen if primaryKitchenId is not set
@@ -291,19 +292,22 @@ export async function refreshUserSession(
   const session = await findSessionByToken(refreshToken);
 
   if (!session) {
-    throw new Error('INVALID_REFRESH_TOKEN');
+    throw new AppError(401, 'Invalid or expired session. Please log in again.');
   }
 
   // Token Reuse / Stolen Token Detection Check
   if (session.revoked_at) {
     // Revoke ALL active sessions for user to protect account!
     revokeAllSessionsForUser(session.user_id);
-    throw new Error('STOLEN_TOKEN_REUSE_DETECTED');
+    throw new AppError(
+      401,
+      'Security Alert: Token reuse detected. All active sessions have been terminated.',
+    );
   }
 
   // Expiry check
   if (new Date(session.expires_at) < new Date()) {
-    throw new Error('EXPIRED_REFRESH_TOKEN');
+    throw new AppError(401, 'Invalid or expired session. Please log in again.');
   }
 
   // Single-use Rotation: Revoke current session & issue new one
@@ -324,7 +328,7 @@ export async function refreshUserSession(
   stmt.finalize();
 
   if (userRows.length === 0) {
-    throw new Error('USER_NOT_FOUND');
+    throw new AppError(401, 'Session user no longer exists.');
   }
 
   const [userId, email, globalRole, primaryKitchenId] = userRows[0] as [
@@ -374,7 +378,7 @@ export function getUserProfile(userId: string): { user: UserDTO; memberships: Ki
   stmt.finalize();
 
   if (rows.length === 0) {
-    throw new Error('USER_NOT_FOUND');
+    throw new AppError(404, 'User profile not found.');
   }
 
   const [
@@ -443,7 +447,7 @@ export function updateUserProfile(userId: string, request: UpdateProfileRequest)
     dupUserStmt.finalize();
 
     if (dupUserRows.length > 0) {
-      throw new Error('USERNAME_ALREADY_EXISTS');
+      throw new AppError(409, 'This username is already taken. Please choose another one.');
     }
 
     const updateUsernameQuery = `
@@ -490,17 +494,17 @@ export async function changeUserPassword(
   stmt.finalize();
 
   if (rows.length === 0) {
-    throw new Error('CREDENTIALS_NOT_FOUND');
+    throw new AppError(500, 'Account credentials are missing or corrupted.');
   }
 
   const currentHash = rows[0][0] as string;
   const isValid = await verifyPassword(currentHash, request.currentPassword);
   if (!isValid) {
-    throw new Error('INVALID_CURRENT_PASSWORD');
+    throw new AppError(400, 'Current password specified is incorrect.');
   }
 
   if (request.currentPassword === request.newPassword) {
-    throw new Error('SAME_AS_CURRENT_PASSWORD');
+    throw new AppError(400, 'New password must be different from the current password.');
   }
 
   const newHash = await hashPassword(request.newPassword);
@@ -534,17 +538,17 @@ export async function verifyUserEmail(
   stmt.finalize();
 
   if (rows.length === 0) {
-    throw new Error('INVALID_TOKEN');
+    throw new AppError(400, 'Invalid or unrecognized verification token.');
   }
 
   const [tokenId, userId, expiresAt, usedAt] = rows[0] as [string, string, string, string | null];
 
   if (usedAt) {
-    throw new Error('TOKEN_ALREADY_USED');
+    throw new AppError(400, 'This verification link has already been used.');
   }
 
   if (new Date(expiresAt) < new Date()) {
-    throw new Error('TOKEN_EXPIRED');
+    throw new AppError(400, 'Verification link has expired. Please request a new one.');
   }
 
   db.exec('BEGIN TRANSACTION;');

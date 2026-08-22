@@ -1,4 +1,5 @@
 import { getDB } from '../db/client.ts';
+import { AppError } from '../middleware/errorHandler.ts';
 import { KitchenDTO, KitchenMemberDTO } from '../models/data-models/kitchen.model.ts';
 
 export function createKitchen(
@@ -154,7 +155,7 @@ export function addKitchenMember(
   userStmt.finalize();
 
   if (userRows.length === 0) {
-    throw new Error('User with specified email address does not exist.');
+    throw new AppError(400, 'User with specified email address does not exist.');
   }
 
   const userId = userRows[0][0] as string;
@@ -187,7 +188,7 @@ export function addKitchenMember(
     };
   } catch (err: unknown) {
     if (err instanceof Error && err.message.includes('UNIQUE constraint failed')) {
-      throw new Error('User is already a member of this kitchen.');
+      throw new AppError(409, 'User is already a member of this kitchen.');
     }
     throw err;
   }
