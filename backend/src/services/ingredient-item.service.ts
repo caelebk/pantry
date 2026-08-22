@@ -16,7 +16,7 @@ import { calculateStringSimilarity } from '../utils/similarity.ts';
 import { isValidUUID } from '../utils/validators.ts';
 
 export class IngredientItemService {
-  private readonly secondsInDay: number = 24 * 60 * 60 * 1000;
+  private readonly millisecondsInDay: number = 24 * 60 * 60 * 1000;
   private readonly soonExpiryDays: number = 7;
 
   /**
@@ -98,8 +98,11 @@ export class IngredientItemService {
 
       let effectiveUnitId = data.unitId;
       if (data.ingredientId) {
-        const ingRow = db.prepare('SELECT default_unit_id FROM ingredients WHERE id = ?').get(
+        const ingRow = db.prepare(
+          'SELECT default_unit_id FROM ingredients WHERE id = ? AND kitchen_id = ?',
+        ).get(
           data.ingredientId,
+          kitchenId,
         ) as { default_unit_id: number | null } | undefined;
         if (ingRow && ingRow.default_unit_id) {
           effectiveUnitId = ingRow.default_unit_id;
@@ -281,7 +284,7 @@ export class IngredientItemService {
   ): Promise<IngredientItemDTO[]> {
     try {
       const db = getDB();
-      const futureDate = new Date(Date.now() + days * this.secondsInDay).toISOString();
+      const futureDate = new Date(Date.now() + days * this.millisecondsInDay).toISOString();
       const rows = db.prepare(
         'SELECT * FROM ingredient_items WHERE kitchen_id = ? AND quantity > 0 AND expiration_date IS NOT NULL AND expiration_date <= ? ORDER BY expiration_date ASC',
       ).all(kitchenId, futureDate) as IngredientItemRow[];

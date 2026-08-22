@@ -184,6 +184,31 @@ Deno.test('ItemService - createItem - derives unit_id from parent ingredient def
   db.close();
 });
 
+Deno.test('ItemService - createItem - does NOT derive unit from ingredient in another kitchen', async () => {
+  const db = createTestDB();
+  setDB(db);
+
+  // Ingredient belongs to a different kitchen — its default_unit_id must not leak in
+  const foreignIngId = 'ing-foreign-kitchen';
+  db.prepare(
+    "INSERT INTO ingredients (id, name, default_unit_id, kitchen_id) VALUES (?, ?, ?, 'other-kitchen-id')",
+  ).run(foreignIngId, 'Cross-Kitchen Rice', 3);
+
+  const newItem: CreateItemDTO = {
+    ingredientId: foreignIngId,
+    label: 'Foreign Rice Bag',
+    quantity: 5,
+    unitId: 1,
+    locationId: 1,
+    expirationDate: mockDate.toISOString(),
+    purchaseDate: mockDate.toISOString(),
+  };
+
+  const item = await itemService.createItem(newItem, 'test-kitchen-id', 'test-user-id');
+  assertEquals(item.unitId, 1); // Keeps caller-supplied unit; no cross-kitchen derivation
+  db.close();
+});
+
 Deno.test('ItemService - updateItem quantity to 0 (clear stock) - success', async () => {
   const db = createTestDB();
   setDB(db);
