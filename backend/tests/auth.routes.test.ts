@@ -1,9 +1,10 @@
+import { initMigratedDB } from './helpers/test-db-path.ts';
 import { assertEquals, assertExists, assertStringIncludes } from '@std/assert';
 import app from '../src/app.ts';
-import { closeDB, initDB } from '../src/db/client.ts';
+import { closeDB } from '../src/db/client.ts';
 
 Deno.test('Auth Routes Integration - Full Authentication & Session Lifecycle', async () => {
-  const db = initDB();
+  const db = initMigratedDB();
   db.exec('DELETE FROM auth_rate_limits;');
   try {
     const testEmail = `chef_${Date.now()}@pantry.app`;
