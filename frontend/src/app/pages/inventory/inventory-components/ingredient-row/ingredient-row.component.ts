@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { EnrichedIngredient } from '@models/inventory.models';
+import { BadgeComponent } from '@ui';
 
 @Component({
   selector: 'pantry-ingredient-row',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BadgeComponent],
   templateUrl: './ingredient-row.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

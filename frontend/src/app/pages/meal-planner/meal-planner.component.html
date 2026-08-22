@@ -13,16 +13,12 @@
     <!-- Quick Actions Group -->
     <div class="flex flex-wrap items-center gap-2.5 shrink-0 self-start md:self-auto">
       @if (missingItemsCount() > 0) {
-        <button
-          (click)="syncAllMissingToShoppingList()"
-          class="inline-flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/20 dark:border-rose-500/30 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
+        <button (click)="syncAllMissingToShoppingList()" class="btn-danger">
           🛒 Sync {{ missingItemsCount() }} Missing Item{{ missingItemsCount() > 1 ? 's' : '' }}
         </button>
       }
 
-      <button
-        (click)="openAddModal()"
-        class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-md shadow-primary-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer">
+      <button (click)="openAddModal()" class="btn-primary">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

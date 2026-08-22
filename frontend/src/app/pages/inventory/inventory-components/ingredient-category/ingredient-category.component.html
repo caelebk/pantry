@@ -46,17 +46,11 @@
       <!-- Stock badges -->
       <div class="hidden sm:flex items-center gap-2 text-xs">
         @if (totalIngredientsCount === 0) {
-          <span
-            class="px-3 py-1.5 rounded-xl font-bold bg-surface-100/80 dark:bg-surface-800/70 text-surface-500 dark:text-surface-400 border border-surface-200/70 dark:border-surface-700/70 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-surface-400"></span>
-            0 In Stock
-          </span>
+          <pantry-badge variant="neutral" [dot]="true"> 0 In Stock </pantry-badge>
         } @else {
-          <span
-            class="px-3 py-1.5 rounded-xl font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5 shadow-2xs">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <pantry-badge variant="fresh" [dot]="true" [live]="true">
             {{ inStockIngredientsCount }}/{{ totalIngredientsCount }} In Stock
-          </span>
+          </pantry-badge>
           <span
             class="px-3 py-1.5 rounded-xl font-bold bg-surface-100/80 dark:bg-surface-800/70 text-surface-700 dark:text-surface-300 border border-surface-200/70 dark:border-surface-700/70">
             {{ totalItemsCount }} {{ totalItemsCount === 1 ? 'item' : 'items' }}

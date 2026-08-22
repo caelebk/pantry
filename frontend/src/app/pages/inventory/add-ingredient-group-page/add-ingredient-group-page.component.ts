@@ -22,6 +22,7 @@ import { IngredientCategoryService } from '@services/inventory/ingredient-catego
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ToastService } from '@services/toast.service';
+import { BadgeComponent, FormFieldComponent, SpinnerComponent } from '@ui';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { forkJoin, of } from 'rxjs';
@@ -37,7 +38,16 @@ export interface IngredientItemSelection {
 @Component({
   selector: 'pantry-add-ingredient-group-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, InputTextModule, SelectModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    InputTextModule,
+    SelectModule,
+    FormFieldComponent,
+    SpinnerComponent,
+    BadgeComponent,
+  ],
   templateUrl: './add-ingredient-group-page.component.html',
 })
 export class AddIngredientGroupPageComponent implements OnInit {

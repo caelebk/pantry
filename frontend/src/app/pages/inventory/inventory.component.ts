@@ -56,7 +56,7 @@ export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'stat
 
 import { SkeletonModule } from 'primeng/skeleton';
 
-import { SearchInputComponent } from '@ui';
+import { BadgeComponent, FormFieldComponent, SearchInputComponent } from '@ui';
 
 @Component({
   selector: 'pantry-inventory',
@@ -73,6 +73,8 @@ import { SearchInputComponent } from '@ui';
     DialogModule,
     SkeletonModule,
     SearchInputComponent,
+    BadgeComponent,
+    FormFieldComponent,
   ],
   providers: [ConfirmationService],
   templateUrl: './inventory.component.html',
@@ -151,6 +153,7 @@ export class InventoryComponent implements OnInit {
   // Pagination State
   public currentPage = 1;
   public pageSize = 15;
+  public readonly pageSizeOptions: number[] = [10, 15, 25, 50];
 
   public getIngredientName(ingredientId?: string): string | null {
     if (!ingredientId) return null;
@@ -308,6 +311,13 @@ export class InventoryComponent implements OnInit {
 
   public resetPagination(): void {
     this.currentPage = 1;
+  }
+
+  public get bulkRestockLocationOptions(): { id: number; name: string }[] {
+    return [
+      { id: 0, name: "Keep each item's current location" },
+      ...this.locations.map((loc) => ({ id: loc.id, name: `Move all to ${loc.name}` })),
+    ];
   }
 
   setStatusFilter(status: StatusFilter): void {

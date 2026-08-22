@@ -10,10 +10,7 @@
       </p>
     </div>
 
-    <button
-      type="button"
-      (click)="goToCreateRecipe()"
-      class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-md shadow-primary-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer shrink-0">
+    <button type="button" (click)="goToCreateRecipe()" class="btn-primary shrink-0">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -96,8 +93,7 @@
         [options]="sortOptions"
         optionLabel="label"
         optionValue="value"
-        appendTo="body"
-        styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
+        appendTo="body">
         <ng-template pTemplate="selectedItem" let-selected>
           @if (selected) {
             <div
@@ -121,8 +117,7 @@
         [options]="difficultyOptions"
         optionLabel="label"
         optionValue="value"
-        appendTo="body"
-        styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
+        appendTo="body">
         <ng-template pTemplate="selectedItem" let-selected>
           @if (selected) {
             <div
@@ -145,8 +140,7 @@
         [options]="timeOptions"
         optionLabel="label"
         optionValue="value"
-        appendTo="body"
-        styleClass="!h-[42px] !bg-surface-100 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-xs font-bold shadow-xs">
+        appendTo="body">
         <ng-template pTemplate="selectedItem" let-selected>
           @if (selected) {
             <div
@@ -168,7 +162,8 @@
         <button
           type="button"
           (click)="resetFilters()"
-          class="p-2 text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-all cursor-pointer"
+          class="btn-icon-sm"
+          aria-label="Reset All Filters"
           title="Reset All Filters">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -197,9 +192,10 @@
                 : ('recipes.yourRecipes' | transloco)
           }}
         </span>
-        <span
-          class="text-xs px-2 py-0.5 rounded-full font-medium bg-surface-100 dark:bg-surface-800/60 text-surface-500 dark:text-surface-400">
-          {{ filteredRecipes.length }} of {{ recipes.length }}
+        <span>
+          <pantry-badge variant="neutral">
+            {{ filteredRecipes.length }} of {{ recipes.length }}
+          </pantry-badge>
         </span>
       </div>
     </div>
@@ -252,17 +248,11 @@
           </p>
           <div class="flex items-center justify-center gap-3">
             @if (hasActiveFilters) {
-              <button
-                type="button"
-                (click)="resetFilters()"
-                class="bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 text-surface-800 dark:text-surface-200 text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-sm">
+              <button type="button" (click)="resetFilters()" class="btn-secondary">
                 Clear Filters
               </button>
             }
-            <button
-              type="button"
-              (click)="goToCreateRecipe()"
-              class="bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-5 py-2 rounded-xl transition-all shadow-sm inline-flex items-center gap-1.5 cursor-pointer">
+            <button type="button" (click)="goToCreateRecipe()" class="btn-primary">
               <i class="pi pi-plus text-xs font-bold"></i>
               <span>Create Recipe</span>
             </button>

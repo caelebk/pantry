@@ -16,12 +16,7 @@
         </div>
       </ng-template>
       <div class="space-y-3 pt-1">
-        <div>
-          <label
-            class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
-            for="add-ingredient">
-            Ingredient <span class="text-rose-500 ml-0.5">*</span>
-          </label>
+        <pantry-form-field [label]="'Ingredient'" forId="add-ingredient" [required]="true">
           <p-select
             inputId="add-ingredient"
             [options]="ingredients"
@@ -30,9 +25,9 @@
             [filter]="true"
             filterBy="name"
             placeholder="Search and select ingredient..."
-            class="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700"
+            class="w-full"
             appendTo="body"></p-select>
-        </div>
+        </pantry-form-field>
 
         @if (addItemForm.controls.ingredient.value; as selectedIng) {
           <div
@@ -52,57 +47,45 @@
       </div>
     </p-panel>
 
-    <div>
-      <label
-        class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
-        for="add-name"
-        >{{ 'addItemForm.itemName' | transloco }}<span class="text-red-500 ml-0.5">*</span></label
-      >
+    <pantry-form-field
+      [label]="'addItemForm.itemName' | transloco"
+      forId="add-name"
+      [required]="true">
       <input
         pInputText
         id="add-name"
         formControlName="name"
         [placeholder]="'addItemForm.itemNamePlaceholder' | transloco"
         class="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl !backdrop-blur-sm focus:!border-primary-500" />
-    </div>
+    </pantry-form-field>
 
     <div class="grid gap-4">
-      <div>
-        <label
-          class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
-          for="add-location">
-          {{ 'addItemForm.location' | transloco }}
-          <span class="text-red-500 ml-0.5">*</span>
-        </label>
+      <pantry-form-field
+        [label]="'addItemForm.location' | transloco"
+        forId="add-location"
+        [required]="true">
         <p-select
           inputId="add-location"
           [options]="locations"
           formControlName="location"
           optionLabel="name"
-          class="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700"
+          class="w-full"
           appendTo="body"></p-select>
-      </div>
+      </pantry-form-field>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <div>
-        <div class="flex items-center justify-between h-6 mb-1.5">
-          <label
-            class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider"
-            for="add-quantity">
-            {{ 'addItemForm.quantity' | transloco }}
-            <span class="text-red-500 ml-0.5">*</span>
-          </label>
-        </div>
+      <pantry-form-field
+        [label]="'addItemForm.quantity' | transloco"
+        forId="add-quantity"
+        [required]="true">
         <p-inputnumber
           inputId="add-quantity"
           formControlName="quantity"
           class="w-full"
-          styleClass="w-full !h-[42px]"
-          inputStyleClass="w-full !h-[42px] !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl"
           [min]="1"
           [showButtons]="true"></p-inputnumber>
-      </div>
+      </pantry-form-field>
       <div>
         <div class="flex items-center justify-between h-6 mb-1.5">
           <span
@@ -135,33 +118,25 @@
       </div>
     </div>
 
-    <div>
-      <label
-        class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
-        for="add-purchaseDate">
-        {{ 'addItemForm.purchaseDate' | transloco }}
-        <span class="text-red-500 ml-0.5">*</span>
-      </label>
+    <pantry-form-field
+      [label]="'addItemForm.purchaseDate' | transloco"
+      forId="add-purchaseDate"
+      [required]="true">
       <p-datepicker
         inputId="add-purchaseDate"
         formControlName="purchaseDate"
         class="w-full"
-        inputStyleClass="w-full !h-[42px] !px-3.5 !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-l-xl text-sm font-medium"
         [showIcon]="true"
         appendTo="body"></p-datepicker>
-    </div>
-    <div>
-      <label
-        class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
-        for="add-expirationDate">
-        {{ 'addItemForm.expirationDate' | transloco }}
-        <span class="text-red-500 ml-0.5">*</span>
-      </label>
+    </pantry-form-field>
+    <pantry-form-field
+      [label]="'addItemForm.expirationDate' | transloco"
+      forId="add-expirationDate"
+      [required]="true">
       <p-datepicker
         inputId="add-expirationDate"
         formControlName="expirationDate"
         class="w-full"
-        inputStyleClass="w-full !h-[42px] !px-3.5 !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-l-xl text-sm font-medium"
         [showIcon]="true"
         [showButtonBar]="true"
         appendTo="body"></p-datepicker>
@@ -193,7 +168,7 @@
           +1m
         </button>
       </div>
-    </div>
+    </pantry-form-field>
 
     <p-panel
       header="{{ 'addItemForm.optionalDetails' | transloco }}"
@@ -201,27 +176,16 @@
       [collapsed]="true"
       styleClass="mt-4">
       <div class="flex flex-col gap-4">
-        <div>
-          <label
-            class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
-            for="add-openedDate">
-            {{ 'addItemForm.openedDate' | transloco }}
-          </label>
+        <pantry-form-field [label]="'addItemForm.openedDate' | transloco" forId="add-openedDate">
           <p-datepicker
             inputId="add-openedDate"
             formControlName="openedDate"
             class="w-full"
-            inputStyleClass="w-full !h-[42px] !px-3.5 !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-l-xl text-sm font-medium"
             [showIcon]="true"
             [showButtonBar]="true"
             appendTo="body"></p-datepicker>
-        </div>
-        <div>
-          <label
-            class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1.5 uppercase tracking-wider"
-            for="add-notes">
-            {{ 'addItemForm.notes' | transloco }}
-          </label>
+        </pantry-form-field>
+        <pantry-form-field [label]="'addItemForm.notes' | transloco" forId="add-notes">
           <textarea
             pTextarea
             id="add-notes"
@@ -229,14 +193,11 @@
             rows="3"
             [placeholder]="'addItemForm.notesPlaceholder' | transloco"
             class="w-full !bg-white/60 dark:!bg-surface-800/60 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl"></textarea>
-        </div>
+        </pantry-form-field>
       </div>
     </p-panel>
 
-    <button
-      type="submit"
-      [disabled]="!addItemForm.valid"
-      class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-md shadow-primary-600/20 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-primary-600 disabled:shadow-none hover:scale-[1.01] active:scale-[0.99]">
+    <button type="submit" [disabled]="!addItemForm.valid" class="btn-primary w-full">
       {{ 'addItemForm.addButton' | transloco }}
     </button>
   </form>

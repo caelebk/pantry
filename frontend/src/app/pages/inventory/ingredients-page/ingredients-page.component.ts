@@ -17,6 +17,7 @@ import { IngredientGroupService } from '@services/inventory/ingredient-group.ser
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { ToastService } from '@services/toast.service';
+import type { BadgeVariant } from '@ui';
 import {
   getTimeDifferenceString,
   isExpired,
@@ -30,7 +31,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
 export type StatusFilterOption = 'all' | 'in-stock' | 'out-of-stock';
 
-import { EmptyStateComponent, SearchInputComponent } from '@ui';
+import { BadgeComponent, EmptyStateComponent, SearchInputComponent } from '@ui';
 
 @Component({
   selector: 'pantry-ingredients-page',
@@ -45,6 +46,7 @@ import { EmptyStateComponent, SearchInputComponent } from '@ui';
     TranslocoModule,
     SearchInputComponent,
     EmptyStateComponent,
+    BadgeComponent,
   ],
   templateUrl: './ingredients-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -73,6 +75,7 @@ export class IngredientsPageComponent {
   public sortDirection = signal<'asc' | 'desc'>('asc');
   public currentPage = signal<number>(1);
   public pageSize = signal<number>(15);
+  public readonly pageSizeOptions: number[] = [10, 15, 25, 50];
 
   constructor() {
     effect(() => {
@@ -357,23 +360,14 @@ export class IngredientsPageComponent {
     }
   }
 
-  getItemStatus(item: Item): { text: string; colorClass: string } {
+  getItemStatus(item: Item): { text: string; variant: BadgeVariant } {
     if (isExpired(item)) {
-      return {
-        text: 'Expired',
-        colorClass: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
-      };
+      return { text: 'Expired', variant: 'expired' };
     }
     if (isExpiringSoon(item)) {
-      return {
-        text: 'Expiring Soon',
-        colorClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-      };
+      return { text: 'Expiring Soon', variant: 'expiring' };
     }
-    return {
-      text: 'Fresh',
-      colorClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-    };
+    return { text: 'Fresh', variant: 'fresh' };
   }
 
   getItemRemainingText(item: Item): string {

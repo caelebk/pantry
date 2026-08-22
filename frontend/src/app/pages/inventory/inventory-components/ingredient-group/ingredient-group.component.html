@@ -51,15 +51,11 @@
 
     <div class="flex items-center gap-3">
       @if (group.ingredients.length === 0) {
-        <span
-          class="text-xs font-bold px-2.5 py-1 rounded-xl bg-surface-100 dark:bg-surface-800/80 text-surface-500 dark:text-surface-400 border border-surface-200/60 dark:border-surface-700/60 hidden sm:inline-block">
-          0 Active
-        </span>
+        <pantry-badge variant="neutral" class="hidden sm:inline-flex"> 0 Active </pantry-badge>
       } @else {
-        <span
-          class="text-xs font-bold px-2.5 py-1 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 hidden sm:inline-block shadow-2xs">
+        <pantry-badge variant="purple" class="hidden sm:inline-flex shadow-2xs">
           {{ inStockCount }}/{{ group.ingredients.length }} Active
-        </span>
+        </pantry-badge>
       }
       <div
         class="w-8 h-8 rounded-xl bg-surface-100 dark:bg-surface-800/80 border border-surface-200/60 dark:border-surface-700/60 flex items-center justify-center text-surface-600 dark:text-surface-300 transition-transform duration-200"
@@ -93,7 +89,7 @@
                 <button
                   type="button"
                   (click)="onAddIngredient($event)"
-                  class="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold transition-colors inline-flex items-center gap-1 cursor-pointer not-italic shadow-xs">
+                  class="btn-primary !h-8 !px-3 !text-xs not-italic">
                   <i class="pi pi-plus text-xs font-bold"></i>
                   <span>Add Ingredient</span>
                 </button>
@@ -123,19 +119,15 @@
                 <!-- Stock Status Badge -->
                 <td class="py-3.5 px-4">
                   @if (ingredient.itemCount > 0) {
-                    <span
-                      class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 inline-flex items-center gap-1">
+                    <pantry-badge variant="fresh">
                       <span>✓</span>
                       <span
                         >{{ ingredient.itemCount }}
                         {{ ingredient.itemCount === 1 ? 'item' : 'items' }}</span
                       >
-                    </span>
+                    </pantry-badge>
                   } @else {
-                    <span
-                      class="px-2.5 py-1 rounded-full text-xs font-semibold bg-surface-100 dark:bg-surface-800 text-surface-400 dark:text-surface-500 border border-surface-200/60 dark:border-surface-700/60 inline-flex items-center gap-1">
-                      <span>Out of Stock</span>
-                    </span>
+                    <pantry-badge variant="neutral"> Out of Stock </pantry-badge>
                   }
                 </td>
 
@@ -149,7 +141,7 @@
                 <td class="py-3.5 px-4 text-right">
                   <button
                     type="button"
-                    class="px-2.5 py-1 rounded-lg text-xs font-semibold text-surface-500 dark:text-surface-400 group-hover/ing:text-primary-600 dark:group-hover/ing:text-primary-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors inline-flex items-center gap-1.5 cursor-pointer">
+                    class="btn-ghost !h-7 !px-2 !text-xs font-semibold group-hover/ing:!text-primary-600 dark:group-hover/ing:!text-primary-400">
                     <span>{{
                       isIngredientExpanded(ingredient.id) ? 'Hide Items' : 'View Items'
                     }}</span>
@@ -197,15 +189,13 @@
                                       {{ item.name }}
                                     </p>
                                     @if (isExpired(item.expirationDate)) {
-                                      <span
-                                        class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                      <pantry-badge variant="expired" size="sm">
                                         Expired
-                                      </span>
+                                      </pantry-badge>
                                     } @else if (isExpiringSoon(item.expirationDate)) {
-                                      <span
-                                        class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                      <pantry-badge variant="expiring" size="sm">
                                         Expiring Soon
-                                      </span>
+                                      </pantry-badge>
                                     }
                                   </div>
 
@@ -249,7 +239,8 @@
                                 <button
                                   type="button"
                                   (click)="onUnassign(item, $event)"
-                                  class="px-2.5 py-1 rounded-lg bg-surface-100 dark:bg-surface-700 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400 text-surface-500 text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer"
+                                  class="btn-ghost !h-7 !px-2 !text-[11px] font-semibold hover:!text-rose-600 dark:hover:!text-rose-400"
+                                  aria-label="Unassign item from ingredient"
                                   title="Unassign item from ingredient">
                                   <span>⚡</span>
                                   <span class="hidden md:inline">Unassign</span>

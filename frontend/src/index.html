@@ -38,6 +38,11 @@
   </head>
 
   <body>
+    <script>
+      // Prevent light-mode flash: the app defaults to dark before Angular boots
+      // and ThemeService reconciles this with the user preference on init.
+      document.documentElement.classList.add('dark');
+    </script>
     <pantry-root></pantry-root>
   </body>
 </html>

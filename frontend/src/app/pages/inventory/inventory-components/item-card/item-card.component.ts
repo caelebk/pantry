@@ -14,6 +14,7 @@ import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
+import { BadgeComponent } from '@ui';
 import {
   getTimeDifferenceString,
   isExpired,
@@ -27,7 +28,7 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'pantry-item-card',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, DialogModule, ButtonModule],
+  imports: [CommonModule, TranslocoModule, DialogModule, ButtonModule, BadgeComponent],
   templateUrl: './item-card.component.html',
   styles: [':host { display: block; height: 100%; }'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -33,7 +33,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
 
 import { SkeletonModule } from 'primeng/skeleton';
 
-import { SearchInputComponent } from '@ui';
+import { BadgeComponent, SearchInputComponent } from '@ui';
 
 @Component({
   selector: 'pantry-recipes',
@@ -46,6 +46,7 @@ import { SearchInputComponent } from '@ui';
     SelectModule,
     SkeletonModule,
     SearchInputComponent,
+    BadgeComponent,
   ],
   templateUrl: './recipes.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -14,6 +14,7 @@ import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
+import { BadgeComponent, FormFieldComponent } from '@ui';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
 import {
   getTimeDifferenceString,
@@ -42,6 +43,8 @@ import { TextareaModule } from 'primeng/textarea';
     TextareaModule,
     DialogModule,
     ButtonModule,
+    BadgeComponent,
+    FormFieldComponent,
   ],
   templateUrl: './add-item-page.component.html',
 })

@@ -250,7 +250,12 @@ body {
 
 /* ── Gradient text utility ──────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #f97316, #ea580c, #fb923c);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-500),
+    var(--color-primary-600),
+    var(--color-primary-400)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -529,25 +534,6 @@ body {
   box-shadow: 0 0 30px rgba(249, 115, 22, 0.2);
 }
 
-.sub-card-hover {
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease !important;
-}
-
-.sub-card-hover:hover {
-  background-color: #ffffff !important;
-  border-color: var(--color-primary-500) !important;
-  box-shadow: 0 4px 12px -2px rgba(249, 115, 22, 0.15) !important;
-}
-
-:where(.dark, .dark *) .sub-card-hover:hover {
-  background-color: rgba(30, 41, 59, 0.65) !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
-}
-
 /* ── Subtle shine animation on cards ────────────────────────── */
 .card-shine {
   position: relative;
@@ -574,7 +560,8 @@ body {
 .gradient-border {
   border: double 1px transparent;
   background-image:
-    linear-gradient(var(--bg, white), var(--bg, white)), linear-gradient(135deg, #f97316, #fb923c);
+    linear-gradient(var(--bg, white), var(--bg, white)),
+    linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
   background-origin: border-box;
   background-clip: padding-box, border-box;
 }
@@ -1210,12 +1197,12 @@ p-inputnumber {
   font-size: 0.75rem;
   font-weight: 600;
   background-color: rgba(249, 115, 22, 0.1);
-  color: #ea580c;
+  color: var(--color-primary-600, #ea580c);
   border: 1px solid rgba(249, 115, 22, 0.2);
 }
 
 :where(.dark, .dark *) .badge-primary {
-  color: #fb923c;
+  color: var(--color-primary-400, #fb923c);
 }
 
 .badge-emerald {
@@ -1227,12 +1214,12 @@ p-inputnumber {
   font-size: 0.75rem;
   font-weight: 600;
   background-color: rgba(16, 185, 129, 0.1);
-  color: #059669;
+  color: var(--color-emerald-600, #059669);
   border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 :where(.dark, .dark *) .badge-emerald {
-  color: #34d399;
+  color: var(--color-emerald-400, #34d399);
 }
 
 .badge-amber {
@@ -1244,12 +1231,12 @@ p-inputnumber {
   font-size: 0.75rem;
   font-weight: 600;
   background-color: rgba(245, 158, 11, 0.1);
-  color: #d97706;
+  color: var(--color-amber-600, #d97706);
   border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 :where(.dark, .dark *) .badge-amber {
-  color: #fbbf24;
+  color: var(--color-amber-400, #fbbf24);
 }
 
 .badge-rose {
@@ -1261,12 +1248,12 @@ p-inputnumber {
   font-size: 0.75rem;
   font-weight: 600;
   background-color: rgba(244, 63, 94, 0.1);
-  color: #e11d48;
+  color: var(--color-rose-600, #e11d48);
   border: 1px solid rgba(244, 63, 94, 0.2);
 }
 
 :where(.dark, .dark *) .badge-rose {
-  color: #fb7185;
+  color: var(--color-rose-400, #fb7185);
 }
 
 .badge-indigo {
@@ -1278,12 +1265,12 @@ p-inputnumber {
   font-size: 0.75rem;
   font-weight: 600;
   background-color: rgba(99, 102, 241, 0.1);
-  color: #4f46e5;
+  color: var(--color-indigo-600, #4f46e5);
   border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 :where(.dark, .dark *) .badge-indigo {
-  color: #818cf8;
+  color: var(--color-indigo-400, #818cf8);
 }
 
 .badge-surface {
@@ -1295,12 +1282,12 @@ p-inputnumber {
   font-size: 0.75rem;
   font-weight: 600;
   background-color: rgba(100, 116, 139, 0.1);
-  color: #475569;
+  color: var(--color-surface-600, #475569);
   border: 1px solid rgba(100, 116, 139, 0.2);
 }
 
 :where(.dark, .dark *) .badge-surface {
-  color: #94a3b8;
+  color: var(--color-surface-400, #94a3b8);
   background-color: rgba(148, 163, 184, 0.1);
   border-color: rgba(148, 163, 184, 0.2);
 }
@@ -1354,7 +1341,7 @@ p-inputnumber {
   padding-left: 1.25rem;
   padding-right: 1.25rem;
   border-radius: 0.75rem;
-  background-color: #ea580c;
+  background-color: var(--color-primary-600);
   color: #ffffff;
   font-weight: 700;
   font-size: 0.875rem;
@@ -1367,7 +1354,7 @@ p-inputnumber {
   cursor: pointer;
 
   &:hover:not(:disabled) {
-    background-color: #c2410c;
+    background-color: var(--color-primary-700);
   }
   &:active:not(:disabled) {
     transform: scale(0.98);
@@ -1415,7 +1402,7 @@ p-inputnumber {
   padding-right: 1rem;
   border-radius: 0.75rem;
   background-color: rgba(244, 63, 94, 0.1);
-  color: #e11d48;
+  color: var(--color-rose-600, #e11d48);
   border: 1px solid rgba(244, 63, 94, 0.2);
   font-weight: 600;
   font-size: 0.875rem;
@@ -1432,7 +1419,7 @@ p-inputnumber {
 }
 
 :where(.dark, .dark *) .btn-danger {
-  color: #fb7185;
+  color: var(--color-rose-400, #fb7185);
 }
 
 .btn-ghost {
@@ -1490,6 +1477,37 @@ p-inputnumber {
   &:hover {
     color: var(--color-surface-200, #e2e8f0);
     background-color: var(--color-surface-800, #1e293b);
+  }
+}
+
+/**
+ * Compact icon button for dense contexts (table rows, card headers).
+ * Intentional 32px variant of `.btn-icon` (42px). Must always carry an
+ * accessible name (aria-label or title). Do not invent further sizes.
+ */
+.btn-icon-sm {
+  height: 32px;
+  width: 32px;
+  padding: 0;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  color: inherit;
+
+  &:hover {
+    background-color: var(--color-surface-100, #f1f5f9);
+    color: var(--color-surface-700, #334155);
+  }
+}
+
+:where(.dark, .dark *) .btn-icon-sm {
+  &:hover {
+    background-color: var(--color-surface-800, #1e293b);
+    color: var(--color-surface-200, #e2e8f0);
   }
 }
 

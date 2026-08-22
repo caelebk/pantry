@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router';
+import { inject, isDevMode } from '@angular/core';
+import { Router, Routes, UrlTree } from '@angular/router';
 import { Tab } from './components/tabs/tabs.model';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
 
@@ -240,5 +241,20 @@ export const routes: Routes = [
   },
   { path: 'meal-planner/add', redirectTo: 'meal-planner/new', pathMatch: 'full' },
 
+  // Dev-only component gallery (living documentation of the design system)
+  {
+    path: 'design-system',
+    canActivate: [devOnlyGuard],
+    loadComponent: () =>
+      import('./pages/design-system/design-system-page.component').then(
+        (m) => m.DesignSystemPageComponent,
+      ),
+  },
+
   { path: '**', redirectTo: Tab.Home },
 ];
+
+/** Redirects to home in production builds; the gallery is a dev-only tool. */
+function devOnlyGuard(): true | UrlTree {
+  return isDevMode() ? true : inject(Router).parseUrl(Tab.Home);
+}

@@ -34,4 +34,28 @@ describe('BadgeComponent', () => {
     const dot = fixture.nativeElement.querySelector('.bg-amber-500');
     expect(dot).toBeTruthy();
   });
+
+  it('should render indigo tone badge', () => {
+    fixture.componentRef.setInput('variant', 'indigo');
+    fixture.detectChanges();
+    const span = fixture.nativeElement.querySelector('span');
+    expect(span.className).toContain('text-indigo-600');
+  });
+
+  it('should render purple tone badge', () => {
+    fixture.componentRef.setInput('variant', 'purple');
+    fixture.detectChanges();
+    const span = fixture.nativeElement.querySelector('span');
+    expect(span.className).toContain('text-purple-600');
+  });
+
+  it('should render a pulsing dot when live is true', () => {
+    fixture.componentRef.setInput('variant', 'fresh');
+    fixture.componentRef.setInput('dot', true);
+    fixture.componentRef.setInput('live', true);
+    fixture.detectChanges();
+    const dot = fixture.nativeElement.querySelector('.bg-emerald-500');
+    expect(dot).toBeTruthy();
+    expect(dot.className).toContain('animate-pulse');
+  });
 });

@@ -10,6 +10,7 @@ import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { RecipeService } from '@services/recipe.service';
 import { ToastService } from '@services/toast.service';
+import { SkeletonComponent } from '@ui';
 import { isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
 import { CookableRecipesContainerComponent } from './home-components/cookable-recipes-container/cookable-recipes-container.component';
 import { ItemsContainerComponent } from './home-components/items-container/items-container.component';
@@ -28,6 +29,7 @@ import { AuthService } from '../../core/services/auth.service';
     CommonModule,
     TranslocoModule,
     StatCardComponent,
+    SkeletonComponent,
     ItemsContainerComponent,
     QuickActionsContainerComponent,
     LocationOverviewContainerComponent,

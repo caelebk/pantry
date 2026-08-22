@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { IngredientCategoryCluster } from '@models/inventory.models';
 import { Item } from '@models/items.model';
+import { BadgeComponent } from '@ui';
 import { IngredientGroupComponent } from '../ingredient-group/ingredient-group.component';
 
 @Component({
   selector: 'pantry-ingredient-category',
   standalone: true,
-  imports: [CommonModule, IngredientGroupComponent],
+  imports: [CommonModule, IngredientGroupComponent, BadgeComponent],
   templateUrl: './ingredient-category.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -11,11 +11,12 @@ import {
 } from '@angular/core';
 import { DayOfWeek, PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
+import { BadgeComponent } from '@ui';
 
 @Component({
   selector: 'pantry-daily-focus',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BadgeComponent],
   templateUrl: './daily-focus.component.html',
   styleUrl: './daily-focus.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

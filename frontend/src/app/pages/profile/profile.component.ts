@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
+import { BadgeComponent, FormFieldComponent } from '@ui';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -22,6 +23,8 @@ import { KitchenService } from '../../core/services/kitchen.service';
     InputTextModule,
     ToastModule,
     DialogModule,
+    BadgeComponent,
+    FormFieldComponent,
   ],
   providers: [MessageService],
   template: `
@@ -40,10 +43,9 @@ import { KitchenService } from '../../core/services/kitchen.service';
           </p>
         </div>
         <div class="flex items-center gap-3">
-          <span
-            class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 text-xs font-semibold uppercase tracking-wider">
+          <pantry-badge variant="primary" class="uppercase tracking-wider">
             {{ authService.currentUser()?.globalRole }}
-          </span>
+          </pantry-badge>
         </div>
       </div>
 
@@ -61,59 +63,62 @@ import { KitchenService } from '../../core/services/kitchen.service';
             </h2>
 
             <form [formGroup]="profileForm" (ngSubmit)="onSaveProfile()" class="space-y-6">
-              <div>
-                <label
-                  class="block text-xs font-semibold uppercase text-surface-600 dark:text-surface-300 mb-2"
-                  >{{ 'auth.fullName' | transloco }}</label
-                >
+              <pantry-form-field
+                [label]="'auth.fullName' | transloco"
+                forId="fullName"
+                [required]="true"
+                [error]="
+                  profileForm.controls.fullName.invalid && profileForm.controls.fullName.touched
+                    ? 'Full name is required'
+                    : ''
+                ">
                 <input
                   type="text"
+                  id="fullName"
                   formControlName="fullName"
                   class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none" />
-              </div>
+              </pantry-form-field>
 
-              <div>
-                <label
-                  class="block text-xs font-semibold uppercase text-surface-600 dark:text-surface-300 mb-2"
-                  >{{ 'profile.username' | transloco }}</label
-                >
+              <pantry-form-field
+                [label]="'profile.username' | transloco"
+                forId="username"
+                [error]="
+                  profileForm.controls.username.invalid && profileForm.controls.username.touched
+                    ? 'Username must be 3-30 letters, numbers, or underscores'
+                    : ''
+                ">
                 <input
                   type="text"
+                  id="username"
                   formControlName="username"
                   class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none" />
-              </div>
+              </pantry-form-field>
 
-              <div>
-                <label
-                  class="block text-xs font-semibold uppercase text-surface-600 dark:text-surface-300 mb-2"
-                  >{{ 'auth.email' | transloco }}</label
-                >
+              <pantry-form-field [label]="'auth.email' | transloco" forId="email">
                 <input
                   type="email"
+                  id="email"
                   [value]="authService.currentUser()?.email"
                   disabled
                   class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-900/80 border border-surface-300 dark:border-surface-800 text-surface-500 dark:text-surface-400 text-sm cursor-not-allowed outline-none" />
-              </div>
+              </pantry-form-field>
 
-              <div>
-                <label
-                  class="block text-xs font-semibold uppercase text-surface-600 dark:text-surface-300 mb-2"
-                  >Theme Preference</label
-                >
+              <pantry-form-field label="Theme Preference" forId="themePreference" [required]="true">
                 <select
+                  id="themePreference"
                   formControlName="themePreference"
                   class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none">
                   <option value="system">System (Match OS)</option>
                   <option value="light">Light Mode</option>
                   <option value="dark">Dark Mode</option>
                 </select>
-              </div>
+              </pantry-form-field>
 
               <div class="flex justify-end">
                 <button
                   type="submit"
                   [disabled]="profileForm.invalid || isSavingProfile()"
-                  class="h-[42px] px-6 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold text-sm shadow-lg shadow-orange-500/20 transition-all flex items-center gap-2 disabled:opacity-50">
+                  class="btn-primary">
                   @if (isSavingProfile()) {
                     <i class="pi pi-spin pi-spinner"></i>
                   }
@@ -133,33 +138,45 @@ import { KitchenService } from '../../core/services/kitchen.service';
             </h2>
 
             <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="space-y-6">
-              <div>
-                <label
-                  class="block text-xs font-semibold uppercase text-surface-600 dark:text-surface-300 mb-2"
-                  >Current Password</label
-                >
+              <pantry-form-field
+                label="Current Password"
+                forId="currentPassword"
+                [required]="true"
+                [error]="
+                  passwordForm.controls.currentPassword.invalid &&
+                  passwordForm.controls.currentPassword.touched
+                    ? 'Current password is required'
+                    : ''
+                ">
                 <input
                   type="password"
+                  id="currentPassword"
                   formControlName="currentPassword"
                   class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none" />
-              </div>
+              </pantry-form-field>
 
-              <div>
-                <label
-                  class="block text-xs font-semibold uppercase text-surface-600 dark:text-surface-300 mb-2"
-                  >New Password</label
-                >
+              <pantry-form-field
+                label="New Password"
+                forId="newPassword"
+                [required]="true"
+                [error]="
+                  passwordForm.controls.newPassword.invalid &&
+                  passwordForm.controls.newPassword.touched
+                    ? 'New password must be at least 8 characters'
+                    : ''
+                ">
                 <input
                   type="password"
+                  id="newPassword"
                   formControlName="newPassword"
                   class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none" />
-              </div>
+              </pantry-form-field>
 
               <div class="flex justify-end">
                 <button
                   type="submit"
                   [disabled]="passwordForm.invalid || isChangingPassword()"
-                  class="h-[42px] px-6 rounded-xl bg-surface-800 dark:bg-surface-100 hover:bg-surface-700 dark:hover:bg-surface-200 text-white dark:text-surface-900 font-semibold text-sm transition-all flex items-center gap-2 disabled:opacity-50">
+                  class="btn-secondary">
                   @if (isChangingPassword()) {
                     <i class="pi pi-spin pi-spinner"></i>
                   }
@@ -178,9 +195,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
                 <i class="pi pi-shield text-orange-400"></i>
                 {{ 'profile.activeSessions' | transloco }}
               </h2>
-              <button
-                (click)="onRevokeAllSessions()"
-                class="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs font-medium transition-colors">
+              <button (click)="onRevokeAllSessions()" class="btn-danger">
                 {{ 'profile.revokeAllSessionsBtn' | transloco }}
               </button>
             </div>
@@ -199,10 +214,9 @@ import { KitchenService } from '../../core/services/kitchen.service';
                         class="text-sm font-medium text-surface-800 dark:text-surface-100 flex items-center gap-2">
                         <span>{{ s.userAgent }}</span>
                         @if (s.isCurrent) {
-                          <span
-                            class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold uppercase">
+                          <pantry-badge variant="fresh" size="sm" class="uppercase">
                             {{ 'profile.currentDevice' | transloco }}
-                          </span>
+                          </pantry-badge>
                         }
                       </div>
                       <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
@@ -228,7 +242,8 @@ import { KitchenService } from '../../core/services/kitchen.service';
               </h2>
               <button
                 (click)="showCreateKitchenModal.set(true)"
-                class="w-8 h-8 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 flex items-center justify-center transition-colors">
+                aria-label="Create kitchen"
+                class="btn-icon-sm text-orange-400 hover:text-orange-500">
                 <i class="pi pi-plus text-sm"></i>
               </button>
             </div>
@@ -277,39 +292,35 @@ import { KitchenService } from '../../core/services/kitchen.service';
         [formGroup]="kitchenForm"
         (ngSubmit)="onConfirmKitchenCreation()"
         class="space-y-4 pt-2">
-        <div>
-          <label
-            class="block text-xs font-semibold uppercase text-surface-600 dark:text-surface-300 mb-2"
-            >Kitchen Name</label
-          >
+        <pantry-form-field
+          label="Kitchen Name"
+          forId="kitchenName"
+          [required]="true"
+          [error]="
+            kitchenForm.controls.name.invalid && kitchenForm.controls.name.touched
+              ? 'Kitchen name is required'
+              : ''
+          ">
           <input
             type="text"
+            id="kitchenName"
             formControlName="name"
             class="w-full h-[42px] px-4 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm outline-none"
             placeholder="Bistro 88 Main Kitchen" />
-        </div>
-        <div>
-          <label
-            class="block text-xs font-semibold uppercase text-surface-600 dark:text-surface-300 mb-2"
-            >Description</label
-          >
+        </pantry-form-field>
+        <pantry-form-field label="Description" forId="kitchenDescription">
           <input
             type="text"
+            id="kitchenDescription"
             formControlName="description"
             class="w-full h-[42px] px-4 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm outline-none"
             placeholder="Shared workspace for team dinner prep" />
-        </div>
+        </pantry-form-field>
         <div class="flex justify-end gap-3 pt-4">
-          <button
-            type="button"
-            (click)="showCreateKitchenModal.set(false)"
-            class="h-[42px] px-4 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 text-sm font-medium">
+          <button type="button" (click)="showCreateKitchenModal.set(false)" class="btn-secondary">
             Cancel
           </button>
-          <button
-            type="submit"
-            [disabled]="kitchenForm.invalid"
-            class="h-[42px] px-5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold shadow-lg shadow-orange-500/20">
+          <button type="submit" [disabled]="kitchenForm.invalid" class="btn-primary">
             Create Workspace
           </button>
         </div>
@@ -332,23 +343,37 @@ import { KitchenService } from '../../core/services/kitchen.service';
           </h3>
           <div class="flex gap-2 items-start">
             <div class="flex-1">
-              <input
-                type="email"
-                formControlName="email"
-                placeholder="User Email"
-                class="w-full h-[42px] px-4 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm outline-none" />
+              <pantry-form-field
+                forId="inviteEmail"
+                label="User Email"
+                [required]="true"
+                [error]="
+                  inviteForm.controls.email.invalid && inviteForm.controls.email.touched
+                    ? 'A valid email is required'
+                    : ''
+                ">
+                <input
+                  type="email"
+                  id="inviteEmail"
+                  formControlName="email"
+                  placeholder="User Email"
+                  class="w-full h-[42px] px-4 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm outline-none" />
+              </pantry-form-field>
             </div>
-            <select
-              formControlName="role"
-              class="h-[42px] px-3 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm outline-none">
-              <option value="editor">Editor</option>
-              <option value="viewer">Viewer</option>
-            </select>
+            <pantry-form-field forId="inviteRole" label="Role" [required]="true">
+              <select
+                id="inviteRole"
+                formControlName="role"
+                class="h-[42px] px-3 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm outline-none">
+                <option value="editor">Editor</option>
+                <option value="viewer">Viewer</option>
+              </select>
+            </pantry-form-field>
           </div>
           <button
             type="submit"
             [disabled]="inviteForm.invalid || isInviting()"
-            class="h-[42px] w-full rounded-xl bg-surface-200 dark:bg-surface-700 hover:bg-surface-300 dark:hover:bg-surface-600 text-surface-800 dark:text-surface-100 text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+            class="btn-secondary w-full">
             @if (isInviting()) {
               <i class="pi pi-spin pi-spinner"></i>
             }
@@ -380,7 +405,8 @@ import { KitchenService } from '../../core/services/kitchen.service';
                 @if (m.userId !== authService.currentUser()?.id) {
                   <button
                     (click)="onRemoveMember(m.userId)"
-                    class="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
+                    aria-label="Remove member"
+                    class="btn-icon-sm text-red-500 hover:text-red-600">
                     <i class="pi pi-trash"></i>
                   </button>
                 }

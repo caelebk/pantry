@@ -6,6 +6,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
+import { FormFieldComponent } from '@ui';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
 import { DatePicker } from 'primeng/datepicker';
 import { InputNumber } from 'primeng/inputnumber';
@@ -30,6 +31,7 @@ import { Ingredient } from '@models/ingredient.model';
     DatePicker,
     Textarea,
     PanelModule,
+    FormFieldComponent,
   ],
   templateUrl: './add-item-form.component.html',
 })
