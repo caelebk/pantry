@@ -13,6 +13,7 @@ import { Unit } from '@models/unit.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { forkJoin, Observable } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
+import { AuthService } from '../../core/services/auth.service';
 import { IngredientGroupService } from './ingredient-group.service';
 import { UnitService } from './unit.service';
 
@@ -23,13 +24,21 @@ import { IngredientItemDTO } from '@models/items.model';
 })
 export class IngredientService {
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly unitService = inject(UnitService);
   private readonly apiUrl = '/api/v1/ingredients';
   private ingredientsCache$?: Observable<Ingredient[]>;
+  private cacheKitchenId?: string;
+
+  private get activeKitchenId(): string {
+    return this.authService.activeKitchen()?.id ?? '';
+  }
 
   getIngredients(): Observable<Ingredient[]> {
-    if (!this.ingredientsCache$) {
+    const kitchenId = this.activeKitchenId;
+    if (!this.ingredientsCache$ || this.cacheKitchenId !== kitchenId) {
+      this.cacheKitchenId = kitchenId;
       this.ingredientsCache$ = forkJoin({
         ingredients: this.http
           .get<ApiResponse<IngredientDTO[]>>(this.apiUrl)

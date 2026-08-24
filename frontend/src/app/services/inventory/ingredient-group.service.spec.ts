@@ -2,6 +2,8 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { firstValueFrom } from 'rxjs';
+import { Kitchen } from '../../core/models/auth.model';
+import { AuthService } from '../../core/services/auth.service';
 import { IngredientGroupService } from './ingredient-group.service';
 
 describe('IngredientGroupService', () => {
@@ -42,6 +44,25 @@ describe('IngredientGroupService', () => {
     const groups = await promise;
     expect(groups.length).toBe(1);
     expect(groups[0].name).toBe('Poultry');
+  });
+
+  it('should refetch groups when the active kitchen changes', async () => {
+    const authService = TestBed.inject(AuthService);
+    authService.activeKitchen.set({ id: 'kitchen-1' } as Kitchen);
+
+    const first = firstValueFrom(service.getIngredientGroups());
+    httpMock.expectOne('/api/v1/ingredient-groups').flush({ status: 'success', data: [mockGroup] });
+    expect((await first).length).toBe(1);
+
+    authService.activeKitchen.set({ id: 'kitchen-2' } as Kitchen);
+    const second = firstValueFrom(service.getIngredientGroups());
+    httpMock
+      .expectOne('/api/v1/ingredient-groups')
+      .flush({ status: 'success', data: [{ id: 2, name: 'Vegetables' }] });
+
+    const groups = await second;
+    expect(groups.length).toBe(1);
+    expect(groups[0].name).toBe('Vegetables');
   });
 
   it('should create ingredient group', async () => {

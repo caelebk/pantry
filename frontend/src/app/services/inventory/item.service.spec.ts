@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { Location } from '@models/location.model';
 import { Unit, UnitType } from '@models/unit.model';
 import { firstValueFrom, of } from 'rxjs';
+import { Kitchen } from '../../core/models/auth.model';
+import { AuthService } from '../../core/services/auth.service';
 import { ItemService } from './item.service';
 import { LocationService } from './location.service';
 import { UnitService } from './unit.service';
@@ -57,6 +59,34 @@ describe('ItemService', () => {
 
     expect(await first).toEqual([]);
     expect(await second).toEqual([]);
+  });
+
+  it('should refetch ingredient items when the active kitchen changes', async () => {
+    const authService = TestBed.inject(AuthService);
+    authService.activeKitchen.set({ id: 'kitchen-1' } as Kitchen);
+
+    const first = firstValueFrom(service.getIngredientItems());
+    httpMock.expectOne('/api/v1/ingredient-items').flush({ status: 'success', data: [] });
+    expect(await first).toEqual([]);
+
+    authService.activeKitchen.set({ id: 'kitchen-2' } as Kitchen);
+    const second = firstValueFrom(service.getIngredientItems());
+    httpMock.expectOne('/api/v1/ingredient-items').flush({
+      status: 'success',
+      data: [
+        {
+          id: 'item-1',
+          label: 'Olive Oil',
+          quantity: 2,
+          unitId: 1,
+          locationId: 1,
+        },
+      ],
+    });
+
+    const items = await second;
+    expect(items.length).toBe(1);
+    expect(items[0].name).toBe('Olive Oil');
   });
 
   it('should call GET /api/ingredient-items/similarity and map response data', async () => {

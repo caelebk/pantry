@@ -6,17 +6,26 @@ import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { mapUnitDTOToUnit } from '@utility/itemUtility/UnitMapper';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
+import { AuthService } from '../../core/services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UnitService {
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly apiUrl = '/api/v1/units';
   private unitsCache$?: Observable<Unit[]>;
+  private cacheKitchenId?: string;
+
+  private get activeKitchenId(): string {
+    return this.authService.activeKitchen()?.id ?? '';
+  }
 
   getUnits(): Observable<Unit[]> {
-    if (!this.unitsCache$) {
+    const kitchenId = this.activeKitchenId;
+    if (!this.unitsCache$ || this.cacheKitchenId !== kitchenId) {
+      this.cacheKitchenId = kitchenId;
       this.unitsCache$ = this.http.get<ApiResponse<UnitDTO[]>>(this.apiUrl).pipe(
         mapResponseData(),
         map((dtos) => dtos.map(mapUnitDTOToUnit)),

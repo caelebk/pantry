@@ -5,19 +5,28 @@ import { CreateRecipeDTO, Recipe } from '@models/recipe.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { Observable } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
+import { AuthService } from '../core/services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RecipeService {
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly apiUrl = '/api/v1/recipes';
 
   private recipesCache$?: Observable<Recipe[]>;
   private availableRecipesCache$?: Observable<Recipe[]>;
+  private cacheKitchenId?: string;
+
+  private get activeKitchenId(): string {
+    return this.authService.activeKitchen()?.id ?? '';
+  }
 
   getRecipes(): Observable<Recipe[]> {
-    if (!this.recipesCache$) {
+    const kitchenId = this.activeKitchenId;
+    if (!this.recipesCache$ || this.cacheKitchenId !== kitchenId) {
+      this.cacheKitchenId = kitchenId;
       this.recipesCache$ = this.http
         .get<ApiResponse<Recipe[]>>(this.apiUrl)
         .pipe(mapResponseData<Recipe[]>(), shareReplay(1));
@@ -26,7 +35,9 @@ export class RecipeService {
   }
 
   getAvailableRecipes(): Observable<Recipe[]> {
-    if (!this.availableRecipesCache$) {
+    const kitchenId = this.activeKitchenId;
+    if (!this.availableRecipesCache$ || this.cacheKitchenId !== kitchenId) {
+      this.cacheKitchenId = kitchenId;
       this.availableRecipesCache$ = this.http
         .get<ApiResponse<Recipe[]>>(`${this.apiUrl}/available`)
         .pipe(mapResponseData<Recipe[]>(), shareReplay(1));

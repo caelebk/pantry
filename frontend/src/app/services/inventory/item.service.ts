@@ -10,6 +10,7 @@ import {
 } from '@utility/itemUtility/ItemMapper';
 import { forkJoin, Observable } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
+import { AuthService } from '../../core/services/auth.service';
 import { LocationService } from './location.service';
 import { UnitService } from './unit.service';
 
@@ -24,10 +25,16 @@ export interface ItemSimilarityCandidate {
 })
 export class ItemService {
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly apiUrl = '/api/v1/ingredient-items';
   private ingredientItemsCache$?: Observable<IngredientItem[]>;
+  private cacheKitchenId?: string;
+
+  private get activeKitchenId(): string {
+    return this.authService.activeKitchen()?.id ?? '';
+  }
 
   getSimilarIngredientItems(name: string, minScore = 0.45): Observable<ItemSimilarityCandidate[]> {
     return forkJoin({
@@ -69,7 +76,9 @@ export class ItemService {
   }
 
   getIngredientItems(): Observable<IngredientItem[]> {
-    if (!this.ingredientItemsCache$) {
+    const kitchenId = this.activeKitchenId;
+    if (!this.ingredientItemsCache$ || this.cacheKitchenId !== kitchenId) {
+      this.cacheKitchenId = kitchenId;
       this.ingredientItemsCache$ = forkJoin({
         items: this.http
           .get<ApiResponse<IngredientItemDTO[]>>(this.apiUrl)

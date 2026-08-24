@@ -2,6 +2,8 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { Recipe } from '@models/recipe.model';
 import { firstValueFrom } from 'rxjs';
+import { Kitchen } from '../core/models/auth.model';
+import { AuthService } from '../core/services/auth.service';
 import { RecipeService } from './recipe.service';
 
 describe('RecipeService', () => {
@@ -59,6 +61,42 @@ describe('RecipeService', () => {
 
     const recipes = await promise;
     expect(recipes.length).toBe(1);
+  });
+
+  it('should refetch recipes when the active kitchen changes', async () => {
+    const authService = TestBed.inject(AuthService);
+    authService.activeKitchen.set({ id: 'kitchen-1' } as Kitchen);
+
+    const first = firstValueFrom(service.getRecipes());
+    httpMock.expectOne('/api/v1/recipes').flush({ status: 'success', data: [mockRecipe] });
+    expect((await first).length).toBe(1);
+
+    authService.activeKitchen.set({ id: 'kitchen-2' } as Kitchen);
+    const second = firstValueFrom(service.getRecipes());
+    httpMock
+      .expectOne('/api/v1/recipes')
+      .flush({ status: 'success', data: [{ ...mockRecipe, id: 'rec-2', name: 'Salad' }] });
+
+    const recipes = await second;
+    expect(recipes.length).toBe(1);
+    expect(recipes[0].name).toBe('Salad');
+  });
+
+  it('should refetch available recipes when the active kitchen changes', async () => {
+    const authService = TestBed.inject(AuthService);
+    authService.activeKitchen.set({ id: 'kitchen-1' } as Kitchen);
+
+    const first = firstValueFrom(service.getAvailableRecipes());
+    httpMock
+      .expectOne('/api/v1/recipes/available')
+      .flush({ status: 'success', data: [mockRecipe] });
+    expect((await first).length).toBe(1);
+
+    authService.activeKitchen.set({ id: 'kitchen-2' } as Kitchen);
+    const second = firstValueFrom(service.getAvailableRecipes());
+    httpMock.expectOne('/api/v1/recipes/available').flush({ status: 'success', data: [] });
+
+    expect(await second).toEqual([]);
   });
 
   it('should fetch recipe by id', async () => {

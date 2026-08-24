@@ -2,6 +2,8 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { UnitDTO } from '@models/unit.model';
 import { firstValueFrom } from 'rxjs';
+import { Kitchen } from '../../core/models/auth.model';
+import { AuthService } from '../../core/services/auth.service';
 import { UnitService } from './unit.service';
 
 describe('UnitService', () => {
@@ -41,6 +43,26 @@ describe('UnitService', () => {
     const units = await promise;
     expect(units.length).toBe(2);
     expect(units[0].name).toBe('Gram');
+  });
+
+  it('should refetch units when the active kitchen changes', async () => {
+    const authService = TestBed.inject(AuthService);
+    authService.activeKitchen.set({ id: 'kitchen-1' } as Kitchen);
+
+    const first = firstValueFrom(service.getUnits());
+    httpMock.expectOne('/api/v1/units').flush({ status: 'success', data: mockUnits });
+    expect((await first).length).toBe(2);
+
+    authService.activeKitchen.set({ id: 'kitchen-2' } as Kitchen);
+    const second = firstValueFrom(service.getUnits());
+    httpMock.expectOne('/api/v1/units').flush({
+      status: 'success',
+      data: [{ id: 3, name: 'Cup', shortName: 'cup', baseFactor: 1 }],
+    });
+
+    const units = await second;
+    expect(units.length).toBe(1);
+    expect(units[0].name).toBe('Cup');
   });
 
   it('should convert units via API endpoint', async () => {

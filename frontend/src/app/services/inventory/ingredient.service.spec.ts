@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { IngredientDTO } from '@models/ingredient.model';
 import { UnitType } from '@models/unit.model';
 import { firstValueFrom, of } from 'rxjs';
+import { Kitchen } from '../../core/models/auth.model';
+import { AuthService } from '../../core/services/auth.service';
 import { IngredientGroupService } from './ingredient-group.service';
 import { IngredientService } from './ingredient.service';
 import { UnitService } from './unit.service';
@@ -76,6 +78,27 @@ describe('IngredientService', () => {
     expect(ingredients[0].name).toBe('Chicken Breast');
     expect(ingredients[0].ingredientGroup?.name).toBe('Poultry');
     expect(ingredients[0].defaultUnit?.shortName).toBe('lbs');
+  });
+
+  it('should refetch ingredients when the active kitchen changes', async () => {
+    const authService = TestBed.inject(AuthService);
+    authService.activeKitchen.set({ id: 'kitchen-1' } as Kitchen);
+
+    const first = firstValueFrom(service.getIngredients());
+    httpMock
+      .expectOne('/api/v1/ingredients')
+      .flush({ status: 'success', data: [mockIngredientDTO] });
+    expect((await first).length).toBe(1);
+
+    authService.activeKitchen.set({ id: 'kitchen-2' } as Kitchen);
+    const second = firstValueFrom(service.getIngredients());
+    httpMock
+      .expectOne('/api/v1/ingredients')
+      .flush({ status: 'success', data: [{ ...mockIngredientDTO, id: 'ing-2', name: 'Salt' }] });
+
+    const ingredients = await second;
+    expect(ingredients.length).toBe(1);
+    expect(ingredients[0].name).toBe('Salt');
   });
 
   it('should create new ingredient', async () => {

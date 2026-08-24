@@ -5,6 +5,7 @@ import { IngredientGroup } from '@models/ingredient-group.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { Observable } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
+import { AuthService } from '../../core/services/auth.service';
 
 export interface CreateIngredientGroupDTO {
   name: string;
@@ -21,11 +22,19 @@ export interface UpdateIngredientGroupDTO {
 })
 export class IngredientGroupService {
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly apiUrl = '/api/v1/ingredient-groups';
   private groupsCache$?: Observable<IngredientGroup[]>;
+  private cacheKitchenId?: string;
+
+  private get activeKitchenId(): string {
+    return this.authService.activeKitchen()?.id ?? '';
+  }
 
   getIngredientGroups(): Observable<IngredientGroup[]> {
-    if (!this.groupsCache$) {
+    const kitchenId = this.activeKitchenId;
+    if (!this.groupsCache$ || this.cacheKitchenId !== kitchenId) {
+      this.cacheKitchenId = kitchenId;
       this.groupsCache$ = this.http
         .get<ApiResponse<IngredientGroup[]>>(this.apiUrl)
         .pipe(mapResponseData<IngredientGroup[]>(), shareReplay(1));
