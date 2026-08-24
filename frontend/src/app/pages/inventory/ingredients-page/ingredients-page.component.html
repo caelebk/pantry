@@ -34,7 +34,7 @@
       <div class="flex flex-wrap items-center gap-3">
         <!-- Status Filter Segment Pills Container -->
         <div
-          class="flex items-center h-[42px] bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-xs border border-surface-200 dark:border-surface-700 shadow-xs">
+          class="flex items-center h-[42px] bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-sm border border-surface-200 dark:border-surface-700 shadow-xs">
           <button
             type="button"
             (click)="setStatusFilter('all')"
@@ -117,25 +117,22 @@
             [ngModel]="selectedGroup()"
             (ngModelChange)="onGroupChange($event)"
             optionLabel="name"
-            placeholder="🏷️ All Groups"
+            placeholder="All Groups"
             [filter]="true"
             filterBy="name"
             filterPlaceholder="Search groups..."
             [showClear]="false"
-            appendTo="body"
-            styleClass="text-xs font-bold">
+            appendTo="body">
             <ng-template pTemplate="selectedItem" let-selected>
-              <div
-                class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-white">
-                <span>🏷️</span>
-                <span class="truncate max-w-[130px]">{{
-                  selected ? selected.name : 'All Groups'
-                }}</span>
-              </div>
+              @if (selected) {
+                <div
+                  class="flex items-center gap-1.5 text-sm font-medium text-surface-600 dark:text-surface-400">
+                  <span class="truncate max-w-[130px]">{{ selected.name }}</span>
+                </div>
+              }
             </ng-template>
             <ng-template pTemplate="item" let-item>
-              <div class="flex items-center gap-2 text-xs font-medium py-0.5">
-                <span>🏷️</span>
+              <div class="flex items-center gap-2 text-sm font-medium py-0.5">
                 <span>{{ item.name }}</span>
               </div>
             </ng-template>

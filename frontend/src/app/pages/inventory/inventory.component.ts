@@ -298,13 +298,12 @@ export class InventoryComponent implements OnInit {
     this.currentPage = 1;
   }
 
-  public get locationSelectOptions(): { id: number | null; name: string; icon: string }[] {
+  public get locationSelectOptions(): { id: number | null; name: string }[] {
     return [
-      { id: null, name: 'All Locations', icon: '📍' },
+      { id: null, name: 'All Locations' },
       ...this.locations.map((loc) => ({
         id: loc.id,
         name: loc.name,
-        icon: loc.name === 'Fridge' ? '❄️' : loc.name === 'Freezer' ? '🧊' : '🥫',
       })),
     ];
   }

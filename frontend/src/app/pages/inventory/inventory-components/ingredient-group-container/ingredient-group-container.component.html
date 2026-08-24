@@ -26,25 +26,21 @@
           [filter]="true"
           filterPlaceholder="Search categories..."
           appendTo="body"
-          placeholder="✨ All Categories"
-          styleClass="text-xs font-bold">
+          placeholder="All Categories">
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
               <div
-                class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-white">
+                class="flex items-center gap-1.5 text-sm font-medium text-surface-600 dark:text-surface-400">
                 @if (selectedItems.length === 1) {
-                  <span>{{ getNutrientIcon(selectedItems[0]) }}</span>
                   <span>{{ getNutrientName(selectedItems[0]) }}</span>
                 } @else {
-                  <span>✨</span>
                   <span>{{ selectedItems.length }} Categories</span>
                 }
               </div>
             }
           </ng-template>
           <ng-template pTemplate="item" let-item>
-            <div class="flex items-center gap-2 text-xs font-medium py-0.5">
-              <span>{{ item.icon }}</span>
+            <div class="flex items-center gap-2 text-sm font-medium py-0.5">
               <span>{{ item.name }}</span>
             </div>
           </ng-template>
@@ -54,7 +50,8 @@
           <button
             type="button"
             (click)="onNutrientTypesSelect([])"
-            class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:text-surface-300 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+            class="btn-icon"
+            aria-label="Reset category filter"
             title="Reset category filter">
             <i class="pi pi-times text-xs font-bold"></i>
           </button>
@@ -74,25 +71,21 @@
           [filter]="true"
           filterPlaceholder="Search groups..."
           appendTo="body"
-          placeholder="🏷️ All Groups"
-          styleClass="text-xs font-bold">
+          placeholder="All Groups">
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
               <div
-                class="flex items-center gap-1.5 text-xs font-semibold text-surface-800 dark:text-white">
+                class="flex items-center gap-1.5 text-sm font-medium text-surface-600 dark:text-surface-400">
                 @if (selectedItems.length === 1) {
-                  <span>🏷️</span>
                   <span>{{ getCategoryName(selectedItems[0]) }}</span>
                 } @else {
-                  <span>🏷️</span>
                   <span>{{ selectedItems.length }} Groups</span>
                 }
               </div>
             }
           </ng-template>
           <ng-template pTemplate="item" let-item>
-            <div class="flex items-center gap-2 text-xs font-medium py-0.5">
-              <span>{{ item.icon }}</span>
+            <div class="flex items-center gap-2 text-sm font-medium py-0.5">
               <span>{{ item.name }}</span>
             </div>
           </ng-template>
@@ -102,7 +95,8 @@
           <button
             type="button"
             (click)="onCategoryIdsSelect([])"
-            class="p-2 h-[42px] w-[42px] text-surface-400 hover:text-surface-600 dark:text-surface-300 dark:hover:text-white hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+            class="btn-icon"
+            aria-label="Reset group filter"
             title="Reset group filter">
             <i class="pi pi-times text-xs font-bold"></i>
           </button>

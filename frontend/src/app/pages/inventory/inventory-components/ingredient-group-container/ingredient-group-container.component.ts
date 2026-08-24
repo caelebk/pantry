@@ -50,22 +50,20 @@ export class IngredientGroupContainerComponent {
   expandedIngredients = signal<Set<string>>(new Set());
 
   // Computed options for the dropdowns
-  nutrientSelectOptions = computed<{ id: number; name: string; icon: string }[]>(() => {
+  nutrientSelectOptions = computed<{ id: number; name: string }[]>(() => {
     return this.nutrientGroups().map((ng) => {
       const cat = ng.category;
       return {
         id: cat ? cat.id : -1,
         name: cat ? cat.name : 'Unknown',
-        icon: cat && cat.icon ? cat.icon : '📦',
       };
     });
   });
 
-  categoryGroupOptions = computed<{ id: number; name: string; icon: string }[]>(() => {
+  categoryGroupOptions = computed<{ id: number; name: string }[]>(() => {
     return this.categories().map((c) => ({
       id: c.id,
       name: c.name,
-      icon: '🏷️',
     }));
   });
 
@@ -85,18 +83,6 @@ export class IngredientGroupContainerComponent {
     }
     const option = this.nutrientSelectOptions().find((opt) => opt.id === itemOrId);
     return option ? option.name : '';
-  }
-
-  getNutrientIcon(itemOrId: unknown): string {
-    if (itemOrId == null) return '✨';
-    if (typeof itemOrId === 'object') {
-      const obj = itemOrId as { id?: number; icon?: string };
-      if (obj.icon) return obj.icon;
-      const option = this.nutrientSelectOptions().find((opt) => opt.id === obj.id);
-      return option ? option.icon : '✨';
-    }
-    const option = this.nutrientSelectOptions().find((opt) => opt.id === itemOrId);
-    return option ? option.icon : '✨';
   }
 
   getCategoryName(itemOrId: unknown): string {
