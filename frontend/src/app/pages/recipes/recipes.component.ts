@@ -91,14 +91,14 @@ export class RecipesComponent {
   difficultyFilter: DifficultyFilterOption = 'all';
   maxTimeFilter = 0; // 0 means any time
 
-  sortOptions: { label: string; value: RecipeSortOption; icon: string }[] = [
-    { label: 'Available', value: 'availability', icon: '✨' },
-    { label: 'Priority', value: 'priority', icon: '⏳' },
-    { label: 'Quickest', value: 'time-asc', icon: '⚡' },
-    { label: 'Longest', value: 'time-desc', icon: '⏳' },
-    { label: 'Easy First', value: 'difficulty-asc', icon: '🟢' },
-    { label: 'Hard First', value: 'difficulty-desc', icon: '🔴' },
-    { label: 'Name (A-Z)', value: 'name-asc', icon: '🔤' },
+  sortOptions: { label: string; value: RecipeSortOption }[] = [
+    { label: 'Available', value: 'availability' },
+    { label: 'Priority', value: 'priority' },
+    { label: 'Quickest', value: 'time-asc' },
+    { label: 'Longest', value: 'time-desc' },
+    { label: 'Easy First', value: 'difficulty-asc' },
+    { label: 'Hard First', value: 'difficulty-desc' },
+    { label: 'Name (A-Z)', value: 'name-asc' },
   ];
 
   difficultyOptions: { label: string; value: DifficultyFilterOption }[] = [
