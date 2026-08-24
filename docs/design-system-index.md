@@ -34,6 +34,7 @@
 | Writing long inline Tailwind button classes (`bg-primary-600 hover:... py-3 rounded-xl ...`) | Use `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, or `.btn-icon` |
 | Styling custom dropdowns with raw unstyled `<ul><li>` absolute menus | Use PrimeNG `<p-select appendTo="body">` or `<p-autoComplete>` |
 | Omitting `appendTo="body"` on PrimeNG dropdowns/popovers | Always add `appendTo="body"` on `p-select` / `p-dialog` / `p-datepicker` |
+| Solid-background inputs in searchbar/filter bars | Glass look: search input is glass by default; wrap filter control groups in `.glass-controls` for PrimeNG selects; pill bars use `bg-white/50 dark:bg-surface-900/40 backdrop-blur-md border-white/70 dark:border-white/10` |
 | Using raw hex colors (e.g. `#ea580c`, `#141C2E`, `#f8fafc`) directly in HTML | Use design tokens: `bg-primary-600`, `bg-navy-900`, `bg-surface-50`, etc. |
 | Hand-rolling inline pills for entity/taxonomy reference columns (Ingredient, Ingredient Group, Category) | Use `<pantry-badge variant="primary">`; unassigned refs use `<span class="text-surface-400 italic text-xs">Unassigned</span>` |
 

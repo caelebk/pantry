@@ -155,6 +155,29 @@ import {
 
 ---
 
+## 3.9 Glass Search, Filter Bars, Cards & Tables
+
+Search bars, filter controls, and all card/table/panel surfaces use the **glass treatment** —
+translucent background + backdrop blur instead of a solid surface:
+
+- **`<pantry-search-input>`** ships glass by default: `bg-white/50 dark:bg-surface-900/40 backdrop-blur-md border border-white/70 dark:border-white/10`.
+- **Segmented pill filter bars & view toggles:** same glass classes on the container (no `shadow-xs`).
+- **PrimeNG selects/multiselects inside a filter bar:** wrap the controls group with class `glass-controls`; scoped overrides in `styles.scss` apply translucent backgrounds + `backdrop-filter: blur(12px)`. Form fields outside filter bars keep the solid surface contract (§4).
+- **`.glass-card`, `.sub-card*`, `.glass-header`:** true glassmorphism via `styles.scss` — translucent rgba surfaces with `backdrop-filter: blur(16px) saturate(140%)`. All tables, panels, and cards inherit automatically.
+- **Table header bands:** use `bg-white/40 dark:bg-surface-900/40 backdrop-blur-sm border-white/60 dark:border-white/10` instead of solid `bg-surface-200`.
+- **Stacking rule:** any absolutely-positioned icon overlapping an element with `backdrop-filter` must carry `z-10` (the filter creates a stacking context that paints above earlier siblings).
+
+```html
+<div class="flex flex-wrap items-center gap-3 glass-controls">
+  <div class="flex items-center h-[42px] bg-white/50 dark:bg-surface-900/40 backdrop-blur-md p-1 rounded-xl gap-1 text-sm border border-white/70 dark:border-white/10">
+    <!-- segmented pills -->
+  </div>
+  <p-select ...></p-select>
+</div>
+```
+
+---
+
 ## 4. Dropdown & Select Consolidation Contract
 
 ### 4.1 Canonical Select Styling
