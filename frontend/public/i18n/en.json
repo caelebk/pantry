@@ -2,6 +2,15 @@
   "app": {
     "name": "Pantry"
   },
+  "pagination": {
+    "perPageLabel": "Per page:",
+    "perPageAria": "{{label}} per page",
+    "showingSummary": "Showing {{from}} to {{to}} of {{total}} {{label}}",
+    "firstPage": "First Page",
+    "previousPage": "Previous Page",
+    "nextPage": "Next Page",
+    "lastPage": "Last Page"
+  },
   "nav": {
     "home": "Home",
     "dashboard": "Home",

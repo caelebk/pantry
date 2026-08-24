@@ -31,7 +31,12 @@ import { AuthService } from '../../../core/services/auth.service';
 
 export type StatusFilterOption = 'all' | 'in-stock' | 'out-of-stock';
 
-import { BadgeComponent, EmptyStateComponent, SearchInputComponent } from '@ui';
+import {
+  BadgeComponent,
+  DataTablePaginationComponent,
+  EmptyStateComponent,
+  SearchInputComponent,
+} from '@ui';
 
 @Component({
   selector: 'pantry-ingredients-page',
@@ -47,6 +52,7 @@ import { BadgeComponent, EmptyStateComponent, SearchInputComponent } from '@ui';
     SearchInputComponent,
     EmptyStateComponent,
     BadgeComponent,
+    DataTablePaginationComponent,
   ],
   templateUrl: './ingredients-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -70,12 +76,11 @@ export class IngredientsPageComponent {
   // Object tracking expanded row keys: Record<string, boolean>
   public expandedRows = signal<Record<string, boolean>>({});
 
-  // Native Table Sorting & Pagination Controls
+  // Native Table Sorting Controls
   public sortBy = signal<'name' | 'group' | 'unit' | 'status'>('group');
   public sortDirection = signal<'asc' | 'desc'>('asc');
   public currentPage = signal<number>(1);
   public pageSize = signal<number>(15);
-  public readonly pageSizeOptions: number[] = [10, 15, 25, 50];
 
   constructor() {
     effect(() => {
@@ -211,9 +216,6 @@ export class IngredientsPageComponent {
     });
   });
 
-  public totalPages = computed(
-    () => Math.ceil(this.filteredIngredients().length / this.pageSize()) || 1,
-  );
   public startIndex = computed(() => (this.currentPage() - 1) * this.pageSize());
   public endIndex = computed(() =>
     Math.min(this.startIndex() + this.pageSize(), this.filteredIngredients().length),
@@ -222,34 +224,6 @@ export class IngredientsPageComponent {
   public displayedIngredients = computed(() => {
     return this.filteredIngredients().slice(this.startIndex(), this.endIndex());
   });
-
-  public visiblePages = computed(() => {
-    const total = this.totalPages();
-    const current = this.currentPage();
-    const pages: number[] = [];
-
-    let start = Math.max(1, current - 2);
-    const end = Math.min(total, start + 4);
-    if (end - start < 4) {
-      start = Math.max(1, end - 4);
-    }
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    return pages;
-  });
-
-  public goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages()) {
-      this.currentPage.set(page);
-    }
-  }
-
-  public onPageSizeChange(size: number | string): void {
-    this.pageSize.set(Number(size));
-    this.currentPage.set(1);
-  }
 
   public resetPagination(): void {
     this.currentPage.set(1);

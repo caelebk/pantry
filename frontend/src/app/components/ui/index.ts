@@ -1,5 +1,6 @@
 export * from './badge/badge.component';
 export * from './card/card.component';
+export * from './data-table-pagination/data-table-pagination.component';
 export * from './empty-state/empty-state.component';
 export * from './form-field/form-field.component';
 export * from './search-input/search-input.component';

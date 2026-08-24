@@ -56,7 +56,12 @@ export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'stat
 
 import { SkeletonModule } from 'primeng/skeleton';
 
-import { BadgeComponent, FormFieldComponent, SearchInputComponent } from '@ui';
+import {
+  BadgeComponent,
+  DataTablePaginationComponent,
+  FormFieldComponent,
+  SearchInputComponent,
+} from '@ui';
 
 @Component({
   selector: 'pantry-inventory',
@@ -75,6 +80,7 @@ import { BadgeComponent, FormFieldComponent, SearchInputComponent } from '@ui';
     SearchInputComponent,
     BadgeComponent,
     FormFieldComponent,
+    DataTablePaginationComponent,
   ],
   providers: [ConfirmationService],
   templateUrl: './inventory.component.html',
@@ -153,7 +159,6 @@ export class InventoryComponent implements OnInit {
   // Pagination State
   public currentPage = 1;
   public pageSize = 15;
-  public readonly pageSizeOptions: number[] = [10, 15, 25, 50];
 
   public getIngredientName(ingredientId?: string): string | null {
     if (!ingredientId) return null;
@@ -254,10 +259,6 @@ export class InventoryComponent implements OnInit {
     return filtered;
   }
 
-  public get totalPages(): number {
-    return Math.ceil(this.filteredItems.length / this.pageSize) || 1;
-  }
-
   public get startIndex(): number {
     return (this.currentPage - 1) * this.pageSize;
   }
@@ -270,32 +271,15 @@ export class InventoryComponent implements OnInit {
     return this.filteredItems.slice(this.startIndex, this.endIndex);
   }
 
-  public get visiblePages(): number[] {
-    const total = this.totalPages;
-    const current = this.currentPage;
-    const pages: number[] = [];
-
-    let start = Math.max(1, current - 2);
-    const end = Math.min(total, start + 4);
-    if (end - start < 4) {
-      start = Math.max(1, end - 4);
-    }
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    return pages;
+  public onPageChange(page: number): void {
+    this.currentPage = page;
+    this.cdr.markForCheck();
   }
 
-  public goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
-  }
-
-  public onPageSizeChange(size: number | string): void {
-    this.pageSize = Number(size);
+  public onPageSizeChange(size: number): void {
+    this.pageSize = size;
     this.currentPage = 1;
+    this.cdr.markForCheck();
   }
 
   public get locationSelectOptions(): { id: number | null; name: string }[] {
