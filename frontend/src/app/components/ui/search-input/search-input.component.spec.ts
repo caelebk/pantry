@@ -67,4 +67,11 @@ describe('SearchInputComponent', () => {
     expect(component.value()).toBe('');
     expect(spy).toHaveBeenCalledWith('');
   });
+
+  it('should render the glass look without a solid background', () => {
+    const input = fixture.nativeElement.querySelector('input');
+    expect(input.className).toContain('backdrop-blur-md');
+    expect(input.className).toContain('bg-white/50');
+    expect(input.className).not.toContain('bg-surface-100');
+  });
 });

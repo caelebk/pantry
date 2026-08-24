@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
   template: `
     <div class="relative w-full" [class.opacity-60]="disabled()">
       <i
-        class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"
+        class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 z-10 text-surface-400 text-sm pointer-events-none"
         aria-hidden="true"></i>
       <input
         #inputElement
@@ -28,13 +28,13 @@ import { FormsModule } from '@angular/forms';
         [attr.aria-label]="ariaLabel()"
         (input)="onInput($event)"
         (keydown.escape)="clear()"
-        class="w-full pl-10 pr-10 h-[42px] bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all placeholder:text-surface-400 shadow-xs disabled:cursor-not-allowed" />
+        class="w-full pl-10 pr-10 h-[42px] bg-white/50 dark:bg-surface-900/40 backdrop-blur-md border border-white/70 dark:border-white/10 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all placeholder:text-surface-400 disabled:cursor-not-allowed" />
       @if (value()) {
         <button
           type="button"
           (click)="clear()"
           [attr.aria-label]="clearAriaLabel()"
-          class="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 cursor-pointer p-1 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500">
+          class="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 cursor-pointer p-1 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500">
           <i class="pi pi-times text-xs" aria-hidden="true"></i>
         </button>
       }
