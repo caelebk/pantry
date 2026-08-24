@@ -7,11 +7,12 @@ import { DayOfWeek, MealType } from '@models/meal-planner.model';
 import { Recipe } from '@models/recipe.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
+import { SearchInputComponent } from '@ui';
 
 @Component({
   selector: 'pantry-plan-meal-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SearchInputComponent],
   templateUrl: './plan-meal-page.component.html',
   styleUrl: './plan-meal-page.component.scss',
 })
