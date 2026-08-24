@@ -37,6 +37,8 @@ export class BadgeComponent {
   dot = input<boolean>(false);
   /** Animates the dot (live status indicators, e.g. real-time stock counts). */
   live = input<boolean>(false);
+  /** Renders without an outline border (e.g. subtle unit/tag chips in tables). */
+  borderless = input<boolean>(false);
 
   badgeClasses = computed(() => {
     const sizeMap: Record<BadgeSize, string> = {
@@ -61,7 +63,12 @@ export class BadgeComponent {
       purple: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20',
     };
 
-    return `inline-flex items-center justify-center border transition-colors ${sizeMap[this.size()]} ${variantMap[this.variant()]}`;
+    const variant = this.borderless()
+      ? variantMap[this.variant()].replace(/(?:^|\s)(?:dark:)?border\S*/g, '')
+      : variantMap[this.variant()];
+    const borderClass = this.borderless() ? '' : 'border';
+
+    return `inline-flex items-center justify-center transition-colors ${borderClass} ${sizeMap[this.size()]} ${variant}`;
   });
 
   dotClasses = computed(() => {

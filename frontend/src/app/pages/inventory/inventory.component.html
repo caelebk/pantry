@@ -350,17 +350,13 @@
                     </td>
 
                     <!-- Connected Ingredient -->
-                    <td class="py-3.5 px-4">
+                    <td class="py-3.5 px-4 align-middle">
                       @if (getIngredientName(item.ingredientId)) {
-                        <span
-                          class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-950/40 border border-primary-200 dark:border-primary-800/50 px-2.5 py-1 rounded-lg">
-                          {{ getIngredientName(item.ingredientId) }}
-                        </span>
+                        <pantry-badge variant="primary">
+                          <span>{{ getIngredientName(item.ingredientId) }}</span>
+                        </pantry-badge>
                       } @else {
-                        <span
-                          class="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 px-2 py-0.5 rounded-md">
-                          Unassigned
-                        </span>
+                        <span class="text-surface-400 italic text-xs">Unassigned</span>
                       }
                     </td>
 

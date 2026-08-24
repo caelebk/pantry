@@ -15,7 +15,7 @@
 | **SearchInput** | `<pantry-search-input>` | `import { SearchInputComponent } from '@ui'` | `default` | `md (42px)` | Hand-coded `<div class="relative"><i class="pi pi-search"></i><input ...>` |
 | **Spinner** | `<pantry-spinner>` | `import { SpinnerComponent } from '@ui'` | `primary`, `white`, `surface` | `xs`, `sm`, `md`, `lg` | Hand-coded SVG `<svg class="animate-spin ...">` or border spinners |
 | **EmptyState** | `<pantry-empty-state>` | `import { EmptyStateComponent } from '@ui'` | `glass`, `plain` | `md` | Hand-coded empty divs with icon & text |
-| **Badge** | `<pantry-badge>` | `import { BadgeComponent } from '@ui'` | `fresh`, `expiring`, `expired`, `primary`, `neutral`, `location`, `outline`, `indigo`, `purple` (+ `[dot]`, `[live]`) | `sm`, `md` | Inline styled status spans and arbitrary badge pills |
+| **Badge** | `<pantry-badge>` | `import { BadgeComponent } from '@ui'` | `fresh`, `expiring`, `expired`, `primary`, `neutral`, `location`, `outline`, `indigo`, `purple` (+ `[dot]`, `[live]`, `[borderless]`) | `sm`, `md` | Inline styled status spans and arbitrary badge pills |
 | **Skeleton** | `<pantry-skeleton>` | `import { SkeletonComponent } from '@ui'` | `card`, `row`, `text`, `circle`, `custom` | `custom height/width` | Raw `div.animate-pulse` placeholders |
 | **FormField** | `<pantry-form-field>` | `import { FormFieldComponent } from '@ui'` | `default` | `md` | Duplicated `<label>` + asterisks + error message wrappers |
 | **Card** | `<pantry-card>` | `import { CardComponent } from '@ui'` | `glass`, `sub`, `elevated` | `none`, `sm`, `md`, `lg` padding | Ad-hoc card containers |
@@ -35,6 +35,7 @@
 | Styling custom dropdowns with raw unstyled `<ul><li>` absolute menus | Use PrimeNG `<p-select appendTo="body">` or `<p-autoComplete>` |
 | Omitting `appendTo="body"` on PrimeNG dropdowns/popovers | Always add `appendTo="body"` on `p-select` / `p-dialog` / `p-datepicker` |
 | Using raw hex colors (e.g. `#ea580c`, `#141C2E`, `#f8fafc`) directly in HTML | Use design tokens: `bg-primary-600`, `bg-navy-900`, `bg-surface-50`, etc. |
+| Hand-rolling inline pills for entity/taxonomy reference columns (Ingredient, Ingredient Group, Category) | Use `<pantry-badge variant="primary">`; unassigned refs use `<span class="text-surface-400 italic text-xs">Unassigned</span>` |
 
 ---
 

@@ -112,13 +112,16 @@ import {
 
 ### 3.4 `BadgeComponent` (`pantry-badge`)
 - **Use For:** Inventory freshness status (`fresh`, `expiring`, `expired`), item locations, tags.
-- **Inputs:** `variant: input<'fresh' | 'expiring' | 'expired' | 'primary' | 'neutral' | 'location' | 'outline' | 'indigo' | 'purple'>`, `size: input<'sm' | 'md'>`, `icon: input<string>`, `dot: input<boolean>`, `live: input<boolean>`.
+- **Inputs:** `variant: input<'fresh' | 'expiring' | 'expired' | 'primary' | 'neutral' | 'location' | 'outline' | 'indigo' | 'purple'>`, `size: input<'sm' | 'md'>`, `icon: input<string>`, `dot: input<boolean>`, `live: input<boolean>`, `borderless: input<boolean>`.
 - **`live`:** animates the dot (`animate-pulse`) for real-time status indicators (e.g. live stock counts). Use sparingly — only where data updates continuously.
+- **`borderless`:** renders the badge without its outline border (keeps background + text tokens). Use for subtle informational chips such as the Default Unit column in the Ingredients table.
+- **Entity/Taxonomy Reference Columns:** When a table column displays a reference to another taxonomy entity (ingredient, ingredient group, category), always render it with `<pantry-badge variant="primary">`. Missing references fall back to an italic muted `<span class="text-surface-400 italic text-xs">Unassigned</span>` — never hand-rolled inline pills. Reference implementations: Ingredients page (Ingredient Group column) and Inventory items page (Ingredient column).
 
 ```html
 <pantry-badge variant="fresh" [dot]="true">Fresh</pantry-badge>
 <pantry-badge variant="location" icon="pi pi-map-marker">Pantry Shelf A</pantry-badge>
 <pantry-badge variant="fresh" [dot]="true" [live]="true">12/15 In Stock</pantry-badge>
+<pantry-badge variant="primary">{{ entity.name }}</pantry-badge>
 ```
 
 ### 3.5 `SkeletonComponent` (`pantry-skeleton`)

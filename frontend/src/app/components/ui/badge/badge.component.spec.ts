@@ -58,4 +58,14 @@ describe('BadgeComponent', () => {
     expect(dot).toBeTruthy();
     expect(dot.className).toContain('animate-pulse');
   });
+
+  it('should omit the border when borderless is true', () => {
+    fixture.componentRef.setInput('variant', 'neutral');
+    fixture.componentRef.setInput('borderless', true);
+    fixture.detectChanges();
+
+    const span = fixture.nativeElement.querySelector('span');
+    expect(span.className).not.toContain('border');
+    expect(span.className).toContain('text-surface-700');
+  });
 });

@@ -308,7 +308,6 @@
                   <td class="py-3.5 px-4 align-middle">
                     @if (ing.ingredientGroup?.name) {
                       <pantry-badge variant="primary">
-                        <span>🏷️</span>
                         <span>{{ ing.ingredientGroup?.name }}</span>
                       </pantry-badge>
                     } @else {
@@ -319,7 +318,7 @@
                   <!-- Default Unit -->
                   <td class="py-3.5 px-4 align-middle">
                     @if (ing.defaultUnit?.name) {
-                      <pantry-badge variant="neutral">
+                      <pantry-badge variant="neutral" [borderless]="true">
                         {{ ing.defaultUnit?.name }}
                         <span class="text-surface-400 font-normal ml-0.5"
                           >({{ ing.defaultUnit?.shortName }})</span
