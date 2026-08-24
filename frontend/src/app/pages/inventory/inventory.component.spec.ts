@@ -257,4 +257,16 @@ describe('InventoryComponent', () => {
     fixture.detectChanges();
     expect(component.showScrollTopButton).toBeFalse();
   });
+
+  it('should render 3-column max grid layout when grid view mode is active', () => {
+    component.viewMode = 'grid';
+    fixture.detectChanges();
+
+    const gridContainer = fixture.nativeElement.querySelector(
+      '.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3',
+    );
+    expect(gridContainer).toBeTruthy();
+    expect(gridContainer.classList.contains('xl:grid-cols-4')).toBeFalse();
+    expect(fixture.nativeElement.querySelectorAll('pantry-item-card').length).toBe(3);
+  });
 });
