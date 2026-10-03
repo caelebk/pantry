@@ -28,8 +28,8 @@
         </div>
       </div>
       <div
-        class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 flex items-center justify-center text-lg">
-        🔥
+        class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 flex items-center justify-center text-lg">
+        <i class="pi pi-fire"></i>
       </div>
     </div>
 
@@ -45,8 +45,8 @@
         </div>
       </div>
       <div
-        class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
-        ⏱️
+        class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 flex items-center justify-center text-lg">
+        <i class="pi pi-clock"></i>
       </div>
     </div>
 
@@ -82,13 +82,15 @@
     <!-- Left Column (2 wide): Chronological Meal Timeline -->
     <div class="lg:col-span-2 space-y-4">
       <h3 class="text-lg font-bold text-surface-900 dark:text-white flex items-center gap-2">
-        <span>📅</span> {{ selectedDay() }} Schedule
+        {{ selectedDay() }} Schedule
       </h3>
 
       @if (dayMeals().length === 0) {
         <div
           class="glass-card rounded-2xl p-10 text-center border border-surface-200 dark:border-surface-700/80">
-          <div class="text-3xl mb-2">🍽️</div>
+          <div class="text-3xl mb-2">
+            <i class="pi pi-bowl-food text-surface-400 dark:text-surface-500"></i>
+          </div>
           <p class="font-bold text-surface-900 dark:text-white">
             No meals planned for {{ selectedDay() }}
           </p>
@@ -116,16 +118,19 @@
 
                 <div
                   class="flex items-center gap-3 text-xs text-surface-600 dark:text-surface-300 font-semibold">
-                  <span>⏱️ {{ meal.prepTimeMinutes || 15 }} mins prep</span>
+                  <span
+                    ><i class="pi pi-clock mr-1"></i>{{ meal.prepTimeMinutes || 15 }} mins
+                    prep</span
+                  >
                   <span>•</span>
-                  <span>🍽️ {{ meal.servings }} servings</span>
+                  <span><i class="pi pi-bowl-food mr-1"></i>{{ meal.servings }} servings</span>
                   <span>•</span>
-                  <span>🔥 {{ meal.calories || 400 }} kcal</span>
+                  <span><i class="pi pi-fire mr-1"></i>{{ meal.calories || 400 }} kcal</span>
                 </div>
 
                 @if (meal.missingIngredients && meal.missingIngredients.length > 0) {
                   <div class="text-xs text-rose-600 dark:text-rose-400 font-semibold pt-1">
-                    ⚠️ Missing ingredients: {{ meal.missingIngredients.join(', ') }}
+                    Missing ingredients: {{ meal.missingIngredients.join(', ') }}
                   </div>
                 }
               </div>
@@ -135,7 +140,7 @@
                   meal.missingIngredients && meal.missingIngredients.length > 0 && !meal.cooked
                 ) {
                   <button (click)="addMissingToShoppingList(meal)" class="btn-danger">
-                    🛒 Add Missing
+                    Add Missing
                   </button>
                 }
 
@@ -170,7 +175,7 @@
     <!-- Right Column (1 wide): Ingredient Checklist for the Day -->
     <div class="space-y-4">
       <h3 class="text-lg font-bold text-surface-900 dark:text-white flex items-center gap-2">
-        <span>🛒</span> {{ selectedDay() }} Ingredients
+        {{ selectedDay() }} Ingredients
       </h3>
 
       <div
@@ -194,7 +199,7 @@
                   @for (ing of meal.missingIngredients; track ing) {
                     <div
                       class="flex items-center justify-between text-rose-700 dark:text-rose-300 font-medium pl-2">
-                      <span>⚠️ {{ ing }}</span>
+                      <span>{{ ing }}</span>
                       <pantry-badge variant="expired" size="sm" class="shrink-0"
                         >Missing</pantry-badge
                       >
@@ -202,7 +207,7 @@
                   }
                 } @else {
                   <div class="text-emerald-600 dark:text-emerald-400 font-medium pl-2">
-                    ✅ All ingredients in pantry
+                    All ingredients in pantry
                   </div>
                 }
               </div>

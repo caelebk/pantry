@@ -10,7 +10,7 @@
           (click)="setLayoutMode('grid')"
           [class]="
             layoutMode() === 'grid'
-              ? 'px-3 py-1 font-bold rounded-lg bg-white dark:bg-surface-700 text-primary-600 dark:text-primary-400 shadow-xs transition-all text-xs flex items-center gap-1.5 cursor-pointer'
+              ? 'px-3 py-1 font-bold rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-white shadow-xs transition-all text-xs flex items-center gap-1.5 cursor-pointer'
               : 'px-3 py-1 font-medium rounded-lg text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all text-xs flex items-center gap-1.5 cursor-pointer'
           ">
           <svg
@@ -25,14 +25,14 @@
               stroke-linejoin="round"
               d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
           </svg>
-          Spacious Cards (Recommended)
+          Cards
         </button>
 
         <button
           (click)="setLayoutMode('timeline')"
           [class]="
             layoutMode() === 'timeline'
-              ? 'px-3 py-1 font-bold rounded-lg bg-white dark:bg-surface-700 text-primary-600 dark:text-primary-400 shadow-xs transition-all text-xs flex items-center gap-1.5 cursor-pointer'
+              ? 'px-3 py-1 font-bold rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-white shadow-xs transition-all text-xs flex items-center gap-1.5 cursor-pointer'
               : 'px-3 py-1 font-medium rounded-lg text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all text-xs flex items-center gap-1.5 cursor-pointer'
           ">
           <svg
@@ -47,7 +47,7 @@
               stroke-linejoin="round"
               d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
-          Horizontal Day Rows
+          Day Rows
         </button>
       </div>
     </div>
@@ -80,7 +80,7 @@
               </div>
               @if (getDayCalories(day) > 0) {
                 <div class="text-xs font-semibold text-surface-400 dark:text-surface-500 mt-0.5">
-                  🔥 ~{{ getDayCalories(day) }} kcal total
+                  ~{{ getDayCalories(day) }} kcal total
                 </div>
               }
             </div>
@@ -93,10 +93,10 @@
             @for (meal of getMealsForDay(day); track meal.id) {
               <div
                 [class.opacity-60]="meal.cooked"
-                [class.bg-emerald-50/50]="meal.cooked"
-                [class.dark:bg-emerald-950/20]="meal.cooked"
-                [class.border-emerald-200]="meal.cooked"
-                [class.dark:border-emerald-900/40]="meal.cooked"
+                [class.bg-surface-100]="meal.cooked"
+                [class.dark:bg-surface-800/60]="meal.cooked"
+                [class.border-surface-200]="meal.cooked"
+                [class.dark:border-surface-700/60]="meal.cooked"
                 class="p-3.5 rounded-xl sub-card sub-card-hover shadow-xs space-y-2.5 group">
                 <!-- Meal Slot Badge + Title + Delete -->
                 <div class="flex items-start justify-between gap-2">
@@ -107,7 +107,7 @@
                         {{ meal.mealType }}
                       </span>
                       <span class="text-xs text-surface-600 dark:text-surface-300 font-bold">
-                        ⏱️ {{ meal.prepTimeMinutes || 15 }}m • 🔥 {{ meal.calories || 400 }} kcal
+                        {{ meal.prepTimeMinutes || 15 }}m • {{ meal.calories || 400 }} kcal
                       </span>
                     </div>
 
@@ -144,12 +144,12 @@
                   <div
                     class="p-2 rounded-lg bg-rose-500/10 dark:bg-rose-500/10 border border-rose-500/20 dark:border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                     <span class="text-rose-700 dark:text-rose-400 font-semibold truncate">
-                      ⚠️ Missing: {{ meal.missingIngredients.join(', ') }}
+                      Missing: {{ meal.missingIngredients.join(', ') }}
                     </span>
                     <button
                       (click)="addMissingToShoppingList(meal)"
                       class="btn-danger shrink-0 text-center">
-                      🛒 Add to Cart
+                      Add to Cart
                     </button>
                   </div>
                 }
@@ -158,18 +158,18 @@
                 <div class="pt-1 flex items-center justify-between gap-2">
                   @if (!meal.missingIngredients || meal.missingIngredients.length === 0) {
                     <span
-                      class="text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
-                      ✅ In Stock
+                      class="text-xs text-surface-600 dark:text-surface-300 font-bold flex items-center gap-1">
+                      In Stock
                     </span>
                   }
                   <button
                     (click)="toggleCooked(meal.id)"
                     [class]="
                       meal.cooked
-                        ? 'px-3 py-1.5 bg-emerald-600 text-white font-bold rounded-xl text-xs transition-all cursor-pointer ml-auto'
+                        ? 'px-3 py-1.5 bg-surface-800 dark:bg-surface-200 text-white dark:text-surface-900 font-bold rounded-xl text-xs transition-all cursor-pointer ml-auto'
                         : 'px-3 py-1.5 bg-surface-200 dark:bg-surface-700 hover:bg-surface-300 dark:hover:bg-surface-600 text-surface-900 dark:text-white font-bold rounded-xl text-xs transition-all cursor-pointer ml-auto'
                     ">
-                    {{ meal.cooked ? '✓ Cooked!' : 'Mark as Cooked' }}
+                    {{ meal.cooked ? 'Cooked' : 'Mark as Cooked' }}
                   </button>
                 </div>
               </div>
@@ -180,9 +180,9 @@
                 (keyup.space)="onRequestAdd(day, 'Dinner')"
                 tabindex="0"
                 role="button"
-                class="p-6 rounded-xl border border-dashed border-surface-200/80 dark:border-surface-800/80 text-center space-y-2 hover:border-primary-500 hover:bg-primary-50/10 cursor-pointer transition-all">
+                class="p-6 rounded-xl border border-dashed border-surface-200/80 dark:border-surface-800/80 text-center space-y-2 hover:border-surface-400 hover:bg-surface-100/40 dark:hover:bg-surface-800/40 cursor-pointer transition-all">
                 <div class="text-surface-400 text-sm font-medium">No meals scheduled</div>
-                <div class="text-xs text-primary-600 dark:text-primary-400 font-semibold">
+                <div class="text-xs text-surface-600 dark:text-surface-300 font-semibold">
                   + Add First Meal
                 </div>
               </div>
@@ -208,12 +208,12 @@
             </div>
             @if (getDayCalories(day) > 0) {
               <div class="text-xs font-semibold text-surface-400">
-                🔥 ~{{ getDayCalories(day) }} kcal
+                ~{{ getDayCalories(day) }} kcal
               </div>
             }
             <button
               (click)="onRequestAdd(day, 'Dinner')"
-              class="mt-2 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline cursor-pointer">
+              class="mt-2 text-xs font-semibold text-surface-600 dark:text-surface-300 hover:underline cursor-pointer">
               + Plan Meal
             </button>
           </div>
@@ -223,8 +223,8 @@
             @for (meal of getMealsForDay(day); track meal.id) {
               <div
                 [class.opacity-60]="meal.cooked"
-                [class.bg-emerald-50/50]="meal.cooked"
-                [class.dark:bg-emerald-950/20]="meal.cooked"
+                [class.bg-surface-100]="meal.cooked"
+                [class.dark:bg-surface-800/90]="meal.cooked"
                 class="p-3 rounded-xl bg-surface-100 dark:bg-surface-800/90 border border-surface-200 dark:border-surface-700/80 space-y-2">
                 <div class="flex items-center justify-between gap-1">
                   <span
@@ -242,23 +242,25 @@
                   {{ meal.recipeName }}
                 </h4>
                 <div class="text-[10px] text-surface-600 dark:text-surface-300 font-semibold">
-                  ⏱️ {{ meal.prepTimeMinutes || 15 }}m • 🔥 {{ meal.calories || 400 }} kcal
+                  {{ meal.prepTimeMinutes || 15 }}m • {{ meal.calories || 400 }} kcal
                 </div>
 
                 @if (
                   meal.missingIngredients && meal.missingIngredients.length > 0 && !meal.cooked
                 ) {
                   <button (click)="addMissingToShoppingList(meal)" class="btn-danger w-full">
-                    🛒 Add Missing
+                    Add Missing
                   </button>
                 }
 
                 <button
                   (click)="toggleCooked(meal.id)"
-                  [class.bg-emerald-600]="meal.cooked"
+                  [class.bg-surface-800]="meal.cooked"
+                  [class.dark:bg-surface-200]="meal.cooked"
                   [class.text-white]="meal.cooked"
+                  [class.dark:text-surface-900]="meal.cooked"
                   class="w-full py-1 text-[10px] bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-white font-bold rounded">
-                  {{ meal.cooked ? '✓ Cooked' : 'Mark Cooked' }}
+                  {{ meal.cooked ? 'Cooked' : 'Mark Cooked' }}
                 </button>
               </div>
             } @empty {

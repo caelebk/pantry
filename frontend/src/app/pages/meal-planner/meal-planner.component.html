@@ -5,16 +5,13 @@
       <h1 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
         Weekly Meal Planner
       </h1>
-      <p class="text-sm font-medium text-surface-500 dark:text-surface-400 mt-1">
-        Schedule recipe meals, track ingredient availability, and auto-sync to shopping list
-      </p>
     </div>
 
     <!-- Quick Actions Group -->
     <div class="flex flex-wrap items-center gap-2.5 shrink-0 self-start md:self-auto">
       @if (missingItemsCount() > 0) {
         <button (click)="syncAllMissingToShoppingList()" class="btn-danger">
-          🛒 Sync {{ missingItemsCount() }} Missing Item{{ missingItemsCount() > 1 ? 's' : '' }}
+          Sync {{ missingItemsCount() }} Missing Item{{ missingItemsCount() > 1 ? 's' : '' }}
         </button>
       }
 
@@ -42,20 +39,20 @@
         (click)="setSubTab('calendar')"
         [class]="
           activeSubTab() === 'calendar'
-            ? 'px-4 py-2 font-bold rounded-lg bg-white dark:bg-surface-700 text-primary-600 dark:text-primary-400 shadow-xs transition-all text-xs flex items-center gap-2 cursor-pointer'
+            ? 'px-4 py-2 font-bold rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-white shadow-xs transition-all text-xs flex items-center gap-2 cursor-pointer'
             : 'px-4 py-2 font-medium rounded-lg text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all text-xs flex items-center gap-2 cursor-pointer'
         ">
-        <span>📅</span> Weekly Calendar
+        <span>Weekly Calendar</span>
       </button>
 
       <button
         (click)="setSubTab('daily')"
         [class]="
           activeSubTab() === 'daily'
-            ? 'px-4 py-2 font-bold rounded-lg bg-white dark:bg-surface-700 text-primary-600 dark:text-primary-400 shadow-xs transition-all text-xs flex items-center gap-2 cursor-pointer'
+            ? 'px-4 py-2 font-bold rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-white shadow-xs transition-all text-xs flex items-center gap-2 cursor-pointer'
             : 'px-4 py-2 font-medium rounded-lg text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all text-xs flex items-center gap-2 cursor-pointer'
         ">
-        <span>🎯</span> Daily Focus
+        <span>Daily Focus</span>
       </button>
     </div>
   </div>

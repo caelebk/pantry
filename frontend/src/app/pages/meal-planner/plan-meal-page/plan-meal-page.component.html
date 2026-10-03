@@ -22,9 +22,6 @@
     <h2 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
       Plan a Meal
     </h2>
-    <p class="text-sm text-surface-500 dark:text-surface-400">
-      Schedule a recipe to your weekly calendar with custom servings & preferences
-    </p>
   </div>
 
   <!-- STEP 1: Select Schedule Slot (Day & Meal Type) -->
@@ -33,7 +30,7 @@
     <h3
       class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
       <span
-        class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold"
+        class="w-6 h-6 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 text-xs flex items-center justify-center font-extrabold"
         >1</span
       >
       Select Day & Meal Time
@@ -91,7 +88,7 @@
       <h3
         class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
         <span
-          class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold"
+          class="w-6 h-6 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 text-xs flex items-center justify-center font-extrabold"
           >2</span
         >
         Select Recipe
@@ -147,9 +144,9 @@
               </p>
               <div
                 class="flex items-center gap-3 text-[11px] text-surface-500 dark:text-surface-400 font-medium pt-1">
-                <span>⏱️ {{ recipe.prepTime || 15 }}m prep</span>
+                <span>{{ recipe.prepTime || 15 }}m prep</span>
                 <span>•</span>
-                <span>🍽️ {{ recipe.servings || 2 }} servings</span>
+                <span>{{ recipe.servings || 2 }} servings</span>
               </div>
             </div>
 
@@ -194,7 +191,7 @@
       <h3
         class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
         <span
-          class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 text-xs flex items-center justify-center font-extrabold"
+          class="w-6 h-6 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 text-xs flex items-center justify-center font-extrabold"
           >3</span
         >
         Custom Servings
