@@ -2,7 +2,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <div
-        class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shadow-primary-500/20 transition-all duration-200 hover:shadow-lg hover:shadow-primary-500/30 hover:scale-105">
+        class="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center text-white font-bold text-lg transition-all duration-200 hover:scale-105">
         <span class="material-symbols-outlined text-[20px]">skillet</span>
       </div>
       <h1 class="text-xl font-bold tracking-tight text-surface-900 dark:text-white">
@@ -10,7 +10,7 @@
       </h1>
       @if (authService.activeKitchen()) {
         <span
-          class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 text-xs font-semibold">
+          class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700 text-xs font-semibold">
           <i class="pi pi-building text-[10px]"></i>
           {{ authService.activeKitchen()?.name }}
         </span>
@@ -63,7 +63,7 @@
           routerLink="/profile"
           class="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-surface-200/60 dark:hover:bg-surface-800/60 text-surface-700 dark:text-surface-200 transition-all duration-200">
           <div
-            class="w-7 h-7 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 text-white font-bold text-xs flex items-center justify-center shadow-md">
+            class="w-7 h-7 rounded-full bg-primary-600 text-white font-bold text-xs flex items-center justify-center">
             {{ authService.currentUser()?.fullName?.substring(0, 1) || 'C' }}
           </div>
           <span class="text-xs font-semibold hidden sm:inline">{{
@@ -72,14 +72,12 @@
         </a>
         <button
           (click)="onLogout()"
-          class="p-2 cursor-pointer rounded-xl hover:bg-red-500/10 text-surface-500 dark:text-surface-400 hover:text-red-400 transition-all duration-200"
+          class="p-2 cursor-pointer rounded-xl hover:bg-surface-200/60 dark:hover:bg-surface-800/60 text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all duration-200"
           title="Log Out">
           <i class="pi pi-power-off text-base"></i>
         </button>
       } @else {
-        <a
-          routerLink="/auth/login"
-          class="h-[36px] px-4 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold text-xs shadow-md shadow-orange-500/20 transition-all duration-200 flex items-center justify-center">
+        <a routerLink="/auth/login" class="btn-primary !h-9 !px-4 !text-xs">
           {{ 'auth.login' | transloco }}
         </a>
       }
