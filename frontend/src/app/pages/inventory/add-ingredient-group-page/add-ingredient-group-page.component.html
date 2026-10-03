@@ -9,9 +9,6 @@
         <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
           Add Ingredient Group
         </h2>
-        <p class="text-surface-500 dark:text-surface-400 mt-1.5 text-sm">
-          Create a new taxonomy group (e.g. Pasta, Grains, Bakery, Meat, Seafood).
-        </p>
       </div>
     </div>
   </div>
@@ -158,17 +155,17 @@
         @if (initialIngredients().length > 0) {
           <div class="flex flex-wrap gap-2 pt-1">
             @for (item of initialIngredients(); track item.name || $index) {
-              <pantry-badge [variant]="item.isExisting ? 'indigo' : 'fresh'" class="shadow-2xs">
+              <pantry-badge [variant]="item.isExisting ? 'neutral' : 'fresh'" class="shadow-2xs">
                 <span class="flex items-center gap-1.5">
                   @if (item.isExisting) {
-                    <span>🔗 {{ item.name }}</span>
+                    <span>{{ item.name }}</span>
                     @if (item.groupName) {
                       <span class="text-[10px] opacity-75 font-medium"
                         >(from {{ item.groupName }})</span
                       >
                     }
                   } @else {
-                    <span>✦ {{ item.name }} (New)</span>
+                    <span>{{ item.name }} (New)</span>
                   }
                 </span>
                 <button
