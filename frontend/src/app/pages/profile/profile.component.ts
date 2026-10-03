@@ -34,16 +34,12 @@ import { KitchenService } from '../../core/services/kitchen.service';
       <div
         class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-200 dark:border-surface-800 pb-6">
         <div>
-          <h1
-            class="text-3xl font-bold tracking-tight bg-gradient-to-r from-surface-900 to-surface-600 dark:from-surface-50 dark:to-surface-300 bg-clip-text text-transparent">
+          <h1 class="text-3xl font-bold tracking-tight text-surface-900 dark:text-white">
             {{ 'profile.title' | transloco }}
           </h1>
-          <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
-            {{ 'profile.subtitle' | transloco }}
-          </p>
         </div>
         <div class="flex items-center gap-3">
-          <pantry-badge variant="primary" class="uppercase tracking-wider">
+          <pantry-badge variant="neutral" class="uppercase tracking-wider">
             {{ authService.currentUser()?.globalRole }}
           </pantry-badge>
         </div>
@@ -58,7 +54,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
             class="glass-card p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl">
             <h2
               class="text-lg font-semibold text-surface-800 dark:text-surface-100 mb-6 flex items-center gap-2">
-              <i class="pi pi-user text-orange-400"></i>
+              <i class="pi pi-user text-surface-500 dark:text-surface-400"></i>
               {{ 'profile.personalInfo' | transloco }}
             </h2>
 
@@ -133,7 +129,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
             class="glass-card p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl">
             <h2
               class="text-lg font-semibold text-surface-800 dark:text-surface-100 mb-6 flex items-center gap-2">
-              <i class="pi pi-lock text-orange-400"></i>
+              <i class="pi pi-lock text-surface-500 dark:text-surface-400"></i>
               {{ 'profile.changePassword' | transloco }}
             </h2>
 
@@ -192,7 +188,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
             <div class="flex items-center justify-between mb-6">
               <h2
                 class="text-lg font-semibold text-surface-800 dark:text-surface-100 flex items-center gap-2">
-                <i class="pi pi-shield text-orange-400"></i>
+                <i class="pi pi-shield text-surface-500 dark:text-surface-400"></i>
                 {{ 'profile.activeSessions' | transloco }}
               </h2>
               <button (click)="onRevokeAllSessions()" class="btn-danger">
@@ -237,13 +233,13 @@ import { KitchenService } from '../../core/services/kitchen.service';
             <div class="flex items-center justify-between mb-6">
               <h2
                 class="text-lg font-semibold text-surface-800 dark:text-surface-100 flex items-center gap-2">
-                <i class="pi pi-building text-orange-400"></i>
+                <i class="pi pi-building text-surface-500 dark:text-surface-400"></i>
                 {{ 'kitchens.title' | transloco }}
               </h2>
               <button
                 (click)="showCreateKitchenModal.set(true)"
                 aria-label="Create kitchen"
-                class="btn-icon-sm text-orange-400 hover:text-orange-500">
+                class="btn-icon-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300">
                 <i class="pi pi-plus text-sm"></i>
               </button>
             </div>
@@ -252,8 +248,8 @@ import { KitchenService } from '../../core/services/kitchen.service';
               @for (k of authService.userKitchens(); track k.id) {
                 <div
                   (click)="authService.setActiveKitchen(k)"
-                  [class.border-orange-500/50]="authService.activeKitchen()?.id === k.id"
-                  [class.bg-orange-500/5]="authService.activeKitchen()?.id === k.id"
+                  [class.border-surface-400]="authService.activeKitchen()?.id === k.id"
+                  [class.bg-surface-100]="authService.activeKitchen()?.id === k.id"
                   class="p-4 rounded-xl border border-surface-200 dark:border-surface-800 hover:border-surface-300 dark:hover:border-surface-700 cursor-pointer transition-all flex items-center justify-between">
                   <div>
                     <div
@@ -262,7 +258,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
                       @if (k.role === 'owner') {
                         <button
                           (click)="$event.stopPropagation(); openManageModal(k)"
-                          class="text-xs text-orange-400 hover:text-orange-500 underline ml-2">
+                          class="text-xs text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 underline ml-2">
                           Manage
                         </button>
                       }
@@ -272,7 +268,8 @@ import { KitchenService } from '../../core/services/kitchen.service';
                     </div>
                   </div>
                   @if (authService.activeKitchen()?.id === k.id) {
-                    <i class="pi pi-check-circle text-orange-400 text-lg"></i>
+                    <i
+                      class="pi pi-check-circle text-surface-500 dark:text-surface-400 text-lg"></i>
                   }
                 </div>
               }
