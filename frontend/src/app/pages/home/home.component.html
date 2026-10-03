@@ -14,9 +14,6 @@
       <h1 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
         {{ kitchenName() }}
       </h1>
-      <p class="text-sm font-medium text-surface-500 dark:text-surface-400 mt-1">
-        {{ 'home.subtitle' | transloco }}
-      </p>
     </div>
 
     <!-- Primary Action Buttons -->
@@ -101,22 +98,19 @@
       <pantry-stat-card
         [title]="'home.stats.expiringSoon' | transloco"
         [value]="expiringSoonItemsCount()"
-        [subtitle]="'home.stats.within7Days' | transloco"
-        [valueColor]="'text-amber-600 dark:text-amber-500'">
+        [subtitle]="'home.stats.within7Days' | transloco">
       </pantry-stat-card>
 
       <pantry-stat-card
         [title]="'home.stats.expired' | transloco"
         [value]="expiredItemsCount()"
-        [subtitle]="'home.stats.needsRemoval' | transloco"
-        [valueColor]="'text-red-600 dark:text-red-500'">
+        [subtitle]="'home.stats.needsRemoval' | transloco">
       </pantry-stat-card>
 
       <pantry-stat-card
         [title]="'home.stats.canMake' | transloco"
         [value]="canMakeRecipesCount()"
-        [subtitle]="'home.stats.recipes' | transloco"
-        [valueColor]="'text-emerald-600 dark:text-emerald-400'">
+        [subtitle]="'home.stats.recipes' | transloco">
       </pantry-stat-card>
     </div>
 
