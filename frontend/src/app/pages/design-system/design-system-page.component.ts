@@ -40,10 +40,6 @@ import { SelectModule } from 'primeng/select';
       <h1 class="text-2xl font-extrabold text-surface-900 dark:text-white tracking-tight">
         Pantry Design System
       </h1>
-      <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
-        Canonical primitives &amp; contracts. Spec: docs/design-system.md · Audit:
-        docs/design-system-audit.md
-      </p>
     </header>
 
     <!-- Buttons -->
@@ -84,8 +80,6 @@ import { SelectModule } from 'primeng/select';
         <pantry-badge variant="neutral">Neutral</pantry-badge>
         <pantry-badge variant="location">Location</pantry-badge>
         <pantry-badge variant="outline">Outline</pantry-badge>
-        <pantry-badge variant="indigo">Indigo</pantry-badge>
-        <pantry-badge variant="purple">Purple</pantry-badge>
         <pantry-badge variant="fresh" size="sm">Fresh / sm</pantry-badge>
         <pantry-badge variant="fresh" [dot]="true" [live]="true">Live stock</pantry-badge>
       </div>

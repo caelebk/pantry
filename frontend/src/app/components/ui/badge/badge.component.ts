@@ -8,9 +8,7 @@ export type BadgeVariant =
   | 'primary'
   | 'neutral'
   | 'location'
-  | 'outline'
-  | 'indigo'
-  | 'purple';
+  | 'outline';
 export type BadgeSize = 'sm' | 'md';
 
 @Component({
@@ -59,8 +57,6 @@ export class BadgeComponent {
         'bg-surface-100 dark:bg-surface-800/80 text-surface-800 dark:text-surface-200 border border-surface-200 dark:border-white/10 font-semibold',
       outline:
         'bg-transparent text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700',
-      indigo: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20',
-      purple: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20',
     };
 
     const variant = this.borderless()
@@ -80,8 +76,6 @@ export class BadgeComponent {
       neutral: 'bg-surface-400',
       location: 'bg-primary-500',
       outline: 'bg-surface-400',
-      indigo: 'bg-indigo-500',
-      purple: 'bg-purple-500',
     };
     const liveClass = this.live() ? ' animate-pulse' : '';
     return `w-1.5 h-1.5 rounded-full ${dotMap[this.variant()]}${liveClass}`;
