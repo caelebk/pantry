@@ -22,7 +22,7 @@
   },
   "home": {
     "title": "Kitchen Command Center",
-    "subtitle": "Monitor pantry stock, manage expirations, and discover recipes",
+    "subtitle": "Monitor stock, expirations, and recipes",
     "greeting": {
       "morning": "Good morning",
       "afternoon": "Good afternoon",
@@ -35,65 +35,63 @@
       "cookNow": "Ready to Cook"
     },
     "alerts": {
-      "expiredTitle": "Expired Items Notice",
-      "expiredMessage": "items in your inventory have expired. Remove them to keep your pantry clean.",
-      "expiringTitle": "Expiring Soon Notice",
-      "expiringMessage": "items expiring within 7 days. Plan your meals today to reduce food waste.",
-      "clearExpiredBtn": "Quick Clear Expired",
-      "viewExpiringRecipesBtn": "View Recipes with Expiring Ingredients"
+      "expiredTitle": "Expired Items",
+      "expiredMessage": "items have expired. Remove them to keep your pantry clean.",
+      "expiringTitle": "Expiring Soon",
+      "expiringMessage": "items expire within 7 days. Plan meals to reduce waste.",
+      "clearExpiredBtn": "Clear Expired",
+      "viewExpiringRecipesBtn": "View Expiring Recipes"
     },
     "shortcuts": {
-      "title": "Quick Launchpad",
+      "title": "Quick Actions",
       "addItem": "Add Pantry Item",
-      "addItemDesc": "Register new ingredient items",
+      "addItemDesc": "Add a pantry item",
       "addRecipe": "Create Recipe",
-      "addRecipeDesc": "Add custom recipe to collection",
+      "addRecipeDesc": "Create a recipe",
       "assignIngredients": "Assign Ingredients",
-      "assignIngredientsDesc": "Triage & group unassigned items",
+      "assignIngredientsDesc": "Group unassigned items",
       "cookableRecipes": "What to Cook",
-      "cookableRecipesDesc": "Recipes matching current stock",
+      "cookableRecipesDesc": "Cook with current stock",
       "manageInventory": "Full Inventory",
-      "manageInventoryDesc": "Search & filter all ingredients"
+      "manageInventoryDesc": "Browse all ingredients"
     },
     "stats": {
       "totalItems": "Total Ingredient Items",
       "expiringSoon": "Expiring Soon",
       "expired": "Expired",
       "canMake": "Ready to Cook",
-      "inInventory": "items in inventory",
-      "within7Days": "within 7 days",
+      "inInventory": "in inventory",
+      "within7Days": "in 7 days",
       "needsRemoval": "needs removal",
-      "recipes": "recipes available"
+      "recipes": "available"
     },
     "locations": {
       "title": "Storage Locations",
-      "subtitle": "Item distribution across storage areas",
       "fridge": "Refrigerator",
       "pantry": "Pantry Cabinet",
       "freezer": "Freezer",
       "other": "Other Storage"
     },
     "cookSpotlight": {
-      "title": "What You Can Cook Today",
-      "subtitle": "Recipes fully matched with ingredients currently in stock",
-      "cookBtn": "View Recipe & Cook",
-      "noRecipes": "No recipes fully matched yet. Add more ingredients to unlock delicious dishes!"
+      "title": "Recipes Available",
+      "cookBtn": "View Recipe",
+      "noRecipes": "No fully-matched recipes yet. Add more ingredients."
     },
     "tips": {
-      "title": "Zero-Waste Kitchen Tip",
-      "tipContent": "Group ingredients nearing expiration into a stir-fry, soup base, or casserole to maximize freshness and prevent food waste!"
+      "title": "Kitchen Tip",
+      "tipContent": "Group near-expiry ingredients into a stir-fry, soup, or casserole to reduce waste."
     }
   },
   "dashboard": {
     "title": "Welcome Back",
-    "subtitle": "Here's what's happening in your kitchen today",
+    "subtitle": "Today in your kitchen",
     "stats": {
       "totalItems": "Total Items",
       "expiringSoon": "Expiring Soon",
       "expired": "Expired",
       "canMake": "Can Make",
       "inInventory": "in inventory",
-      "within7Days": "within 14 days",
+      "within7Days": "in 14 days",
       "needsRemoval": "needs removal",
       "recipes": "recipes"
     },
@@ -124,7 +122,7 @@
   },
   "inventory": {
     "title": "Ingredient Items",
-    "subtitle": "Track your ingredients and manage expiration dates",
+    "subtitle": "Track ingredients and expiration dates",
     "yourInventory": "Your Inventory",
     "tabs": {
       "inventoryItems": "Ingredient Items",
@@ -167,29 +165,29 @@
       "removeButton": "Remove"
     },
     "reconciliation": {
-      "title": "Reconcile Physical Item Measures",
-      "subtitle": "Update quantities for existing in-stock ingredient items to match the new default measurement unit.",
-      "loading": "Loading stock items for reconciliation...",
+      "title": "Reconcile Item Measures",
+      "subtitle": "Update in-stock quantities to match the new default unit.",
+      "loading": "Loading stock items...",
       "bannerTitle": "Default Unit Change for \"{{name}}\"",
       "bannerCurrent": "Current: {{unit}}",
       "bannerNew": "New: {{unit}}",
-      "bannerDesc": "Review the in-stock items below. Quantities have been automatically converted where possible. Adjust the values if needed so that every physical item accurately reflects the new default unit.",
+      "bannerDesc": "Quantities were auto-converted where possible. Adjust as needed to match the new unit.",
       "colLabel": "Item Label",
       "colLocation": "Location",
       "colPrevStock": "Previous Stock",
       "colNewQty": "New Quantity ({{unit}})",
       "cancelBtn": "Cancel",
-      "confirmBtn": "Confirm & Update Measures"
+      "confirmBtn": "Confirm Update"
     }
   },
   "recipes": {
     "title": "My Recipes",
-    "subtitle": "Manage your favorite recipes and plan meals",
+    "subtitle": "Manage recipes and plan meals",
     "yourRecipes": "Your Recipes"
   },
   "mealPlanner": {
     "title": "Meal Planner",
-    "subtitle": "Find recipes you can make with your current inventory",
+    "subtitle": "Plan meals with your current stock",
     "currentInventory": "Current Inventory",
     "almostReady": "Almost Ready",
     "missingIngredients": "Missing ingredients:",
@@ -290,25 +288,25 @@
   },
   "restockReview": {
     "title": "Restock Review",
-    "subtitle": "Review bought items, match existing pantry stock, set storage locations and expiration dates",
+    "subtitle": "Match bought items to pantry stock and set details",
     "selectAll": "Select All",
     "deselectAll": "Deselect All",
     "noItems": "No items ready to restock",
-    "noItemsSub": "Check off items in your shopping list as \"Bought\" to restock them into your pantry.",
+    "noItemsSub": "Mark items as \"Bought\" to restock them.",
     "returnBtn": "Return to Shopping List",
     "summaryTotal": "Selected Items",
     "summaryExact": "Exact Matches",
     "summarySimilar": "Similar Matches",
     "summaryCreating": "Will Create New Entries",
     "exactMatchFound": "Exact Pantry Match",
-    "similarMatchFound": "Similar Pantry Stock ({score}% Match)",
-    "existingStockFound": "Existing Pantry Stock Found",
+    "similarMatchFound": "Similar Stock ({score}%)",
+    "existingStockFound": "Existing Stock Found",
     "newEntry": "New Pantry Entry",
     "updateExisting": "Update Existing Stock",
     "createNew": "Create New Entry",
     "mergeIntoSimilar": "Merge into \"{name}\"",
-    "keepSeparate": "Keep as Separate Item",
-    "similarNotice": "Found similar pantry item \"{existingName}\". Would you like to merge stock or keep \"{draftName}\" as a separate entry?",
+    "keepSeparate": "Keep Separate",
+    "similarNotice": "Similar item \"{existingName}\" found. Merge or keep \"{draftName}\" separate?",
     "selectMatchedItem": "Match Existing Item:",
     "currentQty": "Current Stock:",
     "restockQty": "Restocking:",
@@ -374,7 +372,7 @@
   },
   "ingredientsCatalog": {
     "title": "Ingredients",
-    "subtitle": "Definitions of ingredients grouped by ingredient group, linked to recipes and ingredient items in your pantry.",
+    "subtitle": "Ingredient definitions grouped by category, linked to recipes and pantry items.",
     "addIngredient": "Add Ingredient",
     "searchPlaceholder": "Search ingredients...",
     "allGroups": "All Groups",
@@ -382,7 +380,7 @@
     "collapse": "Collapse",
     "loading": "Loading ingredients catalog...",
     "emptyTitle": "No ingredients found",
-    "emptyDesc": "No ingredients match your search or filter criteria. Create a new ingredient to populate your catalog.",
+    "emptyDesc": "No ingredients match. Create one to populate your catalog.",
     "colIngredient": "Ingredient",
     "colDefaultUnit": "Default Unit",
     "colStockStatus": "Stock Status",
@@ -418,9 +416,9 @@
     "signUpNow": "Sign Up",
     "signInNow": "Sign In",
     "welcomeBack": "Welcome Back",
-    "welcomeSubtitle": "Sign in with your email or username to access your workspace",
+    "welcomeSubtitle": "Sign in with your email or username",
     "createAccountTitle": "Create Account",
-    "createAccountSubtitle": "Get started with your kitchen workspace"
+    "createAccountSubtitle": "Start your kitchen workspace"
   },
   "audit": {
     "createdBy": "Created by",
@@ -433,26 +431,26 @@
     "lastUpdated": "Last updated"
   },
   "profile": {
-    "title": "Chef Profile & Account Settings",
-    "subtitle": "Manage your personal details, theme preferences, and active device sessions",
+    "title": "Profile & Settings",
+    "subtitle": "Manage details, theme, and sessions",
     "personalInfo": "Personal Information",
     "username": "Username",
     "themePreferences": "Theme & Language",
-    "activeSessions": "Active Security Sessions",
-    "changePassword": "Security & Password",
+    "activeSessions": "Active Sessions",
+    "changePassword": "Password",
     "kitchens": "Kitchen Workspaces",
     "currentPassword": "Current Password",
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm New Password",
     "updateProfileBtn": "Save Profile",
     "updatePasswordBtn": "Update Password",
-    "revokeAllSessionsBtn": "Log Out All Other Devices",
+    "revokeAllSessionsBtn": "Log Out Other Devices",
     "currentDevice": "This Device",
     "activeStatus": "Active Now"
   },
   "kitchens": {
-    "title": "Shared Kitchen Workspaces",
-    "subtitle": "Collaborate with family, housemates, or restaurant staff",
+    "title": "Kitchen Workspaces",
+    "subtitle": "Collaborate with your kitchen team",
     "createNew": "Create New Kitchen",
     "kitchenName": "Kitchen Name",
     "description": "Description",
@@ -467,7 +465,7 @@
   },
   "shoppingList": {
     "title": "Shopping List",
-    "subtitle": "Track needed ingredients, organize by store, and restock directly to pantry stock",
+    "subtitle": "Track ingredients, organize by store, restock to pantry",
     "actions": {
       "addItem": "Add Ingredients",
       "syncMealPlan": "Sync Meal Plan",
@@ -480,7 +478,7 @@
       "clearFilters": "Clear Filters"
     },
     "stats": {
-      "combinedTitle": "Shopping Progress & Budget",
+      "combinedTitle": "Progress & Budget",
       "itemsSummary": "items bought",
       "costSummary": "spent of estimated",
       "remainingSpend": "remaining to spend",
@@ -511,16 +509,16 @@
     },
     "empty": {
       "title": "Your shopping list is empty",
-      "description": "Add ingredients here or sync your meal plan to get started.",
+      "description": "Add ingredients or sync your meal plan.",
       "noMatches": "No matching items",
       "noMatchesDesc": "Try changing your search or status filter."
     },
     "form": {
       "addTitle": "Add Shopping Ingredient",
       "editTitle": "Edit Shopping Ingredient",
-      "subtitle": "Choose an ingredient from your catalog, then add purchase details.",
+      "subtitle": "Choose an ingredient, then add purchase details.",
       "ingredientSection": "Ingredient",
-      "ingredientHint": "Category and unit come from the ingredient catalog.",
+      "ingredientHint": "Category and unit come from the catalog.",
       "searchPlaceholder": "Search ingredients...",
       "quantity": "Quantity",
       "price": "Estimated Price",
@@ -538,7 +536,7 @@
   },
   "stores": {
     "title": "Manage Stores",
-    "subtitle": "Add new stores, rename existing ones, or archive suggestions for this kitchen.",
+    "subtitle": "Add, rename, or archive stores.",
     "addStore": "Add New Store",
     "storeNamePlaceholder": "Enter store name (e.g. Trader Joe's, Costco...)",
     "addStoreBtn": "Add Store",
@@ -557,7 +555,7 @@
     "totalTime": "Total Time",
     "servings": "Servings",
     "ingredientsTitle": "Ingredients",
-    "instructionsTitle": "Step-by-Step Instructions",
+    "instructionsTitle": "Instructions",
     "substituteBtn": "Substitute",
     "substitutesModalTitle": "Substitutes for {{name}}",
     "noSubstitutes": "No In-Stock Substitutes Found",
@@ -565,16 +563,16 @@
     "missingBadge": "Missing"
   },
   "inventoryOverview": {
-    "title": "Kitchen Inventory Overview",
-    "subtitle": "Manage taxonomy, monitor physical stock, and explore your 4-tier kitchen domain hierarchy.",
+    "title": "Inventory Overview",
+    "subtitle": "Manage taxonomy and monitor stock.",
     "addStockItem": "Add Stock Item",
     "addIngredient": "Add Ingredient",
     "addGroup": "Add Group",
-    "hierarchyTitle": "Kitchen Inventory 4-Tier Hierarchy",
-    "hierarchySubtitle": "Click any pyramid tier below to expand its detailed taxonomy definition and direct actions."
+    "hierarchyTitle": "4-Tier Hierarchy",
+    "hierarchySubtitle": "Click a tier to expand its details and actions."
   },
   "authVerification": {
-    "passwordRequirements": "Password must be at least 8 characters, include uppercase, lowercase, number, and special symbol.",
+    "passwordRequirements": "Min 8 characters with uppercase, lowercase, number, and symbol.",
     "passwordTooWeak": "Password is too weak or commonly guessed.",
     "passwordStrength": "Password Strength",
     "strengthWeak": "Weak",
