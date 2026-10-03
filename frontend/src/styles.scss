@@ -106,8 +106,7 @@ body {
 
 .sub-card-hover:hover {
   background-color: #ffffff !important;
-  border-color: var(--color-primary-500) !important;
-  box-shadow: 0 4px 12px -2px rgba(249, 115, 22, 0.15) !important;
+  border-color: var(--color-surface-300) !important;
 }
 
 :where(.dark, .dark *) .sub-card-hover:hover {
@@ -207,7 +206,6 @@ body {
   background-color: rgba(249, 115, 22, 0.2);
   border-left-color: var(--color-primary-500);
   color: var(--color-primary-300) !important;
-  box-shadow: 0 0 12px rgba(249, 115, 22, 0.25);
 }
 
 /* ── Sub-Navigation Items ────────────────────────────────────── */
@@ -215,9 +213,7 @@ body {
   background-color: transparent;
   color: var(--color-surface-500);
   font-weight: 500;
-  transition:
-    color 180ms ease,
-    text-shadow 180ms ease;
+  transition: color 180ms ease;
 }
 
 :where(.dark, .dark *) .sidebar-subnav-item {
@@ -236,29 +232,20 @@ body {
   background-color: transparent !important;
   color: var(--color-primary-600) !important;
   font-weight: 700 !important;
-  text-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
 }
 
 :where(.dark, .dark *) .sidebar-subnav-active {
   background-color: transparent !important;
   color: var(--color-primary-400) !important;
-  box-shadow: none !important;
-  text-shadow:
-    0 0 12px rgba(249, 115, 22, 0.65),
-    0 0 24px rgba(249, 115, 22, 0.35);
 }
 
-/* ── Gradient text utility ──────────────────────────────────── */
+/* ── Accent text utility (solid, no gradient) ──────────────── */
 .gradient-text {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-500),
-    var(--color-primary-600),
-    var(--color-primary-400)
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary-600);
+}
+
+:where(.dark, .dark *) .gradient-text {
+  color: var(--color-primary-400);
 }
 
 /* ── World-Class Blue Silk Mesh & Micro-Vignette Grid System ────── */
@@ -517,53 +504,14 @@ body {
   }
 }
 
-/* ── Glow effect for primary buttons ────────────────────────── */
+/* ── Neutral shadow for primary buttons (no colored glow) ──── */
 .glow-primary {
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
-.glow-primary:hover {
-  box-shadow: 0 0 30px rgba(249, 115, 22, 0.25);
-}
-
-:where(.dark, .dark *) .glow-primary {
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.1);
-}
-
-:where(.dark, .dark *) .glow-primary:hover {
-  box-shadow: 0 0 30px rgba(249, 115, 22, 0.2);
-}
-
-/* ── Subtle shine animation on cards ────────────────────────── */
-.card-shine {
-  position: relative;
-  overflow: hidden;
-}
-
-.card-shine::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
-  transition: left 0.6s ease;
-  pointer-events: none;
-}
-
-.card-shine:hover::before {
-  left: 100%;
-}
-
-/* ── Gradient border utility ────────────────────────────────── */
+/* ── Solid accent border utility (no gradient) ─────────────── */
 .gradient-border {
-  border: double 1px transparent;
-  background-image:
-    linear-gradient(var(--bg, white), var(--bg, white)),
-    linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
+  border: 1px solid var(--color-primary-500);
 }
 
 /* ── Scrollbar styling ──────────────────────────────────────── */
@@ -1373,7 +1321,6 @@ p-inputnumber {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.2);
   transition: all 0.2s ease;
   cursor: pointer;
 
