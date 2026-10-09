@@ -15,9 +15,9 @@ export interface PlannedMeal {
   recipeId: string;
   recipeName: string;
   recipeImage?: string;
-  prepTimeMinutes?: number;
-  calories?: number;
-  servings: number;
+  prepTimeMinutes?: number | null;
+  calories?: number | null;
+  servings?: number | null;
   cooked: boolean;
   missingIngredients: string[];
   tags?: string[];

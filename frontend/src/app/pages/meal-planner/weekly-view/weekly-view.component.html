@@ -78,9 +78,9 @@
                   }}
                 </pantry-badge>
               </div>
-              @if (getDayCalories(day) > 0) {
+              @if (getDayCalories(day) !== null && getDayCalories(day) !== undefined) {
                 <div class="text-xs font-semibold text-surface-400 dark:text-surface-500 mt-0.5">
-                  ~{{ getDayCalories(day) }} kcal total
+                  {{ getDayCalories(day) }} kcal total
                 </div>
               }
             </div>
@@ -107,7 +107,20 @@
                         {{ meal.mealType }}
                       </span>
                       <span class="text-xs text-surface-600 dark:text-surface-300 font-bold">
-                        {{ meal.prepTimeMinutes || 15 }}m • {{ meal.calories || 400 }} kcal
+                        @if (meal.prepTimeMinutes !== null && meal.prepTimeMinutes !== undefined) {
+                          {{ meal.prepTimeMinutes }}m
+                        }
+                        @if (
+                          meal.prepTimeMinutes !== null &&
+                          meal.prepTimeMinutes !== undefined &&
+                          meal.calories !== null &&
+                          meal.calories !== undefined
+                        ) {
+                          •
+                        }
+                        @if (meal.calories !== null && meal.calories !== undefined) {
+                          {{ meal.calories }} kcal
+                        }
                       </span>
                     </div>
 
@@ -203,12 +216,12 @@
           <div
             class="w-full md:w-48 shrink-0 space-y-1 border-b md:border-b-0 md:border-r border-surface-200/80 dark:border-surface-800/80 pb-3 md:pb-0 md:pr-4">
             <div class="flex items-center gap-2">
-              <h3 class="text-lg font-extrabold text-surface-900 dark:text-white">{{ day }}</h3>
+              <h3 class="type-section-title text-surface-900 dark:text-white">{{ day }}</h3>
               <pantry-badge variant="neutral">{{ getMealsForDay(day).length }}</pantry-badge>
             </div>
-            @if (getDayCalories(day) > 0) {
+            @if (getDayCalories(day) !== null && getDayCalories(day) !== undefined) {
               <div class="text-xs font-semibold text-surface-400">
-                ~{{ getDayCalories(day) }} kcal
+                {{ getDayCalories(day) }} kcal
               </div>
             }
             <button
@@ -242,7 +255,20 @@
                   {{ meal.recipeName }}
                 </h4>
                 <div class="text-[10px] text-surface-600 dark:text-surface-300 font-semibold">
-                  {{ meal.prepTimeMinutes || 15 }}m • {{ meal.calories || 400 }} kcal
+                  @if (meal.prepTimeMinutes !== null && meal.prepTimeMinutes !== undefined) {
+                    {{ meal.prepTimeMinutes }}m
+                  }
+                  @if (
+                    meal.prepTimeMinutes !== null &&
+                    meal.prepTimeMinutes !== undefined &&
+                    meal.calories !== null &&
+                    meal.calories !== undefined
+                  ) {
+                    •
+                  }
+                  @if (meal.calories !== null && meal.calories !== undefined) {
+                    {{ meal.calories }} kcal
+                  }
                 </div>
 
                 @if (

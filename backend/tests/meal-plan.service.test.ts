@@ -12,9 +12,9 @@ function createTestDB(): Database {
       meal_type TEXT NOT NULL,
       recipe_id TEXT,
       recipe_name TEXT NOT NULL,
-      prep_time_minutes INTEGER NOT NULL DEFAULT 15,
-      calories INTEGER NOT NULL DEFAULT 400,
-      servings INTEGER NOT NULL DEFAULT 2,
+      prep_time_minutes INTEGER,
+      calories INTEGER,
+      servings INTEGER,
       cooked INTEGER NOT NULL DEFAULT 0,
       missing_ingredients TEXT,
       tags TEXT,
@@ -26,6 +26,73 @@ function createTestDB(): Database {
   `);
   return db;
 }
+
+Deno.test('MealPlanService - missing metadata remains unknown through create and update', async () => {
+  const db = createTestDB();
+  setDB(db);
+  try {
+    const created = await mealPlanService.createMealPlan(
+      {
+        day: 'Monday',
+        mealType: 'Dinner',
+        recipeName: 'Unspecified recipe',
+      },
+      'test-kitchen-id',
+      'test-user-id',
+    );
+    assertEquals(created.prepTimeMinutes, null);
+    assertEquals(created.calories, null);
+    assertEquals(created.servings, null);
+    const updated = await mealPlanService.updateMealPlan(created.id, 'test-kitchen-id', {
+      cooked: true,
+    }, 'test-user-id');
+    assertEquals(updated?.prepTimeMinutes, null);
+    assertEquals(updated?.calories, null);
+    assertEquals(updated?.servings, null);
+    assertEquals((await mealPlanService.getAllMealPlans('test-kitchen-id'))[0], updated);
+    assertEquals(await mealPlanService.getMealPlanById(created.id, 'other-kitchen'), null);
+  } finally {
+    db.close();
+  }
+});
+
+Deno.test('MealPlanService - known zero metadata and user servings are preserved', async () => {
+  const db = createTestDB();
+  setDB(db);
+  try {
+    const created = await mealPlanService.createMealPlan(
+      {
+        day: 'Monday',
+        mealType: 'Dinner',
+        recipeName: 'Known recipe',
+        prepTimeMinutes: 0,
+        calories: 0,
+        servings: 3,
+      },
+      'test-kitchen-id',
+      'test-user-id',
+    );
+    assertEquals(created.prepTimeMinutes, 0);
+    assertEquals(created.calories, 0);
+    assertEquals(created.servings, 3);
+    const updated = await mealPlanService.updateMealPlan(created.id, 'test-kitchen-id', {
+      cooked: true,
+    }, 'test-user-id');
+    assertEquals(updated?.prepTimeMinutes, 0);
+    assertEquals(updated?.calories, 0);
+    assertEquals(updated?.servings, 3);
+    const cleared = await mealPlanService.updateMealPlan(created.id, 'test-kitchen-id', {
+      prepTimeMinutes: null,
+      calories: null,
+      servings: null,
+    }, 'test-user-id');
+    assertEquals(cleared?.prepTimeMinutes, null);
+    assertEquals(cleared?.calories, null);
+    assertEquals(cleared?.servings, null);
+  } finally {
+    db.close();
+  }
+});
 
 Deno.test('MealPlanService - create and retrieve meal plan', async () => {
   const db = createTestDB();

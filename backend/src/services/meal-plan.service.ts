@@ -11,9 +11,9 @@ export interface MealPlanRow {
   meal_type: string;
   recipe_id: string | null;
   recipe_name: string;
-  prep_time_minutes: number;
-  calories: number;
-  servings: number;
+  prep_time_minutes: number | null;
+  calories: number | null;
+  servings: number | null;
   cooked: number;
   missing_ingredients: string | null;
   tags: string | null;
@@ -55,9 +55,9 @@ export class MealPlanService {
       data.mealType,
       data.recipeId || null,
       data.recipeName,
-      data.prepTimeMinutes || 15,
-      data.calories || 400,
-      data.servings || 2,
+      data.prepTimeMinutes ?? null,
+      data.calories ?? null,
+      data.servings ?? null,
       data.cooked ? 1 : 0,
       missingJson,
       tagsJson,

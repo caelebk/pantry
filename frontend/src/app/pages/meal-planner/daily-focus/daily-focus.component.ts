@@ -12,6 +12,7 @@ import {
 import { DayOfWeek, PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { BadgeComponent } from '@ui';
+import { sumKnownMetadata } from '@utility/recipe-metadata';
 
 @Component({
   selector: 'pantry-daily-focus',
@@ -49,11 +50,11 @@ export class DailyFocusComponent {
   });
 
   readonly totalCalories = computed(() => {
-    return this.dayMeals().reduce((sum, m) => sum + (m.calories || 0), 0);
+    return sumKnownMetadata(this.dayMeals().map((meal) => meal.calories));
   });
 
   readonly totalPrepTime = computed(() => {
-    return this.dayMeals().reduce((sum, m) => sum + (m.prepTimeMinutes || 0), 0);
+    return sumKnownMetadata(this.dayMeals().map((meal) => meal.prepTimeMinutes));
   });
 
   readonly missingIngredients = computed(() => {

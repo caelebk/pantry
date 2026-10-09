@@ -4,6 +4,7 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Ingredient } from '@models/ingredient.model';
 import { PlannedMeal } from '@models/meal-planner.model';
+import { Recipe } from '@models/recipe.model';
 import { of } from 'rxjs';
 import { AuthService } from '../core/services/auth.service';
 import { IngredientService } from './inventory/ingredient.service';
@@ -82,6 +83,28 @@ describe('MealPlannerService', () => {
 
     const tuesdayMeals = service.getMealsForDay('Tuesday');
     expect(tuesdayMeals.length).toBe(0);
+  });
+
+  it('omits unknown recipe facts from the create request', () => {
+    service.addMealPlan('Tuesday', 'Lunch', { id: 'unknown', name: 'Unknown meal' });
+    const request = httpMock.expectOne('/api/v1/meal-plans');
+    expect(request.request.body).not.toHaveProperty('prepTimeMinutes');
+    expect(request.request.body).not.toHaveProperty('calories');
+    expect(request.request.body).not.toHaveProperty('servings');
+    request.flush({ status: 'success', data: { ...mockMeal, id: 'new' } });
+  });
+
+  it.each([
+    [{ prepTime: 0, cookTime: 0, servings: 0 }, 0],
+    [{ prepTime: 0, cookTime: 12, servings: 3 }, 12],
+    [{ prepTime: 12 }, undefined],
+    [{ cookTime: 12 }, undefined],
+  ])('only reports a complete total time and preserves zero values: %j', (metadata, time) => {
+    service.addMealPlan('Tuesday', 'Lunch', { id: 'recipe', name: 'Meal', ...metadata } as Recipe);
+    const request = httpMock.expectOne('/api/v1/meal-plans');
+    expect(request.request.body.prepTimeMinutes).toBe(time);
+    expect(request.request.body.servings).toBe(metadata.servings);
+    request.flush({ status: 'success', data: { ...mockMeal, id: 'new' } });
   });
 
   it('should toggle cooked status', () => {

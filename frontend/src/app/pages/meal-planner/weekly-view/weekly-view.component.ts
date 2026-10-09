@@ -12,6 +12,7 @@ import {
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { BadgeComponent } from '@ui';
+import { sumKnownMetadata } from '@utility/recipe-metadata';
 
 export type WeeklyLayoutMode = 'grid' | 'timeline';
 
@@ -53,12 +54,9 @@ export class WeeklyViewComponent {
   });
 
   readonly caloriesByDayMap = computed(() => {
-    const map = new Map<DayOfWeek, number>();
+    const map = new Map<DayOfWeek, number | undefined>();
     this.mealsByDayMap().forEach((meals, day) => {
-      map.set(
-        day,
-        meals.reduce((sum, m) => sum + (m.calories || 0), 0),
-      );
+      map.set(day, sumKnownMetadata(meals.map((meal) => meal.calories)));
     });
     return map;
   });
@@ -86,8 +84,8 @@ export class WeeklyViewComponent {
     return this.mealsBySlotMap().get(`${day}_${mealType}`) || [];
   }
 
-  getDayCalories(day: DayOfWeek): number {
-    return this.caloriesByDayMap().get(day) || 0;
+  getDayCalories(day: DayOfWeek): number | undefined {
+    return this.caloriesByDayMap().get(day);
   }
 
   onRequestAdd(day: DayOfWeek, type: MealType = 'Dinner'): void {
