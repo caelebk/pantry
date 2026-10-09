@@ -40,8 +40,8 @@ export class BadgeComponent {
 
   badgeClasses = computed(() => {
     const sizeMap: Record<BadgeSize, string> = {
-      sm: 'px-2 py-0.5 text-[10px] gap-1 font-semibold rounded-md',
-      md: 'px-2.5 py-1 text-xs gap-1.5 font-bold rounded-lg',
+      sm: 'px-2 py-0.5 text-xs gap-1 font-medium rounded-md',
+      md: 'px-2.5 py-1 text-xs gap-1.5 font-medium rounded-lg',
     };
 
     const variantMap: Record<BadgeVariant, string> = {
@@ -54,7 +54,7 @@ export class BadgeComponent {
       neutral:
         'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700',
       location:
-        'bg-surface-100 dark:bg-surface-800/80 text-surface-800 dark:text-surface-200 border border-surface-200 dark:border-white/10 font-semibold',
+        'bg-surface-100 dark:bg-surface-800/80 text-surface-800 dark:text-surface-200 border border-surface-200 dark:border-white/10',
       outline:
         'bg-transparent text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700',
     };
