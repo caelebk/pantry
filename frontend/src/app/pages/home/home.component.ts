@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { StatCardComponent } from '@components/stat-card/stat-card.component';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item, ItemsContainerTheme } from '@models/items.model';
 import { Location } from '@models/location.model';
@@ -10,12 +9,11 @@ import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { RecipeService } from '@services/recipe.service';
 import { ToastService } from '@services/toast.service';
-import { SkeletonComponent } from '@ui';
+import { EmptyStateComponent, SkeletonComponent } from '@ui';
 import { isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
 import { CookableRecipesContainerComponent } from './home-components/cookable-recipes-container/cookable-recipes-container.component';
 import { ItemsContainerComponent } from './home-components/items-container/items-container.component';
 import { LocationOverviewContainerComponent } from './home-components/location-overview-container/location-overview-container.component';
-import { QuickActionsContainerComponent } from './home-components/quick-actions-container/quick-actions-container.component';
 
 import { ChangeDetectionStrategy, DestroyRef, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -28,10 +26,9 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [
     CommonModule,
     TranslocoModule,
-    StatCardComponent,
     SkeletonComponent,
+    EmptyStateComponent,
     ItemsContainerComponent,
-    QuickActionsContainerComponent,
     LocationOverviewContainerComponent,
     CookableRecipesContainerComponent,
   ],
@@ -53,28 +50,12 @@ export class HomeComponent {
   locations = signal<Location[]>([]);
   expiredItems = signal<Item[]>([]);
   soonToExpireItems = signal<Item[]>([]);
-  availableItems = signal<Item[]>([]);
 
   totalItemsCount = computed(() => this.items().length);
   expiredItemsCount = computed(() => this.expiredItems().length);
   expiringSoonItemsCount = computed(() => this.soonToExpireItems().length);
-  canMakeRecipesCount = computed(() => this.recipes().length);
-
-  freshnessPercentage = computed(() => {
-    const total = this.totalItemsCount();
-    if (!total) return 100;
-    const fresh = this.availableItems().length;
-    return Math.round((fresh / total) * 100);
-  });
 
   kitchenName = computed(() => this.authService.activeKitchen()?.name || 'My Kitchen');
-
-  greetingMessage = computed(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
-  });
 
   currentDateString = computed(() => {
     const options: Intl.DateTimeFormatOptions = {
@@ -86,6 +67,7 @@ export class HomeComponent {
   });
 
   isLoading = signal(true);
+  loadFailed = signal(false);
 
   constructor() {
     effect(() => {
@@ -98,6 +80,7 @@ export class HomeComponent {
 
   fetchData(): void {
     this.isLoading.set(true);
+    this.loadFailed.set(false);
     forkJoin({
       items: this.itemService.getItems(),
       recipes: this.recipeService.getAvailableRecipes(),
@@ -108,16 +91,14 @@ export class HomeComponent {
         next: ({ items, recipes, locations }) => {
           this.items.set(items);
           this.expiredItems.set(items.filter((item) => isExpired(item)));
-          this.soonToExpireItems.set(items.filter((item) => isExpiringSoon(item)));
-          this.availableItems.set(
-            items.filter((item) => !isExpired(item) && !isExpiringSoon(item)),
-          );
+          this.soonToExpireItems.set(items.filter((item) => isExpiringSoon(item, 7)));
           this.recipes.set(recipes);
           this.locations.set(locations);
           this.isLoading.set(false);
         },
         error: (err) => {
           console.error('Failed to load home data:', err);
+          this.loadFailed.set(true);
           this.isLoading.set(false);
         },
       });
@@ -144,14 +125,18 @@ export class HomeComponent {
   onReviewExpired(): void {
     const el = document.getElementById('expired-items-section');
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.focus({ preventScroll: true });
+      el.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      });
     } else {
-      this.router.navigate(['/inventory']);
+      this.router.navigate(['/inventory/items']);
     }
   }
 
   onNavigateToAddItem(): void {
-    this.router.navigate(['/inventory/new']);
+    this.router.navigate(['/inventory/items/new']);
   }
 
   onNavigateToAddRecipe(): void {
@@ -159,7 +144,7 @@ export class HomeComponent {
   }
 
   onNavigateToAssign(): void {
-    this.router.navigate(['/inventory'], { queryParams: { tab: 'assign' } });
+    this.router.navigate(['/inventory/items'], { queryParams: { tab: 'assign' } });
   }
 
   onNavigateToRecipes(): void {
@@ -167,6 +152,6 @@ export class HomeComponent {
   }
 
   onNavigateToInventory(): void {
-    this.router.navigate(['/inventory']);
+    this.router.navigate(['/inventory/items']);
   }
 }

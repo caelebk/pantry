@@ -3,27 +3,31 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { Item } from '@models/items.model';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { RecipeService } from '@services/recipe.service';
 import { ToastService } from '@services/toast.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { AuthService } from '../../core/services/auth.service';
 import { HomeComponent } from './home.component';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
+  let mockItemService: { getItems: ReturnType<typeof vi.fn> };
+  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
   const mockAuthService = {
     activeKitchen: signal<{ id: string; name: string } | null>({ id: 'k1', name: 'Chef Central' }),
   };
 
   beforeEach(() => {
-    const mockItemService = { getItems: vi.fn().mockReturnValue(of([])) };
+    mockAuthService.activeKitchen.set({ id: 'k1', name: 'Chef Central' });
+    mockItemService = { getItems: vi.fn().mockReturnValue(of([])) };
     const mockRecipeService = { getAvailableRecipes: vi.fn().mockReturnValue(of([])) };
     const mockLocationService = { getLocations: vi.fn().mockReturnValue(of([])) };
     const mockToastService = { showSuccess: vi.fn() };
-    const mockRouter = { navigate: vi.fn() };
+    mockRouter = { navigate: vi.fn() };
 
     TestBed.configureTestingModule({
       providers: [
@@ -50,5 +54,50 @@ describe('HomeComponent', () => {
   it('should fallback to default kitchen name if active kitchen is null', () => {
     mockAuthService.activeKitchen.set(null);
     expect(component.kitchenName()).toBe('My Kitchen');
+  });
+
+  it('distinguishes load failure from a first-use kitchen and supports retry', () => {
+    mockItemService.getItems.mockReturnValue(throwError(() => new Error('offline')));
+    component.fetchData();
+    expect(component.loadFailed()).toBe(true);
+    expect(component.isLoading()).toBe(false);
+    mockItemService.getItems.mockReturnValue(of([]));
+    component.fetchData();
+    expect(component.loadFailed()).toBe(false);
+    expect(component.totalItemsCount()).toBe(0);
+  });
+
+  it('uses the canonical stock routes', () => {
+    component.onNavigateToAddItem();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/items/new']);
+    component.onNavigateToInventory();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/items']);
+  });
+
+  it('moves focus to the expiry review target with reduced-motion support', () => {
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: true }));
+    const target = document.createElement('section');
+    target.id = 'expired-items-section';
+    target.tabIndex = -1;
+    target.scrollIntoView = vi.fn();
+    document.body.append(target);
+    component.onReviewExpired();
+    expect(document.activeElement).toBe(target);
+    expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'auto', block: 'start' });
+    target.remove();
+    vi.unstubAllGlobals();
+  });
+  it('limits the Home attention window to seven days', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-03T12:00:00Z'));
+    mockItemService.getItems.mockReturnValue(
+      of([
+        { id: 'soon', expirationDate: new Date('2026-10-09T12:00:00Z') },
+        { id: 'later', expirationDate: new Date('2026-10-13T12:00:00Z') },
+      ] as Item[]),
+    );
+    component.fetchData();
+    expect(component.soonToExpireItems().map((item) => item.id)).toEqual(['soon']);
+    vi.useRealTimers();
   });
 });

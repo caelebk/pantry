@@ -1,28 +1,33 @@
 <div class="glass-card rounded-2xl p-6 transition-all duration-300 hover:shadow-lg">
   <div class="flex items-center justify-between mb-5">
     <div>
-      <h3
-        class="text-base font-bold text-surface-900 dark:text-white tracking-tight flex items-center gap-2">
+      <h3 class="type-section-title text-surface-900 dark:text-white flex items-center gap-2">
         <i class="pi pi-building text-surface-500 dark:text-surface-400"></i>
         {{ 'home.locations.title' | transloco }}
       </h3>
     </div>
     <span
       class="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300">
-      {{ items().length }} Items
+      {{
+        (items().length === 1 ? 'home.locations.items_one' : 'home.locations.items')
+          | transloco: { count: items().length }
+      }}
     </span>
   </div>
 
   <div class="space-y-4">
     @for (stat of locationStats(); track stat.location.id) {
       <div>
-        <div class="flex items-center justify-between text-xs mb-1.5 font-medium">
+        <div class="flex items-center justify-between type-meta mb-1.5">
           <div class="flex items-center gap-2 text-surface-800 dark:text-surface-200">
             <i [class]="stat.icon" class="text-surface-500 dark:text-surface-400"></i>
             <span>{{ stat.location.name }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-surface-900 dark:text-white font-bold">{{ stat.count }} items</span>
+            <span class="text-surface-900 dark:text-white font-medium tabular-nums">{{
+              (stat.count === 1 ? 'home.locations.items_one' : 'home.locations.items')
+                | transloco: { count: stat.count }
+            }}</span>
             <span class="text-surface-400 dark:text-surface-500 text-[11px]"
               >({{ stat.percentage }}%)</span
             >

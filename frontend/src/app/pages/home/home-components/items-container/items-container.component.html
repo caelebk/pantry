@@ -1,100 +1,52 @@
-<div class="glass-card rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg">
-  <!-- Neutral header divider -->
-  <div class="h-1 bg-surface-200 dark:bg-surface-700"></div>
-
-  <div class="p-6">
-    <div class="flex justify-between items-center mb-5">
-      <h3
-        class="text-base font-bold text-surface-900 dark:text-white tracking-tight flex items-center gap-2">
-        <i class="pi pi-box text-surface-400 dark:text-surface-500"></i>
-        {{ titleKey() | transloco }}
-      </h3>
-      <span
-        class="text-xs font-bold px-2.5 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700">
-        {{ items().length }}
-      </span>
-    </div>
-
-    <div #itemsList class="space-y-2.5 items-list" [class.isExpanded]="isExpanded()">
-      @for (item of visibleItems(); track item.id; let i = $index) {
-        <div
-          [@staggeredFadeIn]="{ value: '', params: { delay: i * staggerDelayPerItemMs } }"
-          class="sub-card sub-card-hover p-3.5 rounded-xl flex justify-between items-center group/item">
-          <div class="min-w-0 flex-1">
-            <h4
-              class="font-extrabold text-sm text-surface-900 dark:text-white truncate"
-              [ngClass]="{
-                'line-through decoration-surface-400 dark:decoration-surface-500 opacity-60':
-                  theme() === Theme.Red,
-              }">
-              {{ item.name }}
-            </h4>
-            <div class="flex items-center gap-2 mt-0.5">
-              <span
-                class="text-xs text-surface-600 dark:text-surface-300 font-medium truncate flex items-center gap-1">
-                <i class="pi pi-building text-[10px]"></i>
-                {{ item.location.name }}
-              </span>
-              <span class="text-surface-400 dark:text-surface-600 text-[10px]">•</span>
-              <span class="text-xs text-surface-600 dark:text-surface-300 font-semibold">
-                {{ item.quantity }} {{ item.unit.name }}
-              </span>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-3 shrink-0 ml-4">
-            @let timeDiff = getItemTimeDifference(item);
-            <pantry-badge
-              size="sm"
-              [variant]="timeDiff.isExpired ? 'expired' : timeDiff.isClose ? 'expiring' : 'fresh'">
-              {{ timeDiff.label }}
-            </pantry-badge>
-
-            <!-- Quick Action Icon Buttons on Hover -->
-            <div
-              class="opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center gap-1">
-              <button
-                (click)="onEditItem(item, $event)"
-                title="Edit Item"
-                aria-label="Edit Item"
-                class="btn-icon-sm">
-                <i class="pi pi-pencil text-xs"></i>
-              </button>
-              <button
-                (click)="onRemoveItem(item, $event)"
-                title="Remove Item"
-                aria-label="Remove Item"
-                class="btn-icon-sm">
-                <i class="pi pi-trash text-xs"></i>
-              </button>
-            </div>
+<section class="stock-panel glass-card rounded-2xl p-5">
+  <div class="flex items-center justify-between gap-3 mb-3">
+    <h3 class="type-section-title text-surface-900 dark:text-white">
+      {{ titleKey() | transloco }}
+    </h3>
+    <span class="type-meta text-surface-600 dark:text-surface-300">{{ items().length }}</span>
+  </div>
+  <div class="divide-y divide-surface-200/70 dark:divide-surface-700/70">
+    @for (item of visibleItems(); track item.id) {
+      <div class="stock-row py-3 flex flex-col gap-3">
+        <div class="min-w-0 flex-1">
+          <h4 class="type-label text-surface-900 dark:text-white break-words">{{ item.name }}</h4>
+          <p class="type-meta text-surface-600 dark:text-surface-300 mt-1 break-words">
+            {{ item.location.name }} · {{ item.quantity }} {{ item.unit.name }}
+          </p>
+        </div>
+        <div class="stock-row__actions flex items-center justify-between gap-3">
+          @let timeDiff = getItemTimeDifference(item);
+          <pantry-badge
+            size="sm"
+            [variant]="timeDiff.isExpired ? 'expired' : timeDiff.isClose ? 'expiring' : 'fresh'">
+            {{ timeDiff.label }}
+          </pantry-badge>
+          <div class="flex gap-2 shrink-0">
+            <a
+              [routerLink]="['/inventory/items', item.id, 'edit']"
+              class="btn-icon"
+              [attr.aria-label]="'home.stock.editItem' | transloco: { name: item.name }">
+              <i class="pi pi-pencil" aria-hidden="true"></i>
+            </a>
+            <button
+              type="button"
+              (click)="onRemoveItem(item, $event)"
+              class="btn-icon"
+              [attr.aria-label]="'home.stock.removeItem' | transloco: { name: item.name }">
+              <i class="pi pi-trash" aria-hidden="true"></i>
+            </button>
           </div>
         </div>
-      }
-
-      @if (items().length === 0) {
-        <div class="text-center py-6 text-xs text-surface-400 dark:text-surface-500">
-          No items found in this list.
-        </div>
-      }
-    </div>
-
-    @if (showToggle()) {
-      <div class="mt-4 text-center">
-        <button
-          (click)="toggleExpand()"
-          class="text-sm text-surface-400 dark:text-surface-500 hover:text-primary-600 dark:hover:text-primary-400 font-medium focus:outline-none cursor-pointer transition-all duration-200 hover:tracking-wide">
-          @if (isExpanded()) {
-            {{ 'common.showLess' | transloco }}
-          } @else {
-            +{{ hiddenItemsCount() }}
-            {{
-              (hiddenItemsCount() === 1 ? footerMessageKey() + '_one' : footerMessageKey())
-                | transloco
-            }}
-          }
-        </button>
       </div>
+    } @empty {
+      <pantry-empty-state variant="plain" [title]="'home.stock.emptyTitle' | transloco" />
     }
   </div>
-</div>
+  @if (hiddenItemsCount() > 0) {
+    <a routerLink="/inventory/items" class="btn-ghost inline-flex gap-2 mt-3">
+      {{ 'home.stock.viewInventory' | transloco }}
+      <span class="type-meta">+{{ hiddenItemsCount() }}</span>
+      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+    </a>
+  }
+</section>

@@ -1,130 +1,118 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-  <!-- Clean Home Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="page-layout">
+  <div class="page-header">
     <div>
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-xs font-semibold text-surface-500 dark:text-surface-400">
-          {{ currentDateString() }}
-        </span>
-        <span class="text-surface-300 dark:text-surface-700">•</span>
-        <span class="text-xs font-semibold text-primary-600 dark:text-primary-400">
-          {{ freshnessPercentage() }}% Fresh Stock
-        </span>
-      </div>
-      <h1 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
-        {{ kitchenName() }}
-      </h1>
+      <p class="type-meta text-surface-500 dark:text-surface-400 mb-1">{{ currentDateString() }}</p>
+      <h1 class="type-page-title text-surface-900 dark:text-white">{{ kitchenName() }}</h1>
     </div>
-
-    <!-- Primary Action Buttons -->
-    <div class="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
-      <button (click)="onNavigateToAddItem()" class="btn-primary">
-        <i class="pi pi-plus text-xs"></i>
-        <span>Add Item</span>
-      </button>
-      <button (click)="onNavigateToAddRecipe()" class="btn-secondary">
-        <i class="pi pi-book text-xs text-surface-500"></i>
-        <span>Add Recipe</span>
-      </button>
-    </div>
-  </div>
-
-  @if (isLoading()) {
-    <div class="space-y-5" aria-busy="true" aria-label="Loading dashboard">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        @for (card of [1, 2, 3, 4]; track card) {
-          <pantry-skeleton variant="card" height="112px"></pantry-skeleton>
-        }
-      </div>
-      <pantry-skeleton variant="card" height="384px"></pantry-skeleton>
-    </div>
-  } @else {
-    <!-- Simple Urgent Alert Notices -->
-    @if (expiredItemsCount() > 0 || expiringSoonItemsCount() > 0) {
-      <div class="flex flex-col gap-3">
-        <!-- Expired Items Notice -->
-        @if (expiredItemsCount() > 0) {
-          <div
-            class="bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 flex items-center justify-between gap-4 text-xs">
-            <div class="flex items-center gap-3">
-              <i class="pi pi-exclamation-triangle text-red-600 dark:text-red-400 text-base"></i>
-              <div>
-                <span class="font-bold text-red-900 dark:text-red-200">
-                  {{ expiredItemsCount() }} Expired Item(s)
-                </span>
-                <span class="text-red-700 dark:text-red-300 ml-1">
-                  require your review to update inventory.
-                </span>
-              </div>
-            </div>
-            <button (click)="onReviewExpired()" class="btn-danger shrink-0">
-              Review Expired Items
-            </button>
-          </div>
-        }
-
-        <!-- Expiring Soon Notice -->
-        @if (expiringSoonItemsCount() > 0) {
-          <div
-            class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3.5 flex items-center justify-between gap-4 text-xs">
-            <div class="flex items-center gap-3">
-              <i class="pi pi-clock text-amber-600 dark:text-amber-400 text-base"></i>
-              <div>
-                <span class="font-bold text-amber-900 dark:text-amber-200">
-                  {{ expiringSoonItemsCount() }} Item(s) Expiring Soon
-                </span>
-                <span class="text-amber-700 dark:text-amber-300 ml-1">
-                  within 7 days. Plan your upcoming meals.
-                </span>
-              </div>
-            </div>
-            <button (click)="onNavigateToRecipes()" class="btn-secondary shrink-0">
-              View Recipes
-            </button>
-          </div>
-        }
+    @if (!loadFailed() && (isLoading() || totalItemsCount() > 0)) {
+      <div class="page-header__actions">
+        <button (click)="onNavigateToAddItem()" class="btn-primary">
+          <i class="pi pi-plus" aria-hidden="true"></i>
+          {{ 'home.overview.addItem' | transloco }}
+        </button>
+        <button (click)="onNavigateToAddRecipe()" class="btn-secondary">
+          {{ 'home.overview.addRecipe' | transloco }}
+        </button>
       </div>
     }
-
-    <!-- Key Stats Grid -->
+  </div>
+  @if (isLoading()) {
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 panel-reveal panel-delay-1">
-      <pantry-stat-card
-        [title]="'home.stats.totalItems' | transloco"
-        [value]="totalItemsCount()"
-        [subtitle]="'home.stats.inInventory' | transloco">
-      </pantry-stat-card>
-
-      <pantry-stat-card
-        [title]="'home.stats.expiringSoon' | transloco"
-        [value]="expiringSoonItemsCount()"
-        [subtitle]="'home.stats.within7Days' | transloco">
-      </pantry-stat-card>
-
-      <pantry-stat-card
-        [title]="'home.stats.expired' | transloco"
-        [value]="expiredItemsCount()"
-        [subtitle]="'home.stats.needsRemoval' | transloco">
-      </pantry-stat-card>
-
-      <pantry-stat-card
-        [title]="'home.stats.canMake' | transloco"
-        [value]="canMakeRecipesCount()"
-        [subtitle]="'home.stats.recipes' | transloco">
-      </pantry-stat-card>
+      class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+      aria-busy="true"
+      [attr.aria-label]="'home.overview.loading' | transloco">
+      <pantry-skeleton variant="card" height="280px"></pantry-skeleton>
+      <pantry-skeleton variant="card" height="280px"></pantry-skeleton>
     </div>
-
-    <!-- Core 2-Column Home Layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 panel-reveal panel-delay-2">
-      <!-- Left Main Column (2 Columns Wide): Watchlists & Recipes Spotlight -->
-      <div class="lg:col-span-2 flex flex-col gap-6">
-        <!-- "What You Can Cook Today" Recipe Spotlight -->
-        <pantry-cookable-recipes-container [recipes]="recipes()">
-        </pantry-cookable-recipes-container>
-
-        <!-- Expired Items Section (Target for Review button) -->
-        @if (expiredItems().length > 0) {
-          <div id="expired-items-section" class="block">
+  } @else if (loadFailed()) {
+    <div role="alert">
+      <pantry-empty-state
+        icon="pi pi-exclamation-circle"
+        [title]="'home.overview.errorTitle' | transloco"
+        [description]="'home.overview.errorDescription' | transloco"
+        [actionText]="'home.overview.retry' | transloco"
+        (actionClick)="fetchData()">
+      </pantry-empty-state>
+    </div>
+  } @else if (totalItemsCount() === 0) {
+    <pantry-empty-state
+      icon="pi pi-box"
+      [title]="'home.overview.emptyTitle' | transloco"
+      [description]="'home.overview.emptyDescription' | transloco"
+      [actionText]="'home.overview.addItem' | transloco"
+      (actionClick)="onNavigateToAddItem()">
+    </pantry-empty-state>
+  } @else {
+    @if (expiredItemsCount() > 0 || expiringSoonItemsCount() > 0) {
+      <aside
+        class="rounded-xl p-4 border flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4"
+        [ngClass]="
+          expiredItemsCount() > 0
+            ? 'bg-red-500/10 border-red-500/20'
+            : 'bg-amber-500/10 border-amber-500/20'
+        "
+        aria-labelledby="attention-heading">
+        <div class="flex items-start gap-3 min-w-0">
+          <i
+            aria-hidden="true"
+            class="pi mt-1 shrink-0"
+            [ngClass]="
+              expiredItemsCount() > 0
+                ? 'pi-exclamation-triangle text-red-600 dark:text-red-400'
+                : 'pi-clock text-amber-600 dark:text-amber-400'
+            "></i>
+          <div class="min-w-0">
+            <h2
+              id="attention-heading"
+              class="type-label"
+              [ngClass]="
+                expiredItemsCount() > 0
+                  ? 'text-red-900 dark:text-red-200'
+                  : 'text-amber-900 dark:text-amber-200'
+              ">
+              {{
+                (expiredItemsCount() > 0
+                  ? 'home.overview.expiredCallout'
+                  : 'home.overview.soonCallout'
+                )
+                  | transloco
+                    : {
+                        count:
+                          expiredItemsCount() > 0 ? expiredItemsCount() : expiringSoonItemsCount(),
+                      }
+              }}
+            </h2>
+            <p class="type-meta mt-1 text-surface-700 dark:text-surface-300">
+              {{
+                (expiredItemsCount() > 0
+                  ? 'home.overview.expiredDescription'
+                  : 'home.overview.soonDescription'
+                ) | transloco
+              }}
+            </p>
+          </div>
+        </div>
+        @if (expiredItemsCount() > 0) {
+          <button (click)="onReviewExpired()" class="btn-danger shrink-0">
+            {{ 'home.overview.reviewExpired' | transloco }}
+          </button>
+        } @else {
+          <button (click)="onNavigateToRecipes()" class="btn-secondary shrink-0">
+            {{ 'home.recipe.browseAll' | transloco }}
+          </button>
+        }
+      </aside>
+    }
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+      <section
+        class="flex flex-col gap-4 min-w-0"
+        [attr.aria-label]="'home.overview.stockOverview' | transloco">
+        @if (expiredItemsCount() > 0) {
+          <section
+            id="expired-items-section"
+            tabindex="-1"
+            class="rounded-2xl focus:outline-2 focus:outline-primary-500 focus:outline-offset-4"
+            [attr.aria-label]="'dashboard.expiredItems.title' | transloco">
             <pantry-items-container
               [titleKey]="'dashboard.expiredItems.title'"
               [items]="expiredItems()"
@@ -132,37 +120,33 @@
               [footerMessageKey]="'dashboard.expiredItems.moreItems'"
               (removeItem)="onRemoveItem($event)">
             </pantry-items-container>
-          </div>
+          </section>
         }
-
-        <!-- Soon to Expire Items List -->
-        <pantry-items-container
-          [titleKey]="'dashboard.expiringSoonItems.title'"
-          [items]="soonToExpireItems()"
-          [theme]="Theme.Amber"
-          [footerMessageKey]="'dashboard.expiringSoonItems.moreItems'"
-          (removeItem)="onRemoveItem($event)">
-        </pantry-items-container>
-
-        <!-- Available Fresh Items List -->
-        <pantry-items-container
-          [titleKey]="'dashboard.availableItems.title'"
-          [items]="availableItems()"
-          [theme]="Theme.Orange"
-          [footerMessageKey]="'dashboard.availableItems.moreItems'"
-          (removeItem)="onRemoveItem($event)">
-        </pantry-items-container>
-      </div>
-
-      <!-- Right Side Column (1 Column Wide): Shortcuts & Storage Breakdown -->
-      <div class="lg:col-span-1 flex flex-col gap-6">
-        <!-- Quick Shortcuts Panel -->
-        <pantry-quick-actions-container></pantry-quick-actions-container>
-
-        <!-- Storage Locations Breakdown -->
-        <pantry-location-overview-container [items]="items()" [locations]="locations()">
-        </pantry-location-overview-container>
+        @if (expiringSoonItemsCount() > 0) {
+          <pantry-items-container
+            [titleKey]="'dashboard.expiringSoonItems.title'"
+            [items]="soonToExpireItems()"
+            [theme]="Theme.Amber"
+            [footerMessageKey]="'dashboard.expiringSoonItems.moreItems'"
+            (removeItem)="onRemoveItem($event)">
+          </pantry-items-container>
+        }
+        @if (expiredItemsCount() === 0 && expiringSoonItemsCount() === 0) {
+          <pantry-empty-state
+            icon="pi pi-check"
+            [title]="'home.overview.allClear' | transloco"
+            [description]="'home.overview.allClearDescription' | transloco"
+            [actionText]="'home.overview.viewInventory' | transloco"
+            (actionClick)="onNavigateToInventory()">
+          </pantry-empty-state>
+        }
+      </section>
+      <div class="min-w-0">
+        <pantry-cookable-recipes-container
+          [recipes]="recipes()"></pantry-cookable-recipes-container>
       </div>
     </div>
+    <pantry-location-overview-container [items]="items()" [locations]="locations()">
+    </pantry-location-overview-container>
   }
 </div>
