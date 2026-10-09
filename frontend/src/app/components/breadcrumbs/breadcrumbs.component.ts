@@ -45,123 +45,67 @@ export class BreadcrumbsComponent implements OnInit {
   }
 
   private buildBreadcrumbs(rawUrl: string): void {
-    const [pathPart] = rawUrl.split('?');
-    const cleanUrl = pathPart.split('#')[0];
-    const segments = cleanUrl.split('/').filter((s) => s.length > 0);
+    const segments = rawUrl.split(/[?#]/)[0].split('/').filter(Boolean);
+    const items: BreadcrumbItem[] = [{ label: 'nav.home', url: '/home' }];
+    const add = (label: string, url?: string) => items.push({ label, url });
+    const [section, collection, entity, action] = segments;
 
-    const items: BreadcrumbItem[] = [{ label: 'Home', url: '/home', icon: 'pi pi-home' }];
-
-    if (segments.length === 0 || segments[0] === 'home' || segments[0] === 'dashboard') {
-      this.breadcrumbs.set(items);
-      return;
+    if (!section || section === 'home' || section === 'dashboard') {
+      items[0].url = undefined;
+    } else if (section === 'profile') {
+      add('nav.profile');
+    } else if (section === 'inventory') {
+      add('nav.inventory', collection ? '/inventory' : undefined);
+      const collections: Record<
+        string,
+        { label: string; path: string; create: string; edit: string }
+      > = {
+        items: {
+          label: 'sidebar.ingredientItems',
+          path: '/inventory/items',
+          create: 'breadcrumbs.addItem',
+          edit: 'breadcrumbs.editItem',
+        },
+        ingredients: {
+          label: 'sidebar.ingredients',
+          path: '/inventory/ingredients',
+          create: 'breadcrumbs.addIngredient',
+          edit: 'breadcrumbs.editIngredient',
+        },
+        groups: {
+          label: 'sidebar.ingredientCategoriesAndGroups',
+          path: '/inventory/groups',
+          create: 'breadcrumbs.addGroup',
+          edit: 'breadcrumbs.editGroup',
+        },
+      };
+      const config = collections[collection];
+      if (config) {
+        add(config.label, entity ? config.path : undefined);
+        if (entity === 'new') add(config.create);
+        else if (action === 'edit') add(config.edit);
+        else if (action === 'unit-reconciliation') add('breadcrumbs.reconciliation');
+        else if (collection === 'ingredients' && entity) add('ingredientDetail.title');
+      }
+    } else if (section === 'recipes') {
+      add('nav.recipes', collection ? '/recipes' : undefined);
+      if (collection === 'new') add('breadcrumbs.addRecipe');
+      else if (collection) {
+        add('breadcrumbs.recipeDetails', entity === 'edit' ? `/recipes/${collection}` : undefined);
+        if (entity === 'edit') add('breadcrumbs.editRecipe');
+      }
+    } else if (section === 'meal-planner') {
+      add('nav.mealPlanner', collection ? '/meal-planner' : undefined);
+      if (collection === 'new') add('breadcrumbs.planMeal');
+    } else if (section === 'shopping-list') {
+      add('nav.shoppingList', collection ? '/shopping-list' : undefined);
+      if (collection === 'new') add('breadcrumbs.addShoppingItem');
+      else if (collection === 'stores') add('breadcrumbs.stores');
+      else if (collection === 'restock') add('breadcrumbs.restock');
+      else if (entity === 'edit') add('breadcrumbs.editShoppingItem');
+    } else if (section === 'design-system') {
+      add('breadcrumbs.designSystem');
     }
-
-    const firstSegment = segments[0];
-
-    if (firstSegment === 'inventory') {
-      const secondSegment = segments[1];
-      const thirdSegment = segments[2];
-
-      if (!secondSegment) {
-        items.push({ label: 'Inventory', icon: 'pi pi-box' });
-      } else {
-        items.push({ label: 'Inventory', url: '/inventory', icon: 'pi pi-box' });
-
-        if (secondSegment === 'items') {
-          if (thirdSegment === 'new') {
-            items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
-            items.push({ label: 'Add New Item', icon: 'pi pi-plus-circle' });
-          } else if (segments[3] === 'edit') {
-            items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
-            items.push({ label: 'Edit Item', icon: 'pi pi-pencil' });
-          } else {
-            items.push({ label: 'Ingredient Items', icon: 'pi pi-list' });
-          }
-        } else if (secondSegment === 'ingredients') {
-          if (thirdSegment === 'new') {
-            items.push({
-              label: 'Ingredients',
-              url: '/inventory/ingredients',
-              icon: 'pi pi-sparkles',
-            });
-            items.push({ label: 'Add Ingredient', icon: 'pi pi-plus-circle' });
-          } else if (segments[3] === 'edit') {
-            items.push({
-              label: 'Ingredients',
-              url: '/inventory/ingredients',
-              icon: 'pi pi-sparkles',
-            });
-            items.push({ label: 'Edit Ingredient', icon: 'pi pi-pencil' });
-          } else {
-            items.push({ label: 'Ingredients', icon: 'pi pi-sparkles' });
-          }
-        } else if (secondSegment === 'groups') {
-          if (thirdSegment === 'new') {
-            items.push({
-              label: 'Ingredient Categories & Groups',
-              url: '/inventory/groups',
-              icon: 'pi pi-tags',
-            });
-            items.push({ label: 'Add Ingredient Group', icon: 'pi pi-plus-circle' });
-          } else if (segments[3] === 'edit') {
-            items.push({
-              label: 'Ingredient Categories & Groups',
-              url: '/inventory/groups',
-              icon: 'pi pi-tags',
-            });
-            items.push({ label: 'Edit Ingredient Group', icon: 'pi pi-pencil' });
-          } else {
-            items.push({ label: 'Ingredient Categories & Groups', icon: 'pi pi-tags' });
-          }
-        } else if (secondSegment === 'nutrients') {
-          items.push({
-            label: 'Ingredient Categories & Groups',
-            url: '/inventory/groups',
-            icon: 'pi pi-tags',
-          });
-        } else if (secondSegment === 'new') {
-          items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
-          items.push({ label: 'Add New Item', icon: 'pi pi-plus-circle' });
-        } else if (thirdSegment === 'edit') {
-          items.push({ label: 'Ingredient Items', url: '/inventory/items', icon: 'pi pi-list' });
-          items.push({ label: 'Edit Item', icon: 'pi pi-pencil' });
-        } else {
-          items.push({ label: 'Ingredient Items', icon: 'pi pi-list' });
-        }
-      }
-    } else if (firstSegment === 'recipes') {
-      items.push({ label: 'Recipes', url: '/recipes', icon: 'pi pi-book' });
-
-      if (segments[1] === 'new') {
-        items.push({ label: 'Add New Recipe', icon: 'pi pi-plus-circle' });
-      } else if (segments[1]) {
-        const recipeId = segments[1];
-        if (segments[2] === 'edit') {
-          items.push({ label: 'Recipe Details', url: `/recipes/${recipeId}` });
-          items.push({ label: 'Edit Recipe', icon: 'pi pi-pencil' });
-        } else {
-          items.push({ label: 'Recipe Details', icon: 'pi pi-align-left' });
-        }
-      }
-    } else if (firstSegment === 'meal-planner') {
-      if (segments[1] === 'new') {
-        items.push({ label: 'Meal Planner', url: '/meal-planner', icon: 'pi pi-calendar' });
-        items.push({ label: 'Plan a Meal', icon: 'pi pi-plus-circle' });
-      } else {
-        items.push({ label: 'Meal Planner', icon: 'pi pi-calendar' });
-      }
-    } else if (firstSegment === 'shopping-list') {
-      if (segments[1] === 'new') {
-        items.push({ label: 'Shopping List', url: '/shopping-list', icon: 'pi pi-shopping-bag' });
-        items.push({ label: 'Add Shopping Item', icon: 'pi pi-plus-circle' });
-      } else if (segments[1] === 'restock') {
-        items.push({ label: 'Shopping List', url: '/shopping-list', icon: 'pi pi-shopping-bag' });
-        items.push({ label: 'Restock Review', icon: 'pi pi-check-circle' });
-      } else {
-        items.push({ label: 'Shopping List', icon: 'pi pi-shopping-bag' });
-      }
-    }
-
     this.breadcrumbs.set(items);
   }
 }

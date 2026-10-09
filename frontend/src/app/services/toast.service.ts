@@ -25,8 +25,8 @@ export class ToastService {
     const id = Math.random().toString(36).substring(2, 9);
     const newToast: Toast = {
       id,
-      duration: toast.duration ?? 4000,
       ...toast,
+      duration: toast.duration ?? (toast.type === 'error' ? 0 : 4000),
     };
 
     this.toasts$.next([...this.toasts$.value, newToast]);
@@ -43,7 +43,7 @@ export class ToastService {
   }
 
   showError(message: string, title = 'Error'): void {
-    this.show({ type: 'error', title, message, duration: 6000 });
+    this.show({ type: 'error', title, message, duration: 0 });
   }
 
   showWarning(message: string, title = 'Warning'): void {

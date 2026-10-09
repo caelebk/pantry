@@ -75,6 +75,8 @@ export interface KitchenVector {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
+  readonly mobileNavigationOpen = signal(false);
+  @ViewChild('ambientWaves') ambientWaves?: ElementRef<HTMLDivElement>;
   @ViewChild('particleCanvas') particleCanvas?: ElementRef<HTMLCanvasElement>;
 
   private router = inject(Router);
@@ -96,15 +98,26 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       : '';
   }
 
+  private redrawBackground?: () => void;
   private animationFrameId?: number;
+  private animateBackground?: FrameRequestCallback;
+  private lastFrameTime?: number;
+  private motionQuery?: MediaQueryList;
+  private mouseMoveListener?: (event: MouseEvent) => void;
+  private mouseLeaveListener?: () => void;
+  private readonly kitchenPaths = new Map<KitchenVectorType, Path2D>();
   private particles: Particle[] = [];
   private kitchenVectors: KitchenVector[] = [];
   private mouse = { x: -1000, y: -1000, radius: 140 };
   private resizeListener?: () => void;
-  private mouseMoveListener?: (e: MouseEvent) => void;
-  private mouseLeaveListener?: () => void;
+  private visibilityListener?: () => void;
 
   constructor() {
+    effect(() => {
+      this.darkMode();
+      this.ngZone.runOutsideAngular(() => this.redrawBackground?.());
+    });
+
     effect(
       () => {
         const user = this.authService.currentUser();
@@ -158,70 +171,111 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (isPlatformBrowser(this.platformId) && this.particleCanvas) {
+    if (isPlatformBrowser(this.platformId)) {
       this.ngZone.runOutsideAngular(() => {
+        if (!this.visibilityListener) {
+          this.motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+          this.visibilityListener = () => this.syncBackgroundMotion();
+          document.addEventListener('visibilitychange', this.visibilityListener);
+          this.motionQuery.addEventListener('change', this.visibilityListener);
+        }
         this.initParticleWeb();
+        this.syncBackgroundMotion();
       });
     }
   }
 
-  ngOnDestroy() {
-    if (this.animationFrameId) {
+  private stopBackgroundMotion() {
+    if (this.animationFrameId !== undefined) {
       cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = undefined;
     }
-    if (isPlatformBrowser(this.platformId)) {
-      if (this.resizeListener) {
-        window.removeEventListener('resize', this.resizeListener);
-      }
-      if (this.mouseMoveListener) {
-        window.removeEventListener('mousemove', this.mouseMoveListener);
-      }
-      if (this.mouseLeaveListener) {
-        window.removeEventListener('mouseleave', this.mouseLeaveListener);
-      }
+    this.lastFrameTime = undefined;
+  }
+
+  private syncBackgroundMotion() {
+    const hidden = document.visibilityState !== 'visible';
+    const paused = hidden || !!this.motionQuery?.matches;
+    this.ambientWaves?.nativeElement.classList.toggle('is-paused', paused);
+    if (paused) {
+      this.stopBackgroundMotion();
+      if (!hidden) this.redrawBackground?.();
+    } else if (this.animationFrameId === undefined && this.animateBackground) {
+      // Resume from the current positions, without advancing through time spent hidden.
+      this.animationFrameId = requestAnimationFrame(this.animateBackground);
     }
   }
 
+  ngOnDestroy() {
+    this.redrawBackground = undefined;
+    this.animateBackground = undefined;
+    if (isPlatformBrowser(this.platformId)) {
+      this.stopBackgroundMotion();
+      if (this.resizeListener) window.removeEventListener('resize', this.resizeListener);
+      if (this.mouseMoveListener) window.removeEventListener('mousemove', this.mouseMoveListener);
+      if (this.mouseLeaveListener)
+        window.removeEventListener('mouseleave', this.mouseLeaveListener);
+      if (this.visibilityListener) {
+        document.removeEventListener('visibilitychange', this.visibilityListener);
+        this.motionQuery?.removeEventListener('change', this.visibilityListener);
+      }
+    }
+    this.kitchenPaths.clear();
+  }
+
   private initParticleWeb() {
+    if (this.redrawBackground) return;
     const canvas = this.particleCanvas?.nativeElement;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const setupCanvasSize = () => {
+    // Non-animation redraws must not move the artwork, including reduced-motion mode.
+    this.redrawBackground = () => {
+      this.renderParticlesAndVectors(ctx, canvas.width, canvas.height, 0);
+    };
+    this.resizeListener = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       this.createParticles(canvas.width, canvas.height);
       this.createKitchenVectors(canvas.width, canvas.height);
+      this.redrawBackground?.();
     };
-
-    setupCanvasSize();
-
-    this.resizeListener = () => setupCanvasSize();
-    window.addEventListener('resize', this.resizeListener);
-
-    this.mouseMoveListener = (e: MouseEvent) => {
-      this.mouse.x = e.clientX;
-      this.mouse.y = e.clientY;
+    this.mouseMoveListener = (event: MouseEvent) => {
+      this.mouse.x = event.clientX;
+      this.mouse.y = event.clientY;
     };
     this.mouseLeaveListener = () => {
       this.mouse.x = -1000;
       this.mouse.y = -1000;
     };
-
-    window.addEventListener('mousemove', this.mouseMoveListener);
+    window.addEventListener('resize', this.resizeListener);
+    window.addEventListener('mousemove', this.mouseMoveListener, { passive: true });
     window.addEventListener('mouseleave', this.mouseLeaveListener);
+    this.resizeListener();
 
-    const animate = () => {
-      if (document.visibilityState !== 'hidden') {
-        this.renderParticlesAndVectors(ctx, canvas.width, canvas.height);
+    const frameInterval = 1000 / 30;
+    this.animateBackground = (timestamp) => {
+      this.animationFrameId = undefined;
+      if (document.visibilityState !== 'visible' || this.motionQuery?.matches) {
+        this.stopBackgroundMotion();
+        return;
       }
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        this.animationFrameId = requestAnimationFrame(animate);
+      if (this.lastFrameTime === undefined) this.lastFrameTime = timestamp;
+      const elapsed = timestamp - this.lastFrameTime;
+      // A small tolerance avoids dropping to 20fps from fractional rAF timestamps.
+      if (elapsed >= frameInterval - 0.5) {
+        this.lastFrameTime = timestamp;
+        // Original velocities were per 60Hz frame; retain their speed at the draw cap.
+        this.renderParticlesAndVectors(
+          ctx,
+          canvas.width,
+          canvas.height,
+          Math.min(elapsed, 100) / (1000 / 60),
+        );
       }
+      this.animationFrameId = requestAnimationFrame(this.animateBackground!);
     };
-
-    animate();
   }
 
   private createParticles(width: number, height: number) {
@@ -264,7 +318,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private renderParticlesAndVectors(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  private renderParticlesAndVectors(
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    frameScale = 1,
+  ) {
     if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
       return;
     }
@@ -278,8 +337,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     for (let i = 0; i < this.particles.length; i++) {
       const p = this.particles[i];
 
-      p.x += p.vx;
-      p.y += p.vy;
+      p.x += p.vx * frameScale;
+      p.y += p.vy * frameScale;
 
       if (p.x < 0 || p.x > width) p.vx *= -1;
       if (p.y < 0 || p.y > height) p.vy *= -1;
@@ -292,8 +351,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (distSq < mouseRadiusSq && distSq > 0) {
         const force = (1 - distSq / mouseRadiusSq) * 1.2;
         const angle = Math.atan2(dy, dx);
-        p.x += Math.cos(angle) * force;
-        p.y += Math.sin(angle) * force;
+        p.x += Math.cos(angle) * force * frameScale;
+        p.y += Math.sin(angle) * force * frameScale;
       }
 
       ctx.beginPath();
@@ -328,9 +387,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const vectorColorPrefix = isDark ? 'rgba(251, 146, 60, ' : 'rgba(217, 119, 6, ';
 
     for (const v of this.kitchenVectors) {
-      v.x += v.vx;
-      v.y += v.vy;
-      v.rotation += v.vRot;
+      v.x += v.vx * frameScale;
+      v.y += v.vy * frameScale;
+      v.rotation += v.vRot * frameScale;
 
       const margin = 45;
       if (v.x < -margin) v.x = width + margin;
@@ -347,8 +406,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (distSq < mouseRadiusSq && distSq > 0) {
         const force = (1 - distSq / mouseRadiusSq) * 0.9;
         const angle = Math.atan2(dy, dx);
-        v.x += Math.cos(angle) * force;
-        v.y += Math.sin(angle) * force;
+        v.x += Math.cos(angle) * force * frameScale;
+        v.y += Math.sin(angle) * force * frameScale;
       }
 
       ctx.save();
@@ -368,7 +427,22 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private drawKitchenVectorShape(ctx: CanvasRenderingContext2D, type: KitchenVectorType) {
-    ctx.beginPath();
+    if (typeof Path2D === 'undefined') {
+      ctx.beginPath();
+      this.appendKitchenVectorPath(ctx, type);
+      ctx.stroke();
+      return;
+    }
+    let path = this.kitchenPaths.get(type);
+    if (!path) {
+      path = new Path2D();
+      this.appendKitchenVectorPath(path, type);
+      this.kitchenPaths.set(type, path);
+    }
+    ctx.stroke(path);
+  }
+
+  private appendKitchenVectorPath(ctx: CanvasPath, type: KitchenVectorType) {
     switch (type) {
       case 'spatula':
         // Handle
@@ -390,7 +464,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         // Hanging hole
         ctx.moveTo(0, 25);
         ctx.arc(0, 22, 2, 0, Math.PI * 2);
-        ctx.stroke();
         break;
 
       case 'pan':
@@ -402,7 +475,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         // Hanging hole on handle tip
         ctx.moveTo(28.5, 0);
         ctx.arc(26, 0, 2.5, 0, Math.PI * 2);
-        ctx.stroke();
         break;
 
       case 'whisk':
@@ -417,7 +489,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         ctx.bezierCurveTo(8, -20, 8, -6, 0, 4);
         ctx.moveTo(0, 4);
         ctx.lineTo(0, -24);
-        ctx.stroke();
         break;
 
       case 'chefHat':
@@ -428,7 +499,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         ctx.bezierCurveTo(-22, -4, -14, -22, -6, -18);
         ctx.bezierCurveTo(-4, -28, 4, -28, 6, -18);
         ctx.bezierCurveTo(14, -22, 22, -4, 14, 6);
-        ctx.stroke();
         break;
 
       case 'rollingPin':
@@ -444,7 +514,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         ctx.lineTo(25, -2);
         ctx.lineTo(25, 2);
         ctx.lineTo(16, 3);
-        ctx.stroke();
         break;
 
       case 'pot':
@@ -466,7 +535,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         ctx.arc(-19, 3, 3, -Math.PI / 2, Math.PI / 2, true);
         ctx.moveTo(16, 0);
         ctx.arc(19, 3, 3, -Math.PI / 2, Math.PI / 2, false);
-        ctx.stroke();
         break;
 
       case 'saltShaker':
@@ -486,7 +554,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         ctx.arc(2, -7, 0.8, 0, Math.PI * 2);
         ctx.moveTo(1, -9);
         ctx.arc(0, -9, 0.8, 0, Math.PI * 2);
-        ctx.stroke();
         break;
 
       case 'forkKnife':
@@ -509,7 +576,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         ctx.moveTo(8, 2);
         ctx.lineTo(8, -16);
         ctx.bezierCurveTo(14, -12, 14, -2, 8, 2);
-        ctx.stroke();
         break;
 
       case 'ladle':
@@ -519,7 +585,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         // Bowl
         ctx.arc(0, 14, 10, 0, Math.PI);
         ctx.closePath();
-        ctx.stroke();
         break;
 
       case 'cleaver':
@@ -534,7 +599,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         // Hole in top corner
         ctx.moveTo(11, -11);
         ctx.arc(9, -11, 2, 0, Math.PI * 2);
-        ctx.stroke();
         break;
     }
   }

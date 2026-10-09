@@ -52,6 +52,9 @@
       }
     </button>
     <button
+      #mobileTrigger
+      type="button"
+      aria-controls="pantry-navigation"
       (click)="toggleMobileMenu()"
       [attr.aria-label]="'sidebar.toggleMobileMenu' | transloco"
       [attr.aria-expanded]="mobileMenuOpen()"
@@ -75,37 +78,54 @@
 <!-- Mobile Backdrop Overlay -->
 @if (mobileMenuOpen()) {
   <div
-    (click)="toggleMobileMenu()"
+    (click)="closeMobileMenu()"
+    aria-hidden="true"
     class="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity"></div>
 }
 
 <!-- Sidebar Drawer / Desktop Sidebar -->
 <aside
+  #drawer
+  id="pantry-navigation"
+  [attr.inert]="isMobile() && !mobileMenuOpen() ? '' : null"
+  [attr.role]="isMobile() && mobileMenuOpen() ? 'dialog' : null"
+  [attr.aria-modal]="isMobile() && mobileMenuOpen() ? 'true' : null"
+  [attr.aria-label]="'sidebar.navigation' | transloco"
   [class.translate-x-0]="mobileMenuOpen()"
   [class.-translate-x-full]="!mobileMenuOpen()"
-  [class.md:w-20]="isCollapsed()"
-  [class.md:w-64]="!isCollapsed()"
-  class="fixed md:static top-0 left-0 z-50 md:z-auto h-screen md:h-full w-64 md:translate-x-0 transition-[width,transform] duration-300 ease-in-out flex flex-col glass-sidebar shrink-0 group">
+  [class.md:w-20]="desktopCollapsed()"
+  [class.md:w-64]="!desktopCollapsed()"
+  class="fixed md:static top-0 left-0 z-50 md:z-auto h-dvh md:h-full w-64 md:translate-x-0 transition-[width,transform] duration-300 ease-in-out flex flex-col glass-sidebar shrink-0 group">
+  <button
+    type="button"
+    (click)="closeMobileMenu()"
+    [attr.aria-label]="'sidebar.closeMobileMenu' | transloco"
+    class="btn-icon mobile-drawer-close self-end m-2 shrink-0">
+    <i class="pi pi-times" aria-hidden="true"></i>
+  </button>
   <!-- Combined Sidebar Header & Kitchen Switcher -->
   <div class="relative z-30 border-b border-surface-200/50 dark:border-white/10 p-3">
     <button
       type="button"
+      #kitchenSwitcher
       (click)="toggleKitchenMenu($event)"
-      aria-haspopup="true"
+      (keydown)="onKitchenTriggerKeydown($event)"
+      aria-controls="pantry-kitchens"
+      [attr.aria-label]="authService.activeKitchen()?.name || ('app.name' | transloco)"
       [attr.aria-expanded]="kitchenMenuOpen()"
       [attr.title]="authService.activeKitchen()?.name || ('app.name' | transloco)"
-      [class.justify-center]="isCollapsed()"
-      [class.p-1.5]="isCollapsed()"
-      [class.p-2]="!isCollapsed()"
+      [class.justify-center]="desktopCollapsed()"
+      [class.p-1.5]="desktopCollapsed()"
+      [class.p-2]="!desktopCollapsed()"
       class="w-full flex items-center justify-between rounded-2xl text-surface-700 dark:text-surface-300 hover:text-surface-950 dark:hover:text-white hover:bg-surface-200/60 dark:hover:bg-white/5 transition-all text-left group/switcher cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40">
       <div class="flex items-center gap-3 min-w-0">
         <!-- Pantry Logo Icon -->
         <div
-          class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center text-white font-bold text-xl transition-all duration-200 group-hover/switcher:scale-105 shrink-0">
+          class="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center text-white font-bold text-xl transition-all duration-200 shrink-0">
           <span class="material-symbols-outlined text-[22px]">skillet</span>
         </div>
 
-        @if (!isCollapsed()) {
+        @if (!desktopCollapsed()) {
           <div class="min-w-0 flex-1 overflow-hidden transition-all duration-300">
             <!-- Kitchen Title (Combined with App Title) -->
             <h1
@@ -129,7 +149,7 @@
         }
       </div>
 
-      @if (!isCollapsed()) {
+      @if (!desktopCollapsed()) {
         <i
           [class.rotate-180]="kitchenMenuOpen()"
           class="pi pi-chevron-down text-xs text-surface-400 group-hover/switcher:text-surface-600 dark:group-hover/switcher:text-surface-300 transition-transform duration-200 shrink-0 ml-1.5"></i>
@@ -139,13 +159,17 @@
     <!-- Dropdown Floating Kitchen Menu (Notion / Linear Style) -->
     @if (kitchenMenuOpen()) {
       <div
+        #kitchenPanel
+        id="pantry-kitchens"
+        (keydown)="onKitchenPanelKeydown($event)"
+        (focusout)="onKitchenPanelFocusout($event)"
         (click)="$event.stopPropagation()"
-        [class.left-3]="!isCollapsed()"
-        [class.right-3]="!isCollapsed()"
-        [class.left-full]="isCollapsed()"
-        [class.top-2]="isCollapsed()"
-        [class.ml-2]="isCollapsed()"
-        [class.w-64]="isCollapsed()"
+        [class.left-3]="!desktopCollapsed()"
+        [class.right-3]="!desktopCollapsed()"
+        [class.left-full]="desktopCollapsed()"
+        [class.top-2]="desktopCollapsed()"
+        [class.ml-2]="desktopCollapsed()"
+        [class.w-64]="desktopCollapsed()"
         class="absolute top-full mt-1 p-1.5 bg-navy-900 text-white border border-white/15 dark:border-white/10 rounded-2xl shadow-2xl shadow-black/60 z-50 max-h-80 overflow-y-auto">
         <!-- Active Workspace Header -->
         <div class="px-2.5 py-2 flex items-center gap-2.5">
@@ -155,9 +179,14 @@
               {{ authService.activeKitchen()?.name || ('app.name' | transloco) }}
             </div>
             <div class="text-[11px] text-slate-400 capitalize truncate leading-tight mt-0.5">
-              {{ authService.activeKitchen()?.role || 'Owner' }} ·
-              {{ authService.activeKitchen()?.memberCount || 1 }}
-              {{ authService.activeKitchen()?.memberCount === 1 ? 'member' : 'members' }}
+              {{ authService.activeKitchen()?.role }} ·
+              {{ authService.activeKitchen()?.memberCount ?? 1 }}
+              {{
+                ((authService.activeKitchen()?.memberCount ?? 1) === 1
+                  ? 'sidebar.member'
+                  : 'sidebar.members'
+                ) | transloco
+              }}
             </div>
           </div>
         </div>
@@ -170,8 +199,10 @@
             <button
               type="button"
               (click)="selectKitchen(k)"
+              [attr.aria-pressed]="authService.activeKitchen()?.id === k.id"
+              [attr.title]="k.name"
               [class.bg-white/15]="authService.activeKitchen()?.id === k.id"
-              class="w-full text-left px-2 py-1.5 rounded-xl text-xs flex items-center justify-between transition-colors cursor-pointer group/item hover:bg-white/10 focus-visible:outline-none focus-visible:bg-white/10">
+              class="min-h-[42px] w-full text-left px-2 py-1.5 rounded-xl text-xs flex items-center justify-between transition-colors cursor-pointer group/item hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:bg-white/10">
               <div class="flex items-center gap-2.5 min-w-0">
                 <span class="material-symbols-outlined text-[16px] text-white shrink-0">
                   skillet
@@ -179,7 +210,7 @@
                 <span
                   [class.font-semibold]="authService.activeKitchen()?.id === k.id"
                   [class.font-normal]="authService.activeKitchen()?.id !== k.id"
-                  class="text-xs text-slate-200 group-hover/item:text-white truncate">
+                  class="text-xs text-slate-200 group-hover/item:text-white break-words min-w-0">
                   {{ k.name }}
                 </span>
                 @if (k.role && k.role !== 'owner') {
@@ -202,10 +233,10 @@
         <button
           type="button"
           (click)="openAddKitchenDialog($event)"
-          class="w-full text-left px-2 py-1.5 rounded-xl flex items-center gap-2.5 text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer group/add focus-visible:outline-none focus-visible:bg-white/10">
+          class="min-h-[42px] w-full text-left px-2 py-1.5 rounded-xl flex items-center gap-2.5 text-xs text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer group/add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:bg-white/10">
           <i
             class="pi pi-plus text-xs text-slate-400 group-hover/add:text-white shrink-0 ml-0.5"></i>
-          <span class="font-normal truncate">Add a kitchen</span>
+          <span class="font-normal break-words">{{ 'kitchenCreate.title' | transloco }}</span>
         </button>
       </div>
     }
@@ -213,7 +244,7 @@
 
   <!-- Sidebar Navigation Menu -->
   <nav class="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
-    @if (!isCollapsed()) {
+    @if (!desktopCollapsed()) {
       <div
         class="px-3 pb-2 text-[11px] font-extrabold text-surface-400 dark:text-surface-500 uppercase tracking-wider hidden md:block">
         {{ 'sidebar.mainNav' | transloco }}
@@ -221,69 +252,70 @@
     }
 
     <!-- Home Link -->
-    <button
-      (click)="navigateTo('/home')"
+    <a
+      routerLink="/home"
+      (click)="onNavigationClick($event)"
       [attr.title]="'nav.home' | transloco"
-      [attr.aria-current]="isHomeActive() ? 'page' : null"
-      [class.justify-center]="isCollapsed()"
-      [class.px-2.5]="isCollapsed()"
-      [class.px-3.5]="!isCollapsed()"
+      [class.justify-center]="desktopCollapsed()"
+      [class.px-2.5]="desktopCollapsed()"
+      [class.px-3.5]="!desktopCollapsed()"
       [class.sidebar-nav-active]="isHomeActive()"
-      class="sidebar-nav-item w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      class="sidebar-nav-item min-h-[42px] w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+      [attr.aria-current]="isCurrentPage('/home') ? 'page' : null">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         stroke-width="1.75"
         stroke="currentColor"
-        class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+        class="w-5 h-5 shrink-0 transition-transform duration-200">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
           d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h7.5" />
       </svg>
-      @if (!isCollapsed()) {
+      @if (!desktopCollapsed()) {
         <span class="whitespace-nowrap hidden md:inline">{{ 'nav.home' | transloco }}</span>
       }
       <span class="whitespace-nowrap md:hidden">{{ 'nav.home' | transloco }}</span>
-    </button>
+    </a>
 
     <!-- Inventory Group (With Subpages) -->
     <div>
       <div
-        [class.justify-center]="isCollapsed()"
-        [class.px-2.5]="isCollapsed()"
-        [class.px-3.5]="!isCollapsed()"
+        [class.justify-center]="desktopCollapsed()"
+        [class.px-2.5]="desktopCollapsed()"
+        [class.px-3.5]="!desktopCollapsed()"
         [class.sidebar-nav-active]="isInventoryActive()"
-        class="sidebar-nav-item w-full flex items-center justify-between py-2.5 rounded-xl text-sm group/item relative">
-        <button
-          type="button"
-          (click)="navigateTo('/inventory')"
+        class="sidebar-nav-item w-full flex items-center justify-between rounded-xl text-sm group/item relative">
+        <a
+          routerLink="/inventory"
+          (click)="onNavigationClick($event)"
           [attr.title]="'nav.inventory' | transloco"
-          [attr.aria-current]="isInventoryActive() ? 'page' : null"
-          [class.justify-center]="isCollapsed()"
-          [class.w-full]="isCollapsed()"
-          class="w-full flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg">
+          [class.justify-center]="desktopCollapsed()"
+          [class.w-full]="desktopCollapsed()"
+          class="min-h-[42px] w-full flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg"
+          [attr.aria-current]="isCurrentPage('/inventory') ? 'page' : null">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.75"
             stroke="currentColor"
-            class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+            class="w-5 h-5 shrink-0 transition-transform duration-200">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
           </svg>
-          @if (!isCollapsed()) {
+          @if (!desktopCollapsed()) {
             <span class="whitespace-nowrap hidden md:inline">{{
               'nav.inventory' | transloco
             }}</span>
           }
           <span class="whitespace-nowrap md:hidden">{{ 'nav.inventory' | transloco }}</span>
-        </button>
-        @if (!isCollapsed()) {
+        </a>
+        @if (!desktopCollapsed()) {
           <button
             type="button"
             (click)="toggleInventoryExpanded($event)"
@@ -293,7 +325,7 @@
                 ? ('sidebar.collapseInventory' | transloco)
                 : ('sidebar.expandInventory' | transloco)
             "
-            class="p-1 text-surface-400 hover:text-surface-900 dark:hover:text-primary-300 rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 shrink-0">
+            class="h-[42px] w-[42px] flex items-center justify-center text-surface-400 hover:text-surface-900 dark:hover:text-primary-300 rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 shrink-0">
             <svg
               [class.rotate-90]="inventoryExpanded()"
               xmlns="http://www.w3.org/2000/svg"
@@ -309,131 +341,140 @@
       </div>
 
       <!-- Nested Inventory Sub-Navigation Links -->
-      @if (!isCollapsed() && inventoryExpanded()) {
+      @if (!desktopCollapsed() && inventoryExpanded()) {
         <div class="pl-8 pr-2 py-1 space-y-1">
           <!-- Ingredients Catalog Subpage -->
-          <button
-            (click)="navigateTo('/inventory/ingredients')"
+          <a
+            routerLink="/inventory/ingredients"
+            (click)="onNavigationClick($event)"
             [class.sidebar-subnav-active]="isIngredientsActive()"
-            class="sidebar-subnav-item w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+            class="sidebar-subnav-item min-h-[42px] w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            [attr.aria-current]="isCurrentPage('/inventory/ingredients') ? 'page' : null">
             <span>{{ 'sidebar.ingredients' | transloco }}</span>
-          </button>
+          </a>
 
           <!-- Ingredient Items Subpage -->
-          <button
-            (click)="navigateTo('/inventory/items')"
+          <a
+            routerLink="/inventory/items"
+            (click)="onNavigationClick($event)"
             [class.sidebar-subnav-active]="isInventoryItemsActive()"
-            class="sidebar-subnav-item w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+            class="sidebar-subnav-item min-h-[42px] w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            [attr.aria-current]="isCurrentPage('/inventory/items') ? 'page' : null">
             <span>{{ 'sidebar.ingredientItems' | transloco }}</span>
-          </button>
+          </a>
 
           <!-- Ingredient Categories & Groups Subpage -->
-          <button
-            (click)="navigateTo('/inventory/groups')"
+          <a
+            routerLink="/inventory/groups"
+            (click)="onNavigationClick($event)"
             [class.sidebar-subnav-active]="isIngredientGroupsActive()"
-            class="sidebar-subnav-item w-full flex justify-start text-left items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+            class="sidebar-subnav-item min-h-[42px] w-full flex justify-start text-left items-center gap-2 px-3 py-1.5 rounded-lg text-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            [attr.aria-current]="isCurrentPage('/inventory/groups') ? 'page' : null">
             <span>{{ 'sidebar.ingredientCategoriesAndGroups' | transloco }}</span>
-          </button>
+          </a>
         </div>
       }
     </div>
 
     <!-- Recipes Link -->
-    <button
-      (click)="navigateTo('/recipes')"
+    <a
+      routerLink="/recipes"
+      (click)="onNavigationClick($event)"
       [attr.title]="'nav.recipes' | transloco"
-      [attr.aria-current]="isRecipesActive() ? 'page' : null"
-      [class.justify-center]="isCollapsed()"
-      [class.px-2.5]="isCollapsed()"
-      [class.px-3.5]="!isCollapsed()"
+      [class.justify-center]="desktopCollapsed()"
+      [class.px-2.5]="desktopCollapsed()"
+      [class.px-3.5]="!desktopCollapsed()"
       [class.sidebar-nav-active]="isRecipesActive()"
-      class="sidebar-nav-item w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      class="sidebar-nav-item min-h-[42px] w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+      [attr.aria-current]="isCurrentPage('/recipes') ? 'page' : null">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         stroke-width="1.75"
         stroke="currentColor"
-        class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+        class="w-5 h-5 shrink-0 transition-transform duration-200">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
           d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
       </svg>
-      @if (!isCollapsed()) {
+      @if (!desktopCollapsed()) {
         <span class="whitespace-nowrap hidden md:inline">{{ 'nav.recipes' | transloco }}</span>
       }
       <span class="whitespace-nowrap md:hidden">{{ 'nav.recipes' | transloco }}</span>
-    </button>
+    </a>
 
     <!-- Shopping List Link -->
-    <button
-      (click)="navigateTo('/shopping-list')"
+    <a
+      routerLink="/shopping-list"
+      (click)="onNavigationClick($event)"
       [attr.title]="'nav.shoppingList' | transloco"
-      [attr.aria-current]="isShoppingListActive() ? 'page' : null"
-      [class.justify-center]="isCollapsed()"
-      [class.px-2.5]="isCollapsed()"
-      [class.px-3.5]="!isCollapsed()"
+      [class.justify-center]="desktopCollapsed()"
+      [class.px-2.5]="desktopCollapsed()"
+      [class.px-3.5]="!desktopCollapsed()"
       [class.sidebar-nav-active]="isShoppingListActive()"
-      class="sidebar-nav-item w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      class="sidebar-nav-item min-h-[42px] w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+      [attr.aria-current]="isCurrentPage('/shopping-list') ? 'page' : null">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         stroke-width="1.75"
         stroke="currentColor"
-        class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+        class="w-5 h-5 shrink-0 transition-transform duration-200">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
           d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
       </svg>
-      @if (!isCollapsed()) {
+      @if (!desktopCollapsed()) {
         <span class="whitespace-nowrap hidden md:inline">{{ 'nav.shoppingList' | transloco }}</span>
       }
       <span class="whitespace-nowrap md:hidden">{{ 'nav.shoppingList' | transloco }}</span>
-    </button>
+    </a>
 
     <!-- Meal Planner Link -->
-    <button
-      (click)="navigateTo('/meal-planner')"
+    <a
+      routerLink="/meal-planner"
+      (click)="onNavigationClick($event)"
       [attr.title]="'nav.mealPlanner' | transloco"
-      [attr.aria-current]="isMealPlannerActive() ? 'page' : null"
-      [class.justify-center]="isCollapsed()"
-      [class.px-2.5]="isCollapsed()"
-      [class.px-3.5]="!isCollapsed()"
+      [class.justify-center]="desktopCollapsed()"
+      [class.px-2.5]="desktopCollapsed()"
+      [class.px-3.5]="!desktopCollapsed()"
       [class.sidebar-nav-active]="isMealPlannerActive()"
-      class="sidebar-nav-item w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      class="sidebar-nav-item min-h-[42px] w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+      [attr.aria-current]="isCurrentPage('/meal-planner') ? 'page' : null">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         stroke-width="1.75"
         stroke="currentColor"
-        class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+        class="w-5 h-5 shrink-0 transition-transform duration-200">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
           d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
       </svg>
-      @if (!isCollapsed()) {
+      @if (!desktopCollapsed()) {
         <span class="whitespace-nowrap hidden md:inline">{{ 'nav.mealPlanner' | transloco }}</span>
       }
       <span class="whitespace-nowrap md:hidden">{{ 'nav.mealPlanner' | transloco }}</span>
-    </button>
+    </a>
   </nav>
 
   <!-- Desktop Collapse Toggle Button (Middle Edge) -->
   <button
     (click)="toggleCollapse()"
     [attr.aria-label]="
-      isCollapsed()
+      desktopCollapsed()
         ? ('sidebar.expandSidebar' | transloco)
         : ('sidebar.collapseSidebar' | transloco)
     "
     [attr.aria-expanded]="!isCollapsed()"
-    class="hidden md:flex absolute top-1/2 -right-3.5 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-white/90 dark:bg-surface-800/90 backdrop-blur-md border border-surface-200 dark:border-white/20 shadow-md items-center justify-center text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-300 hover:scale-110 active:scale-95 transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-    @if (isCollapsed()) {
+    class="hidden md:flex absolute top-1/2 -right-3.5 -translate-y-1/2 z-50 w-7 h-7 rounded-full bg-white/90 dark:bg-surface-800/90 backdrop-blur-md border border-surface-200 dark:border-white/20 shadow-md items-center justify-center text-surface-600 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-300 transition-all cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+    @if (desktopCollapsed()) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -467,9 +508,9 @@
       [attr.aria-label]="
         darkMode() ? ('sidebar.switchToLight' | transloco) : ('sidebar.switchToDark' | transloco)
       "
-      [class.justify-center]="isCollapsed()"
-      [class.px-2.5]="isCollapsed()"
-      [class.px-3.5]="!isCollapsed()"
+      [class.justify-center]="desktopCollapsed()"
+      [class.px-2.5]="desktopCollapsed()"
+      [class.px-3.5]="!desktopCollapsed()"
       class="sidebar-nav-item w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       @if (darkMode()) {
         <svg
@@ -478,13 +519,13 @@
           viewBox="0 0 24 24"
           stroke-width="1.75"
           stroke="currentColor"
-          class="w-5 h-5 text-surface-600 dark:text-surface-300 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+          class="w-5 h-5 text-surface-600 dark:text-surface-300 shrink-0 transition-transform duration-200">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
             d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
         </svg>
-        @if (!isCollapsed()) {
+        @if (!desktopCollapsed()) {
           <span class="whitespace-nowrap hidden md:inline">{{
             'sidebar.lightMode' | transloco
           }}</span>
@@ -497,13 +538,13 @@
           viewBox="0 0 24 24"
           stroke-width="1.75"
           stroke="currentColor"
-          class="w-5 h-5 text-surface-600 dark:text-surface-300 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+          class="w-5 h-5 text-surface-600 dark:text-surface-300 shrink-0 transition-transform duration-200">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
             d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
         </svg>
-        @if (!isCollapsed()) {
+        @if (!desktopCollapsed()) {
           <span class="whitespace-nowrap hidden md:inline">{{
             'sidebar.darkMode' | transloco
           }}</span>
@@ -511,7 +552,7 @@
         <span class="whitespace-nowrap md:hidden">{{ 'sidebar.darkMode' | transloco }}</span>
       }
 
-      @if (!isCollapsed()) {
+      @if (!desktopCollapsed()) {
         <span
           class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-surface-200/70 dark:bg-white/10 text-surface-600 dark:text-surface-400 font-mono tracking-wider hidden md:inline">
           {{ darkMode() ? 'DARK' : 'LIGHT' }}
@@ -520,32 +561,33 @@
     </button>
 
     <!-- Profile & Account Link -->
-    <button
-      (click)="navigateTo('/profile')"
+    <a
+      routerLink="/profile"
+      (click)="onNavigationClick($event)"
       [attr.title]="'nav.profile' | transloco"
-      [attr.aria-current]="isProfileActive() ? 'page' : null"
-      [class.justify-center]="isCollapsed()"
-      [class.px-2.5]="isCollapsed()"
-      [class.px-3.5]="!isCollapsed()"
+      [class.justify-center]="desktopCollapsed()"
+      [class.px-2.5]="desktopCollapsed()"
+      [class.px-3.5]="!desktopCollapsed()"
       [class.sidebar-nav-active]="isProfileActive()"
-      class="sidebar-nav-item w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+      class="sidebar-nav-item min-h-[42px] w-full flex items-center gap-3 py-2.5 rounded-xl cursor-pointer text-sm group/item relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+      [attr.aria-current]="isCurrentPage('/profile') ? 'page' : null">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         stroke-width="1.75"
         stroke="currentColor"
-        class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+        class="w-5 h-5 shrink-0 transition-transform duration-200">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
           d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
-      @if (!isCollapsed()) {
+      @if (!desktopCollapsed()) {
         <span class="whitespace-nowrap hidden md:inline">{{ 'nav.profile' | transloco }}</span>
       }
       <span class="whitespace-nowrap md:hidden">{{ 'nav.profile' | transloco }}</span>
-    </button>
+    </a>
 
     <!-- Subtle Glass Divider -->
     <div class="my-1.5 border-t border-surface-200/60 dark:border-white/10 mx-1"></div>
@@ -554,9 +596,9 @@
     <button
       (click)="onLogout()"
       [attr.title]="'sidebar.logout' | transloco"
-      [class.justify-center]="isCollapsed()"
-      [class.px-2.5]="isCollapsed()"
-      [class.px-3.5]="!isCollapsed()"
+      [class.justify-center]="desktopCollapsed()"
+      [class.px-2.5]="desktopCollapsed()"
+      [class.px-3.5]="!desktopCollapsed()"
       class="w-full flex items-center gap-3 py-2.5 rounded-xl hover:bg-surface-200/60 dark:hover:bg-surface-800/60 text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-white transition-all duration-200 cursor-pointer text-sm group/item focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -564,13 +606,13 @@
         viewBox="0 0 24 24"
         stroke-width="1.75"
         stroke="currentColor"
-        class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110">
+        class="w-5 h-5 shrink-0 transition-transform duration-200">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
           d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
       </svg>
-      @if (!isCollapsed()) {
+      @if (!desktopCollapsed()) {
         <span class="whitespace-nowrap hidden md:inline">{{ 'sidebar.logout' | transloco }}</span>
       }
       <span class="whitespace-nowrap md:hidden">{{ 'sidebar.logout' | transloco }}</span>
@@ -578,53 +620,6 @@
   </div>
 </aside>
 
-<!-- Add Kitchen Dialog -->
-<p-dialog
-  [visible]="showAddKitchenDialog()"
-  (visibleChange)="showAddKitchenDialog.set($event)"
-  [modal]="true"
-  [dismissableMask]="true"
-  [draggable]="false"
-  [resizable]="false"
-  header="Add Kitchen Workspace"
-  styleClass="p-dialog-glass max-w-md w-full mx-4">
-  <div class="p-1 space-y-4">
-    <pantry-form-field label="Kitchen Name" forId="new-kitchen-name" [required]="true">
-      <input
-        type="text"
-        id="new-kitchen-name"
-        [value]="newKitchenName()"
-        (input)="newKitchenName.set($any($event.target).value)"
-        (keydown.enter)="createKitchen()"
-        placeholder="e.g., Vacation Home, Office Pantry"
-        class="w-full h-[42px] px-3 rounded-xl bg-surface-50 dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-100 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500" />
-    </pantry-form-field>
-
-    <pantry-form-field label="Description" forId="new-kitchen-description" hint="(optional)">
-      <input
-        type="text"
-        id="new-kitchen-description"
-        [value]="newKitchenDescription()"
-        (input)="newKitchenDescription.set($any($event.target).value)"
-        (keydown.enter)="createKitchen()"
-        placeholder="Short description"
-        class="w-full h-[42px] px-3 rounded-xl bg-surface-50 dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-100 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500" />
-    </pantry-form-field>
-
-    <div class="flex items-center justify-end gap-2 pt-2">
-      <button
-        type="button"
-        (click)="showAddKitchenDialog.set(false)"
-        class="btn-secondary text-xs h-9 px-3 rounded-lg">
-        Cancel
-      </button>
-      <button
-        type="button"
-        (click)="createKitchen()"
-        [disabled]="!newKitchenName().trim() || isCreatingKitchen()"
-        class="btn-primary text-xs h-9 px-4 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-        {{ isCreatingKitchen() ? 'Creating...' : 'Create Kitchen' }}
-      </button>
-    </div>
-  </div>
-</p-dialog>
+<pantry-kitchen-create-dialog
+  [(visible)]="showAddKitchenDialog"
+  [returnFocusTo]="isMobile() && !mobileMenuOpen() ? mobileTrigger : kitchenSwitcher" />

@@ -1,0 +1,82 @@
+// Preserve the original wave timing while moving whole SVG layers, not their paths.
+.ambient-waves,
+.ambient-wave {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ambient-wave {
+  transform-origin: center;
+  will-change: transform;
+
+  svg {
+    // Retain the paths' overscan as each layer moves; the outer backdrop clips it.
+    overflow: visible;
+  }
+
+  path {
+    vector-effect: non-scaling-stroke;
+  }
+}
+
+.ambient-wave--1 {
+  animation: waveFlow1 18s ease-in-out infinite alternate;
+}
+
+.ambient-wave--2 {
+  animation: waveFlow2 22s ease-in-out infinite alternate;
+}
+
+.ambient-wave--3 {
+  animation: waveFlow3 26s ease-in-out infinite alternate;
+}
+
+.ambient-waves.is-paused .ambient-wave {
+  animation-play-state: paused;
+}
+
+// Original SVG translations were in 1440 × 800 viewBox units. Percentages retain
+// that travel distance on responsive HTML layers, including narrow phones.
+@keyframes waveFlow1 {
+  0% {
+    transform: translate3d(-2.083333%, 0%, 0) scaleY(1) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(1.736111%, -2.25%, 0) scaleY(1.12) rotate(0.5deg);
+  }
+  100% {
+    transform: translate3d(4.166667%, 1.875%, 0) scaleY(0.92) rotate(-0.5deg);
+  }
+}
+
+@keyframes waveFlow2 {
+  0% {
+    transform: translate3d(2.777778%, 0%, 0) scaleY(1) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-1.388889%, 2.75%, 0) scaleY(0.88) rotate(-0.75deg);
+  }
+  100% {
+    transform: translate3d(-3.472222%, -1.75%, 0) scaleY(1.08) rotate(0.75deg);
+  }
+}
+
+@keyframes waveFlow3 {
+  0% {
+    transform: translate3d(-1.388889%, 0%, 0) scaleY(0.95);
+  }
+  50% {
+    transform: translate3d(2.430556%, 2.5%, 0) scaleY(1.15);
+  }
+  100% {
+    transform: translate3d(0.694444%, -3.125%, 0) scaleY(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-wave {
+    animation: none;
+    will-change: auto;
+  }
+}
