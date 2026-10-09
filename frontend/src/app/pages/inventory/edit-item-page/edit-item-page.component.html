@@ -1,541 +1,130 @@
-<div class="max-w-6xl mx-auto px-4 py-6">
-  <!-- Top Navigation Header -->
-  <div class="flex items-center justify-between mb-6">
-    <div class="flex items-center gap-3">
-      <button
-        (click)="onCancel()"
-        type="button"
-        class="btn-icon"
-        aria-label="Back to items"
-        title="Back to Items">
-        <i class="pi pi-arrow-left text-base"></i>
-      </button>
-      <div>
-        <h1 class="text-2xl font-extrabold text-surface-900 dark:text-white tracking-tight">
-          Edit Ingredient Item
-        </h1>
-      </div>
-    </div>
+<ng-container *transloco="let t">
+  <div class="flex">
+    <button
+      type="button"
+      class="btn-ghost hover:!bg-transparent"
+      (click)="onCancel()"
+      [disabled]="isSubmitting()"
+      [attr.aria-label]="t('itemEditor.back')">
+      <i class="pi pi-arrow-left" aria-hidden="true"></i>
+      <span>{{ t('nav.back') }}</span>
+    </button>
   </div>
-
-  @if (isLoading()) {
-    <div class="py-16 text-center">
-      <i class="pi pi-spin pi-spinner text-3xl text-surface-400 dark:text-surface-500 mb-3"></i>
-      <p class="text-sm font-medium text-surface-500 dark:text-surface-400">
-        Loading item details...
-      </p>
-    </div>
-  } @else {
-    <!-- Error Callout Banner -->
-    @if (submitError()) {
-      <div
-        class="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 flex items-start gap-3">
-        <i
-          class="pi pi-exclamation-circle text-rose-600 dark:text-rose-400 text-lg mt-0.5 shrink-0"></i>
-        <div class="flex-1">
-          <h4 class="text-sm font-bold text-rose-900 dark:text-rose-200">Unable to Save Changes</h4>
-          <p class="text-xs text-rose-700 dark:text-rose-300 mt-0.5">{{ submitError() }}</p>
+  <div class="page-layout max-w-4xl mx-auto px-4 py-6">
+    <header class="page-header">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="min-w-0">
+          <h1 class="type-page-title text-surface-900 dark:text-white">
+            {{ t('itemEditor.editTitle') }}
+          </h1>
+          <p class="text-sm text-surface-600 dark:text-surface-300 mt-2">
+            {{ t('itemEditor.editSubtitle') }}
+          </p>
         </div>
       </div>
+    </header>
+    @if (isLoading()) {
+      <pantry-spinner size="lg" [label]="t('itemEditor.loading')" />
+    } @else {
+      <pantry-item-editor
+        [form]="editItemForm"
+        [ingredients]="ingredients()"
+        [units]="units()"
+        [locations]="locations()"
+        [submitting]="isSubmitting()"
+        [error]="submitError()"
+        [editing]="true"
+        (save)="onSubmit()"
+        (cancelEdit)="onCancel()"
+        (createIngredient)="openQuickCreateIngredient()" />
     }
-
-    <!-- Main 2-Column Layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      <!-- Left Column: Form Controls (7 cols) -->
-      <div class="lg:col-span-7">
-        <form [formGroup]="editItemForm" (ngSubmit)="onSubmit()" class="space-y-6">
-          <!-- Connected Ingredient Panel -->
-          <div
-            class="glass-card rounded-2xl p-6 border border-surface-200/70 dark:border-surface-800/80">
-            <div class="flex items-center justify-between mb-4">
-              <h3
-                class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-surface-400 dark:text-surface-500"></span>
-                Connected Ingredient
-              </h3>
-              <button
-                type="button"
-                (click)="openQuickCreateIngredient()"
-                class="text-xs text-primary-600 dark:text-primary-400 font-bold hover:underline flex items-center gap-1 cursor-pointer">
-                <i class="pi pi-plus text-[10px]"></i>
-                <span>Create New Ingredient</span>
-              </button>
-            </div>
-
-            <div class="space-y-4">
-              <pantry-form-field
-                forId="ingredient"
-                [label]="'Ingredient'"
-                [required]="true"
-                [error]="
-                  editItemForm.controls.ingredient.touched &&
-                  editItemForm.controls.ingredient.errors?.['required']
-                    ? 'Ingredient selection is required.'
-                    : ''
-                "
-                hint="Links this physical item to your ingredient catalog for recipe stock tracking.">
-                <p-select
-                  inputId="ingredient"
-                  [options]="ingredients()"
-                  formControlName="ingredient"
-                  optionLabel="name"
-                  [filter]="true"
-                  filterBy="name"
-                  placeholder="Search and select ingredient..."
-                  class="w-full"
-                  appendTo="body">
-                  <ng-template pTemplate="footer">
-                    <div class="p-2 border-t border-surface-200 dark:border-surface-700 sub-card">
-                      <button
-                        type="button"
-                        (click)="openQuickCreateIngredient()"
-                        class="btn-ghost !h-9 w-full !text-xs font-bold !text-primary-600 dark:!text-primary-400 hover:!bg-primary-500/10">
-                        <i class="pi pi-plus text-xs"></i>
-                        <span>Can't find it? Create New Ingredient</span>
-                      </button>
-                    </div>
-                  </ng-template>
-                  <ng-template pTemplate="empty">
-                    <div class="p-3 text-center space-y-2">
-                      <p class="text-xs text-surface-500">No ingredient found matching search.</p>
-                      <button
-                        type="button"
-                        (click)="openQuickCreateIngredient()"
-                        class="btn-primary !h-8 !px-3 !text-xs mx-auto">
-                        <i class="pi pi-plus text-xs"></i>
-                        <span>Create New Ingredient</span>
-                      </button>
-                    </div>
-                  </ng-template>
-                </p-select>
-              </pantry-form-field>
-
-              @if (editItemForm.controls.ingredient.value; as selectedIng) {
-                <div
-                  class="p-3.5 rounded-xl bg-surface-100/70 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700 flex flex-wrap items-center justify-between gap-3 text-xs">
-                  <div class="flex items-center gap-2.5">
-                    <div
-                      class="w-8 h-8 rounded-lg bg-surface-200 dark:bg-surface-700 text-surface-600 dark:text-surface-300 flex items-center justify-center font-bold shrink-0">
-                      <i class="pi pi-tag text-sm"></i>
-                    </div>
-                    <div>
-                      <div class="font-bold text-surface-900 dark:text-white">
-                        {{ selectedIng.name }}
-                      </div>
-                      <div
-                        class="text-[11px] text-surface-500 dark:text-surface-400 flex items-center gap-2">
-                        @if (selectedIng.ingredientGroup?.name) {
-                          <span>Group: {{ selectedIng.ingredientGroup?.name }}</span>
-                        } @else {
-                          <span>Master Catalog Ingredient</span>
-                        }
-                      </div>
-                    </div>
-                  </div>
-                  @if (selectedIng.defaultUnit) {
-                    <span
-                      class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-surface-700 shadow-xs">
-                      Default Unit: {{ selectedIng.defaultUnit.name }} ({{
-                        selectedIng.defaultUnit.shortName
-                      }})
-                    </span>
-                  }
-                </div>
-              }
-            </div>
-          </div>
-
-          <!-- Basic Information Section -->
-          <div
-            class="glass-card rounded-2xl p-6 border border-surface-200/70 dark:border-surface-800/80">
-            <h3
-              class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-surface-400 dark:text-surface-500"></span>
-              Basic Information
-            </h3>
-
-            <div class="space-y-4">
-              <!-- Item Name -->
-              <pantry-form-field
-                forId="name"
-                [label]="'Item Name'"
-                [required]="true"
-                [error]="
-                  editItemForm.controls.name.touched &&
-                  editItemForm.controls.name.errors?.['required']
-                    ? 'Item name is required.'
-                    : ''
-                ">
-                <input
-                  pInputText
-                  id="name"
-                  formControlName="name"
-                  placeholder="e.g. Organic Whole Milk..."
-                  class="w-full" />
-              </pantry-form-field>
-
-              <!-- Storage Location Buttons -->
-              <pantry-form-field forId="location" [label]="'Storage Location'" [required]="true">
-                <div class="grid grid-cols-3 gap-3">
-                  @for (loc of locations(); track loc.id) {
-                    <button
-                      type="button"
-                      (click)="selectLocation(loc)"
-                      [class.bg-surface-800]="editItemForm.controls.location.value?.id === loc.id"
-                      [class.dark:bg-surface-700]="
-                        editItemForm.controls.location.value?.id === loc.id
-                      "
-                      [class.text-white]="editItemForm.controls.location.value?.id === loc.id"
-                      [class.border-surface-800]="
-                        editItemForm.controls.location.value?.id === loc.id
-                      "
-                      [class.dark:border-surface-700]="
-                        editItemForm.controls.location.value?.id === loc.id
-                      "
-                      [class.shadow-md]="editItemForm.controls.location.value?.id === loc.id"
-                      [class.bg-white/80]="editItemForm.controls.location.value?.id !== loc.id"
-                      [class.dark:bg-surface-800/80]="
-                        editItemForm.controls.location.value?.id !== loc.id
-                      "
-                      [class.text-surface-700]="editItemForm.controls.location.value?.id !== loc.id"
-                      [class.dark:text-surface-300]="
-                        editItemForm.controls.location.value?.id !== loc.id
-                      "
-                      class="h-[42px] px-3 rounded-xl border border-surface-200 dark:border-surface-700 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]">
-                      <span>{{ loc.name }}</span>
-                    </button>
-                  }
-                </div>
-              </pantry-form-field>
-
-              <!-- Quantity & Unit Grid -->
-              <div class="grid grid-cols-2 gap-4">
-                <pantry-form-field forId="quantity" [label]="'Quantity'" [required]="true">
-                  <p-inputnumber
-                    inputId="quantity"
-                    formControlName="quantity"
-                    class="w-full"
-                    [min]="1"
-                    [showButtons]="true">
-                  </p-inputnumber>
-                </pantry-form-field>
-
-                <div>
-                  <div class="flex items-center justify-between h-6 mb-1.5">
-                    <span
-                      class="text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider">
-                      Unit
-                    </span>
-                    <span
-                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700">
-                      <i class="pi pi-lock text-[9px]"></i> Inherited
-                    </span>
-                  </div>
-                  @if (editItemForm.controls.unit.value) {
-                    <div
-                      class="w-full h-[42px] flex items-center justify-between px-3.5 rounded-xl bg-surface-100/70 dark:bg-surface-800/70 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white shadow-inner cursor-not-allowed">
-                      <div class="flex items-center gap-2">
-                        <i class="pi pi-box text-surface-400 dark:text-surface-500 text-sm"></i>
-                        <span class="font-semibold text-sm">
-                          {{ editItemForm.controls.unit.value.name }}
-                        </span>
-                      </div>
-                      <span
-                        class="px-2 py-0.5 text-xs font-bold rounded-lg bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-300 uppercase tracking-wider">
-                        {{ editItemForm.controls.unit.value.shortName }}
-                      </span>
-                    </div>
-                  } @else {
-                    <div
-                      class="w-full h-[42px] flex items-center gap-2 px-3.5 rounded-xl bg-surface-100/40 dark:bg-surface-800/40 border border-dashed border-surface-300 dark:border-surface-700 text-surface-400 dark:text-surface-500 text-xs italic cursor-not-allowed">
-                      <i class="pi pi-info-circle text-xs"></i>
-                      <span>Select an ingredient first</span>
-                    </div>
-                  }
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Dates & Freshness Tracking Section -->
-          <div
-            class="glass-card rounded-2xl p-6 border border-surface-200/70 dark:border-surface-800/80">
-            <h3
-              class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-surface-400 dark:text-surface-500"></span>
-              Dates & Freshness Tracking
-            </h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Purchase Date -->
-              <pantry-form-field forId="purchaseDate" [label]="'Purchase Date'" [required]="true">
-                <p-datepicker
-                  inputId="purchaseDate"
-                  formControlName="purchaseDate"
-                  class="w-full"
-                  [showIcon]="true"
-                  appendTo="body">
-                </p-datepicker>
-              </pantry-form-field>
-
-              <!-- Expiration Date -->
-              <pantry-form-field
-                forId="expirationDate"
-                [label]="'Expiration Date'"
-                [required]="true"
-                [error]="
-                  editItemForm.controls.expirationDate.touched &&
-                  editItemForm.controls.expirationDate.errors?.['required']
-                    ? 'Expiration date is required.'
-                    : ''
-                ">
-                <p-datepicker
-                  inputId="expirationDate"
-                  formControlName="expirationDate"
-                  class="w-full"
-                  [showIcon]="true"
-                  [showButtonBar]="true"
-                  appendTo="body">
-                </p-datepicker>
-
-                <!-- Quick Expiry Presets -->
-                <div class="flex items-center gap-1.5 mt-2">
-                  <button
-                    type="button"
-                    (click)="setExpirationDaysOffset(3)"
-                    class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-surface-100 dark:bg-surface-800 hover:bg-primary-50 dark:hover:bg-primary-950/60 text-surface-700 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 border border-surface-200/80 dark:border-surface-700 transition-all hover:scale-105 active:scale-95 cursor-pointer">
-                    +3d
-                  </button>
-                  <button
-                    type="button"
-                    (click)="setExpirationDaysOffset(7)"
-                    class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-surface-100 dark:bg-surface-800 hover:bg-primary-50 dark:hover:bg-primary-950/60 text-surface-700 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 border border-surface-200/80 dark:border-surface-700 transition-all hover:scale-105 active:scale-95 cursor-pointer">
-                    +1w
-                  </button>
-                  <button
-                    type="button"
-                    (click)="setExpirationDaysOffset(14)"
-                    class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-surface-100 dark:bg-surface-800 hover:bg-primary-50 dark:hover:bg-primary-950/60 text-surface-700 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 border border-surface-200/80 dark:border-surface-700 transition-all hover:scale-105 active:scale-95 cursor-pointer">
-                    +2w
-                  </button>
-                  <button
-                    type="button"
-                    (click)="setExpirationDaysOffset(30)"
-                    class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-surface-100 dark:bg-surface-800 hover:bg-primary-50 dark:hover:bg-primary-950/60 text-surface-700 dark:text-surface-300 hover:text-primary-600 dark:hover:text-primary-400 border border-surface-200/80 dark:border-surface-700 transition-all hover:scale-105 active:scale-95 cursor-pointer">
-                    +1m
-                  </button>
-                </div>
-              </pantry-form-field>
-
-              <!-- Opened Date -->
-              <pantry-form-field
-                class="md:col-span-2"
-                forId="openedDate"
-                [label]="'Opened Date (Optional)'">
-                <p-datepicker
-                  inputId="openedDate"
-                  formControlName="openedDate"
-                  class="w-full"
-                  [showIcon]="true"
-                  [showButtonBar]="true"
-                  appendTo="body">
-                </p-datepicker>
-              </pantry-form-field>
-            </div>
-          </div>
-
-          <!-- Notes Section -->
-          <div
-            class="glass-card rounded-2xl p-6 border border-surface-200/70 dark:border-surface-800/80">
-            <h3
-              class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-surface-400"></span>
-              Notes & Storage Instructions
-            </h3>
-
-            <div>
-              <textarea
-                pTextarea
-                id="notes"
-                formControlName="notes"
-                rows="3"
-                placeholder="e.g. Store in crisp drawer..."
-                class="w-full !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !rounded-xl !p-3"></textarea>
-            </div>
-          </div>
-
-          <!-- Action Buttons -->
-          <div
-            class="flex items-center justify-end gap-3 pt-4 border-t border-surface-200 dark:border-surface-800">
-            <button type="button" (click)="onCancel()" class="btn-secondary">Cancel</button>
-            <button
-              type="submit"
-              [disabled]="isSubmitting() || !editItemForm.valid"
-              class="btn-primary">
-              @if (isSubmitting()) {
-                <i class="pi pi-spin pi-spinner text-sm"></i>
-                <span>Saving Changes...</span>
-              } @else {
-                <i class="pi pi-check text-sm font-bold"></i>
-                <span>Update Item</span>
-              }
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Right Column: Live Card Preview (5 cols) -->
-      <div class="lg:col-span-5 sticky top-6 space-y-6">
-        <div>
-          <div class="flex items-center justify-between mb-3">
-            <h3
-              class="text-xs font-extrabold text-surface-400 dark:text-surface-500 uppercase tracking-wider">
-              Updated Live Preview
-            </h3>
-            <pantry-badge variant="fresh" size="sm">Live Preview</pantry-badge>
-          </div>
-
-          <!-- Preview Card -->
-          <div
-            class="glass-card rounded-2xl overflow-hidden shadow-xl border border-surface-200/80 dark:border-surface-800/80">
-            <div class="h-1.5 bg-surface-200 dark:bg-surface-700"></div>
-
-            <div class="p-5">
-              <div class="flex justify-between items-start mb-3 gap-2">
-                <div class="min-w-0 flex-1">
-                  <h4
-                    class="text-base font-extrabold text-surface-900 dark:text-white leading-tight truncate mb-1">
-                    {{ previewItem()?.name }}
-                  </h4>
-                  <span class="location-badge text-[11px] px-2.5 py-0.5 rounded-md gap-1">
-                    {{ previewItem()?.location?.name || 'Storage' }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="sub-card rounded-xl p-3 mb-3 flex items-center justify-between">
-                <div>
-                  <span class="text-[10px] card-label uppercase tracking-wider block"
-                    >Quantity</span
-                  >
-                  <span class="text-sm font-extrabold text-surface-900 dark:text-white">
-                    {{ previewItem()?.quantity }}
-                    <span class="text-xs font-semibold text-surface-600 dark:text-surface-400">{{
-                      previewItem()?.unit?.name
-                    }}</span>
-                  </span>
-                </div>
-              </div>
-
-              <div class="sub-card rounded-xl p-3 mb-3 grid grid-cols-2 gap-3 text-xs">
-                <div>
-                  <span class="text-[10px] card-label block uppercase tracking-wider"
-                    >Expiration</span
-                  >
-                  <span class="font-bold text-xs text-surface-900 dark:text-white">
-                    {{
-                      previewItem()?.expirationDate
-                        ? previewItem()?.expirationDate?.toLocaleDateString()
-                        : 'Set Date'
-                    }}
-                  </span>
-                </div>
-                <div>
-                  <span class="text-[10px] card-label block uppercase tracking-wider"
-                    >Purchased</span
-                  >
-                  <span class="font-bold text-xs text-surface-900 dark:text-white">
-                    {{
-                      previewItem()?.purchaseDate
-                        ? previewItem()?.purchaseDate?.toLocaleDateString()
-                        : 'Today'
-                    }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  }
-</div>
-
-<!-- Quick Create Ingredient Dialog -->
-<p-dialog
-  header="Create New Ingredient"
-  [visible]="displayQuickCreateDialog()"
-  (visibleChange)="displayQuickCreateDialog.set($event)"
-  [modal]="true"
-  [style]="{ width: '90vw', maxWidth: '480px' }"
-  [dismissableMask]="true">
-  <div class="space-y-4 py-2">
-    <div>
-      <label
-        class="block text-xs font-semibold text-surface-700 dark:text-surface-300 mb-1 uppercase tracking-wider">
-        Ingredient Name <span class="text-rose-500">*</span>
-      </label>
-      <input
-        pInputText
-        [ngModel]="newIngredientName()"
-        (ngModelChange)="newIngredientName.set($event)"
-        placeholder="e.g. Linguine, Organic Eggs, Greek Yogurt..."
-        class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white" />
-    </div>
-
-    <div>
-      <label
-        class="block text-xs font-semibold text-surface-700 dark:text-surface-300 mb-1 uppercase tracking-wider">
-        Ingredient Group <span class="text-surface-400 font-normal">(Optional)</span>
-      </label>
-      <p-select
-        [options]="ingredientGroups()"
-        [ngModel]="newIngredientGroup()"
-        (ngModelChange)="newIngredientGroup.set($event)"
-        optionLabel="name"
-        placeholder="Select Category Group"
-        [showClear]="true"
-        class="w-full"
-        appendTo="body">
-      </p-select>
-    </div>
-
-    <div>
-      <label
-        class="block text-xs font-semibold text-surface-700 dark:text-surface-300 mb-1 uppercase tracking-wider">
-        Default Unit <span class="text-rose-500">*</span>
-      </label>
-      <p-select
-        [options]="units()"
-        [ngModel]="newIngredientDefaultUnit()"
-        (ngModelChange)="newIngredientDefaultUnit.set($event)"
-        optionLabel="name"
-        placeholder="Select Default Unit"
-        [showClear]="true"
-        class="w-full"
-        appendTo="body">
-      </p-select>
-    </div>
   </div>
-
-  <ng-template pTemplate="footer">
-    <div class="flex items-center justify-end gap-2 pt-2">
-      <button type="button" (click)="displayQuickCreateDialog.set(false)" class="btn-ghost text-xs">
-        Cancel
+  <p-dialog
+    [header]="t('itemEditor.createTitle')"
+    [visible]="displayQuickCreateDialog()"
+    (visibleChange)="displayQuickCreateDialog.set($event)"
+    [modal]="true"
+    [style]="{ width: '28rem', maxWidth: 'calc(100vw - 2rem)' }"
+    [closable]="!isCreatingIngredient()"
+    [closeOnEscape]="!isCreatingIngredient()"
+    [draggable]="false"
+    [resizable]="false"
+    appendTo="body">
+    <p class="text-sm text-surface-600 dark:text-surface-300 mb-5">
+      {{ t('itemEditor.createHint') }}
+    </p>
+    <fieldset
+      [attr.inert]="isCreatingIngredient() ? '' : null"
+      [disabled]="isCreatingIngredient()"
+      class="min-w-0 space-y-4">
+      <pantry-form-field
+        forId="new-ingredient-name"
+        [label]="t('itemEditor.ingredientName')"
+        [required]="true">
+        <input
+          pInputText
+          id="new-ingredient-name"
+          [ngModel]="newIngredientName()"
+          (ngModelChange)="newIngredientName.set($event)"
+          [placeholder]="t('itemEditor.ingredientNamePlaceholder')"
+          class="w-full h-[42px] rounded-xl" />
+      </pantry-form-field>
+      <pantry-form-field
+        forId="new-ingredient-unit"
+        [label]="t('itemEditor.defaultUnit')"
+        [required]="true">
+        <p-select
+          [disabled]="isCreatingIngredient()"
+          inputId="new-ingredient-unit"
+          [options]="units()"
+          [ngModel]="newIngredientDefaultUnit()"
+          (ngModelChange)="newIngredientDefaultUnit.set($event)"
+          optionLabel="name"
+          [filter]="true"
+          [placeholder]="t('itemEditor.unitPlaceholder')"
+          class="w-full"
+          appendTo="body" />
+      </pantry-form-field>
+      <pantry-form-field forId="new-ingredient-group" [label]="t('itemEditor.group')">
+        <p-select
+          [disabled]="isCreatingIngredient()"
+          inputId="new-ingredient-group"
+          [options]="ingredientGroups()"
+          [ngModel]="newIngredientGroup()"
+          (ngModelChange)="newIngredientGroup.set($event)"
+          optionLabel="name"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="t('itemEditor.groupPlaceholder')"
+          class="w-full"
+          appendTo="body" />
+      </pantry-form-field>
+    </fieldset>
+    @if (quickCreateError()) {
+      <p role="alert" class="text-sm text-rose-600 dark:text-rose-300 mt-4">
+        {{ quickCreateError() }}
+      </p>
+    }
+    <ng-template pTemplate="footer">
+      <button
+        type="button"
+        class="btn-secondary"
+        [disabled]="isCreatingIngredient()"
+        (click)="displayQuickCreateDialog.set(false)">
+        {{ t('itemEditor.cancel') }}
       </button>
       <button
         type="button"
-        (click)="submitQuickCreateIngredient()"
-        [disabled]="isCreatingIngredient() || !newIngredientName().trim()"
-        class="btn-primary !h-10 !text-xs">
+        class="btn-primary"
+        [disabled]="
+          isCreatingIngredient() || !newIngredientName().trim() || !newIngredientDefaultUnit()
+        "
+        (click)="submitQuickCreateIngredient()">
         @if (isCreatingIngredient()) {
-          <i class="pi pi-spin pi-spinner text-xs"></i>
-          <span>Creating...</span>
-        } @else {
-          <i class="pi pi-check text-xs"></i>
-          <span>Create & Select</span>
+          <pantry-spinner size="sm" color="white" />
         }
+        {{ t(isCreatingIngredient() ? 'itemEditor.creating' : 'itemEditor.create') }}
       </button>
-    </div>
-  </ng-template>
-</p-dialog>
+    </ng-template>
+  </p-dialog>
+</ng-container>

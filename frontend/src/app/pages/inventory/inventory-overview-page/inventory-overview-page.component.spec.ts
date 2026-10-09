@@ -8,7 +8,7 @@ import { IngredientGroupService } from '@services/inventory/ingredient-group.ser
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { InventoryOverviewPageComponent } from './inventory-overview-page.component';
 
 describe('InventoryOverviewPageComponent', () => {
@@ -87,5 +87,16 @@ describe('InventoryOverviewPageComponent', () => {
     // Toggling tier 2 switches expanded tier to 2
     component.toggleTier(2);
     expect(component.expandedTier()).toBe(2);
+  });
+  it('distinguishes failed loading and retries', () => {
+    const spy = vi
+      .spyOn(mockItemService, 'getItems')
+      .mockReturnValue(throwError(() => new Error('Offline')));
+    component.fetchInventoryData();
+    expect(component.loadError()).toBe(true);
+    spy.mockReturnValue(of([]));
+    component.fetchInventoryData();
+    expect(component.loadError()).toBe(false);
+    spy.mockRestore();
   });
 });

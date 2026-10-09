@@ -19,18 +19,17 @@
       <!-- Title & Meta -->
       <div class="min-w-0">
         <div class="flex items-center gap-2.5 flex-wrap">
-          <h3
-            class="text-base md:text-lg font-extrabold text-surface-900 dark:text-white tracking-tight truncate">
+          <h3 class="type-section-title text-surface-900 dark:text-white truncate">
             {{ nutrientType.name }}
           </h3>
           <span
-            class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-surface-100 dark:bg-surface-800/90 text-surface-700 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700/80 shadow-2xs">
+            class="type-label px-2.5 py-0.5 rounded-full bg-surface-100 dark:bg-surface-800/90 text-surface-700 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700/80 shadow-2xs">
             {{ categoryGroups.length }}
             {{ categoryGroups.length === 1 ? 'Group' : 'Groups' }}
           </span>
         </div>
         @if (nutrientType.description) {
-          <p class="text-xs text-surface-500 dark:text-surface-400 font-medium truncate mt-1">
+          <p class="type-meta text-surface-500 dark:text-surface-400 truncate mt-1">
             {{ nutrientType.description }}
           </p>
         }
@@ -40,7 +39,7 @@
     <!-- Right Stats & Expand Icon -->
     <div class="flex items-center gap-3 shrink-0">
       <!-- Stock badges -->
-      <div class="hidden sm:flex items-center gap-2 text-xs">
+      <div class="type-meta hidden sm:flex items-center gap-2">
         @if (totalIngredientsCount === 0) {
           <pantry-badge variant="neutral" [dot]="true"> 0 In Stock </pantry-badge>
         } @else {
@@ -48,7 +47,7 @@
             {{ inStockIngredientsCount }}/{{ totalIngredientsCount }} In Stock
           </pantry-badge>
           <span
-            class="px-3 py-1.5 rounded-xl font-bold bg-surface-100/80 dark:bg-surface-800/70 text-surface-700 dark:text-surface-300 border border-surface-200/70 dark:border-surface-700/70">
+            class="px-3 py-1.5 rounded-xl font-medium bg-surface-100/80 dark:bg-surface-800/70 text-surface-700 dark:text-surface-300 border border-surface-200/70 dark:border-surface-700/70">
             {{ totalItemsCount }} {{ totalItemsCount === 1 ? 'item' : 'items' }}
           </span>
         }
@@ -58,7 +57,7 @@
       <div
         class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-100/80 dark:bg-surface-800/80 hover:bg-surface-200/60 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700/80 transition-all duration-300 shadow-2xs"
         [class.rotate-180]="isExpanded">
-        <i class="pi pi-chevron-down text-xs font-bold"></i>
+        <i class="pi pi-chevron-down text-xs"></i>
       </div>
     </div>
   </button>

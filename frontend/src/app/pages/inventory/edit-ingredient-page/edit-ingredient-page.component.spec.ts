@@ -1,12 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { UnitType } from '@models/unit.model';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
 import { of } from 'rxjs';
+import translations from '../../../../../public/i18n/en.json';
 import { EditIngredientPageComponent } from './edit-ingredient-page.component';
 
 describe('EditIngredientPageComponent', () => {
@@ -33,7 +35,10 @@ describe('EditIngredientPageComponent', () => {
     defaultUnit: mockUnit1,
   };
 
+  let mockQueryParams: Record<string, string> = {};
+
   beforeEach(async () => {
+    mockQueryParams = {};
     mockIngredientService = jasmine.createSpyObj('IngredientService', [
       'getIngredientById',
       'getItemsByIngredientId',
@@ -61,7 +66,13 @@ describe('EditIngredientPageComponent', () => {
     mockUnitService.getUnits.and.returnValue(of([mockUnit1, mockUnit2]));
 
     await TestBed.configureTestingModule({
-      imports: [EditIngredientPageComponent],
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+        }),
+        EditIngredientPageComponent,
+      ],
       providers: [
         FormBuilder,
         { provide: IngredientService, useValue: mockIngredientService },
@@ -72,7 +83,10 @@ describe('EditIngredientPageComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { paramMap: { get: () => 'ing-99' } },
+            snapshot: {
+              paramMap: { get: () => 'ing-99' },
+              queryParams: mockQueryParams,
+            },
           },
         },
       ],
@@ -131,6 +145,45 @@ describe('EditIngredientPageComponent', () => {
 
     expect(mockIngredientService.updateIngredient).toHaveBeenCalled();
     expect(mockToastService.showSuccess).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients']);
+  });
+  it('returns to detail after saving an ingredient without changing its unit', () => {
+    mockQueryParams['returnTo'] = '/inventory/ingredients/ing-99';
+    component.onSubmit();
+    expect(mockIngredientService.updateIngredient).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients/ing-99']);
+  });
+
+  it('returns to detail after changing the unit when no stock needs reconciliation', () => {
+    mockQueryParams['returnTo'] = '/inventory/ingredients/ing-99';
+    component.ingredientForm.patchValue({ defaultUnit: mockUnit2 });
+    component.onSubmit();
+    expect(mockIngredientService.getItemsByIngredientId).toHaveBeenCalledWith('ing-99');
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients/ing-99']);
+  });
+
+  it('preserves the detail destination when continuing into unit reconciliation', () => {
+    mockQueryParams['returnTo'] = '/inventory/ingredients/ing-99';
+    mockIngredientService.getItemsByIngredientId.and.returnValue(
+      of([{ id: 'item-1', label: 'Rice bag', quantity: 2, unitId: 1, locationId: 1 }]),
+    );
+    component.ingredientForm.patchValue({ defaultUnit: mockUnit2 });
+    component.onSubmit();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(
+      ['/inventory/ingredients/ing-99/unit-reconciliation'],
+      { queryParams: { targetUnitId: 2, returnTo: '/inventory/ingredients/ing-99' } },
+    );
+  });
+
+  it('returns to detail when cancelling an ingredient edit', () => {
+    mockQueryParams['returnTo'] = '/inventory/ingredients/ing-99';
+    component.onCancel();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients/ing-99']);
+  });
+
+  it('falls back to the catalog for the reserved new ingredient path', () => {
+    mockQueryParams['returnTo'] = '/inventory/ingredients/new';
+    component.onCancel();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients']);
   });
 });

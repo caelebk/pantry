@@ -21,7 +21,8 @@
           (ngModelChange)="onNutrientTypesSelect($event)"
           optionLabel="name"
           optionValue="id"
-          [showClear]="false"
+          [showClear]="true"
+          styleClass="pantry-filter-select"
           [showToggleAll]="false"
           [filter]="true"
           filterPlaceholder="Search categories..."
@@ -30,9 +31,9 @@
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
               <div
-                class="flex items-center gap-1.5 text-sm font-medium text-surface-600 dark:text-surface-400">
+                class="type-label flex min-w-0 items-center gap-1.5 text-surface-600 dark:text-surface-400">
                 @if (selectedItems.length === 1) {
-                  <span>{{ getNutrientName(selectedItems[0]) }}</span>
+                  <span class="truncate">{{ getNutrientName(selectedItems[0]) }}</span>
                 } @else {
                   <span>{{ selectedItems.length }} Categories</span>
                 }
@@ -40,22 +41,11 @@
             }
           </ng-template>
           <ng-template pTemplate="item" let-item>
-            <div class="flex items-center gap-2 text-sm font-medium py-0.5">
+            <div class="type-label flex items-center gap-2 py-0.5">
               <span>{{ item.name }}</span>
             </div>
           </ng-template>
         </p-multiselect>
-
-        @if (selectedNutrientTypeIds().length > 0) {
-          <button
-            type="button"
-            (click)="onNutrientTypesSelect([])"
-            class="btn-icon"
-            aria-label="Reset category filter"
-            title="Reset category filter">
-            <i class="pi pi-times text-xs font-bold"></i>
-          </button>
-        }
       </div>
 
       <!-- Ingredient Group MultiSelect Dropdown -->
@@ -66,7 +56,8 @@
           (ngModelChange)="onCategoryIdsSelect($event)"
           optionLabel="name"
           optionValue="id"
-          [showClear]="false"
+          [showClear]="true"
+          styleClass="pantry-filter-select"
           [showToggleAll]="false"
           [filter]="true"
           filterPlaceholder="Search groups..."
@@ -75,9 +66,9 @@
           <ng-template pTemplate="selectedItems" let-selectedItems>
             @if (selectedItems && selectedItems.length > 0) {
               <div
-                class="flex items-center gap-1.5 text-sm font-medium text-surface-600 dark:text-surface-400">
+                class="type-label flex min-w-0 items-center gap-1.5 text-surface-600 dark:text-surface-400">
                 @if (selectedItems.length === 1) {
-                  <span>{{ getCategoryName(selectedItems[0]) }}</span>
+                  <span class="truncate">{{ getCategoryName(selectedItems[0]) }}</span>
                 } @else {
                   <span>{{ selectedItems.length }} Groups</span>
                 }
@@ -85,22 +76,11 @@
             }
           </ng-template>
           <ng-template pTemplate="item" let-item>
-            <div class="flex items-center gap-2 text-sm font-medium py-0.5">
+            <div class="type-label flex items-center gap-2 py-0.5">
               <span>{{ item.name }}</span>
             </div>
           </ng-template>
         </p-multiselect>
-
-        @if (selectedCategoryIds().length > 0) {
-          <button
-            type="button"
-            (click)="onCategoryIdsSelect([])"
-            class="btn-icon"
-            aria-label="Reset group filter"
-            title="Reset group filter">
-            <i class="pi pi-times text-xs font-bold"></i>
-          </button>
-        }
       </div>
     </div>
   </div>
@@ -115,10 +95,10 @@
         class="w-16 h-16 rounded-2xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center mx-auto mb-4 text-surface-400 dark:text-surface-500 text-2xl">
         <i class="pi pi-folder-open"></i>
       </div>
-      <h4 class="text-base font-bold text-surface-900 dark:text-white mb-1">
+      <h4 class="type-section-title text-surface-900 dark:text-white mb-1">
         No Ingredient Categories Found
       </h4>
-      <p class="text-xs text-surface-500 dark:text-surface-400">
+      <p class="type-meta text-surface-500 dark:text-surface-400">
         No ingredient categories or groups match your search or filter criteria.
       </p>
     </div>

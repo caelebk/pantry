@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
 import { IngredientGroup } from '@models/ingredient-group.model';
@@ -16,6 +16,7 @@ import { isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 
+import { EmptyStateComponent, SpinnerComponent } from '@ui';
 import { SkeletonModule } from 'primeng/skeleton';
 
 export interface LocationStat {
@@ -28,7 +29,14 @@ export interface LocationStat {
 @Component({
   selector: 'pantry-inventory-overview-page',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, SkeletonModule],
+  imports: [
+    CommonModule,
+    TranslocoModule,
+    SkeletonModule,
+    RouterLink,
+    EmptyStateComponent,
+    SpinnerComponent,
+  ],
   templateUrl: './inventory-overview-page.component.html',
 })
 export class InventoryOverviewPageComponent {
@@ -55,6 +63,7 @@ export class InventoryOverviewPageComponent {
   public readonly items = signal<Item[]>([]);
   public readonly locations = signal<Location[]>([]);
   public readonly isLoading = signal<boolean>(true);
+  public readonly loadError = signal(false);
 
   // Active collapsible pyramid tier (defaults to Tier 4 - Physical Stock)
   public readonly expandedTier = signal<number | null>(4);
@@ -70,13 +79,20 @@ export class InventoryOverviewPageComponent {
   public readonly itemsCount = computed(() => this.items().length);
 
   public readonly expiringCount = computed(
-    () => this.items().filter((item) => isExpiringSoon(item, 7)).length,
+    () => this.items().filter((item) => item.quantity > 0 && isExpiringSoon(item, 7)).length,
   );
   public readonly expiredCount = computed(
-    () => this.items().filter((item) => isExpired(item)).length,
+    () => this.items().filter((item) => item.quantity > 0 && isExpired(item)).length,
   );
   public readonly freshCount = computed(
-    () => this.items().filter((item) => !isExpired(item) && !isExpiringSoon(item, 7)).length,
+    () =>
+      this.items().filter(
+        (item) =>
+          item.quantity > 0 &&
+          !!item.expirationDate &&
+          !isExpired(item) &&
+          !isExpiringSoon(item, 7),
+      ).length,
   );
 
   public readonly locationStats = computed<LocationStat[]>(() => {
@@ -104,6 +120,7 @@ export class InventoryOverviewPageComponent {
 
   public fetchInventoryData(): void {
     this.isLoading.set(true);
+    this.loadError.set(false);
     forkJoin({
       categories: this.categoryService.getIngredientCategories(),
       groups: this.groupService.getIngredientGroups(),
@@ -120,6 +137,7 @@ export class InventoryOverviewPageComponent {
         this.isLoading.set(false);
       },
       error: (err) => {
+        this.loadError.set(true);
         console.error('Error fetching inventory overview data:', err);
         this.isLoading.set(false);
       },

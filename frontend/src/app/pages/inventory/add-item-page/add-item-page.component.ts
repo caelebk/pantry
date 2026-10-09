@@ -3,31 +3,25 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
-import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
-import { Unit, UnitType } from '@models/unit.model';
+import { Unit } from '@models/unit.model';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
-import { BadgeComponent, FormFieldComponent } from '@ui';
+import { FormFieldComponent, SpinnerComponent } from '@ui';
+import { ingredientDetailReturnTo } from '@utility/ingredient-detail-return';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
-import {
-  getTimeDifferenceString,
-  isExpired,
-  isExpiringSoon,
-} from '@utility/itemUtility/ItemUtility';
-import { ButtonModule } from 'primeng/button';
-import { DatePickerModule } from 'primeng/datepicker';
+import { ItemEditorComponent } from '../inventory-components/item-editor/item-editor.component';
+
 import { DialogModule } from 'primeng/dialog';
-import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
-import { TextareaModule } from 'primeng/textarea';
 
 @Component({
   selector: 'pantry-add-item-page',
@@ -37,13 +31,11 @@ import { TextareaModule } from 'primeng/textarea';
     FormsModule,
     ReactiveFormsModule,
     InputTextModule,
-    InputNumberModule,
     SelectModule,
-    DatePickerModule,
-    TextareaModule,
     DialogModule,
-    ButtonModule,
-    BadgeComponent,
+    TranslocoModule,
+    ItemEditorComponent,
+    SpinnerComponent,
     FormFieldComponent,
   ],
   templateUrl: './add-item-page.component.html',
@@ -58,6 +50,9 @@ export class AddItemPageComponent implements OnInit {
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
+  private previousIngredientName: string | null = null;
+  public quickCreateError = signal<string | null>(null);
 
   public addItemForm: FormGroup<ItemFormControls> = createItemForm();
   public ingredients = signal<Ingredient[]>([]);
@@ -74,9 +69,11 @@ export class AddItemPageComponent implements OnInit {
   public newIngredientDefaultUnit = signal<Unit | null>(null);
   public isCreatingIngredient = signal<boolean>(false);
 
-  ngOnInit(): void {
-    this.loadIngredients();
+  private get returnTo(): string | null {
+    return ingredientDetailReturnTo(this.route.snapshot.queryParams?.['returnTo']);
+  }
 
+  ngOnInit(): void {
     this.ingredientGroupService.getIngredientGroups().subscribe({
       next: (groups) => this.ingredientGroups.set(groups),
     });
@@ -104,17 +101,23 @@ export class AddItemPageComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((selectedIng) => {
         if (selectedIng) {
-          if (!this.addItemForm.controls.name.value) {
+          const name = this.addItemForm.controls.name.value;
+          if (!name || name === this.previousIngredientName) {
             this.addItemForm.controls.name.setValue(selectedIng.name);
           }
           if (selectedIng.defaultUnit) {
             this.addItemForm.controls.unit.setValue(selectedIng.defaultUnit);
             this.addItemForm.controls.unit.disable();
+          } else {
+            this.addItemForm.controls.unit.enable();
           }
         } else {
           this.addItemForm.controls.unit.enable();
         }
+        this.previousIngredientName = selectedIng?.name ?? null;
       });
+
+    this.loadIngredients();
   }
 
   loadIngredients(selectNewId?: string): void {
@@ -140,6 +143,8 @@ export class AddItemPageComponent implements OnInit {
   }
 
   openQuickCreateIngredient(): void {
+    if (this.isSubmitting()) return;
+    this.quickCreateError.set(null);
     this.newIngredientName.set(this.addItemForm.controls.name.value || '');
     this.newIngredientGroup.set(null);
     this.newIngredientDefaultUnit.set(this.units()[0] || null);
@@ -147,6 +152,8 @@ export class AddItemPageComponent implements OnInit {
   }
 
   submitQuickCreateIngredient(): void {
+    if (this.isCreatingIngredient()) return;
+    this.quickCreateError.set(null);
     const name = this.newIngredientName().trim();
     if (!name) {
       this.toastService.showError('Please enter an ingredient name.');
@@ -175,69 +182,17 @@ export class AddItemPageComponent implements OnInit {
       error: (err) => {
         this.isCreatingIngredient.set(false);
         console.error('Failed to create ingredient:', err);
-        this.toastService.showError('Failed to create ingredient.');
+        this.quickCreateError.set(this.transloco.translate('itemEditor.createError'));
       },
     });
   }
 
-  selectLocation(loc: Location): void {
-    this.addItemForm.controls.location.setValue(loc);
-  }
-
-  get previewItem(): Item | null {
-    const raw = this.addItemForm.getRawValue();
-    if (!raw.name && !raw.location) return null;
-
-    return {
-      id: 'preview',
-      ingredientId: raw.ingredient?.id || '',
-      name: raw.name || 'Item Name',
-      quantity: raw.quantity || 1,
-      unit: raw.unit || {
-        id: 1,
-        name: 'Piece',
-        shortName: 'pc',
-        type: UnitType.Count,
-        toBaseFactor: 1,
-      },
-      purchaseDate: raw.purchaseDate || new Date(),
-      expirationDate: raw.expirationDate || new Date(Date.now() + 7 * 86400000),
-      location: raw.location || { id: 1, name: 'Pantry' },
-      notes: raw.notes || '',
-    };
-  }
-
-  get previewIsExpired(): boolean {
-    const item = this.previewItem;
-    return item ? isExpired(item) : false;
-  }
-
-  get previewIsExpiringSoon(): boolean {
-    const item = this.previewItem;
-    return item ? isExpiringSoon(item) : false;
-  }
-
-  get previewRemainingText(): string {
-    const item = this.previewItem;
-    if (!item || !item.expirationDate) return '7 days remaining';
-    return item.expirationDate
-      ? getTimeDifferenceString(new Date(), item.expirationDate)
-      : 'No Expiration';
-  }
-
-  setExpirationDaysOffset(days: number): void {
-    const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() + days);
-    this.addItemForm.controls.expirationDate.setValue(targetDate);
-    this.addItemForm.controls.expirationDate.markAsTouched();
-    this.addItemForm.controls.expirationDate.markAsDirty();
-  }
-
   onSubmit(): void {
+    if (this.isSubmitting()) return;
     this.submitError.set(null);
     if (!this.addItemForm.valid) {
       this.addItemForm.markAllAsTouched();
-      this.submitError.set('Please fill in all required fields marked with *.');
+      this.submitError.set(this.transloco.translate('itemEditor.requiredError'));
       return;
     }
 
@@ -252,7 +207,7 @@ export class AddItemPageComponent implements OnInit {
           `"${newItem.name}" has been added to inventory.`,
           'Item Added',
         );
-        this.router.navigate(['/inventory/items']);
+        this.router.navigate([this.returnTo ?? '/inventory/items']);
       },
       error: (err) => {
         this.isSubmitting.set(false);
@@ -264,6 +219,7 @@ export class AddItemPageComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/inventory/items']);
+    if (this.isSubmitting()) return;
+    this.router.navigate([this.returnTo ?? '/inventory/items']);
   }
 }

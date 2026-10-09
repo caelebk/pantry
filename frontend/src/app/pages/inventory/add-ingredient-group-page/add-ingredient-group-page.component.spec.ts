@@ -2,11 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ToastService } from '@services/toast.service';
 import { of } from 'rxjs';
+import translations from '../../../../../public/i18n/en.json';
 import { AddIngredientGroupPageComponent } from './add-ingredient-group-page.component';
 
 describe('AddIngredientGroupPageComponent', () => {
@@ -65,7 +67,14 @@ describe('AddIngredientGroupPageComponent', () => {
     );
 
     await TestBed.configureTestingModule({
-      imports: [AddIngredientGroupPageComponent, ReactiveFormsModule],
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+        }),
+        AddIngredientGroupPageComponent,
+        ReactiveFormsModule,
+      ],
       providers: [
         provideAnimations(),
         { provide: Router, useValue: mockRouter },

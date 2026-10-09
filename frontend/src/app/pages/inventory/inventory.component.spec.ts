@@ -258,15 +258,11 @@ describe('InventoryComponent', () => {
     expect(component.showScrollTopButton).toBeFalse();
   });
 
-  it('should render 3-column max grid layout when grid view mode is active', () => {
-    component.viewMode = 'grid';
-    fixture.detectChanges();
-
-    const gridContainer = fixture.nativeElement.querySelector(
-      '.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3',
-    );
-    expect(gridContainer).toBeTruthy();
-    expect(gridContainer.classList.contains('xl:grid-cols-4')).toBeFalse();
-    expect(fixture.nativeElement.querySelectorAll('pantry-item-card').length).toBe(3);
+  it('should show inventory items in the table without a view toggle', () => {
+    expect(fixture.nativeElement.querySelector('table')).toBeTruthy();
+    expect(fixture.nativeElement.querySelectorAll('tbody tr').length).toBe(3);
+    expect(fixture.nativeElement.querySelector('pantry-item-card')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[title="Grid Cards View"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[title="Table View"]')).toBeNull();
   });
 });

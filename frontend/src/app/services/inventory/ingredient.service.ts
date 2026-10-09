@@ -148,6 +148,10 @@ export class IngredientService {
       );
   }
 
+  invalidateCache(): void {
+    this.clearIngredientsCache();
+  }
+
   private clearIngredientsCache(): void {
     this.ingredientsCache$ = undefined;
   }

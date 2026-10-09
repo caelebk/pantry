@@ -16,6 +16,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
 import { Ingredient } from '@models/ingredient.model';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
@@ -39,6 +40,7 @@ export interface IngredientItemSelection {
   selector: 'pantry-add-ingredient-group-page',
   standalone: true,
   imports: [
+    TranslocoPipe,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
