@@ -2,7 +2,7 @@
   <!-- Page Header & Action Bar -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
     <div>
-      <h1 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
+      <h1 class="type-page-title text-surface-900 dark:text-white">
         {{ 'shoppingList.title' | transloco }}
       </h1>
     </div>
@@ -182,7 +182,7 @@
             class="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-100 text-surface-400 dark:bg-surface-800 dark:text-surface-500 shadow-inner">
             <i class="pi pi-shopping-bag text-2xl"></i>
           </span>
-          <h2 class="mt-4 text-base font-bold text-surface-900 dark:text-white">
+          <h2 class="type-section-title mt-4 text-surface-900 dark:text-white">
             {{
               (hasActiveFilters() ? 'shoppingList.empty.noMatches' : 'shoppingList.empty.title')
                 | transloco
@@ -217,7 +217,7 @@
               <tr
                 class="bg-surface-200/60 dark:bg-surface-800/80 border-b border-surface-300/60 dark:border-surface-700/60 text-[11px] font-extrabold uppercase tracking-wider text-surface-600 dark:text-surface-400 select-none">
                 <!-- Checkbox Header -->
-                <th class="py-3 px-3 w-10 text-center select-none">
+                <th class="type-label py-3 px-3 w-10 text-center select-none">
                   <input
                     type="checkbox"
                     [checked]="allVisibleSelected()"
@@ -230,7 +230,7 @@
                 <!-- Item Name Column Header -->
                 <th
                   (click)="toggleSort('name')"
-                  class="py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  class="type-label py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <div class="flex items-center gap-1.5">
                     <span>{{ 'shoppingList.table.item' | transloco }}</span>
                     @if (sortBy() === 'name') {
@@ -247,7 +247,7 @@
                 <!-- Category Column Header -->
                 <th
                   (click)="toggleSort('category')"
-                  class="py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  class="type-label py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <div class="flex items-center gap-1.5">
                     <span>{{ 'shoppingList.table.category' | transloco }}</span>
                     @if (sortBy() === 'category') {
@@ -264,7 +264,7 @@
                 <!-- Store Column Header -->
                 <th
                   (click)="toggleSort('store')"
-                  class="py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  class="type-label py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <div class="flex items-center gap-1.5">
                     <span>{{ 'shoppingList.table.store' | transloco }}</span>
                     @if (sortBy() === 'store') {
@@ -281,7 +281,7 @@
                 <!-- Quantity Column Header -->
                 <th
                   (click)="toggleSort('quantity')"
-                  class="py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  class="type-label py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <div class="flex items-center gap-1.5">
                     <span>{{ 'shoppingList.table.quantity' | transloco }}</span>
                     @if (sortBy() === 'quantity') {
@@ -298,7 +298,7 @@
                 <!-- Estimated Price Column Header -->
                 <th
                   (click)="toggleSort('price')"
-                  class="py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  class="type-label py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <div class="flex items-center gap-1.5">
                     <span>{{ 'shoppingList.table.price' | transloco }}</span>
                     @if (sortBy() === 'price') {
@@ -313,7 +313,7 @@
                 </th>
 
                 <!-- Status Column Header (Not Sortable) -->
-                <th class="py-3 px-4 text-right sm:text-left">
+                <th class="type-label py-3 px-4 text-right sm:text-left">
                   <span>{{ 'shoppingList.table.status' | transloco }}</span>
                 </th>
               </tr>

@@ -169,8 +169,7 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Form Header -->
           <div>
-            <h1
-              class="text-2xl sm:text-3xl font-bold tracking-tight text-surface-900 dark:text-white">
+            <h1 class="type-page-title text-surface-900 dark:text-white">
               {{ 'auth.signup' | transloco }}
             </h1>
           </div>
@@ -190,9 +189,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Full Name Field -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="fullName"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="fullName" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.fullName' | transloco }}
                 </label>
               </div>
@@ -220,9 +217,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Username Field -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="username"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="username" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.username' | transloco }}
                 </label>
               </div>
@@ -250,9 +245,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Email Field -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="email"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="email" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.email' | transloco }}
                 </label>
               </div>
@@ -280,9 +273,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Password Field with Strength Meter -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="password"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="password" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.password' | transloco }}
                 </label>
               </div>

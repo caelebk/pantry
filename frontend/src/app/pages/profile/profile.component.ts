@@ -8,6 +8,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
+import { KitchenCreateDialogComponent } from '../../components/kitchen-create-dialog/kitchen-create-dialog.component';
 import { Kitchen, KitchenMember, UserSession } from '../../core/models/auth.model';
 import { AuthService } from '../../core/services/auth.service';
 import { KitchenService } from '../../core/services/kitchen.service';
@@ -25,6 +26,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
     DialogModule,
     BadgeComponent,
     FormFieldComponent,
+    KitchenCreateDialogComponent,
   ],
   providers: [MessageService],
   template: `
@@ -34,7 +36,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
       <div
         class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-200 dark:border-surface-800 pb-6">
         <div>
-          <h1 class="text-3xl font-bold tracking-tight text-surface-900 dark:text-white">
+          <h1 class="type-page-title text-surface-900 dark:text-white">
             {{ 'profile.title' | transloco }}
           </h1>
         </div>
@@ -53,7 +55,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
           <div
             class="glass-card p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl">
             <h2
-              class="text-lg font-semibold text-surface-800 dark:text-surface-100 mb-6 flex items-center gap-2">
+              class="type-section-title text-surface-800 dark:text-surface-100 mb-6 flex items-center gap-2">
               <i class="pi pi-user text-surface-500 dark:text-surface-400"></i>
               {{ 'profile.personalInfo' | transloco }}
             </h2>
@@ -128,7 +130,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
           <div
             class="glass-card p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl">
             <h2
-              class="text-lg font-semibold text-surface-800 dark:text-surface-100 mb-6 flex items-center gap-2">
+              class="type-section-title text-surface-800 dark:text-surface-100 mb-6 flex items-center gap-2">
               <i class="pi pi-lock text-surface-500 dark:text-surface-400"></i>
               {{ 'profile.changePassword' | transloco }}
             </h2>
@@ -187,7 +189,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
             class="glass-card p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl">
             <div class="flex items-center justify-between mb-6">
               <h2
-                class="text-lg font-semibold text-surface-800 dark:text-surface-100 flex items-center gap-2">
+                class="type-section-title text-surface-800 dark:text-surface-100 flex items-center gap-2">
                 <i class="pi pi-shield text-surface-500 dark:text-surface-400"></i>
                 {{ 'profile.activeSessions' | transloco }}
               </h2>
@@ -232,14 +234,16 @@ import { KitchenService } from '../../core/services/kitchen.service';
             class="glass-card p-6 rounded-2xl bg-white/60 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl">
             <div class="flex items-center justify-between mb-6">
               <h2
-                class="text-lg font-semibold text-surface-800 dark:text-surface-100 flex items-center gap-2">
+                class="type-section-title text-surface-800 dark:text-surface-100 flex items-center gap-2">
                 <i class="pi pi-building text-surface-500 dark:text-surface-400"></i>
                 {{ 'kitchens.title' | transloco }}
               </h2>
               <button
+                type="button"
+                data-create-kitchen
                 (click)="showCreateKitchenModal.set(true)"
-                aria-label="Create kitchen"
-                class="btn-icon-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300">
+                [attr.aria-label]="'kitchenCreate.title' | transloco"
+                class="btn-icon text-surface-500 hover:text-surface-700 dark:hover:text-surface-300">
                 <i class="pi pi-plus text-sm"></i>
               </button>
             </div>
@@ -247,29 +251,43 @@ import { KitchenService } from '../../core/services/kitchen.service';
             <div class="space-y-3">
               @for (k of authService.userKitchens(); track k.id) {
                 <div
-                  (click)="authService.setActiveKitchen(k)"
                   [class.border-surface-400]="authService.activeKitchen()?.id === k.id"
                   [class.bg-surface-100]="authService.activeKitchen()?.id === k.id"
-                  class="p-4 rounded-xl border border-surface-200 dark:border-surface-800 hover:border-surface-300 dark:hover:border-surface-700 cursor-pointer transition-all flex items-center justify-between">
-                  <div>
-                    <div
-                      class="text-sm font-semibold text-surface-800 dark:text-surface-100 flex items-center gap-2">
-                      {{ k.name }}
-                      @if (k.role === 'owner') {
-                        <button
-                          (click)="$event.stopPropagation(); openManageModal(k)"
-                          class="text-xs text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 underline ml-2">
-                          Manage
-                        </button>
-                      }
-                    </div>
-                    <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                      {{ k.memberCount || 1 }} member(s) • {{ k.role }}
-                    </div>
-                  </div>
+                  class="p-3 rounded-xl border border-surface-200 dark:border-surface-800 flex items-center gap-2 min-w-0">
+                  <button
+                    type="button"
+                    data-select-kitchen
+                    (click)="authService.setActiveKitchen(k)"
+                    [attr.aria-pressed]="authService.activeKitchen()?.id === k.id"
+                    class="flex-1 min-w-0 min-h-[42px] rounded-xl text-left focus-visible:outline-2 focus-visible:outline-primary-500 focus-visible:outline-offset-2">
+                    <span
+                      class="block type-label text-surface-800 dark:text-surface-100 break-words"
+                      >{{ k.name }}</span
+                    >
+                    <span class="block type-meta text-surface-500 dark:text-surface-400 mt-0.5">
+                      {{
+                        ((k.memberCount ?? 1) === 1
+                          ? 'kitchenCreate.member'
+                          : 'kitchenCreate.members'
+                        ) | transloco: { count: k.memberCount ?? 1 }
+                      }}
+                      •
+                      {{ 'kitchenCreate.' + k.role | transloco }}
+                    </span>
+                  </button>
                   @if (authService.activeKitchen()?.id === k.id) {
                     <i
-                      class="pi pi-check-circle text-surface-500 dark:text-surface-400 text-lg"></i>
+                      class="pi pi-check-circle text-surface-500 dark:text-surface-400 text-lg shrink-0"
+                      aria-hidden="true"></i>
+                  }
+                  @if (k.role === 'owner') {
+                    <button
+                      type="button"
+                      (click)="openManageModal(k)"
+                      [attr.aria-label]="'kitchenCreate.manageNamed' | transloco: { name: k.name }"
+                      class="btn-ghost shrink-0">
+                      {{ 'kitchenCreate.manage' | transloco }}
+                    </button>
                   }
                 </div>
               }
@@ -279,50 +297,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
       </div>
     </div>
 
-    <!-- Create Kitchen Modal -->
-    <p-dialog
-      header="Create Shared Kitchen"
-      [(visible)]="showCreateKitchenModal"
-      [modal]="true"
-      [style]="{ width: '90%', 'max-width': '450px' }">
-      <form
-        [formGroup]="kitchenForm"
-        (ngSubmit)="onConfirmKitchenCreation()"
-        class="space-y-4 pt-2">
-        <pantry-form-field
-          label="Kitchen Name"
-          forId="kitchenName"
-          [required]="true"
-          [error]="
-            kitchenForm.controls.name.invalid && kitchenForm.controls.name.touched
-              ? 'Kitchen name is required'
-              : ''
-          ">
-          <input
-            type="text"
-            id="kitchenName"
-            formControlName="name"
-            class="w-full h-[42px] px-4 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm outline-none"
-            placeholder="Bistro 88 Main Kitchen" />
-        </pantry-form-field>
-        <pantry-form-field label="Description" forId="kitchenDescription">
-          <input
-            type="text"
-            id="kitchenDescription"
-            formControlName="description"
-            class="w-full h-[42px] px-4 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm outline-none"
-            placeholder="Shared workspace for team dinner prep" />
-        </pantry-form-field>
-        <div class="flex justify-end gap-3 pt-4">
-          <button type="button" (click)="showCreateKitchenModal.set(false)" class="btn-secondary">
-            Cancel
-          </button>
-          <button type="submit" [disabled]="kitchenForm.invalid" class="btn-primary">
-            Create Workspace
-          </button>
-        </div>
-      </form>
-    </p-dialog>
+    <pantry-kitchen-create-dialog [(visible)]="showCreateKitchenModal" />
     <!-- Manage Kitchen Modal -->
     <p-dialog
       header="Manage Kitchen Members"
@@ -425,7 +400,6 @@ export class ProfileComponent implements OnInit {
   readonly isChangingPassword = signal(false);
   readonly sessions = signal<UserSession[]>([]);
   readonly showCreateKitchenModal = signal(false);
-  readonly isCreatingKitchen = signal(false);
 
   // Kitchen management signals
   readonly showManageKitchenModal = signal(false);
@@ -443,11 +417,6 @@ export class ProfileComponent implements OnInit {
   readonly passwordForm = this.fb.group({
     currentPassword: ['', [Validators.required]],
     newPassword: ['', [Validators.required, Validators.minLength(8)]],
-  });
-
-  readonly kitchenForm = this.fb.group({
-    name: ['', [Validators.required]],
-    description: [''],
   });
 
   readonly inviteForm = this.fb.group({
@@ -542,25 +511,6 @@ export class ProfileComponent implements OnInit {
           severity: 'success',
           summary: 'Sessions Revoked',
           detail: 'Logged out from all devices',
-        });
-      },
-    });
-  }
-
-  onConfirmKitchenCreation() {
-    if (this.kitchenForm.invalid) return;
-    this.isCreatingKitchen.set(true);
-    const { name, description } = this.kitchenForm.value;
-
-    this.kitchenService.createKitchen(name!, description || '').subscribe({
-      next: () => {
-        this.isCreatingKitchen.set(false);
-        this.showCreateKitchenModal.set(false);
-        this.kitchenForm.reset();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Kitchen Created',
-          detail: 'Shared workspace added',
         });
       },
     });

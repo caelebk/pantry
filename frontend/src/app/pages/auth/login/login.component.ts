@@ -173,8 +173,7 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Form Header -->
           <div>
-            <h1
-              class="text-2xl sm:text-3xl font-bold tracking-tight text-surface-900 dark:text-white">
+            <h1 class="type-page-title text-surface-900 dark:text-white">
               {{ 'auth.login' | transloco }}
             </h1>
           </div>
@@ -194,9 +193,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Identifier Field (Email or Username) -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="identifier"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="identifier" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.emailOrUsername' | transloco }}
                 </label>
               </div>
@@ -224,9 +221,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Password Field -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="password"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="password" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.password' | transloco }}
                 </label>
                 <button

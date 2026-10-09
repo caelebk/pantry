@@ -21,9 +21,7 @@
 
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h2 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
-          Restock Review
-        </h2>
+        <h2 class="type-page-title text-surface-900 dark:text-white">Restock Review</h2>
       </div>
 
       <div class="flex items-center gap-2">
@@ -223,7 +221,7 @@
                   <div class="flex items-center gap-1">
                     <label
                       [for]="'select-match-' + item.shoppingId"
-                      class="text-[11px] font-semibold text-surface-600 dark:text-surface-300"
+                      class="type-label text-surface-600 dark:text-surface-300"
                       >Select Match:</label
                     >
                     <p-select
@@ -266,7 +264,7 @@
               <div class="space-y-1.5">
                 <label
                   [for]="'qty-' + item.shoppingId"
-                  class="block text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+                  class="type-label block text-surface-500 dark:text-surface-400">
                   Restock Quantity
                 </label>
                 <p-inputnumber
@@ -281,7 +279,7 @@
               <div class="space-y-1.5">
                 <label
                   [for]="'unit-' + item.shoppingId"
-                  class="block text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+                  class="type-label block text-surface-500 dark:text-surface-400">
                   Unit
                   @if (item.isUnitLocked) {
                     <span
@@ -304,7 +302,7 @@
             <div class="space-y-1.5">
               <label
                 [for]="'loc-' + item.shoppingId"
-                class="text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider"
+                class="type-label text-surface-500 dark:text-surface-400"
                 >Storage Location</label
               >
               <p-select
@@ -320,7 +318,7 @@
               <div class="flex items-center justify-between">
                 <label
                   [for]="'exp-' + item.shoppingId"
-                  class="text-[11px] font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider"
+                  class="type-label text-surface-500 dark:text-surface-400"
                   >Expiration Date</label
                 >
                 <div class="flex items-center gap-1">
