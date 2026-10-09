@@ -1,6 +1,7 @@
 import { assertEquals } from '@std/assert';
 import { Hono } from 'hono';
 import { IngredientDTO } from '../src/models/data-models/ingredient.model.ts';
+import { IngredientItemRow } from '../src/models/schema-models/ingredient-item.model.ts';
 import ingredients from '../src/routes/ingredients.routes.ts';
 import { ingredientService } from '../src/services/ingredients.service.ts';
 import { HttpStatusCode } from '../src/utils/response.ts';
@@ -256,4 +257,98 @@ Deno.test('Ingredients API - POST /api/v1/ingredients/:id/reconcile-units - inva
     }),
   );
   assertEquals(res.status, HttpStatusCode.BAD_REQUEST);
+});
+
+Deno.test('Ingredients API - GET /api/v1/ingredients/:id/items - returns item DTOs', async () => {
+  const originalGetItems = ingredientService.getItemsByIngredientId;
+  const row: IngredientItemRow = {
+    id: '123e4567-e89b-12d3-a456-426614174001',
+    ingredient_id: mockIngredient.id,
+    label: 'Rice bag',
+    quantity: 2,
+    unit_id: 3,
+    location_id: 4,
+    purchase_date: '2026-10-01T00:00:00.000Z',
+    expiration_date: '2026-12-01T00:00:00.000Z',
+    opened_date: '2026-10-02T00:00:00.000Z',
+    notes: 'Keep dry.',
+    created_at: '2026-10-01T12:00:00.000Z',
+    updated_at: '2026-10-02T12:00:00.000Z',
+    created_by: 'creator-id',
+    updated_by: 'editor-id',
+  };
+  const unopenedRow: IngredientItemRow = {
+    ...row,
+    id: '123e4567-e89b-12d3-a456-426614174002',
+    label: 'Unopened rice bag',
+    expiration_date: null,
+    opened_date: null,
+    notes: null,
+    created_by: null,
+    updated_by: null,
+  };
+  let receivedScope: string[] = [];
+  ingredientService.getItemsByIngredientId = (id, kitchenId) => {
+    receivedScope = [id, kitchenId];
+    return Promise.resolve([row, unopenedRow]);
+  };
+
+  try {
+    const app = new Hono();
+    app.route('/api/v1/ingredients', ingredients);
+    const req = createRequest(`/api/v1/ingredients/${mockIngredient.id}/items`, 'GET');
+    req.headers.set('X-Kitchen-Id', 'requested-kitchen-id');
+    const res = await app.request(req);
+    assertEquals(res.status, HttpStatusCode.OK);
+    assertEquals(receivedScope, [mockIngredient.id, 'requested-kitchen-id']);
+    const body = await res.json();
+    assertEquals(body.data, [
+      {
+        id: row.id,
+        ingredientId: mockIngredient.id,
+        label: 'Rice bag',
+        quantity: 2,
+        unitId: 3,
+        locationId: 4,
+        purchaseDate: row.purchase_date,
+        expirationDate: row.expiration_date,
+        openedDate: row.opened_date,
+        notes: 'Keep dry.',
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+        createdBy: { id: 'creator-id' },
+        updatedBy: { id: 'editor-id' },
+      },
+      {
+        id: unopenedRow.id,
+        ingredientId: mockIngredient.id,
+        label: 'Unopened rice bag',
+        quantity: 2,
+        unitId: 3,
+        locationId: 4,
+        purchaseDate: row.purchase_date,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      },
+    ]);
+  } finally {
+    ingredientService.getItemsByIngredientId = originalGetItems;
+  }
+});
+
+Deno.test('Ingredients API - GET /api/v1/ingredients/:id/items - empty stock', async () => {
+  const originalGetItems = ingredientService.getItemsByIngredientId;
+  ingredientService.getItemsByIngredientId = () => Promise.resolve([]);
+  try {
+    const app = new Hono();
+    app.route('/api/v1/ingredients', ingredients);
+    const res = await app.request(
+      createRequest(`/api/v1/ingredients/${mockIngredient.id}/items`, 'GET'),
+    );
+    assertEquals(res.status, HttpStatusCode.OK);
+    const body = await res.json();
+    assertEquals(body.data, []);
+  } finally {
+    ingredientService.getItemsByIngredientId = originalGetItems;
+  }
 });

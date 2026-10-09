@@ -213,9 +213,10 @@ Deno.test('IngredientsService - reconcileIngredientUnit - success and updates al
     'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
   ).run(itemId2, mockId, 'Test Stock 2', 3, 1, 1, '2026-08-12', '2026-08-01');
 
-  // Reconcile passing explicit quantity update for item-123 only
+  // Reconcile every linked batch explicitly; zero is a valid quantity.
   const updated = await ingredientService.reconcileIngredientUnit(mockId, 'test-kitchen-id', 2, [
     { id: itemId1, quantity: 5000 },
+    { id: itemId2, quantity: 0 },
   ], 'test-user-id');
 
   assertEquals(updated?.defaultUnitId, 2);
@@ -228,7 +229,99 @@ Deno.test('IngredientsService - reconcileIngredientUnit - success and updates al
   assertEquals(item1?.unit_id, 2);
   assertEquals(item1?.quantity, 5000);
   assertEquals(item2?.unit_id, 2); // Also updated to unit 2
-  assertEquals(item2?.quantity, 3); // Quantity unchanged
+  assertEquals(item2?.quantity, 0); // Zero remains valid
 
   db.close();
+});
+
+Deno.test('IngredientsService - null clears membership, omission preserves it and other kitchen is untouched', async () => {
+  const db = createTestDB();
+  setDB(db);
+  seedMockIngredient(db);
+  try {
+    await ingredientService.updateIngredient(
+      mockId,
+      'other-kitchen',
+      { ingredientGroupId: null } as unknown as Parameters<
+        typeof ingredientService.updateIngredient
+      >[2],
+      'user',
+    );
+    assertEquals(
+      (await ingredientService.getIngredientById(mockId, 'test-kitchen-id'))?.ingredientGroupId,
+      1,
+    );
+    await ingredientService.updateIngredient(
+      mockId,
+      'test-kitchen-id',
+      { name: 'Renamed' },
+      'user',
+    );
+    assertEquals(
+      (await ingredientService.getIngredientById(mockId, 'test-kitchen-id'))?.ingredientGroupId,
+      1,
+    );
+    await ingredientService.updateIngredient(
+      mockId,
+      'test-kitchen-id',
+      { ingredientGroupId: null } as unknown as Parameters<
+        typeof ingredientService.updateIngredient
+      >[2],
+      'user',
+    );
+    assertEquals(
+      (await ingredientService.getIngredientById(mockId, 'test-kitchen-id'))?.ingredientGroupId,
+      undefined,
+    );
+  } finally {
+    db.close();
+  }
+});
+
+Deno.test('Reconcile units rejects incomplete, duplicate and foreign rows atomically', async () => {
+  const db = createTestDB();
+  setDB(db);
+  seedMockIngredient(db);
+  db.prepare(
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run('a', mockId, 'A', 5, 1, 1, '2026-08-10', '2026-08-01');
+  db.prepare(
+    'INSERT INTO ingredient_items (id, ingredient_id, label, quantity, unit_id, location_id, expiration_date, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run('b', mockId, 'B', 3, 1, 1, '2026-08-10', '2026-08-01');
+  try {
+    const invalid = [
+      [{ id: 'a', quantity: 1000 }],
+      [{ id: 'a', quantity: 1000 }, { id: 'a', quantity: 2 }],
+      [{ id: 'a', quantity: 1000 }, { id: 'foreign', quantity: 2 }],
+      [{ id: 'a', quantity: 1000 }, { id: 'b', quantity: -1 }],
+      [{ id: 'a', quantity: 1000 }, { id: 'b', quantity: Infinity }],
+    ];
+    for (const payload of invalid) {
+      let rejected = false;
+      try {
+        await ingredientService.reconcileIngredientUnit(
+          mockId,
+          'test-kitchen-id',
+          2,
+          payload,
+          'user',
+        );
+      } catch {
+        rejected = true;
+      }
+      assertEquals(rejected, true);
+      assertEquals(
+        (await ingredientService.getIngredientById(mockId, 'test-kitchen-id'))?.defaultUnitId,
+        1,
+      );
+      assertEquals(
+        (await ingredientService.getItemsByIngredientId(mockId, 'test-kitchen-id')).map(
+          (item) => [item.unit_id, item.quantity],
+        ),
+        [[1, 5], [1, 3]],
+      );
+    }
+  } finally {
+    db.close();
+  }
 });

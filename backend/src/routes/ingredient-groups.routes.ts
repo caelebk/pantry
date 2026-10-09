@@ -1,3 +1,4 @@
+import { isValidUpdateIngredientGroupDTO } from '../validators/ingredient-group.validator.ts';
 import { Context, Hono } from 'hono';
 import { IngredientGroupMessages } from '../messages/ingredient-group.messages.ts';
 import { IngredientMessages } from '../messages/ingredient.messages.ts';
@@ -96,6 +97,9 @@ ingredientGroups.put('/:id', async (c: Context) => {
       return c.json(errorResponse(IngredientGroupMessages.INVALID_ID), HttpStatusCode.BAD_REQUEST);
     }
     const body = await c.req.json<UpdateIngredientGroupDTO>();
+    if (!isValidUpdateIngredientGroupDTO(body)) {
+      return c.json(errorResponse('Invalid Ingredient Group update.'), HttpStatusCode.BAD_REQUEST);
+    }
     const activeKitchenId = c.get('activeKitchenId') || '';
     const userId = c.get('user').userId;
     const updated = await ingredientGroupService.updateIngredientGroup(

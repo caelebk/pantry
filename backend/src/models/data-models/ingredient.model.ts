@@ -21,4 +21,7 @@ export interface CreateIngredientDTO {
 }
 
 // Update DTO - all create fields are optional
-export interface UpdateIngredientDTO extends Partial<CreateIngredientDTO> {}
+export interface UpdateIngredientDTO
+  extends Partial<Omit<CreateIngredientDTO, 'ingredientGroupId'>> {
+  ingredientGroupId?: number | null;
+}

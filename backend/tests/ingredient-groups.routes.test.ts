@@ -171,3 +171,37 @@ Deno.test('Categories API - GET /api/v1/ingredient-groups/:id/ingredients - serv
     ingredientService.getIngredientsByGroup = originalGetIngredients;
   }
 });
+
+Deno.test('Ingredient Group PUT validates parents before mutation and passes explicit null', async () => {
+  const original = ingredientGroupService.updateIngredientGroup;
+  let calls = 0;
+  ingredientGroupService.updateIngredientGroup = (_id, _kitchenId, dto) => {
+    calls++;
+    assertEquals(dto.ingredientCategoryId, null);
+    return Promise.resolve(mockCategory);
+  };
+  try {
+    const app = new Hono<
+      { Variables: { activeKitchenId: string; user: { userId: string; globalRole: string } } }
+    >();
+    app.use('*', async (c, next) => {
+      c.set('activeKitchenId', 'kitchen');
+      c.set('user', { userId: 'user', globalRole: 'admin' });
+      await next();
+    });
+    app.route('/api/v1/ingredient-groups', ingredientGroups);
+    const update = (body: unknown) =>
+      app.request('/api/v1/ingredient-groups/1', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    assertEquals((await update({ ingredientCategoryId: '1' })).status, 400);
+    assertEquals((await update({ ingredientCategoryId: -1 })).status, 400);
+    assertEquals(calls, 0);
+    assertEquals((await update({ ingredientCategoryId: null })).status, 200);
+    assertEquals(calls, 1);
+  } finally {
+    ingredientGroupService.updateIngredientGroup = original;
+  }
+});
