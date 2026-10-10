@@ -1,100 +1,322 @@
-<div class="page-layout space-y-6" *transloco="let t; prefix: 'inventoryOverview'">
+<div class="page-layout" *transloco="let t; prefix: 'inventoryOverview'">
   <header class="page-header">
     <div>
       <h1 class="type-page-title text-surface-900 dark:text-white">{{ t('title') }}</h1>
-      <p class="type-body text-surface-600 dark:text-surface-300 mt-2">{{ t('description') }}</p>
     </div>
-    <a routerLink="/inventory/items/new" class="btn-primary"
-      ><i class="pi pi-plus" aria-hidden="true"></i>{{ t('add') }}</a
-    >
   </header>
-  <nav [attr.aria-label]="t('navigation')" class="flex flex-wrap gap-2">
-    <a routerLink="/inventory/items" class="btn-secondary">{{ t('stock') }}</a>
-    <a routerLink="/inventory/ingredients" class="btn-ghost">{{ t('ingredients') }}</a>
-    <a routerLink="/inventory/groups" class="btn-ghost">{{ t('groups') }}</a>
-  </nav>
-  @if (isLoading()) {
-    <pantry-spinner [label]="t('loading')" />
-  } @else if (loadError()) {
-    <section role="alert" class="glass-card rounded-2xl p-6 space-y-4">
-      <p class="type-body text-surface-700 dark:text-surface-200">{{ t('failure') }}</p>
-      <button class="btn-secondary" type="button" (click)="fetchInventoryData()">
-        {{ t('retry') }}
-      </button>
-    </section>
-  } @else {
-    @if (itemsCount() === 0) {
-      <pantry-empty-state
-        icon="pi pi-box"
-        [title]="t('emptyTitle')"
-        [description]="t('emptyDescription')"
-        ><a routerLink="/inventory/items/new" class="btn-primary">{{
-          t('add')
-        }}</a></pantry-empty-state
-      >
-    } @else {
-      <section class="glass-card rounded-2xl p-5 sm:p-6 space-y-5" [attr.aria-label]="t('stock')">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <h2 class="type-section-title">{{ t('stockSummary') }}</h2>
-          <span class="type-meta text-surface-600 dark:text-surface-300">{{
-            t('batchCount', { count: itemsCount() })
-          }}</span>
+
+  <section aria-labelledby="inventory-guide">
+    <h2 id="inventory-guide" class="type-section-title select-none">{{ t('help') }}</h2>
+    <div class="grid grid-cols-2 lg:flex lg:items-center gap-3 lg:gap-2 mt-4">
+      @for (level of ['category', 'group', 'ingredient', 'item']; track level; let index = $index) {
+        <div class="glass-card rounded-xl p-3 sm:p-4 min-w-0 lg:flex-1">
+          <p class="type-label text-surface-900 dark:text-white break-words">
+            <span class="text-surface-400 mr-1.5" aria-hidden="true">{{ index + 1 }}.</span
+            >{{ t(level) }}
+          </p>
+          <p class="type-meta text-surface-600 dark:text-surface-300 mt-1 break-words">
+            {{ t(level + 'Example') }}
+          </p>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <a
-            routerLink="/inventory/items"
-            [queryParams]="{ status: 'expired' }"
-            class="rounded-xl p-4 bg-rose-500/10 focus-visible:outline-2 focus-visible:outline-primary-500"
-            ><span class="type-label text-rose-700 dark:text-rose-300">{{ t('expired') }}</span
-            ><strong class="type-value block mt-2">{{ expiredCount() }}</strong></a
-          >
-          <a
-            routerLink="/inventory/items"
-            [queryParams]="{ status: 'expiring' }"
-            class="rounded-xl p-4 bg-amber-500/10 focus-visible:outline-2 focus-visible:outline-primary-500"
-            ><span class="type-label text-amber-700 dark:text-amber-300">{{ t('expiring') }}</span
-            ><strong class="type-value block mt-2">{{ expiringCount() }}</strong></a
-          >
-          <a
-            routerLink="/inventory/items"
-            class="rounded-xl p-4 bg-surface-100/70 dark:bg-surface-800/70 focus-visible:outline-2 focus-visible:outline-primary-500"
-            ><span class="type-label">{{ t('allStock') }}</span
-            ><strong class="type-value block mt-2">{{ itemsCount() }}</strong></a
-          >
-        </div>
-      </section>
-      <section class="glass-card rounded-2xl p-5 sm:p-6">
-        <h2 class="type-section-title mb-3">{{ t('locations') }}</h2>
-        <ul class="divide-y divide-surface-200 dark:divide-surface-700">
-          @for (location of locationStats(); track location.id) {
-            <li>
-              <a
-                routerLink="/inventory/items"
-                [queryParams]="{ location: location.id }"
-                class="min-h-[42px] flex items-center justify-between gap-4 py-3 rounded-xl focus-visible:outline-2 focus-visible:outline-primary-500"
-                ><span class="type-label break-words">{{ location.name }}</span
-                ><span class="type-meta shrink-0"
-                  >{{ t('batchCount', { count: location.count }) }}
-                  <i class="pi pi-arrow-right ml-2" aria-hidden="true"></i></span
-              ></a>
-            </li>
-          }
-        </ul>
-      </section>
-    }
-    <details class="border-t border-surface-200 dark:border-surface-700 pt-4">
+        @if (index < 3) {
+          <div
+            class="hidden lg:flex items-center justify-center shrink-0 text-surface-400 dark:text-surface-500 px-1"
+            aria-hidden="true">
+            <i class="pi pi-arrow-right text-sm"></i>
+          </div>
+        }
+      }
+    </div>
+    <details class="group mt-4">
       <summary
-        class="type-label min-h-[42px] py-3 cursor-pointer rounded-xl focus-visible:outline-2 focus-visible:outline-primary-500">
-        {{ t('help') }}
+        class="inventory-guide-toggle min-h-[42px] inline-flex items-center gap-1.5 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden type-label text-surface-800 dark:text-surface-300 hover:text-surface-900 dark:hover:text-white focus-visible:text-surface-900 dark:focus-visible:text-white rounded-lg px-1 focus-visible:outline-2 focus-visible:outline-primary-500">
+        <span class="inventory-guide-toggle__label">{{ t('explainTerms') }}</span>
+        <i class="inventory-guide-toggle__caret pi pi-angle-down shrink-0" aria-hidden="true"></i>
       </summary>
-      <dl class="mt-4 grid sm:grid-cols-2 gap-5 text-surface-600 dark:text-surface-300">
-        @for (level of ['category', 'group', 'ingredient', 'item']; track level) {
-          <div>
-            <dt class="type-label text-surface-900 dark:text-white">{{ t(level) }}</dt>
-            <dd class="type-body mt-1">{{ t(level + 'Help') }}</dd>
+      <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        @for (
+          level of ['category', 'group', 'ingredient', 'item'];
+          track level;
+          let index = $index
+        ) {
+          <div class="min-w-0">
+            <dt class="type-label text-surface-900 dark:text-white">
+              <span class="text-surface-500 dark:text-surface-400 mr-1.5" aria-hidden="true"
+                >{{ index + 1 }}.</span
+              >{{ t(level) }}
+            </dt>
+            <dd class="type-meta text-surface-600 dark:text-surface-300 mt-1">
+              <p>{{ t(level + 'Help') }}</p>
+            </dd>
           </div>
         }
       </dl>
     </details>
+  </section>
+
+  @if (isLoading()) {
+    <pantry-spinner [label]="t('loading')" />
   }
+  @if (sectionStates().items === 'error') {
+    <div
+      role="alert"
+      class="glass-card rounded-2xl p-5 flex flex-wrap items-center justify-between gap-3">
+      <p class="type-body text-surface-700 dark:text-surface-200">{{ t('stockFailure') }}</p>
+      <button class="btn-secondary" type="button" (click)="fetchInventoryData()">
+        {{ t('retry') }}
+      </button>
+    </div>
+  }
+  @if (ready('items')) {
+    @if (itemsCount() === 0) {
+      <pantry-empty-state
+        icon="pi pi-box"
+        [title]="t('emptyTitle')"
+        [description]="t('emptyDescription')">
+        <a actions routerLink="/inventory/items/new" class="btn-primary">{{ t('add') }}</a>
+      </pantry-empty-state>
+    } @else {
+      <div class="inventory-summary glass-card rounded-2xl">
+        <section class="inventory-summary__attention" aria-labelledby="inventory-attention">
+          <header class="inventory-summary__header">
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 min-h-[42px]">
+              <h2 id="inventory-attention" class="type-section-title">{{ t('attention') }}</h2>
+              @if (expiredCount() > 0 || expiringCount() > 0) {
+                <div class="flex flex-wrap items-center gap-2">
+                  @if (expiredCount() > 0) {
+                    <a
+                      routerLink="/inventory/items"
+                      [queryParams]="{ status: 'expired' }"
+                      class="min-h-[42px] inline-flex items-center rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-primary-500">
+                      <pantry-badge variant="expired" [dot]="true">{{
+                        t('expiredCount', { count: expiredCount() })
+                      }}</pantry-badge>
+                    </a>
+                  }
+                  @if (expiringCount() > 0) {
+                    <a
+                      routerLink="/inventory/items"
+                      [queryParams]="{ status: 'expiring' }"
+                      class="min-h-[42px] inline-flex items-center rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-primary-500">
+                      <pantry-badge variant="expiring" [dot]="true">{{
+                        t('expiringCount', { count: expiringCount() })
+                      }}</pantry-badge>
+                    </a>
+                  }
+                </div>
+              }
+            </div>
+            @if (expiredCount() === 0 && expiringCount() === 0) {
+              <p class="type-meta text-surface-600 dark:text-surface-300 mt-1">
+                {{ t('attentionDescription') }}
+              </p>
+            }
+          </header>
+          <div class="inventory-summary__body">
+            <ul class="divide-y divide-surface-200 dark:divide-surface-700">
+              @for (item of attentionItems(); track item.id) {
+                @let timing = expiryTiming(item);
+                <li>
+                  <a
+                    [routerLink]="['/inventory/items', item.id, 'edit']"
+                    class="inventory-attention-row rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700/50 focus-visible:outline-2 focus-visible:outline-primary-500">
+                    <div class="inventory-attention-row__item min-w-0">
+                      <span class="type-label break-words">{{ item.name }}</span>
+                      <p class="type-meta text-surface-600 dark:text-surface-300 mt-1 break-words">
+                        {{ item.quantity }} {{ item.unit.shortName || item.unit.name }} ·
+                        {{ locationName(item) || t('noLocation') }}
+                      </p>
+                    </div>
+                    <div
+                      class="inventory-attention-row__expiry type-meta flex flex-wrap gap-x-3 gap-y-1 sm:block">
+                      <span
+                        [class.text-rose-700]="bucket(item) === 'expired'"
+                        [class.dark:text-rose-300]="bucket(item) === 'expired'"
+                        [class.text-amber-700]="bucket(item) === 'expiring'"
+                        [class.dark:text-amber-300]="bucket(item) === 'expiring'"
+                        >{{ t(timing.key, { count: timing.count }) }}</span
+                      >
+                      <p class="sm:mt-1 text-surface-600 dark:text-surface-300">
+                        {{ item.expirationDate | date: 'mediumDate' }}
+                      </p>
+                    </div>
+                    <i
+                      class="inventory-attention-row__arrow pi pi-angle-right text-surface-400"
+                      aria-hidden="true"></i>
+                  </a>
+                </li>
+              } @empty {
+                <li class="type-body py-4 text-surface-600 dark:text-surface-300">
+                  {{ t('nothingUrgent') }}
+                </li>
+              }
+            </ul>
+            @if (undatedCount() > 0) {
+              <p class="type-meta text-surface-600 dark:text-surface-300 mt-3">
+                {{
+                  t(undatedCount() === 1 ? 'undatedCount_one' : 'undatedCount', {
+                    count: undatedCount(),
+                  })
+                }}
+              </p>
+            }
+          </div>
+        </section>
+        <section
+          class="inventory-summary__locations border-t xl:border-t-0 xl:border-l border-surface-200 dark:border-surface-700"
+          aria-labelledby="inventory-locations">
+          <header class="inventory-summary__header">
+            <h2 id="inventory-locations" class="type-section-title min-h-[42px] flex items-center">
+              {{ t('locations') }}
+            </h2>
+            <p class="type-meta text-surface-600 dark:text-surface-300 mt-2">
+              {{ t('locationDescription') }}
+            </p>
+          </header>
+          <div class="inventory-summary__body">
+            @if (ready('locations')) {
+              <ul class="divide-y divide-surface-200 dark:divide-surface-700">
+                @for (location of locationStats(); track location.id) {
+                  <li class="flex items-baseline justify-between gap-4 py-3">
+                    <span class="type-label break-words min-w-0">{{
+                      location.name || t('noLocation')
+                    }}</span>
+                    <span class="type-label tabular-nums shrink-0">{{ location.count }}</span>
+                  </li>
+                }
+              </ul>
+            } @else if (sectionStates().locations === 'error') {
+              <div role="alert">
+                <p class="type-meta text-surface-600 dark:text-surface-300">
+                  {{ t('locationFailure') }}
+                </p>
+                <button class="btn-secondary mt-3" type="button" (click)="fetchInventoryData()">
+                  {{ t('retry') }}
+                </button>
+              </div>
+            } @else {
+              <p class="type-meta text-surface-600 dark:text-surface-300 py-3">
+                {{ t('loadingSummary') }}
+              </p>
+            }
+          </div>
+        </section>
+      </div>
+    }
+  }
+
+  @if (
+    sectionStates().categories === 'error' ||
+    sectionStates().groups === 'error' ||
+    sectionStates().ingredients === 'error'
+  ) {
+    <div role="alert" class="flex flex-wrap items-center justify-between gap-3">
+      <p class="type-body text-surface-700 dark:text-surface-200">{{ t('catalogFailure') }}</p>
+      <button class="btn-secondary" type="button" (click)="fetchInventoryData()">
+        {{ t('retry') }}
+      </button>
+    </div>
+  }
+
+  <section aria-labelledby="inventory-explore">
+    <h2 id="inventory-explore" class="type-section-title mb-4">{{ t('explore') }}</h2>
+    <nav
+      [attr.aria-label]="t('navigation')"
+      class="glass-card rounded-2xl divide-y divide-surface-200 dark:divide-surface-700 overflow-hidden">
+      <a
+        routerLink="/inventory/ingredients"
+        class="p-4 flex items-center justify-between gap-4 min-h-[42px] transition-colors hover:bg-surface-100/50 dark:hover:bg-surface-800/50 focus-visible:outline-2 focus-visible:outline-primary-500">
+        <div class="min-w-0">
+          <span class="type-label text-surface-900 dark:text-white block">{{
+            t('ingredients')
+          }}</span>
+          <p class="type-meta text-surface-600 dark:text-surface-300 mt-0.5">
+            @switch (ingredientsSummaryState()) {
+              @case ('ready-full') {
+                {{
+                  t(ingredientsCount() === 1 ? 'ingredientsSummary_one' : 'ingredientsSummary', {
+                    count: ingredientsCount(),
+                    stocked: stockedIngredientsCount(),
+                  })
+                }}
+              }
+              @case ('ready-ingredients-only') {
+                {{
+                  t(ingredientsCount() === 1 ? 'ingredientCount_one' : 'ingredientCount', {
+                    count: ingredientsCount(),
+                  })
+                }}
+              }
+              @case ('loading') {
+                {{ t('loadingSummary') }}
+              }
+              @default {
+                {{ t('unavailable') }}
+              }
+            }
+          </p>
+        </div>
+        <i class="pi pi-arrow-right text-surface-400 shrink-0 ml-auto" aria-hidden="true"></i>
+      </a>
+
+      <a
+        routerLink="/inventory/items"
+        class="p-4 flex items-center justify-between gap-4 min-h-[42px] transition-colors hover:bg-surface-100/50 dark:hover:bg-surface-800/50 focus-visible:outline-2 focus-visible:outline-primary-500">
+        <div class="min-w-0">
+          <span class="type-label text-surface-900 dark:text-white block">{{ t('stock') }}</span>
+          <p class="type-meta text-surface-600 dark:text-surface-300 mt-0.5">
+            @switch (itemsSummaryState()) {
+              @case ('ready') {
+                {{
+                  t(stockedItemsCount() === 1 ? 'stockedItemsSummary_one' : 'stockedItemsSummary', {
+                    count: stockedItemsCount(),
+                  })
+                }}
+              }
+              @case ('loading') {
+                {{ t('loadingSummary') }}
+              }
+              @default {
+                {{ t('unavailable') }}
+              }
+            }
+          </p>
+        </div>
+        <i class="pi pi-arrow-right text-surface-400 shrink-0 ml-auto" aria-hidden="true"></i>
+      </a>
+
+      <a
+        routerLink="/inventory/groups"
+        class="p-4 flex items-center justify-between gap-4 min-h-[42px] transition-colors hover:bg-surface-100/50 dark:hover:bg-surface-800/50 focus-visible:outline-2 focus-visible:outline-primary-500">
+        <div class="min-w-0">
+          <span class="type-label text-surface-900 dark:text-white block">{{ t('groups') }}</span>
+          <p class="type-meta text-surface-600 dark:text-surface-300 mt-0.5">
+            @switch (groupsSummaryState()) {
+              @case ('ready') {
+                {{
+                  t(
+                    categoriesCount() === 1
+                      ? groupsCount() === 1
+                        ? 'organizationSummary_oneBoth'
+                        : 'organizationSummary_oneCat'
+                      : groupsCount() === 1
+                        ? 'organizationSummary_oneGrp'
+                        : 'organizationSummary',
+                    { categories: categoriesCount(), groups: groupsCount() }
+                  )
+                }}
+              }
+              @case ('loading') {
+                {{ t('loadingSummary') }}
+              }
+              @default {
+                {{ t('unavailable') }}
+              }
+            }
+          </p>
+        </div>
+        <i class="pi pi-arrow-right text-surface-400 shrink-0 ml-auto" aria-hidden="true"></i>
+      </a>
+    </nav>
+  </section>
 </div>
