@@ -1,0 +1,55 @@
+{
+  "route": "/shopping-list",
+  "observedUrl": "http://localhost:4200/shopping-list",
+  "theme": "light",
+  "observedTheme": "light",
+  "viewport": {
+    "name": "mobile",
+    "width": 390,
+    "height": 844
+  },
+  "state": "populated list with checked and unchecked items",
+  "fixture": "synthetic-kitchen-v1",
+  "fixtureNow": "2026-10-03T12:00:00.000Z",
+  "revision": "cd6074abc0107030ae3b485e5d909774c8a2f9f2",
+  "workingTreeDirty": true,
+  "trackedDiffSha256": "16ca6dc25e2a6f27fa5276d2285c2c9e56277e4a314245d0954564f63677cd20",
+  "sourceTreeSha256": "25f4b20a7d3275b10515a94f88a92f59b32fd3ea725d0be1308f0f49ca222d3c",
+  "project": "chromium",
+  "browserVersion": "143.0.7499.4",
+  "platform": "darwin",
+  "capturedAt": "2026-10-04T07:05:55.325Z",
+  "reducedMotion": true,
+  "capture": "shopping-mobile-light.png",
+  "typography": {
+    "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+    "fontSize": "24px",
+    "fontWeight": "600",
+    "lineHeight": "28.8px",
+    "letterSpacing": "-0.6px"
+  },
+  "innerScrollContainers": [
+    {
+      "tag": "DIV",
+      "clientHeight": 780,
+      "scrollHeight": 961,
+      "scrollTop": 0
+    }
+  ],
+  "captureLimit": "The application scrolls inside a fixed-height shell. Full-page browser capture can omit content below the inner scroll viewport; inspect scroll-container metadata and exercise lower sections separately.",
+  "horizontalOverflow": false,
+  "observations": {
+    "unexpectedRequests": [],
+    "servedRequests": [
+      "POST /api/v1/auth/refresh",
+      "GET /api/v1/me/profile",
+      "GET /api/v1/shopping-list",
+      "GET /api/v1/meal-plans"
+    ],
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "httpErrors": []
+  },
+  "reviewStatus": "Pending human visual inspection; capture does not establish acceptance"
+}

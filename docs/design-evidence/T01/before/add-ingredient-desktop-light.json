@@ -1,0 +1,174 @@
+{
+  "route": "/inventory/ingredients/new",
+  "viewport": {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900
+  },
+  "theme": "light",
+  "fixture": "synthetic-kitchen-v1",
+  "revision": "cd6074abc0107030ae3b485e5d909774c8a2f9f2",
+  "capturedAt": "2026-10-04T01:38:53.925Z",
+  "platform": "darwin",
+  "browser": "143.0.7499.4",
+  "mode": "before-observation",
+  "geometry": {
+    "main": {
+      "x": 256,
+      "y": 0,
+      "width": 1184,
+      "height": 900,
+      "right": 1440,
+      "bottom": 900
+    },
+    "breadcrumb": {
+      "x": 288,
+      "y": 24,
+      "width": 1120,
+      "height": 34,
+      "right": 1408,
+      "bottom": 58
+    },
+    "title": {
+      "x": 470,
+      "y": 101,
+      "width": 190.75,
+      "height": 36,
+      "right": 660.75,
+      "bottom": 137
+    },
+    "page": {
+      "x": 400,
+      "y": 74,
+      "width": 896,
+      "height": 435,
+      "right": 1296,
+      "bottom": 509
+    },
+    "card": {
+      "x": 416,
+      "y": 148,
+      "width": 864,
+      "height": 337,
+      "right": 1280,
+      "bottom": 485
+    },
+    "tableContainer": null,
+    "header": {
+      "x": 416,
+      "y": 98,
+      "width": 864,
+      "height": 42,
+      "right": 1280,
+      "bottom": 140
+    },
+    "headerButtons": [
+      {
+        "x": 416,
+        "y": 98,
+        "width": 42,
+        "height": 42,
+        "right": 458,
+        "bottom": 140
+      }
+    ],
+    "statusButtons": [],
+    "scrollWidth": 896,
+    "clientWidth": 896,
+    "mainScrollWidth": 1184,
+    "mainClientWidth": 1184,
+    "viewportWidth": 1440
+  },
+  "roles": {
+    "page-title": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 30,
+      "fontWeight": "600",
+      "lineHeight": 36,
+      "textTransform": "none",
+      "height": 36,
+      "width": 190.75,
+      "radius": 0,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "none"
+    },
+    "input": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 14,
+      "fontWeight": "500",
+      "lineHeight": 21,
+      "textTransform": "none",
+      "height": 42,
+      "width": 814,
+      "radius": 12,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "rgba(249, 115, 22, 0.016) 0px 0px 0px 0.132826px"
+    },
+    "select-control": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 14,
+      "fontWeight": "500",
+      "lineHeight": 21,
+      "textTransform": "none",
+      "height": 42,
+      "width": 814,
+      "radius": 12,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "none"
+    },
+    "field-label": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 13,
+      "fontWeight": "500",
+      "lineHeight": 18.2,
+      "textTransform": "none",
+      "height": 18.1875,
+      "width": 241.390625,
+      "radius": 0,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "none"
+    },
+    "select-overlay": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "lineHeight": 21,
+      "textTransform": "none",
+      "height": 139.57388305664062,
+      "width": 814,
+      "radius": 12,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "rgba(0, 0, 0, 0.15) 0px 10px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px"
+    }
+  },
+  "fieldLabel": {
+    "text": "Ingredient Group (Taxonomy Category)",
+    "clientWidth": 241,
+    "scrollWidth": 241,
+    "bounds": {
+      "x": 441,
+      "y": 241.90625,
+      "width": 241.390625,
+      "height": 18.1875,
+      "top": 241.90625,
+      "right": 682.390625,
+      "bottom": 260.09375,
+      "left": 441
+    }
+  },
+  "overlay": {
+    "x": 441,
+    "y": 311,
+    "width": 814,
+    "height": 139.57388305664062
+  },
+  "unexpectedRequests": [],
+  "errors": [],
+  "reviewStatus": "Requires human screenshot inspection; Windows/platform coverage not established",
+  "captureLimit": "Viewport screenshots show the fixed-height shell. Content below its inner scroll viewport needs separate inspection."
+}

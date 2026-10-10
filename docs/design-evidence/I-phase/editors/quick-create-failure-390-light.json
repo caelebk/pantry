@@ -1,0 +1,11 @@
+{
+  "route": "/inventory/items/new",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "theme": "light",
+  "state": "Recoverable creation failure",
+  "fixture": "synthetic-kitchen-v1",
+  "api": "All requests intercepted with synthetic editor fixtures."
+}

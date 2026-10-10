@@ -1,0 +1,48 @@
+{
+  "route": "/inventory/ingredients/new",
+  "observedUrl": "http://localhost:4200/inventory/ingredients/new",
+  "theme": "light",
+  "observedTheme": "light",
+  "viewport": {
+    "name": "mobile",
+    "width": 390,
+    "height": 844
+  },
+  "state": "new compact form with long name entered; no submission",
+  "fixture": "synthetic-kitchen-v1",
+  "fixtureNow": "2026-10-03T12:00:00.000Z",
+  "revision": "cd6074abc0107030ae3b485e5d909774c8a2f9f2",
+  "workingTreeDirty": true,
+  "trackedDiffSha256": "bb4fa7bba58ccce790a9d9b8e34e54067964aea80286bf870cb5087db8530b01",
+  "sourceTreeSha256": "98893382efb0297908d4e6b5788cf052d750f4258c8fa80a4a80bc007c5abc76",
+  "project": "chromium",
+  "browserVersion": "143.0.7499.4",
+  "platform": "darwin",
+  "capturedAt": "2026-10-04T01:38:11.563Z",
+  "reducedMotion": true,
+  "capture": "add-ingredient-mobile-light.png",
+  "typography": {
+    "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+    "fontSize": "24px",
+    "fontWeight": "600",
+    "lineHeight": "28.8px",
+    "letterSpacing": "-0.6px"
+  },
+  "innerScrollContainers": [],
+  "captureLimit": "The application scrolls inside a fixed-height shell. Full-page browser capture can omit content below the inner scroll viewport; inspect scroll-container metadata and exercise lower sections separately.",
+  "horizontalOverflow": false,
+  "observations": {
+    "unexpectedRequests": [],
+    "servedRequests": [
+      "POST /api/v1/auth/refresh",
+      "GET /api/v1/me/profile",
+      "GET /api/v1/ingredient-groups",
+      "GET /api/v1/units"
+    ],
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [],
+    "httpErrors": []
+  },
+  "reviewStatus": "Pending human visual inspection; capture does not establish acceptance"
+}

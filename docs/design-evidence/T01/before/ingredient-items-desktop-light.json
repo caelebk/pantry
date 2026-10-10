@@ -1,0 +1,156 @@
+{
+  "route": "/inventory/items",
+  "viewport": {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900
+  },
+  "theme": "light",
+  "fixture": "synthetic-kitchen-v1",
+  "revision": "cd6074abc0107030ae3b485e5d909774c8a2f9f2",
+  "capturedAt": "2026-10-04T01:38:52.314Z",
+  "platform": "darwin",
+  "browser": "143.0.7499.4",
+  "mode": "before-observation",
+  "geometry": {
+    "main": {
+      "x": 256,
+      "y": 0,
+      "width": 1184,
+      "height": 900,
+      "right": 1440,
+      "bottom": 900
+    },
+    "breadcrumb": {
+      "x": 288,
+      "y": 24,
+      "width": 1120,
+      "height": 34,
+      "right": 1408,
+      "bottom": 58
+    },
+    "title": {
+      "x": 304,
+      "y": 101,
+      "width": 209.265625,
+      "height": 36,
+      "right": 513.265625,
+      "bottom": 137
+    },
+    "page": {
+      "x": 288,
+      "y": 74,
+      "width": 1120,
+      "height": 543.375,
+      "right": 1408,
+      "bottom": 617.375
+    },
+    "card": {
+      "x": 304,
+      "y": 246,
+      "width": 1088,
+      "height": 247.375,
+      "right": 1392,
+      "bottom": 493.375
+    },
+    "tableContainer": {
+      "x": 304,
+      "y": 246,
+      "width": 1088,
+      "height": 247.375,
+      "right": 1392,
+      "bottom": 493.375
+    },
+    "header": {
+      "x": 304,
+      "y": 98,
+      "width": 1088,
+      "height": 42,
+      "right": 1392,
+      "bottom": 140
+    },
+    "headerButtons": [
+      {
+        "x": 1233.84375,
+        "y": 98,
+        "width": 158.15625,
+        "height": 42,
+        "right": 1392,
+        "bottom": 140
+      }
+    ],
+    "statusButtons": [
+      {
+        "text": "All",
+        "x": 596.9375,
+        "y": 177,
+        "width": 42.0625,
+        "height": 32,
+        "right": 639,
+        "bottom": 209
+      },
+      {
+        "text": "Fresh",
+        "x": 643,
+        "y": 177,
+        "width": 71.953125,
+        "height": 32,
+        "right": 714.953125,
+        "bottom": 209
+      },
+      {
+        "text": "Near Expiry",
+        "x": 718.953125,
+        "y": 177,
+        "width": 110.421875,
+        "height": 32,
+        "right": 829.375,
+        "bottom": 209
+      },
+      {
+        "text": "Expired",
+        "x": 833.375,
+        "y": 177,
+        "width": 84.359375,
+        "height": 32,
+        "right": 917.734375,
+        "bottom": 209
+      },
+      {
+        "text": "Out of Stock",
+        "x": 921.734375,
+        "y": 177,
+        "width": 117.078125,
+        "height": 32,
+        "right": 1038.8125,
+        "bottom": 209
+      }
+    ],
+    "scrollWidth": 1120,
+    "clientWidth": 1120,
+    "mainScrollWidth": 1184,
+    "mainClientWidth": 1184,
+    "viewportWidth": 1440
+  },
+  "roles": {
+    "page-title": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 30,
+      "fontWeight": "600",
+      "lineHeight": 36,
+      "textTransform": "none",
+      "height": 36,
+      "width": 209.265625,
+      "radius": 0,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "none"
+    }
+  },
+  "fieldLabel": null,
+  "overlay": null,
+  "unexpectedRequests": [],
+  "errors": [],
+  "reviewStatus": "Requires human screenshot inspection; Windows/platform coverage not established",
+  "captureLimit": "Viewport screenshots show the fixed-height shell. Content below its inner scroll viewport needs separate inspection."
+}
