@@ -123,8 +123,10 @@
         </div>
 
         <!-- Ingredient Group Dropdown Filter -->
-        <div class="flex items-center gap-1">
+        <div class="flex min-w-0 max-w-full items-center gap-1">
           <p-select
+            data-select-variant="filter"
+            class="min-w-0 max-w-full"
             [options]="ingredientGroups()"
             [ngModel]="selectedGroup()"
             (ngModelChange)="onGroupChange($event)"
@@ -135,19 +137,15 @@
             filterPlaceholder="Search groups..."
             [showClear]="true"
             styleClass="pantry-filter-select"
+            panelStyleClass="p-dialog-glass text-xs pantry-filter-select-overlay"
             appendTo="body">
             <ng-template pTemplate="selectedItem" let-selected>
               @if (selected) {
                 <div
-                  class="type-label flex min-w-0 items-center gap-1.5 text-surface-600 dark:text-surface-400">
+                  class="text-sm flex min-w-0 items-center gap-1.5 text-surface-600 dark:text-surface-400">
                   <span class="truncate">{{ selected.name }}</span>
                 </div>
               }
-            </ng-template>
-            <ng-template pTemplate="item" let-item>
-              <div class="type-label flex items-center gap-2 py-0.5">
-                <span>{{ item.name }}</span>
-              </div>
             </ng-template>
           </p-select>
         </div>

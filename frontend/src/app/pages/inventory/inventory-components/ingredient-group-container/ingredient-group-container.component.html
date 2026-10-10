@@ -16,6 +16,7 @@
       <!-- Nutrient Group MultiSelect Dropdown -->
       <div class="flex items-center gap-1">
         <p-multiselect
+          data-select-variant="filter"
           [options]="nutrientSelectOptions()"
           [ngModel]="selectedNutrientTypeIds()"
           (ngModelChange)="onNutrientTypesSelect($event)"
@@ -51,6 +52,7 @@
       <!-- Ingredient Group MultiSelect Dropdown -->
       <div class="flex items-center gap-1">
         <p-multiselect
+          data-select-variant="filter"
           [options]="categoryGroupOptions()"
           [ngModel]="selectedCategoryIds()"
           (ngModelChange)="onCategoryIdsSelect($event)"

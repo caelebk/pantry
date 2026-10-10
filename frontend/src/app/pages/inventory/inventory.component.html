@@ -109,6 +109,7 @@
         <!-- Location Filter Styled Dropdown (PrimeNG p-select) -->
         <div class="flex items-center gap-1">
           <p-select
+            data-select-variant="filter"
             [(ngModel)]="selectedLocationId"
             (onChange)="resetPagination()"
             [options]="locationSelectOptions"

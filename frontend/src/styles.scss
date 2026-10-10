@@ -723,14 +723,41 @@ textarea[pTextarea],
   color: #ffffff !important;
 }
 
-/* Dropdown filters must match segmented pill bars (bg-surface-100 / dark:bg-surface-800) */
-.p-select,
-.p-multiselect {
+/* Form fields share the same surface across inputs and dropdowns. */
+pantry-form-field {
+  --pantry-form-control-background: rgba(255, 255, 255, 0.8);
+  --pantry-form-control-border: var(--color-surface-200);
+}
+
+:where(.dark, .dark *) pantry-form-field {
+  --pantry-form-control-background: color-mix(in srgb, var(--color-surface-900) 80%, transparent);
+  --pantry-form-control-border: var(--color-surface-700);
+}
+
+pantry-form-field
+  :is(.p-inputtext, .p-textarea, textarea[pTextarea], .p-inputnumber-input, .p-datepicker),
+:is(.p-select, .p-multiselect):where(
+  :not([data-select-variant='filter']):not(.pantry-filter-select)
+) {
+  background-color: var(--pantry-form-control-background, var(--color-surface-100)) !important;
+  border-color: var(--pantry-form-control-border, var(--color-surface-200)) !important;
+}
+
+:where(.dark, .dark *)
+  :is(.p-select, .p-multiselect):where(
+    :not([data-select-variant='filter']):not(.pantry-filter-select)
+  ) {
+  background-color: var(--pantry-form-control-background, rgba(28, 25, 23, 0.55)) !important;
+  border-color: var(--pantry-form-control-border, rgba(255, 255, 255, 0.14)) !important;
+}
+
+/* Explicit filter variants retain the segmented pill bar surface. */
+:is(.p-select, .p-multiselect):is([data-select-variant='filter'], .pantry-filter-select) {
   background-color: var(--color-surface-100) !important;
 }
 
-:where(.dark, .dark *) .p-select,
-:where(.dark, .dark *) .p-multiselect {
+:where(.dark, .dark *)
+  :is(.p-select, .p-multiselect):is([data-select-variant='filter'], .pantry-filter-select) {
   background-color: var(--color-surface-800) !important;
 }
 
@@ -846,6 +873,23 @@ textarea::placeholder {
 .p-multiselect-dropdown {
   color: var(--color-surface-400) !important;
   padding-left: 0.5rem !important;
+}
+
+/* Form values and placeholders follow text input colors and weights. */
+:is(.p-select, .p-multiselect):where(
+  :not([data-select-variant='filter']):not(.pantry-filter-select)
+) {
+  .p-select-label,
+  .p-multiselect-label,
+  .p-multiselect-label-container {
+    color: inherit !important;
+  }
+
+  .p-select-label.p-placeholder,
+  .p-multiselect-label.p-placeholder {
+    color: var(--color-surface-400) !important;
+    font-weight: 400 !important;
+  }
 }
 
 :where(.dark, .dark *) .p-select-dropdown,
@@ -1255,6 +1299,29 @@ p-inputnumber {
 :where(.dark, .dark *) .p-multiselect-option.p-multiselect-option-selected {
   background-color: rgba(249, 115, 22, 0.25) !important;
   color: var(--color-primary-400) !important;
+}
+
+/* Searchable table filter panels: readable rows and space for the search icon. */
+.pantry-filter-select-overlay {
+  min-width: min(16rem, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+
+  .p-select-header {
+    padding: 0.75rem;
+  }
+
+  .p-select-filter {
+    width: 100%;
+    padding-inline-end: 2.5rem !important;
+  }
+
+  .p-select-option {
+    min-height: 42px;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }
 
 /* Checkbox Styling — soft neutral gray when unchecked, brand orange when checked */
