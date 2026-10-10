@@ -3,7 +3,6 @@ import { IngredientGroup } from '@models/ingredient-group.model';
 
 interface CatalogView {
   search: string;
-  fromGroups?: boolean;
   queryKey?: string;
   group: IngredientGroup | null;
   status: 'all' | 'in-stock' | 'out-of-stock';

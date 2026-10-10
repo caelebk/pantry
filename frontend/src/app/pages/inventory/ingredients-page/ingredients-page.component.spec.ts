@@ -189,7 +189,7 @@ describe('IngredientsPageComponent', () => {
     });
   }
 
-  it('retains the group catalog context when returning from ingredient detail', () => {
+  it('retains the group catalog context when returning from ingredient detail without retaining back link', () => {
     component.ingredientGroups.set([{ id: 1, name: 'Baking' }]);
     queryParams.next(convertToParamMap({ groupId: '1', from: 'groups' }));
     fixture.detectChanges();
@@ -201,7 +201,33 @@ describe('IngredientsPageComponent', () => {
     fixture.detectChanges();
     expect(component.selectedGroup()?.id).toBe(1);
     expect(component.searchQuery()).toBe('Flour');
+    expect(component.fromGroups()).toBe(false);
+    expect(fixture.nativeElement.querySelector('a[href="/inventory/groups"]')).toBeNull();
+  });
+
+  it('does not display back to categories & groups navigation when navigating directly to ingredients', () => {
+    queryParams.next(convertToParamMap({}));
+    fixture = TestBed.createComponent(IngredientsPageComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    expect(component.fromGroups()).toBe(false);
+    expect(fixture.nativeElement.querySelector('a[href="/inventory/groups"]')).toBeNull();
+  });
+
+  it('does not persist back to categories & groups navigation after navigating to ingredients without from=groups', () => {
+    component.ingredientGroups.set([{ id: 1, name: 'Baking' }]);
+    queryParams.next(convertToParamMap({ groupId: '1', from: 'groups' }));
+    fixture.detectChanges();
+    expect(component.fromGroups()).toBe(true);
     expect(fixture.nativeElement.querySelector('a[href="/inventory/groups"]')).toBeTruthy();
+
+    fixture.destroy();
+    queryParams.next(convertToParamMap({}));
+    fixture = TestBed.createComponent(IngredientsPageComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    expect(component.fromGroups()).toBe(false);
+    expect(fixture.nativeElement.querySelector('a[href="/inventory/groups"]')).toBeNull();
   });
 
   it('preserves edited filters when browser Back returns to the linked catalog', () => {

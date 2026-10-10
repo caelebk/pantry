@@ -81,7 +81,7 @@ export class IngredientsPageComponent implements OnDestroy {
   public ingredientGroups = signal<IngredientGroup[]>([]);
   public isLoading = signal<boolean>(true);
   public searchQuery = signal<string>('');
-  public fromGroups = signal(false);
+  public readonly fromGroups = computed(() => this.queryParams().get('from') === 'groups');
   public unavailableGroup = signal(false);
   public selectedGroup = signal<IngredientGroup | null>(null);
   public selectedStatusFilter = signal<StatusFilterOption>('all');
@@ -115,7 +115,6 @@ export class IngredientsPageComponent implements OnDestroy {
           this.sortDirection.set(saved?.direction ?? 'asc');
           this.currentPage.set(saved?.page ?? 1);
           this.pageSize.set(saved?.pageSize ?? 15);
-          this.fromGroups.set(saved?.fromGroups ?? false);
           this.unavailableGroup.set(false);
           this.ingredients.set([]);
           this.items.set([]);
@@ -129,7 +128,6 @@ export class IngredientsPageComponent implements OnDestroy {
           const id = groupId && /^[1-9]\d*$/.test(groupId) ? Number(groupId) : null;
           this.linkedGroupId = id !== null && Number.isSafeInteger(id) ? id : null;
           this.pendingGroupQuery = true;
-          this.fromGroups.set(fromGroups);
           this.searchQuery.set('');
           this.selectedGroup.set(null);
           this.selectedStatusFilter.set('all');
@@ -138,7 +136,6 @@ export class IngredientsPageComponent implements OnDestroy {
         } else if (queryChanged && this.queryKey !== undefined && !kitchenChanged) {
           this.pendingGroupQuery = false;
           this.selectedGroup.set(null);
-          this.fromGroups.set(false);
           this.unavailableGroup.set(false);
           this.resetPagination();
         }
@@ -169,7 +166,6 @@ export class IngredientsPageComponent implements OnDestroy {
     if (!this.kitchenId) return;
     this.catalogState.views.set(this.kitchenId, {
       search: this.searchQuery(),
-      fromGroups: this.fromGroups(),
       queryKey: this.queryKey,
       group: this.selectedGroup(),
       status: this.selectedStatusFilter(),
