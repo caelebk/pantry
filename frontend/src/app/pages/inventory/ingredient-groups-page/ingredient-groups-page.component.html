@@ -44,7 +44,8 @@
     <div class="flex flex-col gap-3">
       @for (section of sections(); track section.category.id) {
         <section
-          class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80"
+          class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 taxonomy-section"
+          [style.border-left-color]="section.category.color || 'transparent'"
           [attr.aria-labelledby]="'category-' + section.category.id">
           <h2 [id]="'category-' + section.category.id" class="min-w-0">
             <button
@@ -89,6 +90,13 @@
                     ) | transloco: { count: section.totalGroups }
                   }}</span
                 >
+                @if (!section.unclassified && section.category.description) {
+                  <span
+                    class="basis-full type-meta text-surface-500 dark:text-surface-400 truncate"
+                    [title]="section.category.description">
+                    {{ section.category.description }}
+                  </span>
+                }
               </span>
               <i
                 class="pi text-sm shrink-0"
@@ -106,49 +114,78 @@
                   class="border-t border-surface-200/60 dark:border-surface-800/80 px-4 sm:px-5 py-3 text-sm text-surface-600 dark:text-surface-300 break-words">
                   {{ 'inventory.taxonomy.unclassifiedDescription' | transloco }}
                 </p>
-              } @else if (section.category.description) {
-                <p
-                  class="border-t border-surface-200/60 dark:border-surface-800/80 px-4 sm:px-5 py-3 text-sm text-surface-600 dark:text-surface-300 break-words">
-                  {{ section.category.description }}
-                </p>
               }
               @if (section.groups.length) {
                 <ul
-                  class="border-t border-surface-200/60 dark:border-surface-800/80 divide-y divide-surface-200/60 dark:divide-surface-800/80">
+                  class="border-t border-surface-200/60 dark:border-surface-800/80 p-3 sm:p-4 space-y-2.5">
                   @for (group of section.groups; track group.id) {
-                    <li class="flex items-center justify-between gap-3 px-4 sm:px-5 py-2">
+                    <li
+                      class="sub-card sub-card-hover rounded-xl p-3 sm:px-4 sm:py-3 flex items-center justify-between gap-3 transition-all cursor-pointer group"
+                      (click)="navigateToIngredients(group.id, $event)">
                       <div
-                        class="min-w-0 flex-1 flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4">
+                        class="min-w-0 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 pr-1 sm:pr-2">
                         <h3
                           class="min-w-0 text-sm font-semibold text-surface-900 dark:text-white break-words">
                           <a
                             routerLink="/inventory/ingredients"
                             [queryParams]="{ groupId: group.id, from: 'groups' }"
-                            class="inline-block max-w-full min-h-[42px] py-2.5 rounded-md hover:text-primary-600 dark:hover:text-primary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
-                            >{{ group.name }}</a
-                          >
+                            (click)="$event.stopPropagation()"
+                            class="inline-block max-w-full group-hover:text-primary-600 dark:group-hover:text-primary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 py-1 rounded-md transition-colors"
+                            [attr.aria-label]="
+                              'inventory.taxonomy.viewIngredientsFor'
+                                | transloco: { name: group.name }
+                            ">
+                            {{ group.name }}
+                          </a>
                         </h3>
-                        <p class="text-sm text-surface-500 dark:text-surface-400 shrink-0">
-                          {{
-                            ((ingredientCounts().get(group.id) ?? 0) === 1
-                              ? 'inventory.taxonomy.ingredientCountOne'
-                              : 'inventory.taxonomy.ingredientCount'
-                            ) | transloco: { count: ingredientCounts().get(group.id) ?? 0 }
-                          }}
-                        </p>
+                        <div class="flex flex-wrap items-center gap-1.5 shrink-0">
+                          @if (group.expiredCount) {
+                            <pantry-badge variant="expired" size="sm" [dot]="true">
+                              {{
+                                'inventory.taxonomy.expiredCount'
+                                  | transloco: { count: group.expiredCount }
+                              }}
+                            </pantry-badge>
+                          }
+                          @if (group.expiringCount) {
+                            <pantry-badge variant="expiring" size="sm" [dot]="true">
+                              {{
+                                'inventory.taxonomy.expiringCount'
+                                  | transloco: { count: group.expiringCount }
+                              }}
+                            </pantry-badge>
+                          }
+                          @if (group.inStockCount) {
+                            <pantry-badge variant="fresh" size="sm" [dot]="true">
+                              {{
+                                'inventory.taxonomy.inStockCount'
+                                  | transloco: { count: group.inStockCount }
+                              }}
+                            </pantry-badge>
+                          }
+                          <pantry-badge variant="neutral" size="sm">
+                            {{
+                              ((ingredientCounts().get(group.id) ?? 0) === 1
+                                ? 'inventory.taxonomy.ingredientCountOne'
+                                : 'inventory.taxonomy.ingredientCount'
+                              ) | transloco: { count: ingredientCounts().get(group.id) ?? 0 }
+                            }}
+                          </pantry-badge>
+                        </div>
                       </div>
                       <a
                         [routerLink]="['/inventory/groups', group.id, 'edit']"
                         [queryParams]="{ from: 'groups' }"
-                        class="btn-ghost shrink-0 w-[42px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+                        (click)="$event.stopPropagation()"
+                        class="btn-icon-sm text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
                         [attr.aria-label]="
                           'inventory.taxonomy.editGroupNamed' | transloco: { name: group.name }
                         "
                         [attr.title]="
                           'inventory.taxonomy.editGroupNamed' | transloco: { name: group.name }
-                        "
-                        ><i class="pi pi-pencil" aria-hidden="true"></i
-                      ></a>
+                        ">
+                        <i class="pi pi-pencil text-xs" aria-hidden="true"></i>
+                      </a>
                     </li>
                   }
                 </ul>

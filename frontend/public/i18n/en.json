@@ -241,6 +241,9 @@
     "taxonomy": {
       "title": "Ingredient Categories & Groups",
       "addGroup": "Add Ingredient Group",
+      "expiredCount": "{{count}} expired",
+      "expiringCount": "{{count}} expiring",
+      "inStockCount": "{{count}} in stock",
       "loading": "Loading categories and groups…",
       "loadError": "Unable to load categories and groups",
       "loadErrorDescription": "Try again to load your ingredient organization.",

@@ -6,7 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
 import { IngredientGroup } from '@models/ingredient-group.model';
@@ -14,7 +14,7 @@ import { Ingredient } from '@models/ingredient.model';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
-import { EmptyStateComponent, SearchInputComponent, SpinnerComponent } from '@ui';
+import { BadgeComponent, EmptyStateComponent, SearchInputComponent, SpinnerComponent } from '@ui';
 import { PrimeIcons } from 'primeng/api';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
@@ -25,6 +25,7 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [
     RouterLink,
     TranslocoModule,
+    BadgeComponent,
     EmptyStateComponent,
     SearchInputComponent,
     SpinnerComponent,
@@ -34,6 +35,7 @@ import { AuthService } from '../../../core/services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientGroupsPageComponent {
+  private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly ingredientService = inject(IngredientService);
   private readonly groupService = inject(IngredientGroupService);
@@ -160,5 +162,15 @@ export class IngredientGroupsPageComponent {
 
   emojiIcon(icon?: string): string | null {
     return icon && /\p{Extended_Pictographic}/u.test(icon) && icon.length <= 16 ? icon : null;
+  }
+
+  navigateToIngredients(groupId: number, event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('a[href*="/edit"], button')) {
+      return;
+    }
+    this.router.navigate(['/inventory/ingredients'], {
+      queryParams: { groupId, from: 'groups' },
+    });
   }
 }
