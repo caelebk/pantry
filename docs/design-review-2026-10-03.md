@@ -2,6 +2,8 @@
 
 Review date: October 3, 2026. Scope: all routed page templates, shared navigation and feedback, and the remaining legacy page templates. Prepared through parallel inventory, planning/shopping, and independent design-system exploration.
 
+Implementation progress, accepted decisions, and upcoming work are tracked in the [living UI cleanup plan](ui-cleanup-plan.md). This review retains the original findings and evidence limits.
+
 **Status: comprehensive source-based audit; rendered review remains blocked.** This is a cleanup proposal, not an implemented redesign or a claim that every visible state has been tested. The current working tree already contains extensive frontend edits; this review examines that working tree, not only the committed version. No application source changes were made for the review.
 
 ## Contents
@@ -951,3 +953,9 @@ Use names such as `inventory-items__390x844__dark__filtered-before.png` and `inv
 - The dev server failed on the missing native CSS module. Playwright failed on sandbox permission. No live UI, screenshot, keyboard, contrast, or motion verification was completed.
 - No backend code was changed and backend tests were not run for this documentation-only review. No new UI components, tokens, variants, or page overrides were introduced.
 - Existing application changes were preserved. The deliverable is this Markdown review; actual redesign implementation and final visual acceptance remain future work.
+
+## Implementation follow-up — Ingredient phase
+
+I01–I10 and quantity-aware availability/fabricated preview fixes are implemented on `feat/ui-cleanup`. Following user feedback, Stock, Ingredients and Groups preserve the original table character with common shaded headers, badge treatment, frames and controls. Each filter bar is one row at all widths, with secondary controls in Filters/More panels. Shared editors, reconciliation safeguards and explicit membership updates replace the inconsistent forms and interaction paths. See the [living plan](ui-cleanup-plan.md) and [I-phase evidence](design-evidence/I-phase/README.md) for current verification and remaining work; this audit remains the original diagnosis.
+
+**Subsequent rollback:** the user rejected the Ingredient cleanup and requested the original pages. Their original page/form implementations have been restored; the implementation follow-up above is historical. See [rollback verification](design-evidence/inventory-rollback/README.md).

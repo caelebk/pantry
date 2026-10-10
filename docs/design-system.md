@@ -30,27 +30,86 @@
 
 ## 2. Design Token Taxonomy
 
+### Page geometry pilot (S01)
+
+The app shell's `main` owns outer gutters: 16px on phones, 24px from the small
+breakpoint and 32px from the large breakpoint, within its existing `max-w-7xl`
+workspace. Migrated pages must not add another outer `px-*` or `py-*` wrapper.
+Breadcrumb area, page heading and content share that shell edge.
+
+- `page-layout`: full workspace width, minimum width zero, 24px section gaps.
+- `page-layout page-layout--form`: a left-aligned form with a 640px maximum
+  measure. Use it for compact forms; do not narrow tables or long editors.
+- `page-header`: title/context first, actions next; stacks on phones and uses a
+  horizontal arrangement from 640px.
+- `page-header__actions`: a wrapping action group with 12px gaps.
+- `page-header--compact`: title and a short trailing back action share one row.
+  The heading stays aligned with its form card and the breadcrumb area.
+
+Home, Ingredient Items and Add Ingredient are the initial consumers. Migrate
+other pages with their own tasks. Form footer actions wrap without shrinking
+labels, preserving the 42px control height at 320px.
+
+The Ingredient Items stock filter wraps with 42px targets and unbroken labels.
+This is a local toolbar arrangement, not a new button variant. Search retains
+a 240px minimum at desktop widths; the toolbar wraps instead of squeezing it.
+Tables retain full workspace width and their existing internal horizontal scroll.
+
+PrimeIcons' pseudo-elements override the upstream backface-visibility hint to
+`visible`; browser regressions verify that glyph paint stays inside the icon
+box. This corrects rendering without changing icon positions or the background.
+
+### Typography prototype (October 2026)
+
+The active prototype replaces Inter with a native system sans stack via
+`--font-sans`. Page content, PrimeNG fields, and dialogs use the same family;
+the application no longer downloads Inter. Background, palette, surfaces, and
+the 42px control contract retain their existing values.
+
+Use these roles instead of ad hoc extra-bold headings or uppercase field labels:
+
+| Role                | Class                | Prototype treatment                      |
+| ------------------- | -------------------- | ---------------------------------------- |
+| Page heading        | `type-page-title`    | Fluid 24–30px, semibold, 1.2 line height |
+| Section heading     | `type-section-title` | 18px, semibold, 1.35 line height         |
+| Field/table label   | `type-label`         | 13px, medium, natural case and spacing   |
+| Supporting metadata | `type-meta`          | 12px, regular, 1.5 line height           |
+| Summary value       | `type-value`         | 24px, semibold, tabular numerals         |
+
+Body and control text use 14px as the starting density. Retain color tokens on
+each element; a quieter weight must not make help text unreadable. Labels can
+wrap, and shared field label rows use a minimum height rather than a fixed height.
+Badge labels use 12px medium weight in both sizes; padding distinguishes sizes.
+Existing label copy retains its source casing. Use uppercase only for deliberate
+short overlines, not routine field labels.
+This prototype supersedes older typography examples that prescribe uppercase
+tracked labels. The `/design-system` gallery includes a translated sample of all
+five roles for comparison. Validate wrapping and platform font differences before
+accepting the prototype as the final design.
+
 ### 2.1 Color Tokens
-| Token Name | Light Mode Value | Dark Mode Value | Usage / Semantic Role |
-| :--- | :--- | :--- | :--- |
-| `primary-500` / `primary-600` | `#f97316` / `#ea580c` | `#f97316` / `#fb923c` | Primary actions, focus rings, brand accents |
-| `navy-900` / `navy-950` | `#141c2e` / `#0d1322` | `#141c2e` / `#0d1322` | Floating menus, workspace popovers |
-| `surface-50` / `surface-100` | `#f8fafc` / `#f1f5f9` | `#0f172a` / `#1e293b` | Page background, input fields, badges |
-| `surface-200` / `surface-300` | `#e2e8f0` / `#cbd5e1` | `#334155` / `#475569` | Component borders, separators |
-| `surface-800` / `surface-900` | `#1e293b` / `#0f172a` | `#f1f5f9` / `#ffffff` | Primary typography |
+
+| Token Name                    | Light Mode Value      | Dark Mode Value       | Usage / Semantic Role                        |
+| :---------------------------- | :-------------------- | :-------------------- | :------------------------------------------- |
+| `primary-500` / `primary-600` | `#f97316` / `#ea580c` | `#f97316` / `#fb923c` | Primary actions, focus rings, brand accents  |
+| `navy-900` / `navy-950`       | `#141c2e` / `#0d1322` | `#141c2e` / `#0d1322` | Floating menus, workspace popovers           |
+| `surface-50` / `surface-100`  | `#f8fafc` / `#f1f5f9` | `#0f172a` / `#1e293b` | Page background, input fields, badges        |
+| `surface-200` / `surface-300` | `#e2e8f0` / `#cbd5e1` | `#334155` / `#475569` | Component borders, separators                |
+| `surface-800` / `surface-900` | `#1e293b` / `#0f172a` | `#f1f5f9` / `#ffffff` | Primary typography                           |
 | `emerald-500` / `emerald-600` | `#10b981` / `#059669` | `#34d399` / `#10b981` | Fresh stock, in-cart items, positive metrics |
-| `amber-500` / `amber-600` | `#f59e0b` / `#d97706` | `#fbbf24` / `#f59e0b` | Expiring soon, warnings, budget highlights |
-| `rose-500` / `rose-600` | `#f43f5e` / `#e11d48` | `#fb7185` / `#f43f5e` | Expired stock, errors, destructive actions |
+| `amber-500` / `amber-600`     | `#f59e0b` / `#d97706` | `#fbbf24` / `#f59e0b` | Expiring soon, warnings, budget highlights   |
+| `rose-500` / `rose-600`       | `#f43f5e` / `#e11d48` | `#fb7185` / `#f43f5e` | Expired stock, errors, destructive actions   |
 
 ### 2.2 Sizing, Spacing & Border Radii
-| Dimension Role | Value | Token / Class |
-| :--- | :--- | :--- |
-| **Control Height** | `42px` | `h-[42px]` / `.btn-*` / `.p-inputtext` |
-| **Control Border Radius** | `12px` (`0.75rem`) | `rounded-xl` |
-| **Card Border Radius** | `16px` (`1rem`) | `rounded-2xl` |
-| **Small Pill / Badge Radius** | `8px` / `9999px` | `rounded-lg` / `rounded-full` |
-| **Standard Page Max Width** | `80rem` (`1280px`) | `max-w-7xl mx-auto` |
-| **Form Container Max Width** | `72rem` / `64rem` | `max-w-6xl` / `max-w-5xl` |
+
+| Dimension Role                | Value              | Token / Class                          |
+| :---------------------------- | :----------------- | :------------------------------------- |
+| **Control Height**            | `42px`             | `h-[42px]` / `.btn-*` / `.p-inputtext` |
+| **Control Border Radius**     | `12px` (`0.75rem`) | `rounded-xl`                           |
+| **Card Border Radius**        | `16px` (`1rem`)    | `rounded-2xl`                          |
+| **Small Pill / Badge Radius** | `8px` / `9999px`   | `rounded-lg` / `rounded-full`          |
+| **Standard Page Max Width**   | `80rem` (`1280px`) | `max-w-7xl mx-auto`                    |
+| **Form Container Max Width**  | `72rem` / `64rem`  | `max-w-6xl` / `max-w-5xl`              |
 
 ---
 
@@ -66,11 +125,12 @@ import {
   BadgeComponent,
   SkeletonComponent,
   FormFieldComponent,
-  CardComponent
-} from '@ui';
+  CardComponent,
+} from "@ui";
 ```
 
 ### 3.1 `SearchInputComponent` (`pantry-search-input`)
+
 - **Use For:** Table search filters, catalog search bars, real-time query inputs.
 - **Inputs:** `value: model<string>`, `placeholder: input<string>`, `disabled: input<boolean>`, `ariaLabel: input<string>`, `clearAriaLabel: input<string>`.
 - **Outputs:** `searchChange: output<string>()`.
@@ -81,11 +141,13 @@ import {
   [(value)]="searchQuery"
   (searchChange)="onSearch($event)"
   placeholder="Search items by name..."
-  ariaLabel="Search items">
+  ariaLabel="Search items"
+>
 </pantry-search-input>
 ```
 
 ### 3.2 `SpinnerComponent` (`pantry-spinner`)
+
 - **Use For:** Asynchronous loading states, data fetching indicators, button loading states.
 - **Inputs:** `size: input<'xs' | 'sm' | 'md' | 'lg'>`, `color: input<'primary' | 'white' | 'surface'>`, `layout: input<'inline' | 'stacked'>`, `label: input<string>`.
 - **Behavior:** Accessible SVG spinner with `role="status"`, `aria-live="polite"`, and screen-reader announcement.
@@ -95,6 +157,7 @@ import {
 ```
 
 ### 3.3 `EmptyStateComponent` (`pantry-empty-state`)
+
 - **Use For:** Zero-data screens, empty search/filter results, unpopulated catalog groups.
 - **Inputs:** `title: input.required<string>`, `description: input<string>`, `icon: input<string>`, `actionText: input<string>`, `actionIcon: input<string>`, `variant: input<'glass' | 'plain'>`.
 - **Outputs:** `actionClick: output<void>()`.
@@ -106,11 +169,13 @@ import {
   description="Try adjusting your filter or search query."
   actionText="Add Item"
   actionIcon="pi pi-plus"
-  (actionClick)="openAddDialog()">
+  (actionClick)="openAddDialog()"
+>
 </pantry-empty-state>
 ```
 
 ### 3.4 `BadgeComponent` (`pantry-badge`)
+
 - **Use For:** Inventory freshness status (`fresh`, `expiring`, `expired`), item locations, tags.
 - **Inputs:** `variant: input<'fresh' | 'expiring' | 'expired' | 'primary' | 'neutral' | 'location' | 'outline' | 'indigo' | 'purple'>`, `size: input<'sm' | 'md'>`, `icon: input<string>`, `dot: input<boolean>`, `live: input<boolean>`, `borderless: input<boolean>`.
 - **`live`:** animates the dot (`animate-pulse`) for real-time status indicators (e.g. live stock counts). Use sparingly — only where data updates continuously.
@@ -119,12 +184,17 @@ import {
 
 ```html
 <pantry-badge variant="fresh" [dot]="true">Fresh</pantry-badge>
-<pantry-badge variant="location" icon="pi pi-map-marker">Pantry Shelf A</pantry-badge>
-<pantry-badge variant="fresh" [dot]="true" [live]="true">12/15 In Stock</pantry-badge>
+<pantry-badge variant="location" icon="pi pi-map-marker"
+  >Pantry Shelf A</pantry-badge
+>
+<pantry-badge variant="fresh" [dot]="true" [live]="true"
+  >12/15 In Stock</pantry-badge
+>
 <pantry-badge variant="primary">{{ entity.name }}</pantry-badge>
 ```
 
 ### 3.5 `SkeletonComponent` (`pantry-skeleton`)
+
 - **Use For:** Loading placeholder skeletons during initial page load and tab transitions.
 - **Inputs:** `variant: input<'card' | 'row' | 'text' | 'circle' | 'custom'>`, `height: input<string>`, `width: input<string>`, `count: input<number>`.
 
@@ -133,16 +203,28 @@ import {
 ```
 
 ### 3.6 `FormFieldComponent` (`pantry-form-field`)
+
 - **Use For:** Standardizing form field labels, required asterisks, helper hints, and error messages.
 - **Inputs:** `label: input<string>`, `forId: input<string>`, `required: input<boolean>`, `hint: input<string>`, `error: input<string>`, `badge: input<string>`.
 
 ```html
-<pantry-form-field label="Item Name" forId="item-name" [required]="true" [error]="nameError">
-  <input pInputText id="item-name" formControlName="name" placeholder="e.g. Greek Yogurt" />
+<pantry-form-field
+  label="Item Name"
+  forId="item-name"
+  [required]="true"
+  [error]="nameError"
+>
+  <input
+    pInputText
+    id="item-name"
+    formControlName="name"
+    placeholder="e.g. Greek Yogurt"
+  />
 </pantry-form-field>
 ```
 
 ### 3.7 `CardComponent` (`pantry-card`)
+
 - **Use For:** Structural containers, summaries, stat cards, sub-panels.
 - **Inputs:** `variant: input<'glass' | 'sub' | 'elevated'>`, `hover: input<boolean>`, `padding: input<'none' | 'sm' | 'md' | 'lg'>`.
 
@@ -158,14 +240,17 @@ import {
 ## 4. Dropdown & Select Consolidation Contract
 
 ### 4.1 Canonical Select Styling
+
 All dropdowns and selects in Pantry MUST conform to this uniform contract:
+
 1. **Trigger Height:** `42px` (`h-[42px]`)
 2. **Trigger Radius:** `12px` (`rounded-xl`)
-3. **Trigger Background:** `bg-surface-100 dark:bg-surface-800` (or `bg-white/80 dark:bg-surface-800/80` inside `.glass-card`)
+3. **Trigger Background:** Form selects are the default (`data-select-variant="form"` is optional). Inside `pantry-form-field`, selects, text/number inputs, textareas, and datepicker containers share `bg-white/80 dark:bg-surface-900/80` and the same border. Datepicker inner inputs remain transparent so the container supplies one continuous surface; textareas retain their multiline height. Outside that wrapper, form selects inherit the global input surface. Mark toolbar filters and sort controls with `data-select-variant="filter"` to retain `bg-surface-100 dark:bg-surface-800` and muted labels. The existing `pantry-filter-select` class also retains filter styling for compatibility; it additionally supplies clear-action spacing.
 4. **Trigger Border:** `1px solid var(--color-surface-200)` / `dark:border-surface-700`
 5. **Focus State:** `border-primary-500` with `ring-2 ring-primary-500/30`
 6. **Popup Surface:** `panelStyleClass="p-dialog-glass text-xs"`
 7. **Body Attachment:** Always specify `appendTo="body"` on PrimeNG popovers to prevent overflow clipping.
+8. **Clearable Table Filters:** Use `styleClass="pantry-filter-select"` with `[showClear]="true"`. The shared variant fits the displayed content with 4px extra inline text padding and the standard 14px font, with a trailing chevron and a reserved 30px borderless clear area only when a selection is active. Long selected labels truncate; clearing restores the unfiltered state.
 
 ```html
 <p-select
@@ -175,7 +260,8 @@ All dropdowns and selects in Pantry MUST conform to this uniform contract:
   optionLabel="name"
   placeholder="Select Category"
   class="w-full"
-  appendTo="body">
+  appendTo="body"
+>
 </p-select>
 ```
 
@@ -184,6 +270,7 @@ All dropdowns and selects in Pantry MUST conform to this uniform contract:
 ## 5. Standard Button Contract (`.btn-*`)
 
 Always use standardized CSS utility classes for button actions:
+
 - `.btn-primary`: Primary CTA (`primary-600`, 42px height, 12px radius, bold text, shadow-md).
 - `.btn-secondary`: Neutral bordered action button.
 - `.btn-danger`: Destructive / delete action button (rose tinted).
@@ -209,19 +296,19 @@ default dark class pre-boot to prevent a light-mode flash.
 
 When modifying global design attributes, make edits at the centralized source of truth:
 
-| To Change... | File Location | Mechanism |
-| :--- | :--- | :--- |
-| **All Dropdowns** | `src/styles.scss` (PrimeNG form-control block) | Adjust `.p-select`, `.p-multiselect`, overlay/option styles. Every `p-select` in the app inherits automatically. |
-| **All Buttons** | `src/styles.scss` (Button Contract Classes) | Adjust `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, `.btn-icon`, `.btn-icon-sm`. |
-| **Global Border Radius** | `src/styles.scss` | Control radius lives in the PrimeNG override block (`border-radius: 0.75rem`); card radius in `.glass-card` consumers / `pantry-card`. |
-| **Brand Primary Colors** | `src/app/app.config.ts` + `src/styles.scss` `@theme` | Update `MyPreset` primary palette and `@theme` `--color-primary-*` together. |
-| **Deep Navy Popovers** | `src/styles.scss` `@theme` | Update `--color-navy-900`; consume via `bg-navy-900`. Never hardcode `#141c2e`. |
-| **Dark Mode Behavior** | `src/app/core/services/theme.service.ts` | Single owner of the `.dark` class; user-preference resolution lives here. |
-| **Search Inputs** | `src/app/components/ui/search-input/` | Edit canonical `SearchInputComponent`. |
-| **Loading Spinners** | `src/app/components/ui/spinner/` | Edit canonical `SpinnerComponent`. |
-| **Empty States** | `src/app/components/ui/empty-state/` | Edit canonical `EmptyStateComponent`. |
-| **Badges** | `src/app/components/ui/badge/` | Edit canonical `BadgeComponent` (variants/sizes/live dot). |
-| **Page-Specific Variants** | Canonical component first | Add an explicit, typed variant prop to the primitive. Only fall back to a scoped container override when a prop genuinely doesn't fit — and document it below. |
+| To Change...               | File Location                                        | Mechanism                                                                                                                                                      |
+| :------------------------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **All Dropdowns**          | `src/styles.scss` (PrimeNG form-control block)       | Adjust `.p-select`, `.p-multiselect`, overlay/option styles. Every `p-select` in the app inherits automatically.                                               |
+| **All Buttons**            | `src/styles.scss` (Button Contract Classes)          | Adjust `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, `.btn-icon`, `.btn-icon-sm`.                                                             |
+| **Global Border Radius**   | `src/styles.scss`                                    | Control radius lives in the PrimeNG override block (`border-radius: 0.75rem`); card radius in `.glass-card` consumers / `pantry-card`.                         |
+| **Brand Primary Colors**   | `src/app/app.config.ts` + `src/styles.scss` `@theme` | Update `MyPreset` primary palette and `@theme` `--color-primary-*` together.                                                                                   |
+| **Deep Navy Popovers**     | `src/styles.scss` `@theme`                           | Update `--color-navy-900`; consume via `bg-navy-900`. Never hardcode `#141c2e`.                                                                                |
+| **Dark Mode Behavior**     | `src/app/core/services/theme.service.ts`             | Single owner of the `.dark` class; user-preference resolution lives here.                                                                                      |
+| **Search Inputs**          | `src/app/components/ui/search-input/`                | Edit canonical `SearchInputComponent`.                                                                                                                         |
+| **Loading Spinners**       | `src/app/components/ui/spinner/`                     | Edit canonical `SpinnerComponent`.                                                                                                                             |
+| **Empty States**           | `src/app/components/ui/empty-state/`                 | Edit canonical `EmptyStateComponent`.                                                                                                                          |
+| **Badges**                 | `src/app/components/ui/badge/`                       | Edit canonical `BadgeComponent` (variants/sizes/live dot).                                                                                                     |
+| **Page-Specific Variants** | Canonical component first                            | Add an explicit, typed variant prop to the primitive. Only fall back to a scoped container override when a prop genuinely doesn't fit — and document it below. |
 
 ---
 
@@ -230,19 +317,18 @@ When modifying global design attributes, make edits at the centralized source of
 These are the only sanctioned deviations. Each is allowlisted in
 `frontend/tools/check-design-system.mjs` and must keep its reason recorded here:
 
-| Location | Pattern | Why it remains |
-| :--- | :--- | :--- |
-| `ingredient-category.component.html` | Raw hex fallback `#ea580c` for data-driven category colors | Colors come from backend data; hex concatenation builds tints dynamically. A token cannot express arbitrary data values. |
-| `ingredient-categories-page.component.html` | Raw hex fallback `#8b5cf6` for data-driven group colors | Same data-driven tinting as above; violet-500 is the fallback for missing group color data. |
-| `app.component.html` (hero SVG) | Literal gradient stops `#38bdf8`/`#60a5fa`/`#3b82f6`/`#0ea5e9` | Decorative hero artwork; SVG `stop-color` attributes have no Tailwind token equivalent. |
-| `inventory.component.html` + `ingredients-page.component.html` (pagination dot) | 2px emerald `animate-pulse` dot next to the pagination summary | Live-status indicator, not a loading skeleton — `<pantry-skeleton>` is semantically wrong here. |
-| `add-recipe-form.component.html` (difficulty selector) | emerald/amber/rose bordered state buttons | Segmented state selector where selection branches are the visual state; not a badge pill or standard action button. |
-| `daily-focus.component.html` (status tile) | emerald/rose pill ternary inside a 40px icon tile | Composite status tile (icon + text), not a badge. |
+| Location                                               | Pattern                                                        | Why it remains                                                                                                           |
+| :----------------------------------------------------- | :------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- |
+| `ingredient-category.component.html`                   | Raw hex fallback `#ea580c` for data-driven category colors     | Colors come from backend data; hex concatenation builds tints dynamically. A token cannot express arbitrary data values. |
+| `ingredient-categories-page.component.html`            | Raw hex fallback `#8b5cf6` for data-driven group colors        | Same data-driven tinting as above; violet-500 is the fallback for missing group color data.                              |
+| `app.component.html` (hero SVG)                        | Literal gradient stops `#38bdf8`/`#60a5fa`/`#3b82f6`/`#0ea5e9` | Decorative hero artwork; SVG `stop-color` attributes have no Tailwind token equivalent.                                  |
+| `add-recipe-form.component.html` (difficulty selector) | emerald/amber/rose bordered state buttons                      | Segmented state selector where selection branches are the visual state; not a badge pill or standard action button.      |
+| `daily-focus.component.html` (status tile)             | emerald/rose pill ternary inside a 40px icon tile              | Composite status tile (icon + text), not a badge.                                                                        |
 
 Anything else that trips the guardrails is a regression: fix with the canonical pattern.
 
 **Requesting a new exception:** add an entry to `ALLOWLIST` in `tools/check-design-system.mjs`
-*and* a row above explaining why no canonical variant fits. Both are required; unexplained
+_and_ a row above explaining why no canonical variant fits. Both are required; unexplained
 allowlist entries will be rejected in review.
 
 ---
@@ -270,3 +356,19 @@ allowlist entries will be rejected in review.
 6. **Never hardcode brand hexes** (`#ea580c`, `#141c2e`) — use tokens (`primary-*`, `navy-900`).
 7. When replacing a pattern, migrate every caller, then remove dead styles — do not leave parallel "temporary" implementations.
 8. Always validate design-system changes with `npm run validate:design-system`.
+
+## Shared interaction contracts (S03–S07)
+
+- Mobile navigation is a modal drawer: closed content is inert; opening focuses its close button; Tab stays inside; Escape, backdrop and destination selection close it. Dismissal restores the menu trigger. Desktop collapse is a separate preference. Use the existing surface palette with an almost opaque mobile drawer to keep navigation readable over the atmospheric background.
+- Use `KitchenCreateDialogComponent` from sidebar and Profile. It owns validation, the pending request, cache update through `KitchenService`, translated success feedback and persistent inline failure. Pending creation blocks dismissal and duplicate submission. Body-mounted dialogs have viewport bounds and restore a visible, non-inert opener; breakpoint changes can update `returnFocusTo`.
+- Success notifications are polite status announcements; errors are assertive alerts and persist until dismissed. Neither moves focus. Toasts wrap long text, respect safe areas and fit a narrow viewport. Actionable save errors belong next to the form with retry and retained input; a toast complements confirmed success.
+- `FormFieldComponent` associates projected `NgControl` native/PrimeNG targets with its generated hint or error IDs and invalid state. Preserve external `aria-describedby` tokens. For an input without Angular forms, add `#fieldControl`. `forId` must match the native focus target or PrimeNG `inputId`. Labels wrap. Long forms may focus an actionable validation summary after invalid submission; each error button must focus the matching field.
+- Pagination uses one quiet range status and a plain page indicator with `aria-current="page"`; all navigation controls use the 42px contract. Both inventory table footers sit inside their table cards with the same border, padding, and type roles. On phones show previous/current/next and a labeled row-count selector; desktop adds first/last controls. Filtering or shrinking result sets resets/clamps the page. Static results do not pulse.
+
+Rendered evidence and verification scope: [S03–S07](design-evidence/S03-S07/README.md).
+
+## Inventory rollback
+
+The user requested restoration of the original Ingredient, Ingredient Item and Ingredient Group pages on 2026-10-04. Their page/form implementations are restored from branch `HEAD` (`cd6074a`). The cleanup-specific inventory toolbar, table, shared editor and centered-form classes are removed. Earlier I-phase screenshots and contracts are historical and do not describe the live inventory pages. Other shared typography, navigation and interaction work remains in place.
+
+[Rollback verification](design-evidence/inventory-rollback/README.md).
