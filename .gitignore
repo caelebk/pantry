@@ -46,6 +46,18 @@ docs/reviews/
 docs/reviews
 docs/**/*review*.md
 
-# Design evidence images and binary screenshots
+# Images and binary screenshots
 *.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.avif
+*.ico
+*.bmp
+*.tiff
+*.heic
+images/
+**/images/
+
 
