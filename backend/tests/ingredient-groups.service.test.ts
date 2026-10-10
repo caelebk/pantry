@@ -33,6 +33,32 @@ function createTestDB(): Database {
       created_by TEXT,
       updated_by TEXT
     );
+    CREATE TABLE ingredients (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      ingredient_group_id INTEGER REFERENCES ingredient_groups(id),
+      default_unit_id INTEGER,
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      created_by TEXT,
+      updated_by TEXT
+    );
+    CREATE TABLE ingredient_items (
+      id TEXT PRIMARY KEY,
+      ingredient_id TEXT REFERENCES ingredients(id),
+      label TEXT NOT NULL,
+      quantity REAL NOT NULL,
+      unit_id INTEGER NOT NULL DEFAULT 1,
+      location_id INTEGER NOT NULL DEFAULT 1,
+      expiration_date TEXT,
+      purchase_date TEXT NOT NULL DEFAULT (date('now')),
+      kitchen_id TEXT NOT NULL DEFAULT 'test-kitchen-id',
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      created_by TEXT,
+      updated_by TEXT
+    );
   `);
   return db;
 }
@@ -117,6 +143,41 @@ Deno.test('IngredientGroupService - updateIngredientGroup - success', async () =
   );
   assert(updated !== null);
   assertEquals(updated?.name, 'Updated Name');
+  db.close();
+});
+
+Deno.test('IngredientGroupService - counts inStock and expiring items', async () => {
+  const db = createTestDB();
+  setDB(db);
+  const group = seedMockGroup(db);
+
+  db.prepare(`INSERT INTO ingredients (id, name, ingredient_group_id) VALUES (?, ?, ?)`).run(
+    'ing-1',
+    'Apple',
+    group.id,
+  );
+  // 1 item in stock without expiry, 1 expiring, 1 expired
+  db.prepare(
+    `INSERT INTO ingredient_items (id, ingredient_id, label, quantity, expiration_date) VALUES (?, ?, ?, ?, ?)`,
+  ).run('item-1', 'ing-1', 'Item 1', 1, null);
+  db.prepare(
+    `INSERT INTO ingredient_items (id, ingredient_id, label, quantity, expiration_date) VALUES (?, ?, ?, ?, datetime('now', '+3 days'))`,
+  ).run('item-2', 'ing-1', 'Item 2', 1);
+  db.prepare(
+    `INSERT INTO ingredient_items (id, ingredient_id, label, quantity, expiration_date) VALUES (?, ?, ?, ?, datetime('now', '-1 day'))`,
+  ).run('item-3', 'ing-1', 'Item 3', 1);
+
+  const groups = await ingredientGroupService.getAllIngredientGroups('test-kitchen-id');
+  assertEquals(groups.length, 1);
+  assertEquals(groups[0].inStockCount, 3);
+  assertEquals(groups[0].expiringCount, 1);
+  assertEquals(groups[0].expiredCount, 1);
+
+  const single = await ingredientGroupService.getIngredientGroupById(group.id, 'test-kitchen-id');
+  assertEquals(single?.inStockCount, 3);
+  assertEquals(single?.expiringCount, 1);
+  assertEquals(single?.expiredCount, 1);
+
   db.close();
 });
 

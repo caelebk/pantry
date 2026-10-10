@@ -11,6 +11,9 @@ interface IngredientGroupJoinRow {
   name: string;
   ingredient_category_id: number | null;
   ingredient_category_name: string | null;
+  expired_count?: number;
+  expiring_count?: number;
+  in_stock_count?: number;
   created_at?: string;
   updated_at?: string;
   created_by_username?: string | null;
@@ -29,16 +32,34 @@ export class IngredientGroupService {
       const rows = db.prepare(`
         SELECT ig.*, ic.name as ingredient_category_name,
                u_c.username as created_by_username, p_c.full_name as created_by_full_name,
-               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name
+               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name,
+               COALESCE(stock.expired, 0) as expired_count,
+               COALESCE(stock.expiring, 0) as expiring_count,
+               COALESCE(stock.in_stock, 0) as in_stock_count
         FROM ingredient_groups ig
         LEFT JOIN ingredient_categories ic ON ig.ingredient_category_id = ic.id
         LEFT JOIN users u_c ON ig.created_by = u_c.id
         LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
         LEFT JOIN users u_u ON ig.updated_by = u_u.id
         LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
+        LEFT JOIN (
+          SELECT i.ingredient_group_id,
+            COUNT(CASE WHEN ii.quantity > 0 THEN 1 END) as in_stock,
+            COUNT(CASE WHEN ii.expiration_date IS NOT NULL
+              AND ii.expiration_date <= datetime('now', '+7 days')
+              AND ii.expiration_date > datetime('now')
+              AND ii.quantity > 0 THEN 1 END) as expiring,
+            COUNT(CASE WHEN ii.expiration_date IS NOT NULL
+              AND ii.expiration_date <= datetime('now')
+              AND ii.quantity > 0 THEN 1 END) as expired
+          FROM ingredients i
+          JOIN ingredient_items ii ON ii.ingredient_id = i.id
+          WHERE i.kitchen_id = ?
+          GROUP BY i.ingredient_group_id
+        ) stock ON stock.ingredient_group_id = ig.id
         WHERE ig.kitchen_id = ?
         ORDER BY ig.name
-      `).all(kitchenId) as IngredientGroupJoinRow[];
+      `).all(kitchenId, kitchenId) as IngredientGroupJoinRow[];
       return Promise.resolve(rows.map(this.mapRowToDTO));
     } catch (error: unknown) {
       console.error('Error finding ingredient groups:', error);
@@ -55,15 +76,33 @@ export class IngredientGroupService {
       const row = db.prepare(`
         SELECT ig.*, ic.name as ingredient_category_name,
                u_c.username as created_by_username, p_c.full_name as created_by_full_name,
-               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name
+               u_u.username as updated_by_username, p_u.full_name as updated_by_full_name,
+               COALESCE(stock.expired, 0) as expired_count,
+               COALESCE(stock.expiring, 0) as expiring_count,
+               COALESCE(stock.in_stock, 0) as in_stock_count
         FROM ingredient_groups ig
         LEFT JOIN ingredient_categories ic ON ig.ingredient_category_id = ic.id
         LEFT JOIN users u_c ON ig.created_by = u_c.id
         LEFT JOIN profiles p_c ON u_c.id = p_c.user_id
         LEFT JOIN users u_u ON ig.updated_by = u_u.id
         LEFT JOIN profiles p_u ON u_u.id = p_u.user_id
+        LEFT JOIN (
+          SELECT i.ingredient_group_id,
+            COUNT(CASE WHEN ii.quantity > 0 THEN 1 END) as in_stock,
+            COUNT(CASE WHEN ii.expiration_date IS NOT NULL
+              AND ii.expiration_date <= datetime('now', '+7 days')
+              AND ii.expiration_date > datetime('now')
+              AND ii.quantity > 0 THEN 1 END) as expiring,
+            COUNT(CASE WHEN ii.expiration_date IS NOT NULL
+              AND ii.expiration_date <= datetime('now')
+              AND ii.quantity > 0 THEN 1 END) as expired
+          FROM ingredients i
+          JOIN ingredient_items ii ON ii.ingredient_id = i.id
+          WHERE i.kitchen_id = ?
+          GROUP BY i.ingredient_group_id
+        ) stock ON stock.ingredient_group_id = ig.id
         WHERE ig.id = ? AND ig.kitchen_id = ?
-      `).get(id, kitchenId) as IngredientGroupJoinRow | undefined;
+      `).get(kitchenId, id, kitchenId) as IngredientGroupJoinRow | undefined;
       return Promise.resolve(row ? this.mapRowToDTO(row) : null);
     } catch (error: unknown) {
       console.error('Error finding ingredient group by ID:', error);
@@ -158,6 +197,9 @@ export class IngredientGroupService {
       name: row.name,
       ingredientCategoryId: row.ingredient_category_id ?? undefined,
       ingredientCategoryName: row.ingredient_category_name ?? undefined,
+      expiredCount: row.expired_count ?? 0,
+      expiringCount: row.expiring_count ?? 0,
+      inStockCount: row.in_stock_count ?? 0,
       createdAt: row.created_at ? new Date(row.created_at) : undefined,
       updatedAt: row.updated_at ? new Date(row.updated_at) : undefined,
       createdBy: row.created_by
