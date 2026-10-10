@@ -41,6 +41,11 @@ yarn-error.log*
 docs/**/*spec*.md
 docs/**/*plan*.md
 
+# Review documents
+docs/reviews/
+docs/reviews
+docs/**/*review*.md
+
 # Design evidence images and binary screenshots
 *.png
 
