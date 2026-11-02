@@ -1,0 +1,427 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-02T00:00:00Z",
+  "title": "Design System: Pantry",
+  "extensions": {
+    "colorMeta": {
+      "ember-orange": {
+        "role": "primary",
+        "displayName": "Ember Orange",
+        "canonical": "#ea580c",
+        "tonalRamp": [
+          "#431407",
+          "#7c2d12",
+          "#9a3412",
+          "#c2410c",
+          "#ea580c",
+          "#fb923c",
+          "#fed7aa",
+          "#fff7ed"
+        ]
+      },
+      "ember-orange-bright": {
+        "role": "primary",
+        "displayName": "Ember Orange Bright",
+        "canonical": "#f97316",
+        "tonalRamp": [
+          "#431407",
+          "#7c2d12",
+          "#9a3412",
+          "#c2410c",
+          "#f97316",
+          "#fb923c",
+          "#fed7aa",
+          "#fff7ed"
+        ]
+      },
+      "ember-orange-deep": {
+        "role": "primary",
+        "displayName": "Ember Orange Deep",
+        "canonical": "#c2410c",
+        "tonalRamp": [
+          "#431407",
+          "#7c2d12",
+          "#9a3412",
+          "#c2410c",
+          "#ea580c",
+          "#fb923c",
+          "#fed7aa",
+          "#fff7ed"
+        ]
+      },
+      "ember-orange-soft": {
+        "role": "primary",
+        "displayName": "Ember Orange Soft",
+        "canonical": "#fb923c",
+        "tonalRamp": [
+          "#431407",
+          "#7c2d12",
+          "#9a3412",
+          "#c2410c",
+          "#ea580c",
+          "#fb923c",
+          "#fed7aa",
+          "#fff7ed"
+        ]
+      },
+      "slate-50": {
+        "role": "neutral",
+        "displayName": "Slate 50",
+        "canonical": "#f8fafc"
+      },
+      "slate-100": {
+        "role": "neutral",
+        "displayName": "Slate 100",
+        "canonical": "#f1f5f9"
+      },
+      "slate-200": {
+        "role": "neutral",
+        "displayName": "Slate 200",
+        "canonical": "#e2e8f0"
+      },
+      "slate-300": {
+        "role": "neutral",
+        "displayName": "Slate 300",
+        "canonical": "#cbd5e1"
+      },
+      "slate-400": {
+        "role": "neutral",
+        "displayName": "Slate 400",
+        "canonical": "#94a3b8"
+      },
+      "slate-500": {
+        "role": "neutral",
+        "displayName": "Slate 500",
+        "canonical": "#64748b"
+      },
+      "slate-600": {
+        "role": "neutral",
+        "displayName": "Slate 600",
+        "canonical": "#475569"
+      },
+      "slate-700": {
+        "role": "neutral",
+        "displayName": "Slate 700",
+        "canonical": "#334155"
+      },
+      "slate-800": {
+        "role": "neutral",
+        "displayName": "Slate 800",
+        "canonical": "#1e293b"
+      },
+      "slate-900": {
+        "role": "neutral",
+        "displayName": "Slate 900",
+        "canonical": "#0f172a",
+        "tonalRamp": [
+          "#020617",
+          "#0f172a",
+          "#1e293b",
+          "#334155",
+          "#64748b",
+          "#94a3b8",
+          "#e2e8f0",
+          "#f8fafc"
+        ]
+      },
+      "slate-950": {
+        "role": "neutral",
+        "displayName": "Slate 950",
+        "canonical": "#020617"
+      },
+      "night-navy": {
+        "role": "neutral",
+        "displayName": "Night Navy",
+        "canonical": "#141c2e"
+      },
+      "night-navy-deep": {
+        "role": "neutral",
+        "displayName": "Night Navy Deep",
+        "canonical": "#0d1322"
+      },
+      "morning-haze": {
+        "role": "neutral",
+        "displayName": "Morning Haze",
+        "canonical": "rgba(56, 189, 248, 0.08)",
+        "tonalRamp": [
+          "#082f49",
+          "#0c4a6e",
+          "#075985",
+          "#0369a1",
+          "#0ea5e9",
+          "#38bdf8",
+          "#bae6fd",
+          "#f0f9ff"
+        ]
+      },
+      "fresh-emerald": {
+        "role": "status",
+        "displayName": "Fresh Emerald",
+        "canonical": "#059669",
+        "tonalRamp": [
+          "#022c22",
+          "#064e3b",
+          "#065f46",
+          "#047857",
+          "#059669",
+          "#34d399",
+          "#a7f3d0",
+          "#ecfdf5"
+        ]
+      },
+      "expiring-amber": {
+        "role": "status",
+        "displayName": "Expiring Amber",
+        "canonical": "#d97706",
+        "tonalRamp": [
+          "#451a03",
+          "#78350f",
+          "#92400e",
+          "#b45309",
+          "#d97706",
+          "#fbbf24",
+          "#fde68a",
+          "#fffbeb"
+        ]
+      },
+      "expired-rose": {
+        "role": "status",
+        "displayName": "Expired Rose",
+        "canonical": "#e11d48",
+        "tonalRamp": [
+          "#4c0519",
+          "#881337",
+          "#9f1239",
+          "#be123c",
+          "#e11d48",
+          "#fb7185",
+          "#fecdd3",
+          "#fff1f2"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#ffffff"
+      }
+    },
+    "typographyMeta": {
+      "page-title": {
+        "displayName": "Page title",
+        "purpose": "One per page, in the page header."
+      },
+      "section-title": {
+        "displayName": "Section title",
+        "purpose": "Card and section headings."
+      },
+      "value": {
+        "displayName": "Value",
+        "purpose": "Summary numbers with tabular numerals."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default text and control text (14px density)."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field and table labels in natural case; may wrap."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Supporting metadata and badge text."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-ambient",
+        "value": "0 4px 14px -4px rgba(15,23,42,0.05), 0 1px 3px 0 rgba(15,23,42,0.03)",
+        "purpose": "Main cards; barely visible in light mode."
+      },
+      {
+        "name": "card-ambient-dark",
+        "value": "0 4px 14px -4px rgba(0,0,0,0.3), 0 1px 3px 0 rgba(0,0,0,0.2)",
+        "purpose": "Main cards in dark mode."
+      },
+      {
+        "name": "sub-panel-inset",
+        "value": "inset 0 1px 2px #ffffff, 0 1px 3px rgba(15,23,42,0.04)",
+        "purpose": "Panels nested inside a card."
+      },
+      {
+        "name": "floating-overlay",
+        "value": "0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1)",
+        "purpose": "Select overlays, date pickers, popovers; the only surfaces that visibly lift."
+      },
+      {
+        "name": "focus-ring",
+        "value": "0 0 0 2px rgba(249,115,22,0.25)",
+        "purpose": "Focused fields (0.35 in dark mode), paired with an orange border."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-nav",
+        "value": "240ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Sidebar item background, border and shadow transitions."
+      },
+      {
+        "name": "ease-control",
+        "value": "200ms ease",
+        "purpose": "Button, input and card hover transitions."
+      },
+      {
+        "name": "enter-slide-up",
+        "value": "250ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Content entering: fade in and rise 8px."
+      },
+      {
+        "name": "press",
+        "value": "scale(0.98)",
+        "purpose": "Primary button active state."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The main action on a page or form. Ember Orange, 42px.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg>Add stock</button>",
+      "css": ".ds-btn-primary { height: 42px; padding: 0 20px; border: none; border-radius: 12px; background: #ea580c; color: #fff; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; } .ds-btn-primary:hover { background: #c2410c; } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(249,115,22,0.5); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting actions next to a primary action.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { height: 42px; padding: 0 20px; border: 1px solid #e2e8f0; border-radius: 12px; background: transparent; color: #334155; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; } .ds-btn-secondary:hover { background: #f1f5f9; } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.5); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Low-emphasis inline actions such as Back.",
+      "html": "<button class=\"ds-btn-ghost\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M15 18l-6-6 6-6\"/></svg>Back</button>",
+      "css": ".ds-btn-ghost { height: 42px; padding: 0 14px; border: none; border-radius: 12px; background: transparent; color: #64748b; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s ease; } .ds-btn-ghost:hover { color: #0f172a; background: #f1f5f9; } .ds-btn-ghost:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.5); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Single-line field. 42px, Slate 100 fill, orange focus ring.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Quantity</span><input class=\"ds-input\" placeholder=\"e.g. 2\" /></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; } .ds-field-label { font-size: 13px; font-weight: 500; line-height: 1.4; color: #475569; } .ds-input { height: 42px; padding: 0 14px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f1f5f9; color: #0f172a; font-family: inherit; font-size: 14px; font-weight: 500; outline: none; transition: all 0.2s ease; } .ds-input::placeholder { color: #94a3b8; font-weight: 400; } .ds-input:hover { border-color: #cbd5e1; } .ds-input:focus { border-color: #f97316; box-shadow: 0 0 0 2px rgba(249,115,22,0.25); }"
+    },
+    {
+      "name": "Status Badges",
+      "kind": "chip",
+      "refersTo": "badge-neutral",
+      "description": "Fresh / expiring / expired stock status plus a storage location badge.",
+      "html": "<div class=\"ds-badges\"><span class=\"ds-badge ds-badge-fresh\"><i></i>Fresh</span><span class=\"ds-badge ds-badge-expiring\"><i></i>Expires in 3 days</span><span class=\"ds-badge ds-badge-expired\"><i></i>Expired</span><span class=\"ds-badge ds-badge-location\"><i></i>Fridge</span></div>",
+      "css": ".ds-badges { display: flex; flex-wrap: wrap; gap: 8px; } .ds-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; border: 1px solid; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 12px; font-weight: 500; transition: background-color 0.2s; } .ds-badge i { width: 6px; height: 6px; border-radius: 9999px; } .ds-badge-fresh { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.2); color: #059669; } .ds-badge-fresh i { background: #10b981; } .ds-badge-expiring { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); color: #d97706; } .ds-badge-expiring i { background: #f59e0b; } .ds-badge-expired { background: rgba(244,63,94,0.1); border-color: rgba(244,63,94,0.2); color: #e11d48; } .ds-badge-expired i { background: #f43f5e; } .ds-badge-location { background: #f1f5f9; border-color: #e2e8f0; color: #1e293b; } .ds-badge-location i { background: #f97316; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Nearly opaque frosted card with a quiet ambient shadow and a nested sub-panel.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Expiring soon</h3><p class=\"ds-card-meta\">3 items expire within 7 days</p><div class=\"ds-sub-card\"><span>Chicken Breast</span><span class=\"ds-card-meta\">Fridge · 2 days</span></div></div>",
+      "css": ".ds-card { padding: 20px; border-radius: 16px; background: rgba(255,255,255,0.94); border: 1px solid rgba(226,232,240,0.9); box-shadow: 0 4px 14px -4px rgba(15,23,42,0.05), 0 1px 3px 0 rgba(15,23,42,0.03); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: #0f172a; display: flex; flex-direction: column; gap: 8px; max-width: 360px; } .ds-card-title { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.35; letter-spacing: -0.015em; } .ds-card-meta { margin: 0; font-size: 12px; color: #475569; } .ds-sub-card { margin-top: 8px; padding: 12px 14px; border-radius: 12px; background: #fff; border: 1px solid #e2e8f0; box-shadow: inset 0 1px 2px #fff, 0 1px 3px rgba(15,23,42,0.04); display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 500; transition: all 0.2s ease; cursor: pointer; } .ds-sub-card:hover { border-color: #cbd5e1; }"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Sidebar items with an orange left rule and tint on the active item.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item\" href=\"#\">Home</a><a class=\"ds-nav-item ds-nav-active\" href=\"#\">Inventory</a><a class=\"ds-nav-sub ds-nav-sub-active\" href=\"#\">Ingredient Items</a><a class=\"ds-nav-sub\" href=\"#\">Ingredients</a><a class=\"ds-nav-item\" href=\"#\">Recipes</a><a class=\"ds-nav-item\" href=\"#\">Shopping List</a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; width: 220px; padding: 8px; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; } .ds-nav-item { padding: 10px 12px; border-left: 3.5px solid transparent; border-radius: 8px; color: #475569; font-weight: 500; text-decoration: none; transition: background-color 240ms cubic-bezier(0.22,1,0.36,1), border-color 240ms cubic-bezier(0.22,1,0.36,1), color 200ms ease; } .ds-nav-item:hover:not(.ds-nav-active) { background: rgba(226,232,240,0.5); color: #0f172a; } .ds-nav-item:focus-visible, .ds-nav-sub:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.5); } .ds-nav-active { background: rgba(249,115,22,0.1); border-left-color: #f97316; color: #ea580c; font-weight: 600; } .ds-nav-sub { padding: 6px 12px 6px 28px; color: #64748b; font-weight: 500; text-decoration: none; transition: color 180ms ease; } .ds-nav-sub:hover:not(.ds-nav-sub-active) { color: #0f172a; } .ds-nav-sub-active { color: #ea580c; font-weight: 600; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Calm Kitchen Ledger",
+    "overview": "Pantry is a quiet, trustworthy record of a household's food. The interface behaves like a well-kept ledger. Content sits on clean, nearly opaque surfaces with even rhythm and predictable controls, so you can trust a glance on a phone in the kitchen as much as a planning session at a desk. The system shows information plainly and does not perform.\n\nThe atmosphere stays in the background. The app shell carries a pale Morning Haze sky (soft radial glows and a faint 28px dot grid) behind every page. Content never competes with it: cards are 92–96% opaque, so the haze only reads at the margins. Ember Orange is the one warm note in a cool, slate-and-sky world. It marks where you act and where you are, and it does nothing else. Status colors (emerald, amber, rose) carry the food's condition and never decorate.\n\nDensity is moderate and intentional. Body text starts at 14px, every single-line control is 42px tall, and pages keep useful information visible instead of hiding it behind extra framing. Minimalism here means fewer decisions and clearer relationships, not less information. Light and dark themes are first-class peers; neither is the fallback.",
+    "keyCharacteristics": [
+      "Cool slate neutrals over a pale sky-blue haze; Ember Orange reserved for actions and the current location.",
+      "Nearly opaque frosted cards, quietly layered on borders and tone rather than shadow.",
+      "One 42px control height and soft 12px corners across buttons, inputs, selects, and date pickers.",
+      "Native system sans with five named type roles; natural case, no tracked uppercase labels.",
+      "Emerald / amber / rose status language for fresh / expiring / expired stock.",
+      "Full light and dark themes, toggled by a `.dark` class."
+    ],
+    "rules": [
+      {
+        "name": "The One Warm Note Rule",
+        "body": "Ember Orange is the only warm hue outside status. It marks an action, a selection, or where you are. If an orange element is not clickable or current, it is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Status Is Not Decoration Rule",
+        "body": "Emerald, amber, and rose describe the food's condition. Never use them for category color, branding, or emphasis. Always pair them with a label or icon; color alone never carries status.",
+        "section": "colors"
+      },
+      {
+        "name": "The Natural Case Rule",
+        "body": "Labels keep their source casing. Uppercase is only for a deliberate short overline, never for routine field labels.",
+        "section": "typography"
+      },
+      {
+        "name": "The Role, Not Size Rule",
+        "body": "Use the named role classes (`type-page-title`, `type-section-title`, `type-label`, `type-meta`, `type-value`) instead of ad hoc size and weight utilities. Keep each role's color token; a quieter weight must not make help text unreadable.",
+        "section": "typography"
+      },
+      {
+        "name": "The Only Floaters Lift Rule",
+        "body": "A surface casts a noticeable shadow only when it floats above the page (menus, overlays, dialogs). Content cards stay flat-feeling; to separate content, add a border or a tonal step, not a bigger shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Frame Rule",
+        "body": "Don't nest framed surfaces more than one level deep (a card can hold sub-panels; a sub-panel never holds another card).",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep every single-line control at exactly 42px tall with a 12px radius.",
+      "Do use Ember Orange only for primary actions, focus, selection, and the current navigation location.",
+      "Do use the five named type roles and natural-case labels.",
+      "Do separate content with 1px slate borders and tonal steps before reaching for shadow.",
+      "Do pair every status color with a text label or icon, in both themes.",
+      "Do let the shell own outer gutters; pages set only their content measure.",
+      "Do verify light and dark themes together; check contrast against the composited card surface, not the raw token.",
+      "Do provide `prefers-reduced-motion` fallbacks for any animation.",
+      "Do use design tokens (`primary-*`, `surface-*`, `navy-900`) instead of hex values in templates."
+    ],
+    "donts": [
+      "Don't use emerald, amber, or rose for decoration, categories, or branding.",
+      "Don't use tracked uppercase field labels or extra-bold headings.",
+      "Don't nest a card inside a sub-panel, or add competing headings and badge clusters around a task.",
+      "Don't add outer horizontal or vertical padding wrappers to pages.",
+      "Don't put content directly on the haze background; it belongs on a card.",
+      "Don't shrink desktop tables or controls to fit phones; restructure instead.",
+      "Don't hand-roll search inputs, spinners, skeletons, empty states, badge pills, native selects, or popup menus; use the `@ui` primitive or PrimeNG control.",
+      "Don't write long inline Tailwind button strings; use the `btn-*` classes.",
+      "Don't hardcode brand hexes (`#ea580c`, `#141c2e`, `#0d1322`, `#f8fafc`) in templates.",
+      "Don't introduce new control heights, radii, button variants, or badge variants without recording them in this file."
+    ]
+  }
+}

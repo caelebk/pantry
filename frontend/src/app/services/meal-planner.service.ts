@@ -5,6 +5,7 @@ import { Ingredient } from '@models/ingredient.model';
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
 import { Recipe, RecipeIngredientDTO } from '@models/recipe.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
+import { recipeTotalTime } from '@utility/recipe-metadata';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../core/services/auth.service';
@@ -88,9 +89,8 @@ export class MealPlannerService {
       mealType,
       recipeId: recipe.id,
       recipeName: recipe.name || 'Custom Meal',
-      prepTimeMinutes: (recipe.prepTime || 15) + (recipe.cookTime || 0),
-      calories: 450,
-      servings: recipe.servings || 2,
+      ...(recipeTotalTime(recipe) != null ? { prepTimeMinutes: recipeTotalTime(recipe) } : {}),
+      ...(recipe.servings != null ? { servings: recipe.servings } : {}),
       cooked: false,
       missingIngredients: missing,
       tags: recipe.difficulty ? [recipe.difficulty] : ['Custom'],

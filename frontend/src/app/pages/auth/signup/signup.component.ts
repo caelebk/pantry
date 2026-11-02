@@ -24,8 +24,8 @@ import { ToastService } from '../../../services/toast.service';
           <i
             [class]="
               isDarkMode()
-                ? 'pi pi-sun text-amber-400 text-lg'
-                : 'pi pi-moon text-indigo-500 text-lg'
+                ? 'pi pi-sun text-surface-600 dark:text-surface-300 text-lg'
+                : 'pi pi-moon text-surface-600 dark:text-surface-300 text-lg'
             "></i>
         </button>
       </div>
@@ -37,7 +37,7 @@ import { ToastService } from '../../../services/toast.service';
         <div class="absolute inset-0 pointer-events-none z-0" aria-hidden="true">
           <!-- Pantry Storage Jar Vector -->
           <svg
-            class="vector-float-slow absolute -top-6 -right-6 w-56 h-56 text-primary-500/10 dark:text-primary-400/10"
+            class="vector-float-slow absolute -top-6 -right-6 w-56 h-56 text-surface-400/10 dark:text-surface-300/10"
             viewBox="0 0 100 100"
             fill="none"
             stroke="currentColor"
@@ -51,7 +51,7 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Skillet & Cooking Pan Vector -->
           <svg
-            class="vector-float-medium absolute -bottom-10 -left-10 w-64 h-64 text-amber-500/10 dark:text-amber-400/10"
+            class="vector-float-medium absolute -bottom-10 -left-10 w-64 h-64 text-surface-400/10 dark:text-surface-300/10"
             viewBox="0 0 100 100"
             fill="none"
             stroke="currentColor"
@@ -64,7 +64,7 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Refrigerator Storage Cabinet Vector -->
           <svg
-            class="vector-float-fast absolute top-1/4 -left-12 w-48 h-48 text-orange-500/10 dark:text-orange-400/10"
+            class="vector-float-fast absolute top-1/4 -left-12 w-48 h-48 text-surface-400/10 dark:text-surface-300/10"
             viewBox="0 0 100 100"
             fill="none"
             stroke="currentColor"
@@ -77,7 +77,7 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Crossed Utensils & Spatula Vector -->
           <svg
-            class="vector-float-slow absolute bottom-1/4 -right-10 w-52 h-52 text-amber-500/10 dark:text-amber-400/10"
+            class="vector-float-slow absolute bottom-1/4 -right-10 w-52 h-52 text-surface-400/10 dark:text-surface-300/10"
             viewBox="0 0 100 100"
             fill="none"
             stroke="currentColor"
@@ -90,7 +90,7 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Fresh Produce Apple Vector -->
           <svg
-            class="vector-float-medium absolute top-12 right-1/3 w-36 h-36 text-emerald-500/10 dark:text-emerald-400/10"
+            class="vector-float-medium absolute top-12 right-1/3 w-36 h-36 text-surface-400/10 dark:text-surface-300/10"
             viewBox="0 0 100 100"
             fill="none"
             stroke="currentColor"
@@ -108,7 +108,7 @@ import { ToastService } from '../../../services/toast.service';
         <!-- Brand Emblem Header -->
         <div class="relative z-10 flex items-center gap-3">
           <div
-            class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold shadow-md shadow-primary-500/20">
+            class="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold">
             <span class="material-symbols-outlined text-[20px]">skillet</span>
           </div>
           <span class="text-xl font-bold tracking-tight text-surface-900 dark:text-white">
@@ -132,14 +132,14 @@ import { ToastService } from '../../../services/toast.service';
           <div class="grid grid-cols-2 gap-3">
             <div
               class="glass-card p-3.5 rounded-xl border border-surface-200/80 dark:border-surface-800/80 space-y-1 shadow-sm">
-              <i class="pi pi-building text-primary-500 text-base"></i>
+              <i class="pi pi-building text-surface-500 dark:text-surface-400 text-base"></i>
               <div class="text-xs font-bold text-surface-900 dark:text-surface-100">
                 Shared Kitchens
               </div>
             </div>
             <div
               class="glass-card p-3.5 rounded-xl border border-surface-200/80 dark:border-surface-800/80 space-y-1 shadow-sm">
-              <i class="pi pi-shield text-amber-500 text-base"></i>
+              <i class="pi pi-shield text-surface-500 dark:text-surface-400 text-base"></i>
               <div class="text-xs font-bold text-surface-900 dark:text-surface-100">
                 Zero-Waste Tracking
               </div>
@@ -159,7 +159,7 @@ import { ToastService } from '../../../services/toast.service';
           <!-- Mobile Brand Emblem Header -->
           <div class="lg:hidden flex flex-col items-center text-center space-y-2 mb-6">
             <div
-              class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold shadow-md shadow-primary-500/20">
+              class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold">
               <span class="material-symbols-outlined text-[22px]">skillet</span>
             </div>
             <span class="text-lg font-bold tracking-tight text-surface-900 dark:text-white">
@@ -169,13 +169,9 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Form Header -->
           <div>
-            <h1
-              class="text-2xl sm:text-3xl font-bold tracking-tight text-surface-900 dark:text-white">
+            <h1 class="type-page-title text-surface-900 dark:text-white">
               {{ 'auth.signup' | transloco }}
             </h1>
-            <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
-              {{ 'auth.createAccountSubtitle' | transloco }}
-            </p>
           </div>
 
           <!-- Inline Error Banner -->
@@ -193,9 +189,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Full Name Field -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="fullName"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="fullName" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.fullName' | transloco }}
                 </label>
               </div>
@@ -223,9 +217,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Username Field -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="username"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="username" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.username' | transloco }}
                 </label>
               </div>
@@ -253,9 +245,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Email Field -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="email"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="email" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.email' | transloco }}
                 </label>
               </div>
@@ -283,9 +273,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Password Field with Strength Meter -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="password"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="password" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.password' | transloco }}
                 </label>
               </div>
@@ -332,13 +320,12 @@ import { ToastService } from '../../../services/toast.service';
                   <!-- Progress bar -->
                   <div class="progress-track h-1.5">
                     <div
-                      class="h-full transition-all duration-300 rounded-full shadow-xs"
+                      class="h-full transition-all duration-300 rounded-full"
                       [style.width.%]="(passwordScore() / 5) * 100"
                       [ngClass]="{
-                        'bg-gradient-to-r from-rose-500 to-rose-400': passwordScore() <= 2,
-                        'bg-gradient-to-r from-amber-500 to-amber-400':
-                          passwordScore() === 3 || passwordScore() === 4,
-                        'bg-gradient-to-r from-emerald-500 to-emerald-400': passwordScore() === 5,
+                        'bg-rose-500': passwordScore() <= 2,
+                        'bg-amber-500': passwordScore() === 3 || passwordScore() === 4,
+                        'bg-emerald-500': passwordScore() === 5,
                       }"></div>
                   </div>
                   <!-- Individual criteria -->

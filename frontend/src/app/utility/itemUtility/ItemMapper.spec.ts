@@ -33,6 +33,21 @@ describe('ItemMapper', () => {
   };
 
   describe('mapItemDTOToItem', () => {
+    it('preserves date-only calendar dates without shifting to the preceding day', () => {
+      const item = mapItemDTOToItem(
+        {
+          ...mockItemDTO,
+          purchaseDate: '2026-09-28',
+          expirationDate: '2026-10-02',
+          openedDate: '2026-09-29',
+        },
+        unitMap,
+        locationMap,
+      );
+      expect(item.purchaseDate).toEqual(new Date(2026, 8, 28));
+      expect(item.expirationDate).toEqual(new Date(2026, 9, 2));
+      expect(item.openedDate).toEqual(new Date(2026, 8, 29));
+    });
     it('should map full ItemDTO to Item domain object', () => {
       const item = mapItemDTOToItem(mockItemDTO, unitMap, locationMap);
 

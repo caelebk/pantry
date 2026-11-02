@@ -69,7 +69,6 @@ describe('RecipesComponent', () => {
 
     fixture = TestBed.createComponent(RecipesComponent);
     component = fixture.componentInstance;
-    TestBed.flushEffects();
     fixture.detectChanges();
   });
 

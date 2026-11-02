@@ -5,7 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   --color-primary-50: #fff7ed;
   --color-primary-100: #ffedd5;
@@ -55,8 +55,112 @@ html {
 }
 
 body {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
   background-color: var(--color-surface-50);
   color: var(--color-surface-900);
+}
+
+/* Typography prototype: roles express priority without changing page geometry. */
+.type-page-title {
+  font-size: clamp(1.5rem, 1.25rem + 1vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.type-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+
+.type-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.type-meta {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+}
+
+.type-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Chromium can composite PrimeIcons glyphs away from their inline layout boxes
+ * when the upstream pseudo-element backface hint is hidden. Keep glyph paint
+ * in normal flow; icon positions and the font itself remain unchanged. */
+.pi::before {
+  backface-visibility: visible;
+}
+
+/* The app shell owns outer gutters. Pilot pages only set their content measure. */
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.page-layout--form {
+  max-width: 40rem;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-header > :first-child {
+  min-width: 0;
+}
+
+.page-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 100%;
+}
+
+.page-header--compact {
+  flex-direction: row;
+  align-items: center;
+}
+
+@media (min-width: 640px) {
+  .page-header {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.inventory-status-filters {
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.inventory-status-filters > button {
+  flex-shrink: 0;
+  min-height: 2.625rem;
+  white-space: nowrap;
 }
 
 :where(.dark, .dark *) body {
@@ -106,8 +210,7 @@ body {
 
 .sub-card-hover:hover {
   background-color: #ffffff !important;
-  border-color: var(--color-primary-500) !important;
-  box-shadow: 0 4px 12px -2px rgba(249, 115, 22, 0.15) !important;
+  border-color: var(--color-surface-300) !important;
 }
 
 :where(.dark, .dark *) .sub-card-hover:hover {
@@ -134,8 +237,9 @@ body {
 /* Centralized Card Section Label Utility */
 .card-label {
   color: var(--color-surface-600) !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.05em !important;
+  font-weight: 500 !important;
+  letter-spacing: normal !important;
+  text-transform: none;
 }
 
 :where(.dark, .dark *) .card-label {
@@ -200,14 +304,13 @@ body {
   background-color: rgba(249, 115, 22, 0.1);
   border-left-color: var(--color-primary-500);
   color: var(--color-primary-600) !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
 }
 
 :where(.dark, .dark *) .sidebar-nav-active {
   background-color: rgba(249, 115, 22, 0.2);
   border-left-color: var(--color-primary-500);
   color: var(--color-primary-300) !important;
-  box-shadow: 0 0 12px rgba(249, 115, 22, 0.25);
 }
 
 /* ── Sub-Navigation Items ────────────────────────────────────── */
@@ -215,9 +318,7 @@ body {
   background-color: transparent;
   color: var(--color-surface-500);
   font-weight: 500;
-  transition:
-    color 180ms ease,
-    text-shadow 180ms ease;
+  transition: color 180ms ease;
 }
 
 :where(.dark, .dark *) .sidebar-subnav-item {
@@ -235,30 +336,21 @@ body {
 .sidebar-subnav-active {
   background-color: transparent !important;
   color: var(--color-primary-600) !important;
-  font-weight: 700 !important;
-  text-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+  font-weight: 600 !important;
 }
 
 :where(.dark, .dark *) .sidebar-subnav-active {
   background-color: transparent !important;
   color: var(--color-primary-400) !important;
-  box-shadow: none !important;
-  text-shadow:
-    0 0 12px rgba(249, 115, 22, 0.65),
-    0 0 24px rgba(249, 115, 22, 0.35);
 }
 
-/* ── Gradient text utility ──────────────────────────────────── */
+/* ── Accent text utility (solid, no gradient) ──────────────── */
 .gradient-text {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-500),
-    var(--color-primary-600),
-    var(--color-primary-400)
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary-600);
+}
+
+:where(.dark, .dark *) .gradient-text {
+  color: var(--color-primary-400);
 }
 
 /* ── World-Class Blue Silk Mesh & Micro-Vignette Grid System ────── */
@@ -517,53 +609,14 @@ body {
   }
 }
 
-/* ── Glow effect for primary buttons ────────────────────────── */
+/* ── Neutral shadow for primary buttons (no colored glow) ──── */
 .glow-primary {
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
-.glow-primary:hover {
-  box-shadow: 0 0 30px rgba(249, 115, 22, 0.25);
-}
-
-:where(.dark, .dark *) .glow-primary {
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.1);
-}
-
-:where(.dark, .dark *) .glow-primary:hover {
-  box-shadow: 0 0 30px rgba(249, 115, 22, 0.2);
-}
-
-/* ── Subtle shine animation on cards ────────────────────────── */
-.card-shine {
-  position: relative;
-  overflow: hidden;
-}
-
-.card-shine::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
-  transition: left 0.6s ease;
-  pointer-events: none;
-}
-
-.card-shine:hover::before {
-  left: 100%;
-}
-
-/* ── Gradient border utility ────────────────────────────────── */
+/* ── Solid accent border utility (no gradient) ─────────────── */
 .gradient-border {
-  border: double 1px transparent;
-  background-image:
-    linear-gradient(var(--bg, white), var(--bg, white)),
-    linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
+  border: 1px solid var(--color-primary-500);
 }
 
 /* ── Scrollbar styling ──────────────────────────────────────── */
@@ -634,7 +687,7 @@ body {
 }
 
 .p-dialog .p-dialog-header {
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--font-sans) !important;
 }
 
 /* Global Form Control Base Rules (Text Inputs, Textarea, Selects, Datepickers, Number Inputs) */
@@ -650,7 +703,7 @@ textarea[pTextarea],
   border: 1px solid var(--color-surface-200) !important;
   border-radius: 0.75rem !important;
   color: var(--color-surface-900) !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--font-sans) !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
   transition: all 0.2s ease !important;
@@ -670,14 +723,41 @@ textarea[pTextarea],
   color: #ffffff !important;
 }
 
-/* Dropdown filters must match segmented pill bars (bg-surface-100 / dark:bg-surface-800) */
-.p-select,
-.p-multiselect {
+/* Form fields share the same surface across inputs and dropdowns. */
+pantry-form-field {
+  --pantry-form-control-background: rgba(255, 255, 255, 0.8);
+  --pantry-form-control-border: var(--color-surface-200);
+}
+
+:where(.dark, .dark *) pantry-form-field {
+  --pantry-form-control-background: color-mix(in srgb, var(--color-surface-900) 80%, transparent);
+  --pantry-form-control-border: var(--color-surface-700);
+}
+
+pantry-form-field
+  :is(.p-inputtext, .p-textarea, textarea[pTextarea], .p-inputnumber-input, .p-datepicker),
+:is(.p-select, .p-multiselect):where(
+  :not([data-select-variant='filter']):not(.pantry-filter-select)
+) {
+  background-color: var(--pantry-form-control-background, var(--color-surface-100)) !important;
+  border-color: var(--pantry-form-control-border, var(--color-surface-200)) !important;
+}
+
+:where(.dark, .dark *)
+  :is(.p-select, .p-multiselect):where(
+    :not([data-select-variant='filter']):not(.pantry-filter-select)
+  ) {
+  background-color: var(--pantry-form-control-background, rgba(28, 25, 23, 0.55)) !important;
+  border-color: var(--pantry-form-control-border, rgba(255, 255, 255, 0.14)) !important;
+}
+
+/* Explicit filter variants retain the segmented pill bar surface. */
+:is(.p-select, .p-multiselect):is([data-select-variant='filter'], .pantry-filter-select) {
   background-color: var(--color-surface-100) !important;
 }
 
-:where(.dark, .dark *) .p-select,
-:where(.dark, .dark *) .p-multiselect {
+:where(.dark, .dark *)
+  :is(.p-select, .p-multiselect):is([data-select-variant='filter'], .pantry-filter-select) {
   background-color: var(--color-surface-800) !important;
 }
 
@@ -795,9 +875,90 @@ textarea::placeholder {
   padding-left: 0.5rem !important;
 }
 
+/* Form values and placeholders follow text input colors and weights. */
+:is(.p-select, .p-multiselect):where(
+  :not([data-select-variant='filter']):not(.pantry-filter-select)
+) {
+  .p-select-label,
+  .p-multiselect-label,
+  .p-multiselect-label-container {
+    color: inherit !important;
+  }
+
+  .p-select-label.p-placeholder,
+  .p-multiselect-label.p-placeholder {
+    color: var(--color-surface-400) !important;
+    font-weight: 400 !important;
+  }
+}
+
 :where(.dark, .dark *) .p-select-dropdown,
 :where(.dark, .dark *) .p-multiselect-dropdown {
   color: var(--color-surface-400) !important;
+}
+
+/* Clearable table filters: content-sized text, clear action, and chevron slots. */
+.pantry-filter-select:is(.p-select, .p-multiselect) {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+
+  .p-select-label,
+  .p-multiselect-label-container {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    padding-inline: 0.25rem !important;
+  }
+
+  &:has(.p-select-clear-icon, .p-multiselect-clear-icon) {
+    .p-select-label,
+    .p-multiselect-label-container {
+      padding-inline-end: 2.375rem !important;
+    }
+  }
+
+  .p-multiselect-label {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .p-select-dropdown,
+  .p-multiselect-dropdown {
+    flex: 0 0 1.5rem;
+    width: 1.5rem;
+    padding: 0 !important;
+  }
+
+  .p-select-clear-icon,
+  .p-multiselect-clear-icon {
+    position: absolute;
+    inset-inline-end: 2.625rem;
+    top: 50%;
+    transform: translateY(-50%);
+    box-sizing: border-box;
+    width: 1.875rem;
+    height: 1.875rem;
+    padding: 0.5rem;
+    margin: 0;
+    border: 0;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: var(--color-surface-400);
+    cursor: pointer;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--color-surface-600);
+    }
+  }
+}
+
+:where(.dark, .dark *) .pantry-filter-select {
+  .p-select-clear-icon:hover,
+  .p-multiselect-clear-icon:hover {
+    color: var(--color-surface-200);
+  }
 }
 
 /* PrimeNG InputNumber Host Element & Inner Wrapper */
@@ -1140,7 +1301,59 @@ p-inputnumber {
   color: var(--color-primary-400) !important;
 }
 
-/* Checkbox Styling */
+/* Searchable table filter panels: readable rows and space for the search icon. */
+.pantry-filter-select-overlay {
+  min-width: min(16rem, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+
+  .p-select-header {
+    padding: 0.75rem;
+  }
+
+  .p-select-filter {
+    width: 100%;
+    padding-inline-end: 2.5rem !important;
+  }
+
+  .p-select-option {
+    min-height: 42px;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Checkbox Styling — soft neutral gray when unchecked, brand orange when checked */
+.p-checkbox-box {
+  background-color: var(--color-surface-100) !important;
+  border-color: var(--color-surface-300) !important;
+  color: var(--color-surface-500) !important;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+:where(.dark, .dark *) .p-checkbox-box {
+  background-color: var(--color-surface-800) !important;
+  border-color: var(--color-surface-600) !important;
+  color: var(--color-surface-400) !important;
+}
+
+.p-checkbox-box:hover {
+  background-color: var(--color-surface-200) !important;
+  border-color: var(--color-surface-400) !important;
+  color: var(--color-surface-600) !important;
+}
+
+:where(.dark, .dark *) .p-checkbox-box:hover {
+  background-color: var(--color-surface-700) !important;
+  border-color: var(--color-surface-500) !important;
+  color: var(--color-surface-300) !important;
+}
+
+/* Checked state stays on the brand accent. */
 .p-checkbox-checked .p-checkbox-box {
   background-color: var(--color-primary-600) !important;
   border-color: var(--color-primary-600) !important;
@@ -1367,13 +1580,12 @@ p-inputnumber {
   border-radius: 0.75rem;
   background-color: var(--color-primary-600);
   color: #ffffff;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.875rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.2);
   transition: all 0.2s ease;
   cursor: pointer;
 

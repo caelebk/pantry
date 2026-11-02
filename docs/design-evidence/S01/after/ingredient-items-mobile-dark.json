@@ -1,0 +1,147 @@
+{
+  "route": "/inventory/items",
+  "viewport": {
+    "name": "mobile",
+    "width": 390,
+    "height": 844
+  },
+  "theme": "dark",
+  "fixture": "synthetic-kitchen-v1",
+  "revision": "cd6074abc0107030ae3b485e5d909774c8a2f9f2",
+  "capturedAt": "2026-10-05T00:55:59.495Z",
+  "platform": "darwin",
+  "browser": "143.0.7499.4",
+  "mode": "geometry-regression",
+  "geometry": {
+    "main": {
+      "x": 0,
+      "y": 64,
+      "width": 390,
+      "height": 1057.359375,
+      "right": 390,
+      "bottom": 1121.359375
+    },
+    "breadcrumb": {
+      "x": 16,
+      "y": 88,
+      "width": 358,
+      "height": 42,
+      "right": 374,
+      "bottom": 130
+    },
+    "title": {
+      "x": 16,
+      "y": 146,
+      "width": 344.703125,
+      "height": 28.796875,
+      "right": 360.703125,
+      "bottom": 174.796875
+    },
+    "page": {
+      "x": 16,
+      "y": 146,
+      "width": 358,
+      "height": 951.359375,
+      "right": 374,
+      "bottom": 1097.359375
+    },
+    "card": {
+      "x": 16,
+      "y": 351.796875,
+      "width": 358,
+      "height": 745.5625,
+      "right": 374,
+      "bottom": 1097.359375
+    },
+    "tableContainer": {
+      "x": 16,
+      "y": 351.796875,
+      "width": 358,
+      "height": 745.5625,
+      "right": 374,
+      "bottom": 1097.359375
+    },
+    "searchInput": {
+      "x": 16,
+      "y": 285.796875,
+      "width": 204,
+      "height": 42,
+      "right": 220,
+      "bottom": 327.796875
+    },
+    "header": {
+      "x": 16,
+      "y": 146,
+      "width": 358,
+      "height": 115.796875,
+      "right": 374,
+      "bottom": 261.796875
+    },
+    "headerButtons": [],
+    "statusButtons": [
+      {
+        "text": "Fresh",
+        "x": 250,
+        "y": 448.171875,
+        "width": 74.5625,
+        "height": 42,
+        "right": 324.5625,
+        "bottom": 490.171875
+      },
+      {
+        "text": "Expiring soon",
+        "x": 250,
+        "y": 494.171875,
+        "width": 90.21875,
+        "height": 42,
+        "right": 340.21875,
+        "bottom": 536.171875
+      },
+      {
+        "text": "Expired",
+        "x": 250,
+        "y": 540.171875,
+        "width": 86.578125,
+        "height": 42,
+        "right": 336.578125,
+        "bottom": 582.171875
+      },
+      {
+        "text": "Out of stock",
+        "x": 250,
+        "y": 586.171875,
+        "width": 73.921875,
+        "height": 42,
+        "right": 323.921875,
+        "bottom": 628.171875
+      }
+    ],
+    "scrollWidth": 358,
+    "clientWidth": 358,
+    "mainScrollWidth": 390,
+    "mainClientWidth": 390,
+    "viewportWidth": 390
+  },
+  "roles": {
+    "page-title": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 24,
+      "fontWeight": "600",
+      "lineHeight": 28.8,
+      "textTransform": "none",
+      "height": 28.796875,
+      "width": 344.703125,
+      "radius": 0,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "none"
+    }
+  },
+  "fieldLabel": null,
+  "overlay": null,
+  "footerActions": [],
+  "unexpectedRequests": [],
+  "errors": [],
+  "reviewStatus": "Requires human screenshot inspection; Windows/platform coverage not established",
+  "captureLimit": "Viewport screenshots show the fixed-height shell. Content below its inner scroll viewport needs separate inspection."
+}

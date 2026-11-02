@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
@@ -14,6 +15,7 @@ import { SelectModule } from 'primeng/select';
   selector: 'pantry-edit-ingredient-group-page',
   standalone: true,
   imports: [
+    TranslocoPipe,
     CommonModule,
     ReactiveFormsModule,
     InputTextModule,
@@ -93,7 +95,7 @@ export class EditIngredientGroupPageComponent implements OnInit {
     this.ingredientGroupService
       .updateIngredientGroup(id, {
         name: val.name,
-        ingredientCategoryId: categoryObj ? categoryObj.id : undefined,
+        ingredientCategoryId: categoryObj ? categoryObj.id : null,
       })
       .subscribe({
         next: () => {

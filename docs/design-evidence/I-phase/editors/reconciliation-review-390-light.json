@@ -1,0 +1,11 @@
+{
+  "route": "/inventory/ingredients/ingredient-rice/unit-reconciliation?targetUnitId=2",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "theme": "light",
+  "state": "Explicit zero-quantity review",
+  "fixture": "synthetic-kitchen-v1",
+  "api": "All requests intercepted with synthetic editor fixtures."
+}

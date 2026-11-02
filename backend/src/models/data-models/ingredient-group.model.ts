@@ -5,6 +5,9 @@ export interface IngredientGroupDTO {
   name: string;
   ingredientCategoryId?: number;
   ingredientCategoryName?: string;
+  expiredCount?: number;
+  expiringCount?: number;
+  inStockCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
   createdBy?: UserAuditDTO;
@@ -18,5 +21,5 @@ export interface CreateIngredientGroupDTO {
 
 export interface UpdateIngredientGroupDTO {
   name?: string;
-  ingredientCategoryId?: number;
+  ingredientCategoryId?: number | null;
 }

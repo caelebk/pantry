@@ -4,9 +4,9 @@ export interface MealPlanDTO {
   mealType: string;
   recipeId?: string;
   recipeName: string;
-  prepTimeMinutes: number;
-  calories: number;
-  servings: number;
+  prepTimeMinutes: number | null;
+  calories: number | null;
+  servings: number | null;
   cooked: boolean;
   missingIngredients: string[];
   tags: string[];
@@ -18,9 +18,9 @@ export interface CreateMealPlanDTO {
   mealType: string;
   recipeId?: string;
   recipeName: string;
-  prepTimeMinutes?: number;
-  calories?: number;
-  servings?: number;
+  prepTimeMinutes?: number | null;
+  calories?: number | null;
+  servings?: number | null;
   cooked?: boolean;
   missingIngredients?: string[];
   tags?: string[];
@@ -31,9 +31,9 @@ export interface UpdateMealPlanDTO {
   mealType?: string;
   recipeId?: string;
   recipeName?: string;
-  prepTimeMinutes?: number;
-  calories?: number;
-  servings?: number;
+  prepTimeMinutes?: number | null;
+  calories?: number | null;
+  servings?: number | null;
   cooked?: boolean;
   missingIngredients?: string[];
   tags?: string[];

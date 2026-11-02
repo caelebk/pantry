@@ -33,6 +33,6 @@ export interface CreateIngredientDTO {
 
 export interface UpdateIngredientDTO {
   name?: string;
-  ingredientGroupId?: number;
+  ingredientGroupId?: number | null;
   defaultUnitId?: number;
 }

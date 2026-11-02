@@ -1,5 +1,5 @@
 > [!WARNING]
-> ARCHIVED 2026-08-21: superseded by docs/design-system.md (canonical source of truth).
+> ARCHIVED 2026-08-21: superseded by docs/design-system.md, which was itself archived on 2026-11-02. The current source of truth is [DESIGN.md](../../DESIGN.md).
 
 # 🎨 Pantry Authoritative Design System Manifest & Architecture Specification
 

@@ -22,6 +22,9 @@
 # TypeScript cache
 *.tsbuildinfo
 
+# Nested git worktrees
+.worktrees/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
@@ -33,3 +36,28 @@ yarn-error.log*
 *.db-shm
 *.sqlite
 *.sqlite-wal
+
+# Local specification and planning documents (keep source-code specs tracked)
+docs/**/*spec*.md
+docs/**/*plan*.md
+
+# Review documents
+docs/reviews/
+docs/reviews
+docs/**/*review*.md
+
+# Images and binary screenshots
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.avif
+*.ico
+*.bmp
+*.tiff
+*.heic
+images/
+**/images/
+
+

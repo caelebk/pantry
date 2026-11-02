@@ -14,7 +14,7 @@ export interface CreateIngredientGroupDTO {
 
 export interface UpdateIngredientGroupDTO {
   name?: string;
-  ingredientCategoryId?: number;
+  ingredientCategoryId?: number | null;
 }
 
 @Injectable({

@@ -2,22 +2,19 @@
   <!-- Page Header & Action Bar -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
     <div>
-      <h1 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
+      <h1 class="type-page-title text-surface-900 dark:text-white">
         {{ 'shoppingList.title' | transloco }}
       </h1>
-      <p class="text-sm font-medium text-surface-500 dark:text-surface-400 mt-1">
-        {{ 'shoppingList.subtitle' | transloco }}
-      </p>
     </div>
 
     <div class="flex flex-wrap items-center gap-2.5 shrink-0 self-start sm:self-auto">
       <button type="button" (click)="goToStoreManagement()" class="btn-secondary">
-        <i class="pi pi-map-marker text-sm text-primary-500"></i>
+        <i class="pi pi-map-marker text-sm"></i>
         <span>{{ 'shoppingList.actions.manageStores' | transloco }}</span>
       </button>
 
       <button type="button" (click)="autoFillFromMealPlanner()" class="btn-secondary">
-        <i class="pi pi-sync text-sm text-primary-500"></i>
+        <i class="pi pi-sync text-sm"></i>
         <span>{{ 'shoppingList.actions.syncMealPlan' | transloco }}</span>
       </button>
 
@@ -45,10 +42,10 @@
           <div class="flex items-center justify-between">
             <span
               class="text-xs font-bold uppercase tracking-wider text-surface-500 dark:text-surface-400 flex items-center gap-1.5">
-              <i class="pi pi-shopping-bag text-primary-500"></i>
+              <i class="pi pi-shopping-bag text-surface-500 dark:text-surface-400"></i>
               <span>{{ 'shoppingList.stats.combinedTitle' | transloco }}</span>
             </span>
-            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <span class="text-xs font-bold text-surface-900 dark:text-white">
               {{ checkedCount() }} / {{ totalCount() }}
               {{ 'shoppingList.stats.itemsSummary' | transloco }} ({{ boughtProgress() }}%)
             </span>
@@ -57,7 +54,7 @@
           <!-- Progress Bar -->
           <div class="progress-track h-2">
             <div
-              class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-300 shadow-xs"
+              class="h-full rounded-full bg-emerald-500 transition-all duration-300"
               [style.width.%]="boughtProgress()"></div>
           </div>
 
@@ -70,7 +67,7 @@
               {{ 'shoppingList.stats.itemsRemaining' | transloco }}
             </span>
             <span>
-              <strong class="text-emerald-600 dark:text-emerald-400 font-bold"
+              <strong class="text-surface-900 dark:text-white font-bold"
                 >${{ inCartCost() | number: '1.2-2' }}</strong
               >
               {{ 'shoppingList.stats.costSummary' | transloco }}
@@ -90,7 +87,7 @@
               class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
               {{ 'shoppingList.stats.remainingSpend' | transloco }}
             </p>
-            <p class="text-2xl font-extrabold text-amber-600 dark:text-amber-400">
+            <p class="text-2xl font-extrabold text-surface-900 dark:text-white">
               ${{ remainingCost() | number: '1.2-2' }}
             </p>
           </div>
@@ -123,8 +120,8 @@
             [class.bg-white]="activeFilter() === 'all'"
             [class.dark:bg-surface-700]="activeFilter() === 'all'"
             [class.shadow-xs]="activeFilter() === 'all'"
-            [class.text-primary-600]="activeFilter() === 'all'"
-            [class.dark:text-primary-400]="activeFilter() === 'all'"
+            [class.text-surface-900]="activeFilter() === 'all'"
+            [class.dark:text-white]="activeFilter() === 'all'"
             [class.font-bold]="activeFilter() === 'all'"
             [class.text-surface-600]="activeFilter() !== 'all'"
             [class.dark:text-surface-400]="activeFilter() !== 'all'"
@@ -138,8 +135,8 @@
             [class.bg-white]="activeFilter() === 'unchecked'"
             [class.dark:bg-surface-700]="activeFilter() === 'unchecked'"
             [class.shadow-xs]="activeFilter() === 'unchecked'"
-            [class.text-amber-600]="activeFilter() === 'unchecked'"
-            [class.dark:text-amber-400]="activeFilter() === 'unchecked'"
+            [class.text-surface-900]="activeFilter() === 'unchecked'"
+            [class.dark:text-white]="activeFilter() === 'unchecked'"
             [class.font-bold]="activeFilter() === 'unchecked'"
             [class.text-surface-600]="activeFilter() !== 'unchecked'"
             [class.dark:text-surface-400]="activeFilter() !== 'unchecked'"
@@ -154,8 +151,8 @@
             [class.bg-white]="activeFilter() === 'checked'"
             [class.dark:bg-surface-700]="activeFilter() === 'checked'"
             [class.shadow-xs]="activeFilter() === 'checked'"
-            [class.text-emerald-600]="activeFilter() === 'checked'"
-            [class.dark:text-emerald-400]="activeFilter() === 'checked'"
+            [class.text-surface-900]="activeFilter() === 'checked'"
+            [class.dark:text-white]="activeFilter() === 'checked'"
             [class.font-bold]="activeFilter() === 'checked'"
             [class.text-surface-600]="activeFilter() !== 'checked'"
             [class.dark:text-surface-400]="activeFilter() !== 'checked'"
@@ -185,7 +182,7 @@
             class="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-100 text-surface-400 dark:bg-surface-800 dark:text-surface-500 shadow-inner">
             <i class="pi pi-shopping-bag text-2xl"></i>
           </span>
-          <h2 class="mt-4 text-base font-bold text-surface-900 dark:text-white">
+          <h2 class="type-section-title mt-4 text-surface-900 dark:text-white">
             {{
               (hasActiveFilters() ? 'shoppingList.empty.noMatches' : 'shoppingList.empty.title')
                 | transloco
@@ -220,7 +217,7 @@
               <tr
                 class="bg-surface-200/60 dark:bg-surface-800/80 border-b border-surface-300/60 dark:border-surface-700/60 text-[11px] font-extrabold uppercase tracking-wider text-surface-600 dark:text-surface-400 select-none">
                 <!-- Checkbox Header -->
-                <th class="py-3 px-3 w-10 text-center select-none">
+                <th class="type-label py-3 px-3 w-10 text-center select-none">
                   <input
                     type="checkbox"
                     [checked]="allVisibleSelected()"
@@ -233,7 +230,7 @@
                 <!-- Item Name Column Header -->
                 <th
                   (click)="toggleSort('name')"
-                  class="py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  class="type-label py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <div class="flex items-center gap-1.5">
                     <span>{{ 'shoppingList.table.item' | transloco }}</span>
                     @if (sortBy() === 'name') {
@@ -250,7 +247,7 @@
                 <!-- Category Column Header -->
                 <th
                   (click)="toggleSort('category')"
-                  class="py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  class="type-label py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <div class="flex items-center gap-1.5">
                     <span>{{ 'shoppingList.table.category' | transloco }}</span>
                     @if (sortBy() === 'category') {
@@ -267,7 +264,7 @@
                 <!-- Store Column Header -->
                 <th
                   (click)="toggleSort('store')"
-                  class="py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  class="type-label py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <div class="flex items-center gap-1.5">
                     <span>{{ 'shoppingList.table.store' | transloco }}</span>
                     @if (sortBy() === 'store') {
@@ -284,7 +281,7 @@
                 <!-- Quantity Column Header -->
                 <th
                   (click)="toggleSort('quantity')"
-                  class="py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  class="type-label py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <div class="flex items-center gap-1.5">
                     <span>{{ 'shoppingList.table.quantity' | transloco }}</span>
                     @if (sortBy() === 'quantity') {
@@ -301,7 +298,7 @@
                 <!-- Estimated Price Column Header -->
                 <th
                   (click)="toggleSort('price')"
-                  class="py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  class="type-label py-3 px-4 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   <div class="flex items-center gap-1.5">
                     <span>{{ 'shoppingList.table.price' | transloco }}</span>
                     @if (sortBy() === 'price') {
@@ -316,7 +313,7 @@
                 </th>
 
                 <!-- Status Column Header (Not Sortable) -->
-                <th class="py-3 px-4 text-right sm:text-left">
+                <th class="type-label py-3 px-4 text-right sm:text-left">
                   <span>{{ 'shoppingList.table.status' | transloco }}</span>
                 </th>
               </tr>
@@ -393,7 +390,8 @@
                     @if (item.storeName) {
                       <span
                         class="inline-flex items-center gap-1.5 text-xs text-surface-700 dark:text-surface-300 font-medium">
-                        <i class="pi pi-map-marker text-[11px] text-primary-500"></i>
+                        <i
+                          class="pi pi-map-marker text-[11px] text-surface-400 dark:text-surface-500"></i>
                         <span class="truncate max-w-[140px]">{{ item.storeName }}</span>
                       </span>
                     } @else {

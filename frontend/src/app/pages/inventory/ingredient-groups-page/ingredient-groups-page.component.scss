@@ -1,0 +1,22 @@
+.taxonomy-category-toggle {
+  width: 100%;
+  height: auto;
+  min-height: 56px;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  text-align: left;
+}
+
+@media (min-width: 640px) {
+  .taxonomy-category-toggle {
+    padding-inline: 1.25rem;
+  }
+}
+
+.taxonomy-section {
+  border-left-width: 4px;
+  border-left-style: solid;
+  border-left-color: transparent;
+}

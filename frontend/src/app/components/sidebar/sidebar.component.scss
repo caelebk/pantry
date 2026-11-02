@@ -1,0 +1,25 @@
+// Canonical icon buttons set display outside Tailwind's utility layer.
+@media (min-width: 768px) {
+  .mobile-drawer-close {
+    display: none;
+  }
+}
+
+// Mobile navigation needs a readable surface over the modal backdrop.
+@media (max-width: 767px) {
+  .glass-sidebar {
+    background: color-mix(in srgb, var(--color-surface-50) 97%, transparent);
+  }
+
+  :host-context(.dark) .glass-sidebar {
+    background: color-mix(in srgb, var(--color-surface-900) 97%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host *,
+  :host *::before,
+  :host *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

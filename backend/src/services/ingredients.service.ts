@@ -131,9 +131,10 @@ export class IngredientsService {
       const groupId = ingredient.ingredientGroupId ?? null;
 
       db.prepare(
-        'UPDATE ingredients SET name = COALESCE(?, name), ingredient_group_id = COALESCE(?, ingredient_group_id), default_unit_id = COALESCE(?, default_unit_id), updated_by = ? WHERE id = ? AND kitchen_id = ?',
+        'UPDATE ingredients SET name = COALESCE(?, name), ingredient_group_id = CASE WHEN ? THEN ? ELSE ingredient_group_id END, default_unit_id = COALESCE(?, default_unit_id), updated_by = ? WHERE id = ? AND kitchen_id = ?',
       ).run(
         ingredient.name ?? null,
+        ingredient.ingredientGroupId !== undefined ? 1 : 0,
         groupId,
         ingredient.defaultUnitId ?? null,
         userId,
@@ -221,6 +222,21 @@ export class IngredientsService {
       const db = getDB();
       const now = new Date().toISOString();
       db.transaction(() => {
+        const current = db.prepare(
+          'SELECT id FROM ingredient_items WHERE ingredient_id = ? AND kitchen_id = ?',
+        ).all(id, kitchenId) as { id: string }[];
+        const expected = new Set(current.map((item) => item.id));
+        const supplied = new Set(itemUpdates.map((item) => item.id));
+        if (
+          itemUpdates.length !== expected.size || supplied.size !== itemUpdates.length ||
+          itemUpdates.some((item) =>
+            !expected.has(item.id) || !Number.isFinite(item.quantity) || item.quantity < 0
+          )
+        ) {
+          throw new Error(
+            'Reconciliation must include every current Ingredient Item exactly once with a valid quantity.',
+          );
+        }
         db.prepare(
           'UPDATE ingredients SET default_unit_id = ?, updated_at = ?, updated_by = ? WHERE id = ? AND kitchen_id = ?',
         ).run(newDefaultUnitId, now, userId, id, kitchenId);

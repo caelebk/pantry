@@ -112,6 +112,16 @@ export const routes: Routes = [
   },
 
   {
+    path: 'inventory/ingredients/:id',
+    canActivate: [authGuard],
+    data: { animation: 'IngredientDetailPage' },
+    loadComponent: () =>
+      import('./pages/inventory/ingredient-detail-page/ingredient-detail-page.component').then(
+        (m) => m.IngredientDetailPageComponent,
+      ),
+  },
+
+  {
     path: 'inventory/groups',
     canActivate: [authGuard],
     data: { animation: 'IngredientGroupsPage' },

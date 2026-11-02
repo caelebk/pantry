@@ -1,14 +1,20 @@
 import { CommonModule } from '@angular/common';
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
+  Injector,
+  OnDestroy,
   signal,
+  untracked,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
@@ -17,17 +23,12 @@ import { IngredientGroupService } from '@services/inventory/ingredient-group.ser
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { ToastService } from '@services/toast.service';
-import type { BadgeVariant } from '@ui';
-import {
-  getTimeDifferenceString,
-  isExpired,
-  isExpiringSoon,
-} from '@utility/itemUtility/ItemUtility';
-import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
 import { AuthService } from '../../../core/services/auth.service';
+
+import { forkJoin, Subscription } from 'rxjs';
+import { IngredientCatalogStateService } from './ingredient-catalog-state.service';
 
 export type StatusFilterOption = 'all' | 'in-stock' | 'out-of-stock';
 
@@ -43,11 +44,10 @@ import {
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     FormsModule,
-    InputTextModule,
     SelectModule,
     SkeletonModule,
-    TableModule,
     TranslocoModule,
     SearchInputComponent,
     EmptyStateComponent,
@@ -57,8 +57,19 @@ import {
   templateUrl: './ingredients-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IngredientsPageComponent {
+export class IngredientsPageComponent implements OnDestroy {
+  private readonly catalogState = inject(IngredientCatalogStateService);
+  private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly injector = inject(Injector);
+  private kitchenId: string | null = null;
+  private request?: Subscription;
   private readonly router = inject(Router);
+  private readonly historyReturn = this.router.getCurrentNavigation()?.trigger === 'popstate';
+  private readonly route = inject(ActivatedRoute);
+  private readonly queryParams = toSignal(this.route.queryParamMap, { requireSync: true });
+  private queryKey: string | undefined;
+  private pendingGroupQuery = false;
+  private linkedGroupId: number | null = null;
   private readonly ingredientService = inject(IngredientService);
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly itemService = inject(ItemService);
@@ -70,11 +81,10 @@ export class IngredientsPageComponent {
   public ingredientGroups = signal<IngredientGroup[]>([]);
   public isLoading = signal<boolean>(true);
   public searchQuery = signal<string>('');
+  public readonly fromGroups = computed(() => this.queryParams().get('from') === 'groups');
+  public unavailableGroup = signal(false);
   public selectedGroup = signal<IngredientGroup | null>(null);
   public selectedStatusFilter = signal<StatusFilterOption>('all');
-
-  // Object tracking expanded row keys: Record<string, boolean>
-  public expandedRows = signal<Record<string, boolean>>({});
 
   // Native Table Sorting Controls
   public sortBy = signal<'name' | 'group' | 'unit' | 'status'>('group');
@@ -84,35 +94,127 @@ export class IngredientsPageComponent {
 
   constructor() {
     effect(() => {
-      const activeKitchen = this.authService.activeKitchen();
-      if (activeKitchen) {
-        this.loadData();
-      }
+      const kitchen = this.authService.activeKitchen();
+      const params = this.queryParams();
+      const groupId = params.get('groupId');
+      const fromGroups = params.get('from') === 'groups';
+      const queryKey = JSON.stringify([groupId, fromGroups]);
+      untracked(() => {
+        const kitchenChanged = kitchen?.id !== this.kitchenId;
+        const queryChanged = queryKey !== this.queryKey;
+        if (!kitchenChanged && !queryChanged) return;
+        if (kitchenChanged) {
+          this.saveView();
+          this.request?.unsubscribe();
+          this.kitchenId = kitchen?.id ?? null;
+          const saved = this.kitchenId ? this.catalogState.views.get(this.kitchenId) : undefined;
+          this.searchQuery.set(saved?.search ?? '');
+          this.selectedGroup.set(saved?.group ?? null);
+          this.selectedStatusFilter.set(saved?.status ?? 'all');
+          this.sortBy.set(saved?.sort ?? 'group');
+          this.sortDirection.set(saved?.direction ?? 'asc');
+          this.currentPage.set(saved?.page ?? 1);
+          this.pageSize.set(saved?.pageSize ?? 15);
+          this.unavailableGroup.set(false);
+          this.ingredients.set([]);
+          this.items.set([]);
+          this.ingredientGroups.set([]);
+        }
+        const explicitGroup = groupId !== null || fromGroups;
+        const saved = this.kitchenId ? this.catalogState.views.get(this.kitchenId) : undefined;
+        const restoreHistory =
+          this.queryKey === undefined && this.historyReturn && saved?.queryKey === queryKey;
+        if (explicitGroup && !restoreHistory) {
+          const id = groupId && /^[1-9]\d*$/.test(groupId) ? Number(groupId) : null;
+          this.linkedGroupId = id !== null && Number.isSafeInteger(id) ? id : null;
+          this.pendingGroupQuery = true;
+          this.searchQuery.set('');
+          this.selectedGroup.set(null);
+          this.selectedStatusFilter.set('all');
+          this.resetPagination();
+          this.unavailableGroup.set(false);
+        } else if (queryChanged && this.queryKey !== undefined && !kitchenChanged) {
+          this.pendingGroupQuery = false;
+          this.selectedGroup.set(null);
+          this.unavailableGroup.set(false);
+          this.resetPagination();
+        }
+        this.queryKey = queryKey;
+        if (kitchenChanged && kitchen) {
+          const saved = this.catalogState.views.get(kitchen.id);
+          this.loadData(explicitGroup && !restoreHistory ? 0 : (saved?.scrollTop ?? 0));
+        } else if (!this.isLoading()) {
+          this.applyGroupQuery();
+        }
+      });
     });
   }
 
-  loadData(): void {
+  private applyGroupQuery(): void {
+    if (!this.pendingGroupQuery) return;
+    const group = this.ingredientGroups().find((candidate) => candidate.id === this.linkedGroupId);
+    this.selectedGroup.set(group ?? null);
+    this.unavailableGroup.set(!group);
+    this.pendingGroupQuery = false;
+  }
+
+  private get scrollContainer(): HTMLElement | null {
+    return this.host.nativeElement.closest('main')?.parentElement ?? null;
+  }
+
+  private saveView(): void {
+    if (!this.kitchenId) return;
+    this.catalogState.views.set(this.kitchenId, {
+      search: this.searchQuery(),
+      queryKey: this.queryKey,
+      group: this.selectedGroup(),
+      status: this.selectedStatusFilter(),
+      sort: this.sortBy(),
+      direction: this.sortDirection(),
+      page: this.currentPage(),
+      pageSize: this.pageSize(),
+      scrollTop: this.scrollContainer?.scrollTop ?? 0,
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.saveView();
+    this.request?.unsubscribe();
+  }
+
+  loadData(scrollTop?: number): void {
+    this.request?.unsubscribe();
     this.isLoading.set(true);
-
-    this.ingredientGroupService.getIngredientGroups().subscribe({
-      next: (groups) => this.ingredientGroups.set(groups),
-    });
-
-    this.itemService.getItems().subscribe({
-      next: (items) => this.items.set(items),
-    });
-
-    this.ingredientService.getIngredients().subscribe({
-      next: (ings) => {
-        this.ingredients.set(ings);
+    this.request = forkJoin({
+      groups: this.ingredientGroupService.getIngredientGroups(),
+      items: this.itemService.getItems(),
+      ingredients: this.ingredientService.getIngredients(),
+    }).subscribe({
+      next: ({ groups, items, ingredients }) => {
+        this.ingredientGroups.set(groups);
+        this.items.set(items);
+        this.ingredients.set(ingredients);
+        this.applyGroupQuery();
         this.isLoading.set(false);
+        if (scrollTop !== undefined) {
+          afterNextRender(
+            () => {
+              if (this.scrollContainer) this.scrollContainer.scrollTop = scrollTop;
+            },
+            { injector: this.injector },
+          );
+        }
       },
-      error: (err) => {
-        console.error('Failed to load ingredients:', err);
+      error: () => {
         this.toastService.showError('Unable to load ingredients catalog.');
         this.isLoading.set(false);
       },
     });
+  }
+
+  openIngredient(event: MouseEvent, ingredient: Ingredient): void {
+    if ((event.target as HTMLElement).closest('a, button, input, select')) return;
+    this.router.navigate(['/inventory/ingredients', ingredient.id]);
   }
 
   public connectedItemsMap = computed(() => {
@@ -246,38 +348,13 @@ export class IngredientsPageComponent {
 
   public onGroupChange(group: IngredientGroup | null): void {
     this.selectedGroup.set(group);
+    this.unavailableGroup.set(false);
     this.resetPagination();
   }
 
   public setStatusFilter(status: StatusFilterOption): void {
     this.selectedStatusFilter.set(status);
     this.resetPagination();
-  }
-
-  public isRowExpanded(id: string): boolean {
-    return Boolean(this.expandedRows()[id]);
-  }
-
-  public toggleRowExpansion(id: string): void {
-    const current = { ...this.expandedRows() };
-    if (current[id]) {
-      delete current[id];
-    } else {
-      current[id] = true;
-    }
-    this.expandedRows.set(current);
-  }
-
-  public expandAll(): void {
-    const newExpanded: Record<string, boolean> = {};
-    for (const ing of this.filteredIngredients()) {
-      newExpanded[ing.id] = true;
-    }
-    this.expandedRows.set(newExpanded);
-  }
-
-  public collapseAll(): void {
-    this.expandedRows.set({});
   }
 
   onAddIngredient(): void {
@@ -303,51 +380,5 @@ export class IngredientsPageComponent {
         },
       });
     }
-  }
-
-  onAddStockItemForIngredient(ing?: Ingredient): void {
-    if (ing?.id) {
-      this.router.navigate(['/inventory/items/new'], {
-        queryParams: { ingredientId: ing.id },
-      });
-    } else {
-      this.router.navigate(['/inventory/items/new']);
-    }
-  }
-
-  onEditItem(item: Item): void {
-    this.router.navigate(['/inventory/items', item.id, 'edit']);
-  }
-
-  onDeleteItem(item: Item): void {
-    if (confirm(`Are you sure you want to delete "${item.name}" from physical inventory?`)) {
-      this.itemService.removeItem(item).subscribe({
-        next: () => {
-          this.toastService.showSuccess(`Item "${item.name}" removed from inventory.`);
-          this.loadData();
-        },
-        error: (err: unknown) => {
-          console.error('Failed to delete item:', err);
-          this.toastService.showError('Failed to remove item.');
-        },
-      });
-    }
-  }
-
-  getItemStatus(item: Item): { text: string; variant: BadgeVariant } {
-    if (isExpired(item)) {
-      return { text: 'Expired', variant: 'expired' };
-    }
-    if (isExpiringSoon(item)) {
-      return { text: 'Expiring Soon', variant: 'expiring' };
-    }
-    return { text: 'Fresh', variant: 'fresh' };
-  }
-
-  getItemRemainingText(item: Item): string {
-    if (!item.expirationDate) return 'No expiry';
-    return item.expirationDate
-      ? getTimeDifferenceString(new Date(), item.expirationDate)
-      : 'No Expiration';
   }
 }

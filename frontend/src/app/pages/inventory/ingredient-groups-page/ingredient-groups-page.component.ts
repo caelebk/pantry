@@ -1,219 +1,176 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
-import { IngredientCategoryCluster, IngredientGroupCluster } from '@models/inventory.models';
-import { Item } from '@models/items.model';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
-import { ItemService } from '@services/inventory/item.service';
-import { ToastService } from '@services/toast.service';
-import { IngredientGroupContainerComponent } from '../inventory-components/ingredient-group-container/ingredient-group-container.component';
-
-import { SpinnerComponent } from '@ui';
+import { BadgeComponent, EmptyStateComponent, SearchInputComponent, SpinnerComponent } from '@ui';
+import { PrimeIcons } from 'primeng/api';
+import { forkJoin } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'pantry-ingredient-groups-page',
   standalone: true,
-  imports: [CommonModule, IngredientGroupContainerComponent, SpinnerComponent],
+  imports: [
+    RouterLink,
+    TranslocoModule,
+    BadgeComponent,
+    EmptyStateComponent,
+    SearchInputComponent,
+    SpinnerComponent,
+  ],
   templateUrl: './ingredient-groups-page.component.html',
+  styleUrl: './ingredient-groups-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IngredientGroupsPageComponent implements OnInit {
+export class IngredientGroupsPageComponent {
   private readonly router = inject(Router);
-  private readonly itemService = inject(ItemService);
+  private readonly authService = inject(AuthService);
   private readonly ingredientService = inject(IngredientService);
-  private readonly ingredientGroupService = inject(IngredientGroupService);
-  private readonly ingredientCategoryService = inject(IngredientCategoryService);
-  private readonly toastService = inject(ToastService);
-
-  public items = signal<Item[]>([]);
-  public ingredients = signal<Ingredient[]>([]);
-  public ingredientGroups = signal<IngredientGroup[]>([]);
-  public ingredientCategories = signal<IngredientCategory[]>([]);
-  public isLoading = signal<boolean>(true);
-  public searchQuery = signal<string>('');
-  public selectedGroup = signal<IngredientGroup | null>(null);
-
-  public get categories() {
-    return this.ingredientGroups;
-  }
-
-  public get selectedCategory() {
-    return this.selectedGroup;
-  }
-
-  ngOnInit(): void {
-    this.loadData();
-  }
-
-  loadData(): void {
-    this.isLoading.set(true);
-
-    this.itemService.getItems().subscribe({
-      next: (items) => this.items.set(items),
-    });
-
-    this.ingredientService.getIngredients().subscribe({
-      next: (ingredients) => this.ingredients.set(ingredients),
-    });
-
-    this.ingredientGroupService.getIngredientGroups().subscribe({
-      next: (groups) => this.ingredientGroups.set(groups),
-    });
-
-    this.ingredientCategoryService.getIngredientCategories().subscribe({
-      next: (categories) => {
-        this.ingredientCategories.set(categories);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Failed to load ingredient taxonomy data:', err);
-        this.toastService.showError('Unable to load ingredient taxonomy.');
-        this.isLoading.set(false);
-      },
-    });
-  }
-
-  public categoryGroups = computed(() => {
-    const itemsList = this.items();
-    const ingredientsList = this.ingredients();
-    const groupsList = this.ingredientGroups();
-    const query = this.searchQuery().toLowerCase().trim();
-    const selGroup = this.selectedGroup();
-
-    const ingredientMap = new Map();
-
-    ingredientsList.forEach((ingredient) => {
-      const ingredientItems = itemsList.filter((item) => item.ingredientId === ingredient.id);
-      ingredientMap.set(ingredient.id, {
-        ...ingredient,
-        items: ingredientItems,
-        itemCount: ingredientItems.length,
+  private readonly groupService = inject(IngredientGroupService);
+  private readonly categoryService = inject(IngredientCategoryService);
+  private readonly reload = signal(0);
+  private readonly knownIcons = new Set<string>(Object.values(PrimeIcons));
+  readonly state = signal<'loading' | 'ready' | 'error' | 'no-kitchen'>('loading');
+  readonly ingredients = signal<Ingredient[]>([]);
+  readonly groups = signal<IngredientGroup[]>([]);
+  readonly categories = signal<IngredientCategory[]>([]);
+  readonly searchQuery = signal('');
+  private readonly expandedCategories = signal(new Set<number>());
+  private readonly searchCollapsedCategories = signal(new Set<number>());
+  readonly ingredientCounts = computed(() => {
+    const counts = new Map<number, number>();
+    for (const ingredient of this.ingredients()) {
+      const id = (ingredient.ingredientGroup ?? ingredient.category)?.id;
+      if (id !== undefined) counts.set(id, (counts.get(id) ?? 0) + 1);
+    }
+    return counts;
+  });
+  readonly sections = computed(() => {
+    const query = this.searchQuery().trim().toLocaleLowerCase();
+    const categories = [...this.categories()].sort((a, b) => a.name.localeCompare(b.name));
+    const knownIds = new Set(categories.map((category) => category.id));
+    const sections = categories.map((category) => ({
+      category,
+      groups: this.groups().filter((group) => group.ingredientCategoryId === category.id),
+      unclassified: false,
+    }));
+    const unclassified = this.groups().filter(
+      (group) => !knownIds.has(group.ingredientCategoryId ?? -1),
+    );
+    if (unclassified.length)
+      sections.push({
+        category: { id: -1, name: 'Unclassified', icon: 'pi pi-folder' },
+        groups: unclassified,
+        unclassified: true,
       });
+    return sections
+      .map((section) => ({
+        ...section,
+        totalGroups: section.groups.length,
+        groups: section.groups
+          .filter(
+            (group) =>
+              !query ||
+              section.category.name.toLocaleLowerCase().includes(query) ||
+              group.name.toLocaleLowerCase().includes(query),
+          )
+          .sort((a, b) => a.name.localeCompare(b.name)),
+      }))
+      .filter(
+        (section) =>
+          !query ||
+          section.groups.length ||
+          section.category.name.toLocaleLowerCase().includes(query),
+      );
+  });
+
+  constructor() {
+    effect(() => {
+      this.searchQuery();
+      this.searchCollapsedCategories.set(new Set());
     });
-
-    const groupMap = new Map();
-
-    ingredientMap.forEach((ingredient) => {
-      const groupId = ingredient.ingredientGroup?.id ?? -1;
-      if (!groupMap.has(groupId)) {
-        groupMap.set(groupId, []);
-      }
-      groupMap.get(groupId).push(ingredient);
+    effect(() => {
+      this.authService.activeKitchen();
+      this.expandedCategories.set(new Set());
+      this.searchCollapsedCategories.set(new Set());
     });
-
-    const clusters: IngredientGroupCluster[] = [];
-
-    groupMap.forEach((ingList, groupId) => {
-      const group =
-        groupId === -1
-          ? { id: -1, name: 'Uncategorized' }
-          : (groupsList.find((g) => g.id === groupId) ?? { id: -1, name: 'Unknown' });
-
-      if (selGroup && selGroup.id !== group.id) {
+    effect((onCleanup) => {
+      const kitchenId = this.authService.activeKitchen()?.id;
+      this.reload();
+      this.ingredients.set([]);
+      this.groups.set([]);
+      this.categories.set([]);
+      if (!kitchenId) {
+        this.state.set('no-kitchen');
         return;
       }
-
-      const filteredIngredients = ingList.filter((ing: { name: string }) =>
-        ing.name.toLowerCase().includes(query),
-      );
-
-      if (filteredIngredients.length > 0) {
-        clusters.push({ group, ingredients: filteredIngredients });
-      }
-    });
-
-    return clusters.sort((a, b) => a.group.name.localeCompare(b.group.name));
-  });
-
-  public nutrientGroups = computed(() => {
-    const catGroups = this.categoryGroups();
-    const groupsList = this.ingredientGroups();
-    const categoriesList = this.ingredientCategories();
-    const query = this.searchQuery().toLowerCase().trim();
-    const selGroup = this.selectedGroup();
-    const hasSearchOrFilter = query.length > 0 || selGroup !== null;
-
-    const groupClustersMap = new Map<number, IngredientGroupCluster>();
-    catGroups.forEach((cg) => {
-      groupClustersMap.set(cg.group.id, cg);
-    });
-
-    const result: IngredientCategoryCluster[] = [];
-
-    categoriesList.forEach((cat) => {
-      const groupsForCat = groupsList.filter((g) => g.ingredientCategoryId === cat.id);
-      const categoryGroupsInCat: IngredientGroupCluster[] = [];
-
-      groupsForCat.forEach((grp) => {
-        if (selGroup && selGroup.id !== grp.id) {
-          return;
-        }
-        const existingCluster = groupClustersMap.get(grp.id);
-        if (existingCluster) {
-          categoryGroupsInCat.push(existingCluster);
-        } else if (!hasSearchOrFilter) {
-          categoryGroupsInCat.push({ group: grp, ingredients: [] });
-        }
-      });
-
-      if (!hasSearchOrFilter || categoryGroupsInCat.length > 0) {
-        result.push({
-          category: cat,
-          ingredientGroups: categoryGroupsInCat.sort((a, b) =>
-            a.group.name.localeCompare(b.group.name),
-          ),
-        });
-      }
-    });
-
-    const knownGroupIds = new Set(groupsList.map((g) => g.id));
-    const uncategorizedClusters = catGroups.filter(
-      (cg) =>
-        !knownGroupIds.has(cg.group.id) ||
-        !groupsList.find((g) => g.id === cg.group.id)?.ingredientCategoryId,
-    );
-
-    if (uncategorizedClusters.length > 0) {
-      result.push({
-        category: {
-          id: -1,
-          name: 'Unclassified',
-          icon: '📦',
-          color: '#94a3b8',
-          description: 'Groups without an assigned ingredient category',
+      this.state.set('loading');
+      const request = forkJoin({
+        ingredients: this.ingredientService.getIngredients(),
+        groups: this.groupService.getIngredientGroups(),
+        categories: this.categoryService.getIngredientCategories(),
+      }).subscribe({
+        next: ({ ingredients, groups, categories }) => {
+          this.ingredients.set(ingredients);
+          this.groups.set(groups);
+          this.categories.set(categories);
+          this.state.set('ready');
         },
-        ingredientGroups: uncategorizedClusters,
+        error: () => this.state.set('error'),
       });
-    }
-
-    return result.sort((a, b) => {
-      if (a.category.id === -1) return 1;
-      if (b.category.id === -1) return -1;
-      return a.category.name.localeCompare(b.category.name);
+      onCleanup(() => request.unsubscribe());
     });
-  });
-
-  onAddGroup(): void {
-    this.router.navigate(['/inventory/groups/new']);
   }
 
-  onUnassignItem(item: Item): void {
-    const updatedItem: Item = {
-      ...item,
-      ingredientId: undefined,
-    };
-    this.itemService.updateItem(updatedItem).subscribe({
-      next: () => {
-        this.toastService.showSuccess(`Unassigned "${item.name}"`, 'Item Unassigned');
-        this.loadData();
-      },
-      error: () => {
-        this.toastService.showError('Failed to unassign item.', 'Error');
-      },
+  isExpanded(id: number): boolean {
+    return this.searchQuery().trim()
+      ? !this.searchCollapsedCategories().has(id)
+      : this.expandedCategories().has(id);
+  }
+
+  toggleCategory(id: number): void {
+    const state = this.searchQuery().trim()
+      ? this.searchCollapsedCategories
+      : this.expandedCategories;
+    state.update((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  retry(): void {
+    this.reload.update((value) => value + 1);
+  }
+
+  iconClass(icon?: string): string | null {
+    return icon && this.knownIcons.has(icon) ? icon : null;
+  }
+
+  emojiIcon(icon?: string): string | null {
+    return icon && /\p{Extended_Pictographic}/u.test(icon) && icon.length <= 16 ? icon : null;
+  }
+
+  navigateToIngredients(groupId: number, event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('a[href*="/edit"], button')) {
+      return;
+    }
+    this.router.navigate(['/inventory/ingredients'], {
+      queryParams: { groupId, from: 'groups' },
     });
   }
 }

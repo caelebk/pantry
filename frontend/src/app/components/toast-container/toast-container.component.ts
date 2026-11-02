@@ -1,23 +1,26 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Observable } from 'rxjs';
 import { Toast, ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'pantry-toast-container',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoModule],
   template: `
-    <div
-      class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full px-4 pointer-events-none">
+    <div class="toast-stack fixed z-50 flex flex-col gap-3 pointer-events-none">
       @for (toast of toasts$ | async; track toast.id) {
         <div
+          [attr.role]="toast.type === 'error' ? 'alert' : 'status'"
+          [attr.aria-live]="toast.type === 'error' ? 'assertive' : 'polite'"
+          aria-atomic="true"
           [class]="
-            'pointer-events-auto rounded-2xl p-4 shadow-2xl border transition-all duration-300 transform translate-y-0 flex items-start gap-3 ' +
+            'toast-card pointer-events-auto rounded-2xl p-4 shadow-2xl border transition-all duration-300 transform translate-y-0 flex items-start gap-3 ' +
             getToastClass(toast.type)
           ">
           <!-- Icon -->
-          <div class="shrink-0 mt-0.5">
+          <div class="shrink-0 mt-0.5" aria-hidden="true">
             @switch (toast.type) {
               @case ('success') {
                 <div
@@ -91,14 +94,14 @@ import { Toast, ToastService } from '../../services/toast.service';
           </div>
 
           <!-- Message Body -->
-          <div class="flex-1 min-w-0">
+          <div class="toast-message flex-1 min-w-0">
             @if (toast.title) {
               <h5
-                class="text-sm font-extrabold text-surface-900 dark:text-white leading-tight mb-0.5">
+                class="text-sm font-semibold text-surface-900 dark:text-white leading-tight mb-0.5">
                 {{ toast.title }}
               </h5>
             }
-            <p class="text-xs text-surface-600 dark:text-surface-300 leading-normal">
+            <p class="text-sm text-surface-600 dark:text-surface-300 leading-normal">
               {{ toast.message }}
             </p>
           </div>
@@ -107,8 +110,8 @@ import { Toast, ToastService } from '../../services/toast.service';
           <button
             type="button"
             (click)="dismiss(toast.id)"
-            aria-label="Dismiss notification"
-            class="btn-icon-sm">
+            [attr.aria-label]="'COMMON.DISMISS_NOTIFICATION' | transloco"
+            class="btn-icon-sm shrink-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -122,6 +125,24 @@ import { Toast, ToastService } from '../../services/toast.service';
         </div>
       }
     </div>
+  `,
+  styles: `
+    .toast-stack {
+      right: max(1rem, env(safe-area-inset-right));
+      bottom: max(1rem, env(safe-area-inset-bottom));
+      width: min(24rem, calc(100vw - 2rem));
+      max-height: calc(100dvh - 2rem);
+      overflow-y: auto;
+    }
+    .toast-card {
+      background: color-mix(in srgb, var(--color-surface-50) 97%, transparent);
+    }
+    :host-context(.dark) .toast-card {
+      background: color-mix(in srgb, var(--color-surface-900) 97%, transparent);
+    }
+    .toast-message {
+      overflow-wrap: anywhere;
+    }
   `,
 })
 export class ToastContainerComponent implements OnInit {

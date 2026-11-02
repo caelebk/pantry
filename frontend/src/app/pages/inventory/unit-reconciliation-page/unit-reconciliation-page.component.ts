@@ -11,6 +11,7 @@ import { IngredientService } from '@services/inventory/ingredient.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
+import { ingredientDetailReturnTo } from '@utility/ingredient-detail-return';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
@@ -58,13 +59,17 @@ export class UnitReconciliationPageComponent implements OnInit {
   public isSubmitting = signal<boolean>(false);
   public submitError = signal<string | null>(null);
 
+  private get returnTo(): string | null {
+    return ingredientDetailReturnTo(this.route.snapshot.queryParams?.['returnTo']);
+  }
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     const targetUnitIdStr = this.route.snapshot.queryParamMap.get('targetUnitId');
 
     if (!id || !targetUnitIdStr) {
       this.toastService.showError('Invalid reconciliation parameters.');
-      this.router.navigate(['/inventory/ingredients']);
+      this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
       return;
     }
 
@@ -115,7 +120,7 @@ export class UnitReconciliationPageComponent implements OnInit {
       error: (err) => {
         console.error('Failed to load reconciliation data:', err);
         this.toastService.showError('Failed to load details for reconciliation.');
-        this.router.navigate(['/inventory/ingredients']);
+        this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
       },
     });
   }
@@ -140,7 +145,7 @@ export class UnitReconciliationPageComponent implements OnInit {
           `Reconciled ${payloadItems.length} item(s) to unit "${target.name}".`,
           'Measures Reconciled',
         );
-        this.router.navigate(['/inventory/ingredients']);
+        this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
       },
       error: (err) => {
         this.isSubmitting.set(false);
@@ -152,6 +157,6 @@ export class UnitReconciliationPageComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/inventory/ingredients']);
+    this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
   }
 }

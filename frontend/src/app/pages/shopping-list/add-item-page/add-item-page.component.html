@@ -8,14 +8,11 @@
       <i class="pi pi-arrow-left text-sm"></i>
     </button>
     <div>
-      <h1 class="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
+      <h1 class="type-page-title text-surface-900 dark:text-white">
         {{
           (editingId() ? 'shoppingList.form.editTitle' : 'shoppingList.form.addTitle') | transloco
         }}
       </h1>
-      <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
-        {{ 'shoppingList.form.subtitle' | transloco }}
-      </p>
     </div>
   </div>
 
@@ -49,7 +46,7 @@
     <section class="space-y-4">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <h2 class="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider">
+          <h2 class="type-label text-surface-900 dark:text-white">
             {{ 'shoppingList.form.ingredientSection' | transloco }}
           </h2>
           <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
@@ -182,9 +179,7 @@
     <!-- Store Select with Direct Create Shortcut -->
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label
-          for="store"
-          class="block text-xs font-semibold uppercase tracking-wider text-surface-700 dark:text-surface-300">
+        <label for="store" class="type-label block text-surface-700 dark:text-surface-300">
           {{ 'shoppingList.form.store' | transloco }}
         </label>
         <button
@@ -240,7 +235,7 @@
         appendTo="body">
         <ng-template pTemplate="item" let-item>
           <div class="flex items-center gap-2 py-0.5">
-            <i class="pi pi-map-marker text-xs text-primary-500"></i>
+            <i class="pi pi-map-marker text-xs text-surface-400 dark:text-surface-500"></i>
             <span class="font-medium text-sm">{{ item.name }}</span>
           </div>
         </ng-template>

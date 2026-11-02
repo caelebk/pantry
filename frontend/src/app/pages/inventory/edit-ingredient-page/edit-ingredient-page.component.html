@@ -1,20 +1,12 @@
+<div class="flex">
+  <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent">
+    <i class="pi pi-arrow-left" aria-hidden="true"></i>
+    <span>{{ 'nav.back' | transloco }}</span>
+  </button>
+</div>
 <div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
   <!-- Page Header -->
-  <div class="flex items-center justify-between mb-2">
-    <div class="flex items-center gap-3">
-      <button (click)="onCancel()" type="button" class="btn-icon" aria-label="Back" title="Back">
-        <i class="pi pi-arrow-left text-base"></i>
-      </button>
-      <div>
-        <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
-          Edit Ingredient
-        </h2>
-        <p class="text-surface-500 dark:text-surface-400 mt-1.5 text-sm">
-          Update ingredient properties, taxonomy group, or default unit.
-        </p>
-      </div>
-    </div>
-  </div>
+  <h2 class="type-page-title text-surface-900 dark:text-white">Edit Ingredient</h2>
 
   @if (isLoading()) {
     <div
@@ -24,7 +16,7 @@
   } @else {
     @if (submitError()) {
       <div
-        class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-2">
+        class="type-label p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 flex items-center gap-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

@@ -25,8 +25,8 @@ import { ToastService } from '../../../services/toast.service';
           <i
             [class]="
               isDarkMode()
-                ? 'pi pi-sun text-amber-400 text-lg'
-                : 'pi pi-moon text-indigo-500 text-lg'
+                ? 'pi pi-sun text-surface-600 dark:text-surface-300 text-lg'
+                : 'pi pi-moon text-surface-600 dark:text-surface-300 text-lg'
             "></i>
         </button>
       </div>
@@ -38,7 +38,7 @@ import { ToastService } from '../../../services/toast.service';
         <div class="absolute inset-0 pointer-events-none z-0" aria-hidden="true">
           <!-- Pantry Storage Jar Vector -->
           <svg
-            class="vector-float-slow absolute -top-6 -right-6 w-56 h-56 text-primary-500/10 dark:text-primary-400/10"
+            class="vector-float-slow absolute -top-6 -right-6 w-56 h-56 text-surface-400/10 dark:text-surface-300/10"
             viewBox="0 0 100 100"
             fill="none"
             stroke="currentColor"
@@ -52,7 +52,7 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Skillet & Cooking Pan Vector -->
           <svg
-            class="vector-float-medium absolute -bottom-10 -left-10 w-64 h-64 text-amber-500/10 dark:text-amber-400/10"
+            class="vector-float-medium absolute -bottom-10 -left-10 w-64 h-64 text-surface-400/10 dark:text-surface-300/10"
             viewBox="0 0 100 100"
             fill="none"
             stroke="currentColor"
@@ -65,7 +65,7 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Refrigerator Storage Cabinet Vector -->
           <svg
-            class="vector-float-fast absolute top-1/4 -left-12 w-48 h-48 text-orange-500/10 dark:text-orange-400/10"
+            class="vector-float-fast absolute top-1/4 -left-12 w-48 h-48 text-surface-400/10 dark:text-surface-300/10"
             viewBox="0 0 100 100"
             fill="none"
             stroke="currentColor"
@@ -78,7 +78,7 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Crossed Utensils & Spatula Vector -->
           <svg
-            class="vector-float-slow absolute bottom-1/4 -right-10 w-52 h-52 text-amber-500/10 dark:text-amber-400/10"
+            class="vector-float-slow absolute bottom-1/4 -right-10 w-52 h-52 text-surface-400/10 dark:text-surface-300/10"
             viewBox="0 0 100 100"
             fill="none"
             stroke="currentColor"
@@ -91,7 +91,7 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Fresh Produce Apple Vector -->
           <svg
-            class="vector-float-medium absolute top-12 right-1/3 w-36 h-36 text-emerald-500/10 dark:text-emerald-400/10"
+            class="vector-float-medium absolute top-12 right-1/3 w-36 h-36 text-surface-400/10 dark:text-surface-300/10"
             viewBox="0 0 100 100"
             fill="none"
             stroke="currentColor"
@@ -109,7 +109,7 @@ import { ToastService } from '../../../services/toast.service';
         <!-- Brand Emblem Header -->
         <div class="relative z-10 flex items-center gap-3">
           <div
-            class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold shadow-md shadow-primary-500/20">
+            class="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold">
             <span class="material-symbols-outlined text-[20px]">skillet</span>
           </div>
           <span class="text-xl font-bold tracking-tight text-surface-900 dark:text-white">
@@ -135,7 +135,7 @@ import { ToastService } from '../../../services/toast.service';
             <div
               class="flex items-center justify-between text-xs font-semibold text-surface-700 dark:text-surface-200">
               <span class="flex items-center gap-2">
-                <i class="pi pi-building text-primary-500 text-sm"></i>
+                <i class="pi pi-building text-surface-500 dark:text-surface-400 text-sm"></i>
                 Kitchen Inventory
               </span>
               <pantry-badge variant="fresh" size="sm" [dot]="true">Synced</pantry-badge>
@@ -144,7 +144,7 @@ import { ToastService } from '../../../services/toast.service';
               class="flex items-center justify-between p-2.5 rounded-xl bg-white/60 dark:bg-surface-800/60 border border-surface-200/50 dark:border-surface-700/50">
               <span
                 class="text-xs font-semibold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                <span>🥩</span> Wagyu Ribeye
+                Wagyu Ribeye
               </span>
               <pantry-badge variant="expiring" size="sm">Exp. 2 days</pantry-badge>
             </div>
@@ -163,7 +163,7 @@ import { ToastService } from '../../../services/toast.service';
           <!-- Mobile Brand Emblem Header -->
           <div class="lg:hidden flex flex-col items-center text-center space-y-2 mb-6">
             <div
-              class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white font-bold shadow-md shadow-primary-500/20">
+              class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold">
               <span class="material-symbols-outlined text-[22px]">skillet</span>
             </div>
             <span class="text-lg font-bold tracking-tight text-surface-900 dark:text-white">
@@ -173,13 +173,9 @@ import { ToastService } from '../../../services/toast.service';
 
           <!-- Form Header -->
           <div>
-            <h1
-              class="text-2xl sm:text-3xl font-bold tracking-tight text-surface-900 dark:text-white">
+            <h1 class="type-page-title text-surface-900 dark:text-white">
               {{ 'auth.login' | transloco }}
             </h1>
-            <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
-              {{ 'auth.welcomeSubtitle' | transloco }}
-            </p>
           </div>
 
           <!-- Inline Error Banner -->
@@ -197,9 +193,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Identifier Field (Email or Username) -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="identifier"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="identifier" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.emailOrUsername' | transloco }}
                 </label>
               </div>
@@ -227,9 +221,7 @@ import { ToastService } from '../../../services/toast.service';
             <!-- Password Field -->
             <div>
               <div class="flex items-center justify-between h-6 mb-1.5">
-                <label
-                  for="password"
-                  class="text-xs font-semibold uppercase tracking-wider text-surface-600 dark:text-surface-300">
+                <label for="password" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.password' | transloco }}
                 </label>
                 <button
@@ -270,10 +262,7 @@ import { ToastService } from '../../../services/toast.service';
             </div>
 
             <!-- Submit Button -->
-            <button
-              type="submit"
-              [disabled]="isSubmitting()"
-              class="w-full h-[42px] rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 active:scale-[0.99] text-white font-semibold text-sm shadow-md shadow-orange-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 cursor-pointer">
+            <button type="submit" [disabled]="isSubmitting()" class="btn-primary w-full mt-2">
               @if (isSubmitting()) {
                 <i class="pi pi-spin pi-spinner text-sm"></i>
                 <span>Signing in...</span>

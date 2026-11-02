@@ -1,534 +1,322 @@
-<div class="max-w-7xl mx-auto px-4 py-6 space-y-8">
-  <!-- Page Header & Action Launchpad -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="page-layout" *transloco="let t; prefix: 'inventoryOverview'">
+  <header class="page-header">
     <div>
-      <div
-        class="flex items-center gap-2 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1">
-        <i class="pi pi-box text-primary-500"></i>
-        <span>Inventory</span>
-      </div>
-      <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
-        Kitchen Inventory Overview
-      </h2>
-      <p class="text-surface-500 dark:text-surface-400 mt-1 text-sm font-medium">
-        Manage taxonomy, monitor physical stock, and explore your 4-tier kitchen domain hierarchy.
-      </p>
+      <h1 class="type-page-title text-surface-900 dark:text-white">{{ t('title') }}</h1>
     </div>
+  </header>
 
-    <!-- Quick Action Launchpad -->
-    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
-      <button (click)="navigateTo('/inventory/items/new')" class="btn-primary">
-        <i class="pi pi-plus text-xs font-bold"></i>
-        <span>Add Stock Item</span>
-      </button>
-      <button (click)="navigateTo('/inventory/ingredients/new')" class="btn-secondary">
-        <i class="pi pi-sparkles text-surface-500"></i>
-        <span>Add Ingredient</span>
-      </button>
-      <button (click)="navigateTo('/inventory/groups/new')" class="btn-secondary">
-        <i class="pi pi-tags text-surface-500"></i>
-        <span>Add Group</span>
-      </button>
-    </div>
-  </div>
-
-  @if (isLoading()) {
-    <div class="space-y-6">
-      <div
-        class="glass-card rounded-3xl p-6 md:p-8 border border-surface-200/60 dark:border-surface-800/80 shadow-xs space-y-5">
-        <div class="flex items-center justify-between">
-          <p-skeleton width="16rem" height="2.25rem" borderRadius="12px"></p-skeleton>
-          <p-skeleton width="7rem" height="1.75rem" borderRadius="8px"></p-skeleton>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-          <p-skeleton width="100%" height="6.5rem" borderRadius="16px"></p-skeleton>
-          <p-skeleton width="100%" height="6.5rem" borderRadius="16px"></p-skeleton>
-          <p-skeleton width="100%" height="6.5rem" borderRadius="16px"></p-skeleton>
-          <p-skeleton width="100%" height="6.5rem" borderRadius="16px"></p-skeleton>
-        </div>
-      </div>
-    </div>
-  } @else {
-    <!-- 4-TIER DOMAIN HIERARCHY INTERACTIVE COLLAPSIBLE PYRAMID CARD -->
-    <div
-      class="glass-card rounded-3xl p-6 md:p-8 border border-surface-200/60 dark:border-surface-800/80 shadow-xs panel-reveal panel-delay-1">
-      <!-- Section Header -->
-      <div
-        class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-6 border-b border-surface-200/40 dark:border-surface-800/40">
-        <div>
-          <div
-            class="flex items-center gap-2 text-xs font-bold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
-            <i class="pi pi-sitemap text-primary-500"></i>
-            <span>Interactive Domain Model</span>
-          </div>
-          <h3 class="text-xl font-bold text-surface-900 dark:text-white mt-1">
-            Kitchen Inventory 4-Tier Hierarchy
-          </h3>
-          <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-            Click any pyramid tier below to expand its detailed taxonomy definition and direct
-            actions.
+  <section aria-labelledby="inventory-guide">
+    <h2 id="inventory-guide" class="type-section-title select-none">{{ t('help') }}</h2>
+    <div class="grid grid-cols-2 lg:flex lg:items-center gap-3 lg:gap-2 mt-4">
+      @for (level of ['category', 'group', 'ingredient', 'item']; track level; let index = $index) {
+        <div class="glass-card rounded-xl p-3 sm:p-4 min-w-0 lg:flex-1">
+          <p class="type-label text-surface-900 dark:text-white break-words">
+            <span class="text-surface-400 mr-1.5" aria-hidden="true">{{ index + 1 }}.</span
+            >{{ t(level) }}
+          </p>
+          <p class="type-meta text-surface-600 dark:text-surface-300 mt-1 break-words">
+            {{ t(level + 'Example') }}
           </p>
         </div>
-        <div class="shrink-0 flex items-center gap-2">
-          <span
-            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700">
-            <i class="pi pi-sliders-h text-primary-500"></i>
-            Interactive Pyramid
-          </span>
-        </div>
-      </div>
-
-      <!-- Interactive Collapsible Triangle Pyramid Visual Diagram -->
-      <div class="my-6 flex flex-col items-center justify-center">
-        <div class="w-full max-w-3xl flex flex-col items-center gap-3 relative">
-          <!-- Pyramid Tier 1 (Apex - Narrowest: Ingredient Category) -->
-          <div class="w-full max-w-[360px] flex flex-col items-center">
-            <div
-              (click)="toggleTier(1)"
-              [class.border-primary-500]="expandedTier() === 1"
-              [class.ring-2]="expandedTier() === 1"
-              [class.ring-primary-500/20]="expandedTier() === 1"
-              class="w-full p-3.5 rounded-2xl bg-surface-100/90 dark:bg-surface-800/90 text-surface-900 dark:text-white shadow-xs hover:border-primary-500/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer border border-surface-200 dark:border-surface-700 flex items-center justify-between group">
-              <div class="flex items-center gap-3 overflow-hidden">
-                <div
-                  class="w-9 h-9 rounded-xl bg-surface-200/80 dark:bg-surface-700/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <i class="pi pi-sitemap text-sm text-surface-700 dark:text-surface-200"></i>
-                </div>
-                <div class="min-w-0">
-                  <div class="flex items-center gap-1.5">
-                    <span
-                      class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-surface-200/80 dark:bg-surface-700 text-surface-600 dark:text-surface-300 tracking-wider whitespace-nowrap"
-                      >Tier 1</span
-                    >
-                    <h4 class="text-xs font-bold text-surface-900 dark:text-white truncate">
-                      Ingredient Category
-                    </h4>
-                  </div>
-                  <p
-                    class="text-[11px] text-surface-500 dark:text-surface-400 font-medium mt-0.5 truncate">
-                    Macro Classification ({{ categoriesCount() }})
-                  </p>
-                </div>
-              </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <span
-                  class="text-[11px] font-extrabold text-surface-600 dark:text-surface-300 px-2 py-0.5 rounded-full bg-surface-200/60 dark:bg-surface-700/60">
-                  {{ categoriesCount() }}
-                </span>
-                <i
-                  [class]="
-                    expandedTier() === 1
-                      ? 'pi pi-chevron-down text-primary-500'
-                      : 'pi pi-chevron-right text-surface-400'
-                  "
-                  class="text-xs transition-transform"></i>
-              </div>
-            </div>
-
-            <!-- Collapsible Tier 1 Details Card -->
-            @if (expandedTier() === 1) {
-              <div
-                class="w-full mt-2 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/80 border border-primary-500/30 shadow-inner animate-fadeIn space-y-3">
-                <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
-                  Macro classification encapsulating nutritional & culinary categories. Serves as
-                  top-level taxonomy.
-                </p>
-                <div
-                  class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-surface-200/60 dark:border-surface-700/60">
-                  <span class="text-surface-500 font-medium">Examples:</span>
-                  <span class="font-semibold text-surface-700 dark:text-surface-200"
-                    >Protein & Dairy, Fiber & Produce, Carbs & Grains</span
-                  >
-                </div>
-                <div class="pt-2 flex justify-end">
-                  <button
-                    (click)="navigateTo('/inventory/groups')"
-                    class="btn-ghost !h-8 !px-2 !text-xs font-bold !text-primary-600 dark:!text-primary-400 hover:!bg-primary-500/10">
-                    <span>Manage Categories & Groups</span>
-                    <i class="pi pi-arrow-right text-[10px]"></i>
-                  </button>
-                </div>
-              </div>
-            }
-          </div>
-
-          <!-- Down Arrow Connector 1 -->
+        @if (index < 3) {
           <div
-            class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
-            <i class="pi pi-arrow-down text-xs opacity-75"></i>
+            class="hidden lg:flex items-center justify-center shrink-0 text-surface-400 dark:text-surface-500 px-1"
+            aria-hidden="true">
+            <i class="pi pi-arrow-right text-sm"></i>
           </div>
-
-          <!-- Pyramid Tier 2 (Upper Middle: Ingredient Group) -->
-          <div class="w-full max-w-[460px] flex flex-col items-center">
-            <div
-              (click)="toggleTier(2)"
-              [class.border-primary-500]="expandedTier() === 2"
-              [class.ring-2]="expandedTier() === 2"
-              [class.ring-primary-500/20]="expandedTier() === 2"
-              class="w-full p-3.5 rounded-2xl bg-surface-100/90 dark:bg-surface-800/90 text-surface-900 dark:text-white shadow-xs hover:border-primary-500/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer border border-surface-200 dark:border-surface-700 flex items-center justify-between group">
-              <div class="flex items-center gap-3 overflow-hidden">
-                <div
-                  class="w-9 h-9 rounded-xl bg-surface-200/80 dark:bg-surface-700/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <i class="pi pi-tags text-sm text-surface-700 dark:text-surface-200"></i>
-                </div>
-                <div class="min-w-0">
-                  <div class="flex items-center gap-1.5">
-                    <span
-                      class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-surface-200/80 dark:bg-surface-700 text-surface-600 dark:text-surface-300 tracking-wider whitespace-nowrap"
-                      >Tier 2</span
-                    >
-                    <h4 class="text-xs font-bold text-surface-900 dark:text-white truncate">
-                      Ingredient Group
-                    </h4>
-                  </div>
-                  <p
-                    class="text-[11px] text-surface-500 dark:text-surface-400 font-medium mt-0.5 truncate">
-                    Culinary Sub-Grouping ({{ groupsCount() }})
-                  </p>
-                </div>
-              </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <span
-                  class="text-[11px] font-extrabold text-surface-600 dark:text-surface-300 px-2 py-0.5 rounded-full bg-surface-200/60 dark:bg-surface-700/60">
-                  {{ groupsCount() }}
-                </span>
-                <i
-                  [class]="
-                    expandedTier() === 2
-                      ? 'pi pi-chevron-down text-primary-500'
-                      : 'pi pi-chevron-right text-surface-400'
-                  "
-                  class="text-xs transition-transform"></i>
-              </div>
-            </div>
-
-            <!-- Collapsible Tier 2 Details Card -->
-            @if (expandedTier() === 2) {
-              <div
-                class="w-full mt-2 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/80 border border-primary-500/30 shadow-inner animate-fadeIn space-y-3">
-                <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
-                  Sub-classification organizing related culinary ingredients under a parent
-                  Category.
-                </p>
-                <div
-                  class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-surface-200/60 dark:border-surface-700/60">
-                  <span class="text-surface-500 font-medium">Examples:</span>
-                  <span class="font-semibold text-surface-700 dark:text-surface-200"
-                    >Meat, Seafood, Beans, Vegetables, Fruits, Grains</span
-                  >
-                </div>
-                <div class="pt-2 flex justify-end">
-                  <button
-                    (click)="navigateTo('/inventory/groups')"
-                    class="btn-ghost !h-8 !px-2 !text-xs font-bold !text-primary-600 dark:!text-primary-400 hover:!bg-primary-500/10">
-                    <span>Manage Groups & Taxonomy</span>
-                    <i class="pi pi-arrow-right text-[10px]"></i>
-                  </button>
-                </div>
-              </div>
-            }
-          </div>
-
-          <!-- Down Arrow Connector 2 -->
-          <div
-            class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
-            <i class="pi pi-arrow-down text-xs opacity-75"></i>
-          </div>
-
-          <!-- Pyramid Tier 3 (Lower Middle: Ingredient Catalog) -->
-          <div class="w-full max-w-[580px] flex flex-col items-center">
-            <div
-              (click)="toggleTier(3)"
-              [class.border-primary-500]="expandedTier() === 3"
-              [class.ring-2]="expandedTier() === 3"
-              [class.ring-primary-500/20]="expandedTier() === 3"
-              class="w-full p-3.5 rounded-2xl bg-surface-100/90 dark:bg-surface-800/90 text-surface-900 dark:text-white shadow-xs hover:border-primary-500/50 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer border border-surface-200 dark:border-surface-700 flex items-center justify-between group">
-              <div class="flex items-center gap-3 overflow-hidden">
-                <div
-                  class="w-9 h-9 rounded-xl bg-surface-200/80 dark:bg-surface-700/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <i class="pi pi-sparkles text-sm text-surface-700 dark:text-surface-200"></i>
-                </div>
-                <div class="min-w-0">
-                  <div class="flex items-center gap-1.5">
-                    <span
-                      class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-surface-200/80 dark:bg-surface-700 text-surface-600 dark:text-surface-300 tracking-wider whitespace-nowrap"
-                      >Tier 3</span
-                    >
-                    <h4 class="text-xs font-bold text-surface-900 dark:text-white truncate">
-                      Ingredient
-                    </h4>
-                  </div>
-                  <p
-                    class="text-[11px] text-surface-500 dark:text-surface-400 font-medium mt-0.5 truncate">
-                    Master Catalog Definition ({{ ingredientsCount() }})
-                  </p>
-                </div>
-              </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <span
-                  class="text-[11px] font-extrabold text-surface-600 dark:text-surface-300 px-2 py-0.5 rounded-full bg-surface-200/60 dark:bg-surface-700/60">
-                  {{ ingredientsCount() }}
-                </span>
-                <i
-                  [class]="
-                    expandedTier() === 3
-                      ? 'pi pi-chevron-down text-primary-500'
-                      : 'pi pi-chevron-right text-surface-400'
-                  "
-                  class="text-xs transition-transform"></i>
-              </div>
-            </div>
-
-            <!-- Collapsible Tier 3 Details Card -->
-            @if (expandedTier() === 3) {
-              <div
-                class="w-full mt-2 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800/80 border border-primary-500/30 shadow-inner animate-fadeIn space-y-3">
-                <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
-                  Master catalog culinary definition. Shared across recipe ingredients and physical
-                  stock items.
-                </p>
-                <div
-                  class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-surface-200/60 dark:border-surface-700/60">
-                  <span class="text-surface-500 font-medium">Examples:</span>
-                  <span class="font-semibold text-surface-700 dark:text-surface-200"
-                    >Chicken Breast, Gala Apple, Jasmine Rice, Olive Oil</span
-                  >
-                </div>
-                <div class="pt-2 flex justify-end">
-                  <button
-                    (click)="navigateTo('/inventory/ingredients')"
-                    class="btn-ghost !h-8 !px-2 !text-xs font-bold !text-primary-600 dark:!text-primary-400 hover:!bg-primary-500/10">
-                    <span>Explore Master Catalog</span>
-                    <i class="pi pi-arrow-right text-[10px]"></i>
-                  </button>
-                </div>
-              </div>
-            }
-          </div>
-
-          <!-- Down Arrow Connector 3 -->
-          <div
-            class="flex items-center justify-center -my-1 text-surface-400 dark:text-surface-500">
-            <i class="pi pi-arrow-down text-xs opacity-75"></i>
-          </div>
-
-          <!-- Pyramid Tier 4 (Base Foundation - Widest: Ingredient Item Stock) -->
-          <div class="w-full max-w-[700px] flex flex-col items-center">
-            <div
-              (click)="toggleTier(4)"
-              [class.border-primary-500]="expandedTier() === 4"
-              [class.ring-2]="expandedTier() === 4"
-              [class.ring-primary-500/30]="expandedTier() === 4"
-              class="w-full p-3.5 rounded-2xl bg-primary-500/10 dark:bg-primary-500/15 text-surface-900 dark:text-white shadow-xs hover:border-primary-500 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 cursor-pointer border border-primary-500/30 flex items-center justify-between group">
-              <div class="flex items-center gap-3 overflow-hidden">
-                <div
-                  class="w-9 h-9 rounded-xl bg-primary-500/20 text-primary-600 dark:text-primary-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <i class="pi pi-box text-sm"></i>
-                </div>
-                <div class="min-w-0">
-                  <div class="flex items-center gap-1.5">
-                    <span
-                      class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-primary-500/20 text-primary-700 dark:text-primary-300 tracking-wider whitespace-nowrap"
-                      >Tier 4 Base</span
-                    >
-                    <h4 class="text-xs font-bold text-surface-900 dark:text-white truncate">
-                      Ingredient Item
-                    </h4>
-                  </div>
-                  <p
-                    class="text-[11px] text-surface-600 dark:text-surface-300 font-medium mt-0.5 truncate">
-                    Physical Stock Batches in Fridge/Pantry ({{ itemsCount() }})
-                  </p>
-                </div>
-              </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <span
-                  class="text-[11px] font-extrabold text-primary-700 dark:text-primary-300 px-2 py-0.5 rounded-full bg-primary-500/20">
-                  {{ itemsCount() }} batches
-                </span>
-                <i
-                  [class]="
-                    expandedTier() === 4
-                      ? 'pi pi-chevron-down text-primary-600 dark:text-primary-400'
-                      : 'pi pi-chevron-right text-primary-500'
-                  "
-                  class="text-xs transition-transform"></i>
-              </div>
-            </div>
-
-            <!-- Collapsible Tier 4 Details Card -->
-            @if (expandedTier() === 4) {
-              <div
-                class="w-full mt-2 p-4 rounded-2xl bg-primary-500/5 dark:bg-primary-500/10 border border-primary-500/30 shadow-inner animate-fadeIn space-y-3">
-                <p class="text-xs text-surface-600 dark:text-surface-300 leading-relaxed">
-                  Physical stock instance sitting in your fridge/pantry with specific quantity,
-                  expiration date, and storage location.
-                </p>
-                <div
-                  class="flex flex-wrap items-center justify-between text-[11px] pt-2 border-t border-primary-500/20">
-                  <span class="text-surface-500 font-medium">Status Overview:</span>
-                  <div class="flex items-center gap-2">
-                    <span class="font-semibold text-emerald-600 dark:text-emerald-400"
-                      >{{ freshCount() }} fresh</span
-                    >
-                    @if (expiringCount() > 0) {
-                      <span class="font-semibold text-amber-600 dark:text-amber-400"
-                        >• {{ expiringCount() }} expiring</span
-                      >
-                    }
-                    @if (expiredCount() > 0) {
-                      <span class="font-semibold text-red-600 dark:text-red-400"
-                        >• {{ expiredCount() }} expired</span
-                      >
-                    }
-                  </div>
-                </div>
-                <div class="pt-2 flex justify-end">
-                  <button
-                    (click)="navigateTo('/inventory/items')"
-                    class="btn-primary !h-8 !text-xs !rounded-lg">
-                    <span>View Physical Inventory Stock</span>
-                    <i class="pi pi-arrow-right text-[10px]"></i>
-                  </button>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
+        }
+      }
     </div>
+    <details class="group mt-4">
+      <summary
+        class="inventory-guide-toggle min-h-[42px] inline-flex items-center gap-1.5 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden type-label text-surface-800 dark:text-surface-300 hover:text-surface-900 dark:hover:text-white focus-visible:text-surface-900 dark:focus-visible:text-white rounded-lg px-1 focus-visible:outline-2 focus-visible:outline-primary-500">
+        <span class="inventory-guide-toggle__label">{{ t('explainTerms') }}</span>
+        <i class="inventory-guide-toggle__caret pi pi-angle-down shrink-0" aria-hidden="true"></i>
+      </summary>
+      <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        @for (
+          level of ['category', 'group', 'ingredient', 'item'];
+          track level;
+          let index = $index
+        ) {
+          <div class="min-w-0">
+            <dt class="type-label text-surface-900 dark:text-white">
+              <span class="text-surface-500 dark:text-surface-400 mr-1.5" aria-hidden="true"
+                >{{ index + 1 }}.</span
+              >{{ t(level) }}
+            </dt>
+            <dd class="type-meta text-surface-600 dark:text-surface-300 mt-1">
+              <p>{{ t(level + 'Help') }}</p>
+            </dd>
+          </div>
+        }
+      </dl>
+    </details>
+  </section>
 
-    <!-- Navigation Hub: 3 Main Sub-views Access Cards -->
-    <div>
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold text-surface-900 dark:text-white">Inventory Sub-Systems</h3>
-        <span class="text-xs font-medium text-surface-500">Quick Access Hub</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Sub-system 1: Ingredient Items (Physical Stock) -->
-        <div
-          (click)="navigateTo('/inventory/items')"
-          class="glass-card rounded-2xl p-6 border border-surface-200/60 dark:border-surface-800/80 hover:border-primary-500/50 dark:hover:border-primary-500/50 transition-all duration-200 cursor-pointer group shadow-xs hover:shadow-md flex flex-col justify-between">
-          <div>
-            <div
-              class="w-11 h-11 rounded-2xl bg-primary-500/10 text-primary-600 dark:text-primary-400 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <i class="pi pi-box text-xl"></i>
-            </div>
-            <h4
-              class="text-base font-bold text-surface-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-              Ingredient Items
-            </h4>
-            <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5 leading-relaxed">
-              Track physical kitchen batches, stock levels, storage locations (Fridge, Pantry,
-              Freezer), and expiration dates.
-            </p>
-          </div>
-          <div
-            class="mt-6 pt-4 border-t border-surface-200/40 dark:border-surface-800/40 flex items-center justify-between">
-            <span class="text-xs font-semibold text-primary-600 dark:text-primary-400"
-              >View Stock Items ({{ itemsCount() }})</span
-            >
-            <i
-              class="pi pi-arrow-right text-xs text-primary-600 dark:text-primary-400 group-hover:translate-x-1 transition-transform"></i>
-          </div>
-        </div>
-
-        <!-- Sub-system 2: Ingredients Catalog -->
-        <div
-          (click)="navigateTo('/inventory/ingredients')"
-          class="glass-card rounded-2xl p-6 border border-surface-200/60 dark:border-surface-800/80 hover:border-surface-400 dark:hover:border-surface-600 transition-all duration-200 cursor-pointer group shadow-xs hover:shadow-md flex flex-col justify-between">
-          <div>
-            <div
-              class="w-11 h-11 rounded-2xl bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <i class="pi pi-sparkles text-xl"></i>
-            </div>
-            <h4 class="text-base font-bold text-surface-900 dark:text-white transition-colors">
-              Ingredients Catalog
-            </h4>
-            <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5 leading-relaxed">
-              Define catalog ingredient definitions, default measurement units, and nutritional
-              baselines.
-            </p>
-          </div>
-          <div
-            class="mt-6 pt-4 border-t border-surface-200/40 dark:border-surface-800/40 flex items-center justify-between">
-            <span class="text-xs font-semibold text-surface-600 dark:text-surface-300"
-              >Explore Catalog ({{ ingredientsCount() }})</span
-            >
-            <i
-              class="pi pi-arrow-right text-xs text-surface-500 group-hover:translate-x-1 transition-transform"></i>
-          </div>
-        </div>
-
-        <!-- Sub-system 3: Ingredient Categories & Groups -->
-        <div
-          (click)="navigateTo('/inventory/groups')"
-          class="glass-card rounded-2xl p-6 border border-surface-200/60 dark:border-surface-800/80 hover:border-surface-400 dark:hover:border-surface-600 transition-all duration-200 cursor-pointer group shadow-xs hover:shadow-md flex flex-col justify-between">
-          <div>
-            <div
-              class="w-11 h-11 rounded-2xl bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <i class="pi pi-tags text-xl"></i>
-            </div>
-            <h4 class="text-base font-bold text-surface-900 dark:text-white transition-colors">
-              Categories & Groups
-            </h4>
-            <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5 leading-relaxed">
-              Organize taxonomy, manage groups, and assign unclassified ingredients to appropriate
-              tiers.
-            </p>
-          </div>
-          <div
-            class="mt-6 pt-4 border-t border-surface-200/40 dark:border-surface-800/40 flex items-center justify-between">
-            <span class="text-xs font-semibold text-surface-600 dark:text-surface-300"
-              >Manage Taxonomy ({{ groupsCount() }})</span
-            >
-            <i
-              class="pi pi-arrow-right text-xs text-surface-500 group-hover:translate-x-1 transition-transform"></i>
-          </div>
-        </div>
-      </div>
+  @if (isLoading()) {
+    <pantry-spinner [label]="t('loading')" />
+  }
+  @if (sectionStates().items === 'error') {
+    <div
+      role="alert"
+      class="glass-card rounded-2xl p-5 flex flex-wrap items-center justify-between gap-3">
+      <p class="type-body text-surface-700 dark:text-surface-200">{{ t('stockFailure') }}</p>
+      <button class="btn-secondary" type="button" (click)="fetchInventoryData()">
+        {{ t('retry') }}
+      </button>
     </div>
-
-    <!-- Storage Location Distribution Section -->
-    @if (locationStats().length > 0) {
-      <div
-        class="glass-card rounded-2xl p-6 border border-surface-200/60 dark:border-surface-800/80">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-2">
-            <i class="pi pi-compass text-surface-500"></i>
-            <h3 class="text-base font-bold text-surface-900 dark:text-white">
-              Storage Location Breakdown
-            </h3>
-          </div>
-          <span class="text-xs text-surface-500 font-medium"
-            >{{ itemsCount() }} total stock batches</span
-          >
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          @for (loc of locationStats(); track loc.id) {
-            <div
-              class="p-4 rounded-xl bg-surface-100/60 dark:bg-surface-800/50 border border-surface-200/40 dark:border-surface-700/50 flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-8 h-8 rounded-lg bg-surface-200/80 dark:bg-surface-700/80 text-surface-700 dark:text-surface-200 flex items-center justify-center">
-                  <i [class]="loc.icon"></i>
+  }
+  @if (ready('items')) {
+    @if (itemsCount() === 0) {
+      <pantry-empty-state
+        icon="pi pi-box"
+        [title]="t('emptyTitle')"
+        [description]="t('emptyDescription')">
+        <a actions routerLink="/inventory/items/new" class="btn-primary">{{ t('add') }}</a>
+      </pantry-empty-state>
+    } @else {
+      <div class="inventory-summary glass-card rounded-2xl">
+        <section class="inventory-summary__attention" aria-labelledby="inventory-attention">
+          <header class="inventory-summary__header">
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 min-h-[42px]">
+              <h2 id="inventory-attention" class="type-section-title">{{ t('attention') }}</h2>
+              @if (expiredCount() > 0 || expiringCount() > 0) {
+                <div class="flex flex-wrap items-center gap-2">
+                  @if (expiredCount() > 0) {
+                    <a
+                      routerLink="/inventory/items"
+                      [queryParams]="{ status: 'expired' }"
+                      class="min-h-[42px] inline-flex items-center rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-primary-500">
+                      <pantry-badge variant="expired" [dot]="true">{{
+                        t('expiredCount', { count: expiredCount() })
+                      }}</pantry-badge>
+                    </a>
+                  }
+                  @if (expiringCount() > 0) {
+                    <a
+                      routerLink="/inventory/items"
+                      [queryParams]="{ status: 'expiring' }"
+                      class="min-h-[42px] inline-flex items-center rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-primary-500">
+                      <pantry-badge variant="expiring" [dot]="true">{{
+                        t('expiringCount', { count: expiringCount() })
+                      }}</pantry-badge>
+                    </a>
+                  }
                 </div>
-                <div>
-                  <div class="text-xs font-bold text-surface-900 dark:text-white">
-                    {{ loc.name }}
-                  </div>
-                  <div class="text-[11px] text-surface-500">{{ loc.count }} item batches</div>
-                </div>
-              </div>
-              <span class="text-xs font-extrabold text-primary-600 dark:text-primary-400">
-                {{ itemsCount() > 0 ? ((loc.count / itemsCount()) * 100 | number: '1.0-0') : 0 }}%
-              </span>
+              }
             </div>
-          }
-        </div>
+            @if (expiredCount() === 0 && expiringCount() === 0) {
+              <p class="type-meta text-surface-600 dark:text-surface-300 mt-1">
+                {{ t('attentionDescription') }}
+              </p>
+            }
+          </header>
+          <div class="inventory-summary__body">
+            <ul class="divide-y divide-surface-200 dark:divide-surface-700">
+              @for (item of attentionItems(); track item.id) {
+                @let timing = expiryTiming(item);
+                <li>
+                  <a
+                    [routerLink]="['/inventory/items', item.id, 'edit']"
+                    class="inventory-attention-row rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700/50 focus-visible:outline-2 focus-visible:outline-primary-500">
+                    <div class="inventory-attention-row__item min-w-0">
+                      <span class="type-label break-words">{{ item.name }}</span>
+                      <p class="type-meta text-surface-600 dark:text-surface-300 mt-1 break-words">
+                        {{ item.quantity }} {{ item.unit.shortName || item.unit.name }} ·
+                        {{ locationName(item) || t('noLocation') }}
+                      </p>
+                    </div>
+                    <div
+                      class="inventory-attention-row__expiry type-meta flex flex-wrap gap-x-3 gap-y-1 sm:block">
+                      <span
+                        [class.text-rose-700]="bucket(item) === 'expired'"
+                        [class.dark:text-rose-300]="bucket(item) === 'expired'"
+                        [class.text-amber-700]="bucket(item) === 'expiring'"
+                        [class.dark:text-amber-300]="bucket(item) === 'expiring'"
+                        >{{ t(timing.key, { count: timing.count }) }}</span
+                      >
+                      <p class="sm:mt-1 text-surface-600 dark:text-surface-300">
+                        {{ item.expirationDate | date: 'mediumDate' }}
+                      </p>
+                    </div>
+                    <i
+                      class="inventory-attention-row__arrow pi pi-angle-right text-surface-400"
+                      aria-hidden="true"></i>
+                  </a>
+                </li>
+              } @empty {
+                <li class="type-body py-4 text-surface-600 dark:text-surface-300">
+                  {{ t('nothingUrgent') }}
+                </li>
+              }
+            </ul>
+            @if (undatedCount() > 0) {
+              <p class="type-meta text-surface-600 dark:text-surface-300 mt-3">
+                {{
+                  t(undatedCount() === 1 ? 'undatedCount_one' : 'undatedCount', {
+                    count: undatedCount(),
+                  })
+                }}
+              </p>
+            }
+          </div>
+        </section>
+        <section
+          class="inventory-summary__locations border-t xl:border-t-0 xl:border-l border-surface-200 dark:border-surface-700"
+          aria-labelledby="inventory-locations">
+          <header class="inventory-summary__header">
+            <h2 id="inventory-locations" class="type-section-title min-h-[42px] flex items-center">
+              {{ t('locations') }}
+            </h2>
+            <p class="type-meta text-surface-600 dark:text-surface-300 mt-2">
+              {{ t('locationDescription') }}
+            </p>
+          </header>
+          <div class="inventory-summary__body">
+            @if (ready('locations')) {
+              <ul class="divide-y divide-surface-200 dark:divide-surface-700">
+                @for (location of locationStats(); track location.id) {
+                  <li class="flex items-baseline justify-between gap-4 py-3">
+                    <span class="type-label break-words min-w-0">{{
+                      location.name || t('noLocation')
+                    }}</span>
+                    <span class="type-label tabular-nums shrink-0">{{ location.count }}</span>
+                  </li>
+                }
+              </ul>
+            } @else if (sectionStates().locations === 'error') {
+              <div role="alert">
+                <p class="type-meta text-surface-600 dark:text-surface-300">
+                  {{ t('locationFailure') }}
+                </p>
+                <button class="btn-secondary mt-3" type="button" (click)="fetchInventoryData()">
+                  {{ t('retry') }}
+                </button>
+              </div>
+            } @else {
+              <p class="type-meta text-surface-600 dark:text-surface-300 py-3">
+                {{ t('loadingSummary') }}
+              </p>
+            }
+          </div>
+        </section>
       </div>
     }
   }
+
+  @if (
+    sectionStates().categories === 'error' ||
+    sectionStates().groups === 'error' ||
+    sectionStates().ingredients === 'error'
+  ) {
+    <div role="alert" class="flex flex-wrap items-center justify-between gap-3">
+      <p class="type-body text-surface-700 dark:text-surface-200">{{ t('catalogFailure') }}</p>
+      <button class="btn-secondary" type="button" (click)="fetchInventoryData()">
+        {{ t('retry') }}
+      </button>
+    </div>
+  }
+
+  <section aria-labelledby="inventory-explore">
+    <h2 id="inventory-explore" class="type-section-title mb-4">{{ t('explore') }}</h2>
+    <nav
+      [attr.aria-label]="t('navigation')"
+      class="glass-card rounded-2xl divide-y divide-surface-200 dark:divide-surface-700 overflow-hidden">
+      <a
+        routerLink="/inventory/ingredients"
+        class="p-4 flex items-center justify-between gap-4 min-h-[42px] transition-colors hover:bg-surface-100/50 dark:hover:bg-surface-800/50 focus-visible:outline-2 focus-visible:outline-primary-500">
+        <div class="min-w-0">
+          <span class="type-label text-surface-900 dark:text-white block">{{
+            t('ingredients')
+          }}</span>
+          <p class="type-meta text-surface-600 dark:text-surface-300 mt-0.5">
+            @switch (ingredientsSummaryState()) {
+              @case ('ready-full') {
+                {{
+                  t(ingredientsCount() === 1 ? 'ingredientsSummary_one' : 'ingredientsSummary', {
+                    count: ingredientsCount(),
+                    stocked: stockedIngredientsCount(),
+                  })
+                }}
+              }
+              @case ('ready-ingredients-only') {
+                {{
+                  t(ingredientsCount() === 1 ? 'ingredientCount_one' : 'ingredientCount', {
+                    count: ingredientsCount(),
+                  })
+                }}
+              }
+              @case ('loading') {
+                {{ t('loadingSummary') }}
+              }
+              @default {
+                {{ t('unavailable') }}
+              }
+            }
+          </p>
+        </div>
+        <i class="pi pi-arrow-right text-surface-400 shrink-0 ml-auto" aria-hidden="true"></i>
+      </a>
+
+      <a
+        routerLink="/inventory/items"
+        class="p-4 flex items-center justify-between gap-4 min-h-[42px] transition-colors hover:bg-surface-100/50 dark:hover:bg-surface-800/50 focus-visible:outline-2 focus-visible:outline-primary-500">
+        <div class="min-w-0">
+          <span class="type-label text-surface-900 dark:text-white block">{{ t('stock') }}</span>
+          <p class="type-meta text-surface-600 dark:text-surface-300 mt-0.5">
+            @switch (itemsSummaryState()) {
+              @case ('ready') {
+                {{
+                  t(stockedItemsCount() === 1 ? 'stockedItemsSummary_one' : 'stockedItemsSummary', {
+                    count: stockedItemsCount(),
+                  })
+                }}
+              }
+              @case ('loading') {
+                {{ t('loadingSummary') }}
+              }
+              @default {
+                {{ t('unavailable') }}
+              }
+            }
+          </p>
+        </div>
+        <i class="pi pi-arrow-right text-surface-400 shrink-0 ml-auto" aria-hidden="true"></i>
+      </a>
+
+      <a
+        routerLink="/inventory/groups"
+        class="p-4 flex items-center justify-between gap-4 min-h-[42px] transition-colors hover:bg-surface-100/50 dark:hover:bg-surface-800/50 focus-visible:outline-2 focus-visible:outline-primary-500">
+        <div class="min-w-0">
+          <span class="type-label text-surface-900 dark:text-white block">{{ t('groups') }}</span>
+          <p class="type-meta text-surface-600 dark:text-surface-300 mt-0.5">
+            @switch (groupsSummaryState()) {
+              @case ('ready') {
+                {{
+                  t(
+                    categoriesCount() === 1
+                      ? groupsCount() === 1
+                        ? 'organizationSummary_oneBoth'
+                        : 'organizationSummary_oneCat'
+                      : groupsCount() === 1
+                        ? 'organizationSummary_oneGrp'
+                        : 'organizationSummary',
+                    { categories: categoriesCount(), groups: groupsCount() }
+                  )
+                }}
+              }
+              @case ('loading') {
+                {{ t('loadingSummary') }}
+              }
+              @default {
+                {{ t('unavailable') }}
+              }
+            }
+          </p>
+        </div>
+        <i class="pi pi-arrow-right text-surface-400 shrink-0 ml-auto" aria-hidden="true"></i>
+      </a>
+    </nav>
+  </section>
 </div>

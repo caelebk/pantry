@@ -1,0 +1,102 @@
+.inventory-guide-toggle {
+  transition:
+    color 160ms ease,
+    text-shadow 160ms ease;
+}
+
+.inventory-guide-toggle__label {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.125rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 160ms ease;
+  }
+}
+
+.inventory-guide-toggle__caret {
+  transition: rotate 180ms ease;
+}
+
+details[open] > .inventory-guide-toggle .inventory-guide-toggle__caret {
+  rotate: 180deg;
+}
+
+.inventory-guide-toggle:is(:hover, :focus-visible) {
+  text-shadow: 0 0 8px color-mix(in srgb, currentColor 18%, transparent);
+
+  .inventory-guide-toggle__label::after {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inventory-guide-toggle,
+  .inventory-guide-toggle__label::after,
+  .inventory-guide-toggle__caret {
+    transition: none;
+  }
+}
+
+.inventory-summary__header {
+  padding: 1.25rem 1.25rem 0;
+}
+
+.inventory-summary__body {
+  padding: 0.25rem 1.25rem 1.25rem;
+}
+
+.inventory-attention-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem 0.75rem;
+  padding: 0.75rem 0.5rem;
+  margin-inline: -0.5rem;
+}
+
+.inventory-attention-row__expiry {
+  grid-column: 1;
+  min-width: 0;
+}
+
+.inventory-attention-row__arrow {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+@media (min-width: 640px) {
+  .inventory-attention-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, auto) auto;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .inventory-attention-row__expiry {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .inventory-attention-row__arrow {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+@media (min-width: 1280px) {
+  .inventory-summary {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+
+  .inventory-summary__attention,
+  .inventory-summary__locations {
+    min-width: 0;
+  }
+}

@@ -4,7 +4,7 @@
   (keyup.space)="viewDetails()"
   tabindex="0"
   role="button"
-  class="glass-card rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-sm hover:shadow-md hover:border-primary-500/30 dark:hover:border-primary-500/30 transition-all duration-200 flex flex-col justify-between h-[480px] relative overflow-hidden cursor-pointer group">
+  class="glass-card rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-sm hover:shadow-md hover:border-surface-300 dark:hover:border-surface-600 transition-all duration-200 flex flex-col justify-between h-[480px] relative overflow-hidden cursor-pointer group">
   <!-- Main Scrollable/Clippable Content Area -->
   <div class="p-6 overflow-hidden relative flex-1">
     <!-- Card Top Header -->
@@ -33,7 +33,7 @@
                     : 'expired'
               ">
               @if (ingredientStats.isFullyMakeable) {
-                <span>✓ Ready to Cook</span>
+                <span>Ready to Cook</span>
               } @else {
                 <span
                   >{{ ingredientStats.availableCount }}/{{
@@ -118,7 +118,7 @@
       </div>
       <div>
         <span class="block text-[10px] card-label uppercase tracking-wider">Total</span>
-        <span class="block font-extrabold text-primary-600 dark:text-primary-400 text-xs mt-0.5">
+        <span class="block font-extrabold text-surface-900 dark:text-white text-xs mt-0.5">
           {{ (recipe.prepTime || 0) + (recipe.cookTime || 0) }}m
         </span>
       </div>
@@ -131,12 +131,7 @@
           <span class="text-surface-700 dark:text-surface-300 font-bold uppercase tracking-wider"
             >Stock Match</span
           >
-          <span
-            [class]="
-              ingredientStats.isFullyMakeable
-                ? 'text-emerald-600 dark:text-emerald-400 font-bold'
-                : 'text-amber-600 dark:text-amber-400 font-bold'
-            ">
+          <span class="text-surface-700 dark:text-surface-300 font-bold">
             {{ ingredientStats.availableCount }}/{{ ingredientStats.totalCount }} In Stock ({{
               ingredientStats.percentage
             }}%)
@@ -146,10 +141,10 @@
           <div
             [class]="
               ingredientStats.isFullyMakeable
-                ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-full transition-all duration-500 shadow-xs'
+                ? 'bg-emerald-500 h-full rounded-full transition-all duration-500'
                 : ingredientStats.availableCount > 0
-                  ? 'bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full transition-all duration-500 shadow-xs'
-                  : 'bg-gradient-to-r from-rose-500 to-rose-400 h-full rounded-full transition-all duration-500 shadow-xs'
+                  ? 'bg-amber-500 h-full rounded-full transition-all duration-500'
+                  : 'bg-rose-500 h-full rounded-full transition-all duration-500'
             "
             [style.width.%]="ingredientStats.percentage"></div>
         </div>
@@ -163,7 +158,7 @@
       <div>
         <h5
           class="text-[11px] font-bold text-surface-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-surface-400 dark:text-surface-500"></span>
           Ingredients
         </h5>
         <ul class="space-y-1 text-xs">
@@ -186,7 +181,7 @@
                   @if (expInfo.expiringSoon) {
                     <span
                       class="w-3.5 h-3.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[9px] font-extrabold flex items-center justify-center shrink-0">
-                      ⏳
+                      <i class="pi pi-clock text-[8px]"></i>
                     </span>
                   } @else {
                     <span
@@ -228,7 +223,7 @@
       <div>
         <h5
           class="text-[11px] font-bold text-surface-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-surface-400 dark:text-surface-500"></span>
           Steps ({{ recipe.steps?.length || 0 }})
         </h5>
         <ol class="space-y-1 text-xs text-surface-600 dark:text-surface-300">

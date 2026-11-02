@@ -2,13 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, ElementRef, inject, input, signal, ViewChild } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item, ItemsContainerTheme, ItemTimeStatus } from '@models/items.model';
+import { BadgeComponent } from '@ui/badge/badge.component';
 import { STAGGER_DELAY_PER_ITEM_MS, staggeredFadeIn } from '@utility/animationUtility/animations';
 import { getItemTimeStatus, sortItemsByExpirationDate } from '@utility/itemUtility/ItemUtility';
 
 @Component({
   selector: 'pantry-items-container',
   standalone: true,
-  imports: [CommonModule, TranslocoModule],
+  imports: [CommonModule, TranslocoModule, BadgeComponent],
   templateUrl: './items-container.component.html',
   styleUrls: ['./items-container.component.scss'],
   animations: [staggeredFadeIn],

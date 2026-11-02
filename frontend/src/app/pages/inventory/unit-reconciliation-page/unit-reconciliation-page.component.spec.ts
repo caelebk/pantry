@@ -18,7 +18,10 @@ describe('UnitReconciliationPageComponent', () => {
   let mockToastService: jasmine.SpyObj<ToastService>;
   let mockRouter: jasmine.SpyObj<Router>;
 
+  let mockQueryParams: Record<string, string> = {};
+
   beforeEach(async () => {
+    mockQueryParams = {};
     mockIngredientService = jasmine.createSpyObj('IngredientService', [
       'getIngredientById',
       'getItemsByIngredientId',
@@ -84,6 +87,7 @@ describe('UnitReconciliationPageComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
+              queryParams: mockQueryParams,
               paramMap: { get: () => 'ing-1' },
               queryParamMap: { get: () => '2' },
             },
@@ -102,5 +106,25 @@ describe('UnitReconciliationPageComponent', () => {
     const rows = component.itemRows();
     expect(rows.length).toBe(1);
     expect(rows[0].newQuantity).toBe(2000); // 2 kg converted to grams
+  });
+  it('returns to ingredient detail after reconciling stock', () => {
+    mockQueryParams['returnTo'] = '/inventory/ingredients/ing-1';
+    mockIngredientService.reconcileIngredientUnit.and.returnValue(of(undefined));
+    component.onSubmit();
+    expect(mockIngredientService.reconcileIngredientUnit).toHaveBeenCalledWith('ing-1', 2, [
+      { id: 'item-1', quantity: 2000 },
+    ]);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients/ing-1']);
+  });
+
+  it('returns to ingredient detail when cancelling reconciliation', () => {
+    mockQueryParams['returnTo'] = '/inventory/ingredients/ing-1';
+    component.onCancel();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients/ing-1']);
+  });
+
+  it('keeps the catalog destination without a detail return parameter', () => {
+    component.onCancel();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients']);
   });
 });

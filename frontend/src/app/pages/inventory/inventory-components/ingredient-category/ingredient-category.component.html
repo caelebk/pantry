@@ -1,9 +1,8 @@
 <div
   class="glass-card rounded-2xl border border-surface-200/80 dark:border-surface-800/80 overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md hover:border-surface-300 dark:hover:border-surface-700 relative group/category">
-  <!-- Color Accent Stripe -->
+  <!-- Neutral accent stripe -->
   <div
-    class="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl transition-all duration-300 group-hover/category:w-2"
-    [style.backgroundColor]="nutrientType.color || '#ea580c'"></div>
+    class="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl bg-surface-200 dark:bg-surface-700"></div>
 
   <!-- Category Header Accordion Button -->
   <button
@@ -13,28 +12,24 @@
     <div class="flex items-center gap-4 min-w-0">
       <!-- Icon & Theme Badge -->
       <div
-        class="w-11 h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-2xl shadow-xs shrink-0 border transition-transform group-hover/category:scale-105 duration-200"
-        [style.backgroundColor]="(nutrientType.color || '#ea580c') + '1a'"
-        [style.borderColor]="(nutrientType.color || '#ea580c') + '35'"
-        [style.boxShadow]="'0 4px 14px ' + (nutrientType.color || '#ea580c') + '1f'">
+        class="w-11 h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center text-2xl shadow-xs shrink-0 border border-surface-200 dark:border-surface-700 bg-surface-100 dark:bg-surface-800 transition-transform group-hover/category:scale-105 duration-200">
         <span>{{ nutrientType.icon || '📦' }}</span>
       </div>
 
       <!-- Title & Meta -->
       <div class="min-w-0">
         <div class="flex items-center gap-2.5 flex-wrap">
-          <h3
-            class="text-base md:text-lg font-extrabold text-surface-900 dark:text-white tracking-tight truncate">
+          <h3 class="type-section-title text-surface-900 dark:text-white truncate">
             {{ nutrientType.name }}
           </h3>
           <span
-            class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-surface-100 dark:bg-surface-800/90 text-surface-700 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700/80 shadow-2xs">
+            class="type-label px-2.5 py-0.5 rounded-full bg-surface-100 dark:bg-surface-800/90 text-surface-700 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700/80 shadow-2xs">
             {{ categoryGroups.length }}
             {{ categoryGroups.length === 1 ? 'Group' : 'Groups' }}
           </span>
         </div>
         @if (nutrientType.description) {
-          <p class="text-xs text-surface-500 dark:text-surface-400 font-medium truncate mt-1">
+          <p class="type-meta text-surface-500 dark:text-surface-400 truncate mt-1">
             {{ nutrientType.description }}
           </p>
         }
@@ -44,7 +39,7 @@
     <!-- Right Stats & Expand Icon -->
     <div class="flex items-center gap-3 shrink-0">
       <!-- Stock badges -->
-      <div class="hidden sm:flex items-center gap-2 text-xs">
+      <div class="type-meta hidden sm:flex items-center gap-2">
         @if (totalIngredientsCount === 0) {
           <pantry-badge variant="neutral" [dot]="true"> 0 In Stock </pantry-badge>
         } @else {
@@ -52,7 +47,7 @@
             {{ inStockIngredientsCount }}/{{ totalIngredientsCount }} In Stock
           </pantry-badge>
           <span
-            class="px-3 py-1.5 rounded-xl font-bold bg-surface-100/80 dark:bg-surface-800/70 text-surface-700 dark:text-surface-300 border border-surface-200/70 dark:border-surface-700/70">
+            class="px-3 py-1.5 rounded-xl font-medium bg-surface-100/80 dark:bg-surface-800/70 text-surface-700 dark:text-surface-300 border border-surface-200/70 dark:border-surface-700/70">
             {{ totalItemsCount }} {{ totalItemsCount === 1 ? 'item' : 'items' }}
           </span>
         }
@@ -62,7 +57,7 @@
       <div
         class="w-9 h-9 rounded-xl flex items-center justify-center bg-surface-100/80 dark:bg-surface-800/80 hover:bg-surface-200/60 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700/80 transition-all duration-300 shadow-2xs"
         [class.rotate-180]="isExpanded">
-        <i class="pi pi-chevron-down text-xs font-bold"></i>
+        <i class="pi pi-chevron-down text-xs"></i>
       </div>
     </div>
   </button>

@@ -42,6 +42,7 @@ import {
 import { AuthService } from '../../core/services/auth.service';
 
 import { ConfirmationService } from 'primeng/api';
+import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
@@ -49,7 +50,6 @@ import { ToastModule } from 'primeng/toast';
 import { AddItemFormComponent } from './inventory-components/add-item-form/add-item-form.component';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { ItemCardComponent } from './inventory-components/item-card/item-card.component';
 
 export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh' | 'out_of_stock';
 export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'status';
@@ -68,9 +68,9 @@ import {
   standalone: true,
   imports: [
     CommonModule,
+    CheckboxModule,
     TranslocoModule,
     AddItemFormComponent,
-    ItemCardComponent,
     ConfirmDialogModule,
     ToastModule,
     FormsModule,
@@ -149,7 +149,6 @@ export class InventoryComponent implements OnInit {
   public restockExpirationDate = signal<string>('');
   public isRestocking = signal(false);
 
-  public viewMode: 'table' | 'grid' = 'table';
   public sortDirection: 'asc' | 'desc' = 'asc';
 
   private filteredItemsCache: Item[] | null = null;

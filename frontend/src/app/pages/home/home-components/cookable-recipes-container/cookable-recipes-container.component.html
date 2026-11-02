@@ -1,79 +1,53 @@
-<div class="glass-card rounded-2xl p-6 transition-all duration-300 hover:shadow-lg">
-  <div class="flex items-center justify-between mb-5">
-    <div>
-      <h3
-        class="text-base font-bold text-surface-900 dark:text-white tracking-tight flex items-center gap-2">
-        <i class="pi pi-book text-emerald-600 dark:text-emerald-400"></i>
-        {{ 'home.cookSpotlight.title' | transloco }}
-      </h3>
-      <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-        {{ 'home.cookSpotlight.subtitle' | transloco }}
-      </p>
-    </div>
-    <button
-      (click)="onBrowseAllRecipes()"
-      class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer flex items-center gap-1">
-      Browse All
-      <i class="pi pi-arrow-right text-[10px]"></i>
-    </button>
+<section class="glass-card rounded-2xl p-5 sm:p-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+    <h3 class="type-section-title text-surface-900 dark:text-white">
+      {{ 'home.cookSpotlight.title' | transloco }}
+    </h3>
+    <a routerLink="/recipes" class="btn-ghost inline-flex gap-2">
+      {{ 'home.recipe.browseAll' | transloco }}
+      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+    </a>
   </div>
-
   @if (recipes().length > 0) {
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="divide-y divide-surface-200/70 dark:divide-surface-700/70">
       @for (recipe of recipes().slice(0, 4); track recipe.id) {
-        <div
-          (click)="onViewRecipe(recipe)"
-          class="bg-white/50 dark:bg-surface-800/50 hover:bg-white dark:hover:bg-surface-800 border border-surface-200/60 dark:border-surface-700/60 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:scale-[1.01] hover:shadow-md group/recipe">
-          <div class="flex items-start justify-between gap-2 mb-2">
-            <h4
-              class="font-bold text-sm text-surface-900 dark:text-white group-hover/recipe:text-emerald-600 dark:group-hover/recipe:text-emerald-400 transition-colors line-clamp-1">
+        <a
+          [routerLink]="['/recipes', recipe.id]"
+          class="recipe-row flex items-center gap-4 py-4 rounded-lg transition-colors hover:bg-surface-100/60 dark:hover:bg-surface-800/40">
+          <div class="min-w-0 flex-1">
+            <h4 class="type-label text-surface-900 dark:text-white break-words">
               {{ recipe.name }}
             </h4>
-            <span
-              class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 shrink-0">
-              100% Ready
-            </span>
-          </div>
-
-          <p class="text-xs text-surface-500 dark:text-surface-400 line-clamp-2 mb-3">
-            {{ recipe.description || 'Quick & delicious meal using ingredients in your pantry.' }}
-          </p>
-
-          <div
-            class="flex items-center justify-between text-xs text-surface-400 dark:text-surface-500 border-t border-surface-200/40 dark:border-surface-700/40 pt-2.5">
-            <div class="flex items-center gap-3">
-              <span class="flex items-center gap-1">
-                <i class="pi pi-clock text-[11px]"></i>
-                {{ (recipe.prepTime || 15) + (recipe.cookTime || 15) }}m
-              </span>
-              <span class="flex items-center gap-1">
-                <i class="pi pi-users text-[11px]"></i>
-                {{ recipe.servings || 2 }} serv
-              </span>
+            @if (recipe.description) {
+              <p class="type-meta text-surface-600 dark:text-surface-300 line-clamp-2 mt-1">
+                {{ recipe.description }}
+              </p>
+            }
+            <div
+              class="type-meta flex flex-wrap gap-x-4 gap-y-1 text-surface-600 dark:text-surface-300 mt-2">
+              @if (totalTime(recipe) !== null && totalTime(recipe) !== undefined) {
+                <span class="flex items-center gap-1"
+                  ><i class="pi pi-clock" aria-hidden="true"></i
+                  >{{ 'home.recipe.minutes' | transloco: { count: totalTime(recipe) } }}</span
+                >
+              }
+              @if (recipe.servings !== null && recipe.servings !== undefined) {
+                <span class="flex items-center gap-1"
+                  ><i class="pi pi-users" aria-hidden="true"></i
+                  >{{ 'home.recipe.servings' | transloco: { count: recipe.servings } }}</span
+                >
+              }
             </div>
-            <span
-              class="text-emerald-600 dark:text-emerald-400 font-semibold group-hover/recipe:translate-x-0.5 transition-transform flex items-center gap-1 text-[11px]">
-              View Recipe
-              <i class="pi pi-chevron-right text-[9px]"></i>
-            </span>
           </div>
-        </div>
+          <i class="pi pi-chevron-right text-surface-400" aria-hidden="true"></i>
+        </a>
       }
     </div>
   } @else {
-    <div
-      class="bg-surface-100/50 dark:bg-surface-800/30 border border-dashed border-surface-200 dark:border-surface-700/60 rounded-xl p-6 text-center">
-      <p class="text-sm font-semibold text-surface-700 dark:text-surface-300 mb-1">
-        No fully ready recipes right now
-      </p>
-      <p class="text-xs text-surface-400 dark:text-surface-500 max-w-md mx-auto mb-4">
-        Add more ingredients to unlock dishes matching your inventory!
-      </p>
-      <button
-        (click)="onBrowseAllRecipes()"
-        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-sm transition-all cursor-pointer">
-        Explore All Recipes
-      </button>
-    </div>
+    <pantry-empty-state
+      variant="plain"
+      icon="pi pi-book"
+      [title]="'home.recipe.emptyTitle' | transloco"
+      [description]="'home.recipe.emptyDescription' | transloco" />
   }
-</div>
+</section>

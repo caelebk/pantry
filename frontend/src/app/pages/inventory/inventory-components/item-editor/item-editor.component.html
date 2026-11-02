@@ -1,0 +1,235 @@
+<ng-container *transloco="let t">
+  <pantry-card padding="md">
+    <form [formGroup]="form()" (ngSubmit)="onSubmit()" class="space-y-5" novalidate>
+      <fieldset
+        [attr.inert]="submitting() ? '' : null"
+        [disabled]="submitting()"
+        class="min-w-0 space-y-5">
+        <pantry-form-field
+          forId="ingredient"
+          [label]="t('itemEditor.ingredient')"
+          [required]="true"
+          [error]="fieldError('ingredient', 'ingredientError')">
+          <p-select
+            [readonly]="submitting()"
+            inputId="ingredient"
+            [options]="ingredients()"
+            formControlName="ingredient"
+            optionLabel="name"
+            dataKey="id"
+            [filter]="true"
+            filterBy="name"
+            [placeholder]="t('itemEditor.ingredientPlaceholder')"
+            class="w-full"
+            appendTo="body">
+          </p-select>
+          <div class="flex items-center justify-between gap-2 mt-1">
+            @if (
+              form().controls.name.value &&
+              form().controls.name.value !== form().controls.ingredient.value?.name
+            ) {
+              <p class="type-meta text-surface-600 dark:text-surface-300 break-words">
+                {{ t('itemEditor.savedLabel', { name: form().controls.name.value }) }}
+              </p>
+            }
+            <button type="button" class="btn-ghost ml-auto" (click)="createIngredient.emit()">
+              {{ t('itemEditor.createIngredient') }}
+            </button>
+          </div>
+        </pantry-form-field>
+
+        <div class="grid grid-cols-1 min-[380px]:grid-cols-2 gap-4">
+          <pantry-form-field
+            forId="quantity"
+            [label]="t('itemEditor.quantity')"
+            [required]="true"
+            [error]="fieldError('quantity', 'quantityError')">
+            <p-inputnumber
+              inputId="quantity"
+              formControlName="quantity"
+              [min]="1"
+              [maxFractionDigits]="3"
+              [showButtons]="true"
+              class="w-full"
+              styleClass="w-full !h-[42px]"
+              inputStyleClass="w-full !h-[42px] !rounded-xl"></p-inputnumber>
+          </pantry-form-field>
+          <pantry-form-field
+            forId="unit"
+            [label]="t('itemEditor.unit')"
+            [required]="!form().controls.unit.disabled"
+            [hint]="form().controls.unit.disabled ? t('itemEditor.unitHint') : ''"
+            [error]="fieldError('unit', 'unitError')">
+            @if (form().controls.unit.disabled) {
+              <input
+                pInputText
+                id="unit"
+                readonly
+                [value]="
+                  form().controls.unit.value?.name +
+                  ' (' +
+                  form().controls.unit.value?.shortName +
+                  ')'
+                "
+                class="w-full h-[42px] rounded-xl" />
+            } @else {
+              <p-select
+                [readonly]="submitting()"
+                inputId="unit"
+                formControlName="unit"
+                [options]="units()"
+                optionLabel="name"
+                dataKey="id"
+                [filter]="true"
+                [placeholder]="t('itemEditor.unitPlaceholder')"
+                class="w-full"
+                appendTo="body"></p-select>
+            }
+          </pantry-form-field>
+        </div>
+
+        <pantry-form-field
+          forId="location"
+          [label]="t('itemEditor.location')"
+          [required]="true"
+          [error]="fieldError('location', 'locationError')">
+          <p-select
+            [readonly]="submitting()"
+            inputId="location"
+            formControlName="location"
+            [options]="locations()"
+            optionLabel="name"
+            dataKey="id"
+            [placeholder]="t('itemEditor.locationPlaceholder')"
+            class="w-full"
+            appendTo="body"></p-select>
+        </pantry-form-field>
+
+        <pantry-form-field
+          forId="expirationDate"
+          [label]="t('itemEditor.expiry')"
+          [required]="true"
+          [error]="fieldError('expirationDate', 'expiryError')">
+          <p-datepicker
+            inputId="expirationDate"
+            formControlName="expirationDate"
+            [placeholder]="t('itemEditor.expiryPlaceholder')"
+            [showIcon]="true"
+            [showButtonBar]="true"
+            class="w-full"
+            appendTo="body"></p-datepicker>
+          <div class="flex flex-wrap gap-1 mt-2">
+            <button type="button" class="btn-secondary" (click)="setExpiry(3)">
+              {{ t('itemEditor.inDays', { days: 3 }) }}
+            </button>
+            <button type="button" class="btn-secondary" (click)="setExpiry(7)">
+              {{ t('itemEditor.inWeek') }}
+            </button>
+            <button type="button" class="btn-secondary" (click)="setExpiry(14)">
+              {{ t('itemEditor.inWeeks') }}
+            </button>
+            <button type="button" class="btn-secondary" (click)="setExpiry(30)">
+              {{ t('itemEditor.inMonth') }}
+            </button>
+          </div>
+        </pantry-form-field>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <pantry-form-field
+            forId="name"
+            [label]="t('itemEditor.name')"
+            [required]="true"
+            [hint]="t('itemEditor.nameHint')"
+            [error]="fieldError('name', 'nameError')">
+            <input
+              pInputText
+              id="name"
+              formControlName="name"
+              [placeholder]="t('itemEditor.namePlaceholder')"
+              class="w-full h-[42px] rounded-xl" />
+          </pantry-form-field>
+          <pantry-form-field
+            forId="purchaseDate"
+            [label]="t('itemEditor.purchase')"
+            [required]="true"
+            [error]="fieldError('purchaseDate', 'purchaseError')">
+            <p-datepicker
+              inputId="purchaseDate"
+              formControlName="purchaseDate"
+              [showIcon]="true"
+              appendTo="body"
+              class="w-full"></p-datepicker>
+          </pantry-form-field>
+        </div>
+
+        <div>
+          <button
+            type="button"
+            class="btn-ghost w-full justify-between"
+            [attr.aria-expanded]="detailsOpen()"
+            aria-controls="item-details"
+            (click)="detailsOpen.set(!detailsOpen())">
+            <span>{{ t('itemEditor.details') }}</span>
+            <i
+              class="pi"
+              [class.pi-chevron-down]="!detailsOpen()"
+              [class.pi-chevron-up]="detailsOpen()"
+              aria-hidden="true"></i>
+          </button>
+          <div id="item-details" [hidden]="!detailsOpen()" class="space-y-4 pt-4">
+            <pantry-form-field forId="openedDate" [label]="t('itemEditor.opened')">
+              <p-datepicker
+                inputId="openedDate"
+                formControlName="openedDate"
+                [showIcon]="true"
+                [showButtonBar]="true"
+                [placeholder]="t('itemEditor.optionalDate')"
+                appendTo="body"
+                class="w-full"></p-datepicker>
+            </pantry-form-field>
+            <pantry-form-field forId="notes" [label]="t('itemEditor.notes')">
+              <textarea
+                pTextarea
+                id="notes"
+                formControlName="notes"
+                rows="3"
+                [placeholder]="t('itemEditor.notesPlaceholder')"
+                class="w-full rounded-xl"></textarea>
+            </pantry-form-field>
+          </div>
+        </div>
+      </fieldset>
+
+      @if (error()) {
+        <div
+          role="alert"
+          class="rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3 text-sm text-rose-700 dark:text-rose-300">
+          {{ error() }}
+        </div>
+      }
+      <div class="flex flex-wrap items-center justify-end gap-3 pt-4">
+        <button
+          type="button"
+          class="btn-secondary"
+          [disabled]="submitting()"
+          (click)="cancelEdit.emit()">
+          {{ t('itemEditor.cancel') }}
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="submitting()">
+          @if (submitting()) {
+            <pantry-spinner size="sm" color="white" />
+          }
+          {{
+            t(
+              submitting()
+                ? 'itemEditor.saving'
+                : editing()
+                  ? 'itemEditor.saveChanges'
+                  : 'itemEditor.save'
+            )
+          }}
+        </button>
+      </div>
+    </form>
+  </pantry-card>
+</ng-container>

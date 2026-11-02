@@ -334,7 +334,8 @@ export class IngredientItemService {
     return Promise.resolve(candidates.sort((a, b) => b.score - a.score));
   }
 
-  private mapItemRowToItem(
+  /** Converts an ingredient item database row to the shared API response contract. */
+  mapItemRowToItem(
     row: IngredientItemRow & {
       created_by_username?: string | null;
       created_by_full_name?: string | null;

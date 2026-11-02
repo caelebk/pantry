@@ -112,6 +112,29 @@ describe('AddRecipeFormComponent', () => {
     fixture.detectChanges();
   });
 
+  it('renders actionable validation errors and focuses their corresponding fields', async () => {
+    component.submitForm();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const summary = fixture.nativeElement.querySelector('[data-validation-summary]');
+    expect(summary).toBeTruthy();
+    expect(document.activeElement).toBe(summary);
+    const buttons = summary.querySelectorAll('button');
+    expect(buttons.length).toBe(3);
+    buttons.forEach((button: HTMLButtonElement, index: number) => {
+      button.click();
+      expect(document.activeElement?.id).toBe(component.validationTargets[index]);
+      expect(document.activeElement?.getAttribute('aria-invalid')).toBe('true');
+      const description = document.activeElement?.getAttribute('aria-describedby');
+      expect(fixture.nativeElement.querySelector(`[id="${description}"]`)?.textContent).toContain(
+        component.validationErrors[index],
+      );
+    });
+    expect(fixture.nativeElement.querySelector('#recipe-name').getAttribute('aria-invalid')).toBe(
+      'true',
+    );
+  });
+
   it('should initialize available ingredients, groups, and units', () => {
     expect(component).toBeTruthy();
     expect(component.availableIngredients.length).toBe(1);

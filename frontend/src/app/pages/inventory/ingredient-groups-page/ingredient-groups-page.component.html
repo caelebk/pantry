@@ -1,38 +1,217 @@
-<div class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-  <!-- Page Title & Header Actions -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+<div class="page-layout">
+  <header class="page-header">
     <div>
-      <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
-        Ingredient Categories & Groups
-      </h2>
-      <p class="text-surface-500 dark:text-surface-400 mt-1.5 text-sm font-medium">
-        4-Tier Domain Hierarchy Explorer: Ingredient Categories → Ingredient Groups → Ingredients →
-        Ingredient Items.
+      <h1 class="type-page-title text-surface-900 dark:text-white">
+        {{ 'inventory.taxonomy.title' | transloco }}
+      </h1>
+      <p class="text-sm text-surface-600 dark:text-surface-300 mt-2">
+        {{ 'inventory.groupsDescription' | transloco }}
       </p>
     </div>
-    <div class="flex items-center gap-3 shrink-0">
-      <button (click)="onAddGroup()" class="btn-primary">
-        <i class="pi pi-plus text-base font-bold"></i>
-        <span>Add Ingredient Group</span>
-      </button>
+    <div class="page-header__actions">
+      <a routerLink="/inventory/groups/new" [queryParams]="{ from: 'groups' }" class="btn-primary">
+        <i class="pi pi-plus" aria-hidden="true"></i>
+        <span>{{ 'inventory.taxonomy.addGroup' | transloco }}</span>
+      </a>
     </div>
-  </div>
+  </header>
 
-  @if (isLoading()) {
-    <div
-      class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 p-8 flex items-center justify-center">
-      <pantry-spinner size="md" label="Loading taxonomy tree..."></pantry-spinner>
+  @if (state() === 'loading') {
+    <div class="flex justify-center py-12" role="status">
+      <pantry-spinner size="md" [label]="'inventory.taxonomy.loading' | transloco" />
     </div>
+  } @else if (state() === 'error') {
+    <div role="alert">
+      <pantry-empty-state
+        icon="pi pi-exclamation-circle"
+        [title]="'inventory.taxonomy.loadError' | transloco"
+        [description]="'inventory.taxonomy.loadErrorDescription' | transloco"
+        [actionText]="'inventory.taxonomy.retry' | transloco"
+        (actionClick)="retry()" />
+    </div>
+  } @else if (state() === 'no-kitchen') {
+    <pantry-empty-state
+      [title]="'inventory.taxonomy.noKitchen' | transloco"
+      [description]="'inventory.taxonomy.noKitchenDescription' | transloco" />
   } @else {
-    <!-- Full Interactive Ingredient Group Container -->
-    <pantry-ingredient-group-container
-      [nutrientGroups]="nutrientGroups()"
-      [categories]="categories()"
-      [searchQuery]="searchQuery()"
-      [selectedCategory]="selectedCategory()"
-      (searchChange)="searchQuery.set($event)"
-      (categorySelect)="selectedCategory.set($event)"
-      (unassignItem)="onUnassignItem($event)">
-    </pantry-ingredient-group-container>
+    <div class="max-w-lg">
+      <pantry-search-input
+        [(value)]="searchQuery"
+        [placeholder]="'inventory.taxonomy.search' | transloco"
+        [ariaLabel]="'inventory.taxonomy.search' | transloco"
+        [clearAriaLabel]="'inventory.taxonomy.clearSearch' | transloco" />
+    </div>
+    <div class="flex flex-col gap-3">
+      @for (section of sections(); track section.category.id) {
+        <section
+          class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 taxonomy-section"
+          [style.border-left-color]="section.category.color || 'transparent'"
+          [attr.aria-labelledby]="'category-' + section.category.id">
+          <h2 [id]="'category-' + section.category.id" class="min-w-0">
+            <button
+              type="button"
+              class="btn-ghost taxonomy-category-toggle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+              (click)="toggleCategory(section.category.id)"
+              [attr.aria-expanded]="isExpanded(section.category.id)"
+              [attr.aria-controls]="'category-panel-' + section.category.id"
+              [attr.aria-describedby]="'category-count-' + section.category.id"
+              [attr.aria-label]="
+                section.unclassified
+                  ? ('inventory.taxonomy.unclassified' | transloco)
+                  : section.category.name
+              ">
+              <span
+                class="text-xl text-surface-500 dark:text-surface-400 shrink-0"
+                aria-hidden="true">
+                @if (iconClass(section.category.icon); as icon) {
+                  <i [class]="icon"></i>
+                } @else if (emojiIcon(section.category.icon); as emoji) {
+                  {{ emoji }}
+                } @else {
+                  <i class="pi pi-folder"></i>
+                }
+              </span>
+              <span class="min-w-0 flex flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span
+                  class="type-section-title min-w-0 max-w-full text-surface-900 dark:text-white break-words"
+                  >{{
+                    section.unclassified
+                      ? ('inventory.taxonomy.unclassified' | transloco)
+                      : section.category.name
+                  }}</span
+                >
+                <span
+                  [id]="'category-count-' + section.category.id"
+                  class="text-sm text-surface-500 dark:text-surface-400 font-normal"
+                  >{{
+                    (section.totalGroups === 1
+                      ? 'inventory.taxonomy.groupCountOne'
+                      : 'inventory.taxonomy.groupCount'
+                    ) | transloco: { count: section.totalGroups }
+                  }}</span
+                >
+                @if (!section.unclassified && section.category.description) {
+                  <span
+                    class="basis-full type-meta text-surface-500 dark:text-surface-400 truncate"
+                    [title]="section.category.description">
+                    {{ section.category.description }}
+                  </span>
+                }
+              </span>
+              <i
+                class="pi text-sm shrink-0"
+                [class.pi-chevron-down]="isExpanded(section.category.id)"
+                [class.pi-chevron-right]="!isExpanded(section.category.id)"
+                aria-hidden="true"></i>
+            </button>
+          </h2>
+          <div
+            [id]="'category-panel-' + section.category.id"
+            [hidden]="!isExpanded(section.category.id)">
+            @if (isExpanded(section.category.id)) {
+              @if (section.unclassified) {
+                <p
+                  class="border-t border-surface-200/60 dark:border-surface-800/80 px-4 sm:px-5 py-3 text-sm text-surface-600 dark:text-surface-300 break-words">
+                  {{ 'inventory.taxonomy.unclassifiedDescription' | transloco }}
+                </p>
+              }
+              @if (section.groups.length) {
+                <ul
+                  class="border-t border-surface-200/60 dark:border-surface-800/80 p-3 sm:p-4 space-y-2.5">
+                  @for (group of section.groups; track group.id) {
+                    <li
+                      class="sub-card sub-card-hover rounded-xl p-3 sm:px-4 sm:py-3 flex items-center justify-between gap-3 transition-all cursor-pointer group"
+                      (click)="navigateToIngredients(group.id, $event)">
+                      <div
+                        class="min-w-0 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 pr-1 sm:pr-2">
+                        <h3
+                          class="min-w-0 text-sm font-semibold text-surface-900 dark:text-white break-words">
+                          <a
+                            routerLink="/inventory/ingredients"
+                            [queryParams]="{ groupId: group.id, from: 'groups' }"
+                            (click)="$event.stopPropagation()"
+                            class="inline-block max-w-full group-hover:text-primary-600 dark:group-hover:text-primary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 py-1 rounded-md transition-colors"
+                            [attr.aria-label]="
+                              'inventory.taxonomy.viewIngredientsFor'
+                                | transloco: { name: group.name }
+                            ">
+                            {{ group.name }}
+                          </a>
+                        </h3>
+                        <div class="flex flex-wrap items-center gap-1.5 shrink-0">
+                          @if (group.expiredCount) {
+                            <pantry-badge variant="expired" size="sm" [dot]="true">
+                              {{
+                                'inventory.taxonomy.expiredCount'
+                                  | transloco: { count: group.expiredCount }
+                              }}
+                            </pantry-badge>
+                          }
+                          @if (group.expiringCount) {
+                            <pantry-badge variant="expiring" size="sm" [dot]="true">
+                              {{
+                                'inventory.taxonomy.expiringCount'
+                                  | transloco: { count: group.expiringCount }
+                              }}
+                            </pantry-badge>
+                          }
+                          @if (group.inStockCount) {
+                            <pantry-badge variant="fresh" size="sm" [dot]="true">
+                              {{
+                                'inventory.taxonomy.inStockCount'
+                                  | transloco: { count: group.inStockCount }
+                              }}
+                            </pantry-badge>
+                          }
+                          <pantry-badge variant="neutral" size="sm">
+                            {{
+                              ((ingredientCounts().get(group.id) ?? 0) === 1
+                                ? 'inventory.taxonomy.ingredientCountOne'
+                                : 'inventory.taxonomy.ingredientCount'
+                              ) | transloco: { count: ingredientCounts().get(group.id) ?? 0 }
+                            }}
+                          </pantry-badge>
+                        </div>
+                      </div>
+                      <a
+                        [routerLink]="['/inventory/groups', group.id, 'edit']"
+                        [queryParams]="{ from: 'groups' }"
+                        (click)="$event.stopPropagation()"
+                        class="btn-icon-sm text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+                        [attr.aria-label]="
+                          'inventory.taxonomy.editGroupNamed' | transloco: { name: group.name }
+                        "
+                        [attr.title]="
+                          'inventory.taxonomy.editGroupNamed' | transloco: { name: group.name }
+                        ">
+                        <i class="pi pi-pencil text-xs" aria-hidden="true"></i>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p
+                  class="border-t border-surface-200/60 dark:border-surface-800/80 px-4 sm:px-5 py-4 text-sm text-surface-500 dark:text-surface-400">
+                  {{ 'inventory.taxonomy.noGroupsInCategory' | transloco }}
+                </p>
+              }
+            }
+          </div>
+        </section>
+      } @empty {
+        <pantry-empty-state
+          icon="pi pi-search"
+          [title]="
+            (searchQuery() ? 'inventory.taxonomy.noMatches' : 'inventory.taxonomy.empty')
+              | transloco
+          "
+          [description]="
+            (searchQuery()
+              ? 'inventory.taxonomy.noMatchesDescription'
+              : 'inventory.taxonomy.emptyDescription'
+            ) | transloco
+          " />
+      }
+    </div>
   }
 </div>

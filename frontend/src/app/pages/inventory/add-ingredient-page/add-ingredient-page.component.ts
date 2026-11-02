@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Unit } from '@models/unit.model';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
@@ -16,6 +17,7 @@ import { SelectModule } from 'primeng/select';
   selector: 'pantry-add-ingredient-page',
   standalone: true,
   imports: [
+    TranslocoPipe,
     CommonModule,
     ReactiveFormsModule,
     InputTextModule,

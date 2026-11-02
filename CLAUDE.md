@@ -6,6 +6,13 @@
 
 ---
 
+## 🧭 Product & Design Context
+
+- **[PRODUCT.md](PRODUCT.md):** users, usage contexts, positioning, product principles, and accessibility needs. Read it before planning any feature or user-facing change.
+- **[DESIGN.md](DESIGN.md):** the single source of truth for visual design: tokens, components, `@ui` primitives, contracts, exceptions, and enforcement. Read it before any UI work and update it in the same change when a visual rule changes. Older design specs in `docs/archive/` are history only.
+
+---
+
 ## 🚀 Key Commands
 
 - **Backend Tests:** `cd backend && deno task test`

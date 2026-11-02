@@ -1,28 +1,27 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
-import { Unit, UnitType } from '@models/unit.model';
+import { Unit } from '@models/unit.model';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
-import { BadgeComponent, FormFieldComponent } from '@ui';
+import { FormFieldComponent, SpinnerComponent } from '@ui';
+import { ingredientDetailReturnTo } from '@utility/ingredient-detail-return';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
-import { ButtonModule } from 'primeng/button';
-import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
-import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
-import { TextareaModule } from 'primeng/textarea';
+import { ItemEditorComponent } from '../inventory-components/item-editor/item-editor.component';
 
 @Component({
   selector: 'pantry-edit-item-page',
@@ -32,13 +31,11 @@ import { TextareaModule } from 'primeng/textarea';
     FormsModule,
     ReactiveFormsModule,
     InputTextModule,
-    InputNumberModule,
     SelectModule,
-    DatePickerModule,
-    TextareaModule,
     DialogModule,
-    ButtonModule,
-    BadgeComponent,
+    TranslocoModule,
+    ItemEditorComponent,
+    SpinnerComponent,
     FormFieldComponent,
   ],
   templateUrl: './edit-item-page.component.html',
@@ -52,6 +49,9 @@ export class EditItemPageComponent implements OnInit {
   private readonly locationService = inject(LocationService);
   private readonly unitService = inject(UnitService);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
+  private previousIngredientName: string | null = null;
+  public quickCreateError = signal<string | null>(null);
 
   public itemId = signal<string | null>(null);
   public isLoading = signal<boolean>(true);
@@ -64,7 +64,6 @@ export class EditItemPageComponent implements OnInit {
   public locations = signal<Location[]>([]);
 
   public editItemForm: FormGroup<ItemFormControls> = createItemForm();
-  public currentFormValue = signal<Record<string, unknown>>({});
 
   // Quick Create Ingredient Dialog state
   public displayQuickCreateDialog = signal<boolean>(false);
@@ -73,48 +72,11 @@ export class EditItemPageComponent implements OnInit {
   public newIngredientDefaultUnit = signal<Unit | null>(null);
   public isCreatingIngredient = signal<boolean>(false);
 
-  public previewItem = computed<Item | null>(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const val = (this.currentFormValue() || {}) as any;
-    const defaultUnit: Unit = {
-      id: 1,
-      name: 'piece',
-      shortName: 'pc',
-      type: UnitType.Count,
-      toBaseFactor: 1,
-    };
-    if (!val || !val.name) {
-      return {
-        id: this.itemId() || 'preview',
-        ingredientId: '',
-        name: 'Preview Item',
-        quantity: 1,
-        unit: this.units()[0] || defaultUnit,
-        location: this.locations()[0] || { id: 1, name: 'Pantry' },
-        purchaseDate: new Date(),
-        expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        openedDate: undefined,
-        notes: '',
-      } as Item;
-    }
-
-    return {
-      id: this.itemId() || 'preview',
-      ingredientId: val.ingredient?.id || val.ingredientId || '',
-      name: val.name || 'Untitled Item',
-      quantity: val.quantity ?? 1,
-      unit: val.unit || this.units()[0] || defaultUnit,
-      location: val.location || this.locations()[0] || { id: 1, name: 'Pantry' },
-      purchaseDate: val.purchaseDate ? new Date(val.purchaseDate) : new Date(),
-      expirationDate: val.expirationDate
-        ? new Date(val.expirationDate)
-        : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      openedDate: val.openedDate ? new Date(val.openedDate) : undefined,
-      notes: val.notes || '',
-    } as Item;
-  });
-
   private readonly destroyRef = inject(DestroyRef);
+
+  private get returnTo(): string | null {
+    return ingredientDetailReturnTo(this.route.snapshot.queryParams?.['returnTo']);
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -138,27 +100,27 @@ export class EditItemPageComponent implements OnInit {
       next: (l) => this.locations.set(l),
     });
 
-    this.loadIngredients(id);
-
     this.editItemForm.controls.ingredient.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((selectedIng) => {
         if (selectedIng) {
-          if (!this.editItemForm.controls.name.value) {
+          const name = this.editItemForm.controls.name.value;
+          if (!name || name === this.previousIngredientName) {
             this.editItemForm.controls.name.setValue(selectedIng.name);
           }
           if (selectedIng.defaultUnit) {
             this.editItemForm.controls.unit.setValue(selectedIng.defaultUnit);
             this.editItemForm.controls.unit.disable();
+          } else {
+            this.editItemForm.controls.unit.enable();
           }
         } else {
           this.editItemForm.controls.unit.enable();
         }
+        this.previousIngredientName = selectedIng?.name ?? null;
       });
 
-    this.editItemForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((val) => {
-      this.currentFormValue.set(val);
-    });
+    this.loadIngredients(id);
   }
 
   loadIngredients(itemId?: string, selectNewId?: string): void {
@@ -196,10 +158,6 @@ export class EditItemPageComponent implements OnInit {
                 this.editItemForm.controls.unit.disable();
               }
 
-              this.currentFormValue.set({
-                ...this.editItemForm.value,
-                ingredientId: item.ingredientId,
-              });
               this.isLoading.set(false);
             },
             error: (err) => {
@@ -213,15 +171,9 @@ export class EditItemPageComponent implements OnInit {
     });
   }
 
-  setExpirationDaysOffset(days: number): void {
-    const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() + days);
-    this.editItemForm.controls.expirationDate.setValue(targetDate);
-    this.editItemForm.controls.expirationDate.markAsTouched();
-    this.editItemForm.controls.expirationDate.markAsDirty();
-  }
-
   openQuickCreateIngredient(): void {
+    if (this.isSubmitting()) return;
+    this.quickCreateError.set(null);
     this.newIngredientName.set(this.editItemForm.controls.name.value || '');
     this.newIngredientGroup.set(null);
     this.newIngredientDefaultUnit.set(this.units()[0] || null);
@@ -229,6 +181,8 @@ export class EditItemPageComponent implements OnInit {
   }
 
   submitQuickCreateIngredient(): void {
+    if (this.isCreatingIngredient()) return;
+    this.quickCreateError.set(null);
     const name = this.newIngredientName().trim();
     if (!name) {
       this.toastService.showError('Please enter an ingredient name.');
@@ -257,19 +211,16 @@ export class EditItemPageComponent implements OnInit {
       error: (err) => {
         this.isCreatingIngredient.set(false);
         console.error('Failed to create ingredient:', err);
-        this.toastService.showError('Failed to create ingredient.');
+        this.quickCreateError.set(this.transloco.translate('itemEditor.createError'));
       },
     });
   }
 
-  selectLocation(loc: Location): void {
-    this.editItemForm.controls.location.setValue(loc);
-  }
-
   onSubmit(): void {
+    if (this.isSubmitting()) return;
     if (this.editItemForm.invalid) {
       this.editItemForm.markAllAsTouched();
-      this.submitError.set('Please check required form fields.');
+      this.submitError.set(this.transloco.translate('itemEditor.requiredError'));
       return;
     }
 
@@ -290,7 +241,7 @@ export class EditItemPageComponent implements OnInit {
     this.itemService.updateItem(updatedItem).subscribe({
       next: () => {
         this.toastService.showSuccess(`"${updatedItem.name}" updated successfully!`);
-        this.router.navigate(['/inventory/items']);
+        this.router.navigate([this.returnTo ?? '/inventory/items']);
       },
       error: (err) => {
         console.error('Error updating item:', err);
@@ -301,6 +252,7 @@ export class EditItemPageComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/inventory/items']);
+    if (this.isSubmitting()) return;
+    this.router.navigate([this.returnTo ?? '/inventory/items']);
   }
 }

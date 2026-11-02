@@ -1,5 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, OnInit, Output, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Injector,
+  OnInit,
+  Output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -96,6 +107,29 @@ export class AddRecipeFormComponent implements OnInit {
 
   isSubmitting = false;
   validationErrors: string[] = [];
+  validationTargets: string[] = [];
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  private readonly validationSummary = viewChild<ElementRef<HTMLElement>>('validationSummary');
+
+  fieldError(target: string): string | undefined {
+    const index = this.validationTargets.indexOf(target);
+    return index < 0 ? undefined : this.validationErrors[index];
+  }
+
+  focusValidationField(index: number): void {
+    const target = this.validationTargets[index];
+    const field = Array.from(this.host.nativeElement.querySelectorAll<HTMLElement>('[id]')).find(
+      (element) => element.id === target,
+    );
+    field?.focus();
+  }
+
+  private addValidationError(message: string, target: string): void {
+    this.validationErrors.push(message);
+    this.validationTargets.push(target);
+  }
+
   serverErrorBanner: string | null = null;
 
   ngOnInit(): void {
@@ -432,40 +466,55 @@ export class AddRecipeFormComponent implements OnInit {
 
   validateForm(): boolean {
     this.validationErrors = [];
+    this.validationTargets = [];
     this.serverErrorBanner = null;
 
     if (!this.name.trim()) {
-      this.validationErrors.push('Recipe name is required.');
+      this.addValidationError('Recipe name is required.', 'recipe-name');
     }
 
     if (Number(this.servings) <= 0) {
-      this.validationErrors.push('Servings must be at least 1.');
+      this.addValidationError('Servings must be at least 1.', 'recipe-servings');
     }
 
     if (Number(this.prepTime) < 0 || Number(this.cookTime) < 0) {
-      this.validationErrors.push('Prep time and cook time cannot be negative.');
+      this.addValidationError(
+        'Prep time and cook time cannot be negative.',
+        Number(this.prepTime) < 0 ? 'recipe-prep-time' : 'recipe-cook-time',
+      );
     }
 
     const validIngredients = this.recipeIngredients.filter((row) => row.ingredientId !== '');
     if (validIngredients.length === 0) {
-      this.validationErrors.push('Please select at least one valid ingredient for the recipe.');
+      if (!this.recipeIngredients.length) this.addIngredientRow();
+      this.addValidationError(
+        'Please select at least one valid ingredient for the recipe.',
+        `ing-select-${this.recipeIngredients[0].id}`,
+      );
     }
 
     for (const row of this.recipeIngredients) {
       if (row.ingredientId && (Number(row.quantity) <= 0 || isNaN(Number(row.quantity)))) {
-        this.validationErrors.push(
+        this.addValidationError(
           `Ingredient "${this.getIngredientName(row.ingredientId) || 'item'}" must have a quantity greater than 0.`,
+          `ing-quantity-${row.id}`,
         );
       }
     }
 
     const validSteps = this.recipeSteps.filter((st) => st.instructionText.trim() !== '');
     if (validSteps.length === 0) {
-      this.validationErrors.push('Please add at least one instruction step.');
+      if (!this.recipeSteps.length) this.addStepRow();
+      this.addValidationError(
+        'Please add at least one instruction step.',
+        `recipe-step-${this.recipeSteps[0].id}`,
+      );
     }
 
     if (this.validationErrors.length > 0) {
-      this.toastService.showError('Please fix the highlighted form errors.', 'Validation Failed');
+      afterNextRender(() => this.validationSummary()?.nativeElement.focus(), {
+        injector: this.injector,
+      });
       return false;
     }
 

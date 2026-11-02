@@ -13,7 +13,6 @@ export class StatCardComponent {
   title = input.required<string>();
   value = input.required<number>();
   subtitle = input<string>();
-  valueColor = input<string>('text-gray-900 dark:text-white');
   trend = input<string>();
   trendClass = input<string>('badge-primary');
 }

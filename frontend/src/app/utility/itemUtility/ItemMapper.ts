@@ -2,6 +2,14 @@ import { Item, ItemDTO, UpdateItemDTO } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
 
+// Calendar dates have no time zone; timestamps retain their original instant.
+function parseItemDate(value: string): Date {
+  const calendar = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  return calendar
+    ? new Date(Number(calendar[1]), Number(calendar[2]) - 1, Number(calendar[3]))
+    : new Date(value);
+}
+
 export function mapItemDTOToItem(
   itemDTO: ItemDTO,
   unitMap: Map<number, Unit>,
@@ -23,9 +31,9 @@ export function mapItemDTOToItem(
     name: itemDTO.label,
     quantity: itemDTO.quantity,
     unit: unit,
-    purchaseDate: new Date(itemDTO.purchaseDate),
-    openedDate: itemDTO.openedDate ? new Date(itemDTO.openedDate) : undefined,
-    expirationDate: itemDTO.expirationDate ? new Date(itemDTO.expirationDate) : undefined,
+    purchaseDate: parseItemDate(itemDTO.purchaseDate),
+    openedDate: itemDTO.openedDate ? parseItemDate(itemDTO.openedDate) : undefined,
+    expirationDate: itemDTO.expirationDate ? parseItemDate(itemDTO.expirationDate) : undefined,
     location: location,
     notes: itemDTO.notes || '',
     createdAt: itemDTO.createdAt ? new Date(itemDTO.createdAt) : undefined,

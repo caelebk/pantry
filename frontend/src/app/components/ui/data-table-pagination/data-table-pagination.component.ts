@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, input, model, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  input,
+  model,
+  output,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { SelectModule } from 'primeng/select';
@@ -9,111 +17,100 @@ let nextPaginationId = 0;
   selector: 'pantry-data-table-pagination',
   standalone: true,
   imports: [FormsModule, SelectModule, TranslocoModule],
+  host: { class: 'block' },
   template: `
-    <div
-      class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-50 dark:bg-surface-800/40 rounded-2xl border border-surface-200/80 dark:border-surface-700/60 text-xs font-semibold text-surface-600 dark:text-surface-300 select-none">
-      <!-- Showing Count Summary -->
-      <div class="flex items-center gap-2" data-testid="pagination-summary">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span>
+    <footer
+      class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-between gap-3 px-4 py-3 border-t border-surface-200/70 dark:border-surface-700/70 text-surface-600 dark:text-surface-300">
+      <div
+        data-testid="pagination-summary"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        class="type-meta min-w-0 tabular-nums">
+        <span>{{
+          'pagination.showingSummary'
+            | transloco
+              : {
+                  from: totalItems() === 0 ? 0 : startIndex() + 1,
+                  to: endIndex(),
+                  total: totalItems(),
+                  label: itemLabel(),
+                }
+        }}</span>
+        <span class="sr-only"
+          >.
           {{
-            'pagination.showingSummary'
-              | transloco
-                : {
-                    from: totalItems() === 0 ? 0 : startIndex() + 1,
-                    to: endIndex(),
-                    total: totalItems(),
-                    label: itemLabel(),
-                  }
-          }}
-        </span>
+            'pagination.pageState' | transloco: { page: currentPage(), total: totalPages() }
+          }}</span
+        >
       </div>
-
-      <!-- Page Navigation Controls -->
-      <div class="flex flex-wrap items-center gap-3">
-        <!-- Rows Per Page Selector -->
-        <div class="flex items-center gap-1.5 text-xs">
-          <label [for]="inputId" class="text-surface-500 font-medium hidden md:inline">
-            {{ 'pagination.perPageLabel' | transloco }}
+      <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 min-w-0">
+        <div class="flex items-center gap-2 shrink-0">
+          <label [for]="inputId" class="type-meta whitespace-nowrap">
+            <span class="sm:hidden">{{ 'pagination.rowsLabel' | transloco }}</span>
+            <span class="hidden sm:inline">{{ 'pagination.perPageLabel' | transloco }}</span>
           </label>
           <p-select
             [inputId]="inputId"
             [ngModel]="pageSize()"
             (ngModelChange)="onPageSizeChange($event)"
             [options]="pageSizeOptions()"
+            styleClass="min-w-20"
             appendTo="body"
-            [ariaLabel]="'pagination.perPageAria' | transloco: { label: itemLabel() }"
-            styleClass="text-xs font-bold">
-          </p-select>
+            [ariaLabel]="'pagination.perPageAria' | transloco: { label: itemLabel() }" />
         </div>
-
-        <!-- Page Number Navigation Buttons -->
-        <div class="flex items-center gap-1">
-          <!-- First Page -->
+        <nav
+          class="flex items-center gap-1 shrink-0 ml-auto"
+          [attr.aria-label]="'pagination.navigationAria' | transloco: { label: itemLabel() }">
           <button
             type="button"
             (click)="goToPage(1)"
             [disabled]="currentPage() === 1"
-            class="btn-icon-sm"
-            aria-label="First Page"
-            title="First Page">
-            <i class="pi pi-angle-double-left text-xs"></i>
+            class="btn-icon border-0! disabled:opacity-40 disabled:cursor-not-allowed hidden! sm:inline-flex!"
+            [attr.aria-label]="'pagination.firstPage' | transloco"
+            [attr.title]="'pagination.firstPage' | transloco">
+            <i class="pi pi-angle-double-left" aria-hidden="true"></i>
           </button>
-
-          <!-- Prev Page -->
           <button
             type="button"
             (click)="goToPage(currentPage() - 1)"
             [disabled]="currentPage() === 1"
-            class="btn-icon-sm"
-            aria-label="Previous Page"
-            title="Previous Page">
-            <i class="pi pi-angle-left text-xs"></i>
+            class="btn-icon border-0! disabled:opacity-40 disabled:cursor-not-allowed"
+            [attr.aria-label]="'pagination.previousPage' | transloco"
+            [attr.title]="'pagination.previousPage' | transloco">
+            <i class="pi pi-angle-left" aria-hidden="true"></i>
           </button>
-
-          <!-- Page Numbers -->
-          @for (page of visiblePages(); track page) {
-            <button
-              type="button"
+          <span class="type-meta whitespace-nowrap tabular-nums px-1">
+            {{ 'pagination.pagePrefix' | transloco }}
+            <span
               data-testid="page-number"
-              (click)="goToPage(page)"
-              [class.bg-primary-600]="currentPage() === page"
-              [class.text-white]="currentPage() === page"
-              [class.font-bold]="currentPage() === page"
-              [class.shadow-xs]="currentPage() === page"
-              [class.bg-surface-100]="currentPage() !== page"
-              [class.dark:bg-surface-800]="currentPage() !== page"
-              [class.text-surface-700]="currentPage() !== page"
-              [class.dark:text-surface-300]="currentPage() !== page"
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-xs border border-surface-200/60 dark:border-surface-700/60 hover:border-primary-500/50 transition-all cursor-pointer">
-              {{ page }}
-            </button>
-          }
-
-          <!-- Next Page -->
+              aria-current="page"
+              class="type-label text-surface-900 dark:text-white"
+              >{{ currentPage() }}</span
+            >
+            {{ 'pagination.pageOf' | transloco: { total: totalPages() } }}
+          </span>
           <button
             type="button"
             (click)="goToPage(currentPage() + 1)"
             [disabled]="currentPage() >= totalPages()"
-            class="btn-icon-sm"
-            aria-label="Next Page"
-            title="Next Page">
-            <i class="pi pi-angle-right text-xs"></i>
+            class="btn-icon border-0! disabled:opacity-40 disabled:cursor-not-allowed"
+            [attr.aria-label]="'pagination.nextPage' | transloco"
+            [attr.title]="'pagination.nextPage' | transloco">
+            <i class="pi pi-angle-right" aria-hidden="true"></i>
           </button>
-
-          <!-- Last Page -->
           <button
             type="button"
             (click)="goToPage(totalPages())"
             [disabled]="currentPage() >= totalPages()"
-            class="btn-icon-sm"
-            aria-label="Last Page"
-            title="Last Page">
-            <i class="pi pi-angle-double-right text-xs"></i>
+            class="btn-icon border-0! disabled:opacity-40 disabled:cursor-not-allowed hidden! sm:inline-flex!"
+            [attr.aria-label]="'pagination.lastPage' | transloco"
+            [attr.title]="'pagination.lastPage' | transloco">
+            <i class="pi pi-angle-double-right" aria-hidden="true"></i>
           </button>
-        </div>
+        </nav>
       </div>
-    </div>
+    </footer>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -137,22 +134,15 @@ export class DataTablePaginationComponent {
     Math.min(this.startIndex() + this.pageSize(), this.totalItems()),
   );
 
-  public visiblePages = computed(() => {
-    const total = this.totalPages();
-    const current = this.currentPage();
-    const pages: number[] = [];
-
-    let start = Math.max(1, current - 2);
-    const end = Math.min(total, start + 4);
-    if (end - start < 4) {
-      start = Math.max(1, end - 4);
-    }
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    return pages;
-  });
+  constructor() {
+    effect(() => {
+      const page = Math.max(1, Math.min(this.currentPage(), this.totalPages()));
+      if (page !== this.currentPage()) {
+        this.currentPage.set(page);
+        this.pageChange.emit(page);
+      }
+    });
+  }
 
   public goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages() && page !== this.currentPage()) {
@@ -163,7 +153,7 @@ export class DataTablePaginationComponent {
 
   public onPageSizeChange(size: number | string): void {
     const newSize = Number(size);
-    if (newSize === this.pageSize()) {
+    if (!Number.isInteger(newSize) || newSize <= 0 || newSize === this.pageSize()) {
       return;
     }
     this.pageSize.set(newSize);

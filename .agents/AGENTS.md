@@ -18,8 +18,14 @@ All model-specific entry point files bridge directly to this file (`.agents/AGEN
 - `.github/copilot-instructions.md` (GitHub Copilot entry point)
 
 Directory-scoped conventions extend this file — read them when working in those trees:
-- [`backend/AGENTS.md`](../../backend/AGENTS.md) (Deno/Hono layout, tenancy rule, SQL safety, test strategy)
-- [`frontend/AGENTS.md`](../../frontend/AGENTS.md) (Angular standards, design-system contracts, i18n rules)
+- [`backend/AGENTS.md`](../backend/AGENTS.md) (Deno/Hono layout, tenancy rule, SQL safety, test strategy)
+- [`frontend/AGENTS.md`](../frontend/AGENTS.md) (Angular standards, design-system contracts, i18n rules)
+
+Product and design context lives at the repository root — read these before planning features or touching UI:
+- [`PRODUCT.md`](../PRODUCT.md) (who Pantry is for, where it is used, positioning, product principles, accessibility needs). Read it before planning any feature or user-facing change.
+- [`DESIGN.md`](../DESIGN.md) (the single source of truth for visual design: tokens, components, `@ui` primitives, interaction contracts, documented exceptions, and enforcement; machine-readable tokens in its frontmatter, with extensions in `.impeccable/design.json`). Read it before any UI work.
+
+If any other document, skill, or comment disagrees with `DESIGN.md`, `DESIGN.md` wins. Update it in the same change as any visual token or rule, and keep it strictly visual — product facts belong in `PRODUCT.md`. Older design specs in `docs/archive/` are history only.
 
 **Any AI assistant loading this repository MUST inspect `.agents/AGENTS.md` and trigger appropriate skills in `.agents/skills/`.**
 
@@ -64,7 +70,7 @@ Always strictly enforce the 4-tier domain hierarchy across database schemas, bac
 
 ### RULE-04: Frontend Architecture & UI Aesthetics
 1. **Standalone Components:** All Angular components must use Angular Standalone architecture (`standalone: true`).
-2. **UI & Glassmorphism Theme:** Use PrimeNG 20 controls (`@primeng/themes`), TailwindCSS v4 flexbox/grid layout, and custom SCSS `.glass-card` styling for card elements.
+2. **UI & Glassmorphism Theme:** Use PrimeNG 20 controls (`@primeng/themes`), TailwindCSS v4 flexbox/grid layout, and custom SCSS `.glass-card` styling for card elements. Follow the tokens and rules in [`DESIGN.md`](../DESIGN.md).
 3. **Transloco i18n:** User-facing strings MUST be defined in `frontend/public/i18n/en.json` (and locale dictionaries) and rendered via Transloco pipes/directives.
 
 ### RULE-05: Code Formatting & Quality Safeguards
@@ -80,7 +86,7 @@ NEVER declare a task resolved, a bug fixed, or a feature complete without perfor
 
 ### RULE-07: Design System Compliance & Canonical UI Primitives
 All frontend modifications MUST strictly comply with the centralized design system:
-1. **Source of Truth:** Consult `docs/design-system.md` and `docs/design-system-index.md` before making UI changes.
+1. **Source of Truth:** Consult [`DESIGN.md`](../DESIGN.md) before making UI changes.
 2. **Canonical `@ui` Primitives:** Always reuse canonical components from `@ui` (`SearchInputComponent`, `SpinnerComponent`, `EmptyStateComponent`, `BadgeComponent`, `SkeletonComponent`, `FormFieldComponent`, `CardComponent`). Never hand-roll local copies of search inputs, loading spinners, empty states, or skeletons.
 3. **Button Contract:** Standardize all button elements using `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, or `.btn-icon`. Avoid long arbitrary inline Tailwind button strings.
 4. **Dropdown Contract:** Use PrimeNG `p-select` with `appendTo="body"`. Never introduce raw unstyled `<select>` elements or hand-coded `<ul><li>` popup menus.

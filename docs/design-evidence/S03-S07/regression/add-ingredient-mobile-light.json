@@ -1,0 +1,195 @@
+{
+  "route": "/inventory/ingredients/new",
+  "viewport": {
+    "name": "mobile",
+    "width": 390,
+    "height": 844
+  },
+  "theme": "light",
+  "fixture": "synthetic-kitchen-v1",
+  "revision": "cd6074abc0107030ae3b485e5d909774c8a2f9f2",
+  "capturedAt": "2026-10-04T09:17:51.839Z",
+  "platform": "darwin",
+  "browser": "143.0.7499.4",
+  "mode": "geometry-regression",
+  "geometry": {
+    "main": {
+      "x": 0,
+      "y": 64,
+      "width": 390,
+      "height": 780,
+      "right": 390,
+      "bottom": 844
+    },
+    "breadcrumb": {
+      "x": 16,
+      "y": 88,
+      "width": 358,
+      "height": 42,
+      "right": 374,
+      "bottom": 130
+    },
+    "title": {
+      "x": 16,
+      "y": 152.59375,
+      "width": 152.46875,
+      "height": 28.796875,
+      "right": 168.46875,
+      "bottom": 181.390625
+    },
+    "page": {
+      "x": 16,
+      "y": 146,
+      "width": 358,
+      "height": 421,
+      "right": 374,
+      "bottom": 567
+    },
+    "card": {
+      "x": 16,
+      "y": 212,
+      "width": 358,
+      "height": 355,
+      "right": 374,
+      "bottom": 567
+    },
+    "tableContainer": null,
+    "searchInput": null,
+    "header": {
+      "x": 16,
+      "y": 146,
+      "width": 358,
+      "height": 42,
+      "right": 374,
+      "bottom": 188
+    },
+    "headerButtons": [
+      {
+        "x": 332,
+        "y": 146,
+        "width": 42,
+        "height": 42,
+        "right": 374,
+        "bottom": 188
+      }
+    ],
+    "statusButtons": [],
+    "scrollWidth": 358,
+    "clientWidth": 358,
+    "mainScrollWidth": 390,
+    "mainClientWidth": 390,
+    "viewportWidth": 390
+  },
+  "roles": {
+    "page-title": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 24,
+      "fontWeight": "600",
+      "lineHeight": 28.8,
+      "textTransform": "none",
+      "height": 28.796875,
+      "width": 152.46875,
+      "radius": 0,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "none"
+    },
+    "input": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 14,
+      "fontWeight": "500",
+      "lineHeight": 21,
+      "textTransform": "none",
+      "height": 42,
+      "width": 308,
+      "radius": 12,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "rgba(249, 115, 22, 0.008) 0px 0px 0px 0.0516723px"
+    },
+    "select-control": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 14,
+      "fontWeight": "500",
+      "lineHeight": 21,
+      "textTransform": "none",
+      "height": 42,
+      "width": 308,
+      "radius": 12,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "none"
+    },
+    "field-label": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 13,
+      "fontWeight": "500",
+      "lineHeight": 18.2,
+      "textTransform": "none",
+      "height": 18.1875,
+      "width": 241.390625,
+      "radius": 0,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "none"
+    },
+    "select-overlay": {
+      "fontFamily": "system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+      "fontSize": 14,
+      "fontWeight": "400",
+      "lineHeight": 21,
+      "textTransform": "none",
+      "height": 119.88156127929688,
+      "width": 308,
+      "radius": 12,
+      "outlineStyle": "none",
+      "outlineWidth": "0px",
+      "boxShadow": "rgba(0, 0, 0, 0.15) 0px 10px 25px -5px, rgba(0, 0, 0, 0.1) 0px 8px 10px -6px"
+    }
+  },
+  "fieldLabel": {
+    "text": "Ingredient Group (Taxonomy Category)",
+    "clientWidth": 241,
+    "scrollWidth": 241,
+    "bounds": {
+      "x": 41,
+      "y": 305,
+      "width": 241.390625,
+      "height": 18.1875,
+      "top": 305,
+      "right": 282.390625,
+      "bottom": 323.1875,
+      "left": 41
+    }
+  },
+  "overlay": {
+    "x": 41,
+    "y": 375,
+    "width": 308,
+    "height": 124.25155639648438
+  },
+  "footerActions": [
+    {
+      "text": "Cancel",
+      "x": 103.421875,
+      "right": 191.75,
+      "height": 42,
+      "clientWidth": 86,
+      "scrollWidth": 86,
+      "lineCount": 1
+    },
+    {
+      "text": "Save Ingredient",
+      "x": 203.75,
+      "right": 349,
+      "height": 42,
+      "clientWidth": 145,
+      "scrollWidth": 145,
+      "lineCount": 1
+    }
+  ],
+  "unexpectedRequests": [],
+  "errors": [],
+  "reviewStatus": "Requires human screenshot inspection; Windows/platform coverage not established",
+  "captureLimit": "Viewport screenshots show the fixed-height shell. Content below its inner scroll viewport needs separate inspection."
+}

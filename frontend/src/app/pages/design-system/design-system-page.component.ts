@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   BadgeComponent,
   CardComponent,
@@ -24,6 +25,7 @@ import { SelectModule } from 'primeng/select';
   imports: [
     CommonModule,
     FormsModule,
+    TranslocoModule,
     BadgeComponent,
     CardComponent,
     EmptyStateComponent,
@@ -37,21 +39,70 @@ import { SelectModule } from 'primeng/select';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<div class="max-w-5xl mx-auto p-6 sm:p-10 space-y-10">
     <header>
-      <h1 class="text-2xl font-extrabold text-surface-900 dark:text-white tracking-tight">
-        Pantry Design System
-      </h1>
-      <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
-        Canonical primitives &amp; contracts. Spec: docs/design-system.md · Audit:
-        docs/design-system-audit.md
-      </p>
+      <h1 class="type-page-title text-surface-900 dark:text-white">Pantry Design System</h1>
     </header>
+
+    <!-- Typography prototype uses the same roles as the live pages. -->
+    <pantry-card>
+      <div class="space-y-6" *transloco="let t; prefix: 'typographyPrototype'">
+        <div class="space-y-2">
+          <p class="type-meta text-surface-500 dark:text-surface-400">{{ t('eyebrow') }}</p>
+          <h2 class="type-page-title text-surface-900 dark:text-white">{{ t('title') }}</h2>
+          <p class="text-sm text-surface-600 dark:text-surface-300 max-w-xl">
+            {{ t('description') }}
+          </p>
+        </div>
+        <div class="grid gap-6 sm:grid-cols-2">
+          <div class="space-y-4">
+            <h3 class="type-section-title text-surface-900 dark:text-white">
+              {{ t('sectionTitle') }}
+            </h3>
+            <div class="flex items-center justify-between gap-4">
+              <div class="space-y-1 min-w-0">
+                <p class="text-sm font-medium text-surface-900 dark:text-white">
+                  {{ t('ingredientName') }}
+                </p>
+                <p class="type-meta text-surface-500 dark:text-surface-400">
+                  {{ t('ingredientMeta') }}
+                </p>
+              </div>
+              <pantry-badge variant="expiring">{{ t('status') }}</pantry-badge>
+            </div>
+            <div class="border-t border-surface-200 dark:border-surface-700 pt-4 space-y-1">
+              <p class="type-label text-surface-600 dark:text-surface-300">
+                {{ t('valueLabel') }}
+              </p>
+              <p class="type-value text-surface-900 dark:text-white">$28.50</p>
+              <p class="type-meta text-surface-500 dark:text-surface-400">{{ t('valueHint') }}</p>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <pantry-form-field
+              [label]="t('fieldLabel')"
+              forId="type-prototype-ingredient"
+              [hint]="t('fieldHint')">
+              <input
+                pInputText
+                #fieldControl
+                id="type-prototype-ingredient"
+                [value]="t('ingredientName')"
+                class="w-full" />
+            </pantry-form-field>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" class="btn-primary" disabled>{{ t('primaryAction') }}</button>
+              <button type="button" class="btn-secondary" disabled>
+                {{ t('secondaryAction') }}
+              </button>
+            </div>
+            <p class="type-meta text-surface-500 dark:text-surface-400">{{ t('sampleHint') }}</p>
+          </div>
+        </div>
+      </div>
+    </pantry-card>
 
     <!-- Buttons -->
     <pantry-card>
-      <h2
-        class="text-sm font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider mb-4">
-        Buttons
-      </h2>
+      <h2 class="type-section-title text-surface-600 dark:text-surface-300 mb-4">Buttons</h2>
       <div class="flex flex-wrap items-center gap-3">
         <button class="btn-primary" type="button">Primary</button>
         <button class="btn-secondary" type="button">Secondary</button>
@@ -72,10 +123,7 @@ import { SelectModule } from 'primeng/select';
 
     <!-- Badges -->
     <pantry-card>
-      <h2
-        class="text-sm font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider mb-4">
-        Badges
-      </h2>
+      <h2 class="type-section-title text-surface-600 dark:text-surface-300 mb-4">Badges</h2>
       <div class="flex flex-wrap items-center gap-2">
         <pantry-badge variant="fresh">Fresh</pantry-badge>
         <pantry-badge variant="expiring" [dot]="true">Expiring</pantry-badge>
@@ -84,8 +132,6 @@ import { SelectModule } from 'primeng/select';
         <pantry-badge variant="neutral">Neutral</pantry-badge>
         <pantry-badge variant="location">Location</pantry-badge>
         <pantry-badge variant="outline">Outline</pantry-badge>
-        <pantry-badge variant="indigo">Indigo</pantry-badge>
-        <pantry-badge variant="purple">Purple</pantry-badge>
         <pantry-badge variant="fresh" size="sm">Fresh / sm</pantry-badge>
         <pantry-badge variant="fresh" [dot]="true" [live]="true">Live stock</pantry-badge>
       </div>
@@ -93,10 +139,7 @@ import { SelectModule } from 'primeng/select';
 
     <!-- Form field -->
     <pantry-card>
-      <h2
-        class="text-sm font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider mb-4">
-        Form Field
-      </h2>
+      <h2 class="type-section-title text-surface-600 dark:text-surface-300 mb-4">Form Field</h2>
       <div class="grid gap-6 sm:grid-cols-2 max-w-2xl">
         <pantry-form-field label="Ingredient name" forId="ds-name" [required]="true">
           <input pInputText id="ds-name" placeholder="e.g. Roma Tomato" class="w-full" />
@@ -128,8 +171,7 @@ import { SelectModule } from 'primeng/select';
 
     <!-- States -->
     <pantry-card>
-      <h2
-        class="text-sm font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider mb-4">
+      <h2 class="type-section-title text-surface-600 dark:text-surface-300 mb-4">
         Loading &amp; Empty States
       </h2>
       <div class="flex flex-wrap items-center gap-6">
@@ -155,10 +197,7 @@ import { SelectModule } from 'primeng/select';
 
     <!-- Surfaces -->
     <pantry-card>
-      <h2
-        class="text-sm font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider mb-4">
-        Card Surfaces
-      </h2>
+      <h2 class="type-section-title text-surface-600 dark:text-surface-300 mb-4">Card Surfaces</h2>
       <div class="grid gap-4 sm:grid-cols-3">
         <pantry-card variant="glass" padding="sm"><span>Glass</span></pantry-card>
         <pantry-card variant="sub" padding="sm" [hover]="true"> Sub (hover) </pantry-card>

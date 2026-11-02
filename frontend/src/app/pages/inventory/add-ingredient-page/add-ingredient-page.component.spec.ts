@@ -1,11 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
 import { of } from 'rxjs';
+import translations from '../../../../../public/i18n/en.json';
 import { AddIngredientPageComponent } from './add-ingredient-page.component';
 
 describe('AddIngredientPageComponent', () => {
@@ -40,7 +42,13 @@ describe('AddIngredientPageComponent', () => {
     );
 
     await TestBed.configureTestingModule({
-      imports: [AddIngredientPageComponent],
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+        }),
+        AddIngredientPageComponent,
+      ],
       providers: [
         FormBuilder,
         { provide: IngredientService, useValue: mockIngredientService },

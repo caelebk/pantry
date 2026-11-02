@@ -35,18 +35,18 @@ describe('BadgeComponent', () => {
     expect(dot).toBeTruthy();
   });
 
-  it('should render indigo tone badge', () => {
-    fixture.componentRef.setInput('variant', 'indigo');
+  it('should render primary tone badge', () => {
+    fixture.componentRef.setInput('variant', 'primary');
     fixture.detectChanges();
     const span = fixture.nativeElement.querySelector('span');
-    expect(span.className).toContain('text-indigo-600');
+    expect(span.className).toContain('text-primary-600');
   });
 
-  it('should render purple tone badge', () => {
-    fixture.componentRef.setInput('variant', 'purple');
+  it('should render outline tone badge', () => {
+    fixture.componentRef.setInput('variant', 'outline');
     fixture.detectChanges();
     const span = fixture.nativeElement.querySelector('span');
-    expect(span.className).toContain('text-purple-600');
+    expect(span.className).toContain('bg-transparent');
   });
 
   it('should render a pulsing dot when live is true', () => {

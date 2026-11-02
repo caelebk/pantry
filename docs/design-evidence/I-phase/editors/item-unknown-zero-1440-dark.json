@@ -1,0 +1,11 @@
+{
+  "route": "/inventory/items/new?ingredientId=ingredient-rice&returnTo=%2Finventory%2Fingredients%3Fsearch%3Drice%26view%3Dgrid%26page%3D1",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "theme": "dark",
+  "state": "Zero stock, unknown expiry",
+  "fixture": "synthetic-kitchen-v1",
+  "api": "All requests intercepted with synthetic editor fixtures."
+}

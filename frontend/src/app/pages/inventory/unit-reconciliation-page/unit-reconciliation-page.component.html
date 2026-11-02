@@ -15,9 +15,6 @@
         <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
           {{ t('title') }}
         </h2>
-        <p class="text-surface-500 dark:text-surface-400 mt-1.5 text-sm">
-          {{ t('subtitle') }}
-        </p>
       </div>
     </div>
   </div>
@@ -29,10 +26,12 @@
     </div>
   } @else {
     <!-- Ingredient Banner -->
-    <div class="glass-card rounded-2xl p-6 border-l-4 border-amber-500 bg-amber-500/10 space-y-2">
+    <div
+      class="glass-card rounded-2xl p-6 border-l-4 border-surface-400 dark:border-surface-600 bg-surface-100/60 dark:bg-surface-800/40 space-y-2">
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2 text-amber-700 dark:text-amber-300 font-bold text-lg">
-          <i class="pi pi-exclamation-triangle text-xl"></i>
+        <div
+          class="flex items-center gap-2 text-surface-800 dark:text-surface-200 font-bold text-lg">
+          <i class="pi pi-exclamation-triangle text-xl text-surface-500 dark:text-surface-400"></i>
           <span>{{ t('bannerTitle', { name: ingredient()?.name }) }}</span>
         </div>
         <div class="flex items-center gap-2 text-xs font-semibold">
@@ -42,7 +41,7 @@
           </span>
           <i class="pi pi-arrow-right text-surface-400"></i>
           <span
-            class="px-2.5 py-1 rounded-full bg-primary-500/20 text-primary-600 dark:text-primary-400 font-bold">
+            class="px-2.5 py-1 rounded-full bg-surface-200 dark:bg-surface-800 text-surface-900 dark:text-white font-bold">
             {{ t('bannerNew', { unit: targetUnit()?.name }) }}
           </span>
         </div>

@@ -1,8 +1,7 @@
 # Frontend Agent Guidelines: Pantry Design System
 
 **Target:** `frontend/`  
-**Specification:** [`docs/design-system.md`](../docs/design-system.md)  
-**Quick Index:** [`docs/design-system-index.md`](../docs/design-system-index.md)
+**Specification:** [`DESIGN.md`](../DESIGN.md) (single source of truth for visual design)
 
 ---
 

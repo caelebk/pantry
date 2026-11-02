@@ -5,6 +5,7 @@ import {
   UpdateIngredientDTO,
 } from '../models/data-models/ingredient.model.ts';
 import { ingredientService } from '../services/ingredients.service.ts';
+import { ingredientItemService } from '../services/ingredient-item.service.ts';
 import { substitutionService } from '../services/substitution.service.ts';
 import { errorResponse, HttpStatusCode, successResponse } from '../utils/response.ts';
 import { isValidUUID } from '../utils/validators.ts';
@@ -229,7 +230,10 @@ ingredients.get('/:id/items', async (c: Context) => {
     }
     const activeKitchenId = c.get('activeKitchenId') || '';
     const items = await ingredientService.getItemsByIngredientId(id, activeKitchenId);
-    return c.json(successResponse(items), HttpStatusCode.OK);
+    return c.json(
+      successResponse(items.map((item) => ingredientItemService.mapItemRowToItem(item))),
+      HttpStatusCode.OK,
+    );
   } catch (_error: unknown) {
     return c.json(
       errorResponse('Failed to retrieve items for ingredient.'),

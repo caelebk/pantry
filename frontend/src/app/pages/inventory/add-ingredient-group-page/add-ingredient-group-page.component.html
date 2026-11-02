@@ -1,24 +1,16 @@
+<div class="flex">
+  <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent">
+    <i class="pi pi-arrow-left" aria-hidden="true"></i>
+    <span>{{ 'nav.back' | transloco }}</span>
+  </button>
+</div>
 <div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
   <!-- Page Header -->
-  <div class="flex items-center justify-between mb-2">
-    <div class="flex items-center gap-3">
-      <button (click)="onCancel()" type="button" class="btn-icon" aria-label="Back" title="Back">
-        <i class="pi pi-arrow-left text-base"></i>
-      </button>
-      <div>
-        <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
-          Add Ingredient Group
-        </h2>
-        <p class="text-surface-500 dark:text-surface-400 mt-1.5 text-sm">
-          Create a new taxonomy group (e.g. Pasta, Grains, Bakery, Meat, Seafood).
-        </p>
-      </div>
-    </div>
-  </div>
+  <h2 class="type-page-title text-surface-900 dark:text-white">Add Ingredient Group</h2>
 
   @if (submitError()) {
     <div
-      class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-2">
+      class="type-label p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 flex items-center gap-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -78,11 +70,10 @@
       <div
         class="pt-2 border-t border-surface-200/50 dark:border-surface-800/50 space-y-3 relative">
         <div>
-          <label
-            class="block text-xs font-semibold text-surface-700 dark:text-surface-300 uppercase tracking-wider mb-1">
+          <label class="type-label block text-surface-700 dark:text-surface-300 mb-1">
             Ingredients in this Group (Optional)
           </label>
-          <p class="text-xs text-surface-500 dark:text-surface-400">
+          <p class="type-meta text-surface-500 dark:text-surface-400">
             Search existing ingredients or type a new name (e.g. Spaghetti, Fettuccine, Penne).
           </p>
         </div>
@@ -106,8 +97,8 @@
             <button
               type="button"
               (click)="addIngredient($event)"
-              class="btn-primary !h-10 !text-xs shrink-0">
-              <i class="pi pi-plus text-xs font-bold"></i>
+              class="btn-primary !h-10 shrink-0">
+              <i class="pi pi-plus text-xs"></i>
               <span>Add</span>
             </button>
           </div>
@@ -124,29 +115,31 @@
                     class="w-full px-3.5 py-2.5 text-left hover:bg-primary-50 dark:hover:bg-surface-700/60 transition-colors flex items-center justify-between group/sug cursor-pointer">
                     <div class="flex items-center gap-2.5">
                       <span
-                        class="text-sm font-bold text-surface-900 dark:text-white group-hover/sug:text-primary-600 dark:group-hover/sug:text-primary-400">
+                        class="type-label text-surface-900 dark:text-white group-hover/sug:text-primary-600 dark:group-hover/sug:text-primary-400">
                         {{ sug.name }}
                       </span>
                       @if (sug.ingredientGroup?.name || sug.category?.name) {
                         <span
-                          class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-700 text-surface-500 dark:text-surface-400">
+                          class="type-label px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-700 text-surface-500 dark:text-surface-400">
                           Current: {{ sug.ingredientGroup?.name || sug.category?.name }}
                         </span>
                       }
                     </div>
                     <span
-                      class="text-xs font-semibold text-primary-600 dark:text-primary-400 opacity-0 group-hover/sug:opacity-100 transition-opacity">
+                      class="type-label text-primary-600 dark:text-primary-400 opacity-0 group-hover/sug:opacity-100 transition-opacity">
                       + Select
                     </span>
                   </button>
                 }
               } @else {
                 <div
-                  class="px-3.5 py-3 text-xs text-surface-500 dark:text-surface-400 flex items-center gap-2">
+                  class="type-meta px-3.5 py-3 text-surface-500 dark:text-surface-400 flex items-center gap-2">
                   <i class="pi pi-info-circle text-surface-400"></i>
                   <span
-                    >No matching ingredients found. Click <b>Add</b> or press <b>Enter</b> to create
-                    <b>"{{ newIngredientInput() }}"</b> as a new ingredient.</span
+                    >No matching ingredients found. Click <b class="font-medium">Add</b> or press
+                    <b class="font-medium">Enter</b> to create
+                    <b class="font-medium">"{{ newIngredientInput() }}"</b> as a new
+                    ingredient.</span
                   >
                 </div>
               }
@@ -158,23 +151,21 @@
         @if (initialIngredients().length > 0) {
           <div class="flex flex-wrap gap-2 pt-1">
             @for (item of initialIngredients(); track item.name || $index) {
-              <pantry-badge [variant]="item.isExisting ? 'indigo' : 'fresh'" class="shadow-2xs">
+              <pantry-badge [variant]="item.isExisting ? 'neutral' : 'fresh'" class="shadow-2xs">
                 <span class="flex items-center gap-1.5">
                   @if (item.isExisting) {
-                    <span>🔗 {{ item.name }}</span>
+                    <span>{{ item.name }}</span>
                     @if (item.groupName) {
-                      <span class="text-[10px] opacity-75 font-medium"
-                        >(from {{ item.groupName }})</span
-                      >
+                      <span class="type-label opacity-75">(from {{ item.groupName }})</span>
                     }
                   } @else {
-                    <span>✦ {{ item.name }} (New)</span>
+                    <span>{{ item.name }} (New)</span>
                   }
                 </span>
                 <button
                   type="button"
                   (click)="removeIngredient($index)"
-                  class="hover:text-red-500 font-extrabold text-xs transition-colors cursor-pointer ml-1"
+                  class="type-label hover:text-red-500 transition-colors cursor-pointer ml-1"
                   aria-label="Remove ingredient"
                   title="Remove ingredient">
                   <i class="pi pi-times text-[10px]"></i>
@@ -183,7 +174,7 @@
             }
           </div>
         } @else {
-          <p class="text-xs text-surface-400 italic">
+          <p class="type-meta text-surface-400 italic">
             No ingredients added yet. Search existing ingredients or type a new name above.
           </p>
         }

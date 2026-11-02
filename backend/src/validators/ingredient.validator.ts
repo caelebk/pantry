@@ -28,7 +28,10 @@ export function isValidUpdateIngredientDTO(data: Partial<UpdateIngredientDTO>): 
   // Assuming strict requirements similar to Create for now, or just validating properties if they exist.
 
   if (data.name !== undefined && !isNonEmptyString(data.name)) return false;
-  if (data.ingredientGroupId !== undefined && !isPositiveNumber(data.ingredientGroupId)) {
+  if (
+    data.ingredientGroupId !== undefined && data.ingredientGroupId !== null &&
+    (!Number.isInteger(data.ingredientGroupId) || !isPositiveNumber(data.ingredientGroupId))
+  ) {
     return false;
   }
   if (data.defaultUnitId !== undefined && !isPositiveNumber(data.defaultUnitId)) return false;
@@ -52,7 +55,7 @@ export function isValidReconcileUnitsDTO(data: unknown): boolean {
     if (!item || typeof item !== 'object') return false;
     const { id, quantity } = item as { id?: unknown; quantity?: unknown };
     if (typeof id !== 'string' || !isValidUUID(id)) return false;
-    if (typeof quantity !== 'number' || isNaN(quantity) || quantity <= 0) return false;
+    if (typeof quantity !== 'number' || !Number.isFinite(quantity) || quantity < 0) return false;
   }
 
   return true;
