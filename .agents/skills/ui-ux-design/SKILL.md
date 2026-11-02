@@ -9,15 +9,14 @@ Use this skill when designing, building, auditing, or refining user interfaces, 
 
 ## 🎨 Core Design Principles
 
+**Source of truth:** [`DESIGN.md`](../../../DESIGN.md) at the repository root defines Pantry's tokens, type roles, surfaces, components, interaction contracts, and documented exceptions. Read it before any UI work. Where this skill and `DESIGN.md` disagree, `DESIGN.md` wins. Read [`PRODUCT.md`](../../../PRODUCT.md) for who the product serves and where it is used (phone in the kitchen, phone at the store, desktop planning).
+
 ### 1. Consistent Theme & Color System
-- **Curated Palette**: Use standard Tailwind CSS surface & primary color variables (`bg-surface-100`, `dark:bg-surface-800`, `text-primary-500`, `border-surface-200`, `dark:border-surface-700`). Never introduce random or ad-hoc inline HEX color strings.
-- **Dark/Light Glassmorphism**: Use `.glass-card` backdrop blur effects for containers, cards, and popups (`bg-white/60 dark:bg-surface-800/60 backdrop-blur-md border border-surface-200/80 dark:border-surface-800/80`).
-- **Semantic Accents**: Use semantic status colors consistently:
-  - `primary` (Orange `#f97316`): Main actions, active navigation, selected options.
-  - `emerald` (Green): Existing stock updates, exact matches, success feedback.
-  - `amber` (Yellow/Gold): Similar matches, warnings, low stock alerts.
-  - `indigo` / `violet`: New item creation, informational badges.
-  - `rose` (Red): Required field indicators (`*`), error feedback, destructive actions.
+- **Curated Palette**: Use design tokens (`bg-surface-100`, `dark:bg-surface-800`, `text-primary-600`, `border-surface-200`, `dark:border-surface-700`). Never introduce ad-hoc inline hex values.
+- **Surfaces**: Use `pantry-card` (`glass`, `sub`, `elevated`) or `.glass-card` / `.sub-card`. Cards are nearly opaque frosted surfaces, not translucent blur panels; depth comes from borders and tone, and only floating overlays cast a visible shadow.
+- **Semantic Accents** (see DESIGN.md → Colors):
+  - `primary` (Ember Orange): primary actions, focus, selection, and current navigation only.
+  - `emerald` / `amber` / `rose`: fresh / expiring / expired stock, warnings, errors, and destructive actions. Never decorative, and always paired with a label or icon.
 
 ### 2. Strict Input & Component Sizing Alignment
 - **Form Control Height Standard**:
@@ -29,16 +28,13 @@ Use this skill when designing, building, auditing, or refining user interfaces, 
   - Ensures label text across adjacent grid columns aligns perfectly on the exact same horizontal baseline regardless of badges, icons, or action links.
 
 ### 3. Modern Minimalism & Visual Hierarchy
-- **Typography & Scale**: Use a clear typographic scale:
-  - `text-xs font-semibold uppercase tracking-wider` for field labels.
-  - `text-sm font-semibold` for input values and option text.
-  - `text-lg font-bold tracking-tight` for card and section titles.
+- **Typography & Scale**: Use the named type roles from DESIGN.md → Typography: `type-page-title`, `type-section-title`, `type-label` (13px medium, natural case — never uppercase tracked labels), `type-meta`, and `type-value`. Body and control text are 14px. Avoid extra-bold headings.
 - **Whitespace & Layout**: Maintain consistent grid gaps (`gap-4` for form fields, `space-y-6` between major section cards). Avoid cramped layouts or uneven margins.
 - **Corner Radius Uniformity**: Use standard `rounded-xl` for form controls/buttons and `rounded-2xl` for outer cards and modal panels.
 
 ### 4. User Ergonomics & Visibility
 - **State Feedback**:
-  - **Read-Only / Inherited Fields**: Remove misleading required `*` indicators. Add explicit badges (e.g., `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20"><i class="pi pi-lock text-[9px]"></i> Inherited</span>`).
+  - **Read-Only / Inherited Fields**: Remove misleading required `*` indicators. Add an explicit badge instead (e.g., `<pantry-badge variant="primary" size="sm" icon="pi pi-lock">Inherited</pantry-badge>`); never hand-roll an inline pill.
   - **Unselected / Pristine States**: Show clear, subtle dashed helper text (`<i class="pi pi-info-circle"></i> Select an ingredient first`).
 - **Contrast & Legibility**: Ensure body text and badge labels pass WCAG AA contrast against both light (`text-surface-700` / `text-surface-900`) and dark (`dark:text-surface-300` / `dark:text-white`) backgrounds.
 
@@ -68,7 +64,7 @@ For every UI task, include this compact report in your completion response:
 ### Design-System Impact Report
 - **Canonical components used:** (e.g. `pantry-search-input`, `pantry-spinner`, `pantry-badge`)
 - **Tokens used or changed:** (e.g. `navy-900`, `primary-600`, `surface-100`)
-- **New variants introduced:** (e.g. none / documented in `docs/design-system.md`)
+- **New variants introduced:** (e.g. none / documented in `DESIGN.md`)
 - **Page-specific overrides:** (e.g. none)
 - **Accessibility states verified:** (e.g. keyboard focus, ARIA labels, light/dark contrast)
 - **Responsive states verified:** (e.g. mobile 375px, desktop 1280px)
@@ -79,7 +75,7 @@ For every UI task, include this compact report in your completion response:
 ---
 
 ## 🛠️ Verification Checklist for UI Changes
-- [ ] Consult `docs/design-system.md` and `docs/design-system-index.md`.
+- [ ] Consult `DESIGN.md` (and `PRODUCT.md` for usage context).
 - [ ] Reuse canonical UI primitives from `@ui`.
 - [ ] Standard button contracts (`.btn-primary`, `.btn-secondary`, `.btn-danger`, `.btn-ghost`, `.btn-icon`) applied.
 - [ ] Grid column label headers wrapped in `<div class="flex items-center justify-between h-6 mb-1.5">` or `<pantry-form-field>`.

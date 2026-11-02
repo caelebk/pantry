@@ -50,4 +50,4 @@ session. Live rendering still requires server/browser access; see
 Next visual checks: desktop and 390px mobile, both themes, long names and labels,
 dropdown/dialog typography, summary values, and native-font differences between
 macOS and Windows. The active prototype's typography contract is documented in
-[the design system](design-system.md).
+[DESIGN.md](../DESIGN.md).

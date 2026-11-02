@@ -1,3 +1,6 @@
+> [!WARNING]
+> ARCHIVED 2026-11-02: superseded by [DESIGN.md](../../DESIGN.md), the single source of truth for Pantry's visual design. Kept for history only; do not follow or update this file.
+
 # Pantry Design System Index (Agent-Readable Map)
 
 **Target Audience:** AI Coding Assistants & Automated Tools  

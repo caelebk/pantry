@@ -3,11 +3,11 @@
  * Design-system guardrails.
  *
  * Fails when forbidden legacy UI patterns reappear in page/component
- * templates. Canonical replacements live in `docs/design-system.md`.
+ * templates. Canonical replacements live in `DESIGN.md`.
  *
  * Documented exceptions are allowlisted below with a reason. Adding to the
  * allowlist requires a matching entry in the docs (see "Requesting an
- * exception" in docs/design-system.md).
+ * exception" in DESIGN.md → Implementation → Documented Exceptions).
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -50,7 +50,7 @@ const RULES = [
   },
 ];
 
-/** file -> ruleId -> reason (must be mirrored in docs/design-system.md) */
+/** file -> ruleId -> reason (must be mirrored in DESIGN.md → Documented Exceptions) */
 const ALLOWLIST = {
   'src/app/pages/inventory/inventory-components/ingredient-category/ingredient-category.component.html':
     {
@@ -128,7 +128,7 @@ for (const file of EXTRA_FILES) {
 if (violations.length) {
   console.error(`\n✖ design-system guardrails: ${violations.length} violation(s)\n`);
   for (const v of violations) console.error('  ' + v);
-  console.error('\nSee docs/design-system.md for canonical patterns and the exception process.');
+  console.error('\nSee DESIGN.md for canonical patterns and the exception process.');
   process.exit(1);
 }
 console.log('✔ design-system guardrails passed');
