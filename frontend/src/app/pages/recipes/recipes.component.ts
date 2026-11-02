@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Recipe } from '@models/recipe.model';
@@ -31,9 +31,7 @@ export type DifficultyFilterOption = 'all' | 'easy' | 'medium' | 'hard';
 
 import { ChangeDetectionStrategy } from '@angular/core';
 
-import { SkeletonModule } from 'primeng/skeleton';
-
-import { BadgeComponent, SearchInputComponent } from '@ui';
+import { EmptyStateComponent, SearchInputComponent, SkeletonComponent } from '@ui';
 
 @Component({
   selector: 'pantry-recipes',
@@ -44,14 +42,21 @@ import { BadgeComponent, SearchInputComponent } from '@ui';
     FormsModule,
     RecipeCardComponent,
     SelectModule,
-    SkeletonModule,
+    SkeletonComponent,
     SearchInputComponent,
-    BadgeComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './recipes.component.html',
+  styleUrl: './recipes.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipesComponent {
+  private readonly transloco = inject(TranslocoService);
+
+  localizedOptions<T>(options: { label: string; value: T }[]): { label: string; value: T }[] {
+    return options.map((option) => ({ ...option, label: this.transloco.translate(option.label) }));
+  }
+
   private readonly recipeService = inject(RecipeService);
   private readonly itemService = inject(ItemService);
   private readonly unitService = inject(UnitService);
@@ -80,6 +85,7 @@ export class RecipesComponent {
   availableBaseMap = new Map<string, number>();
 
   isLoading = false;
+  loadFailed = false;
   private filteredRecipesCache: Recipe[] | null = null;
   private filteredRecipesCacheKey = '';
   private filteredRecipesCacheSource: Recipe[] | null = null;
@@ -92,31 +98,32 @@ export class RecipesComponent {
   maxTimeFilter = 0; // 0 means any time
 
   sortOptions: { label: string; value: RecipeSortOption }[] = [
-    { label: 'Available', value: 'availability' },
-    { label: 'Priority', value: 'priority' },
-    { label: 'Quickest', value: 'time-asc' },
-    { label: 'Longest', value: 'time-desc' },
-    { label: 'Easy First', value: 'difficulty-asc' },
-    { label: 'Hard First', value: 'difficulty-desc' },
-    { label: 'Name (A-Z)', value: 'name-asc' },
+    { label: 'recipes.browse.mostAvailable', value: 'availability' },
+    { label: 'recipes.browse.useSoon', value: 'priority' },
+    { label: 'recipes.browse.quickest', value: 'time-asc' },
+    { label: 'recipes.browse.longest', value: 'time-desc' },
+    { label: 'recipes.browse.easyFirst', value: 'difficulty-asc' },
+    { label: 'recipes.browse.hardFirst', value: 'difficulty-desc' },
+    { label: 'recipes.browse.nameSort', value: 'name-asc' },
   ];
 
   difficultyOptions: { label: string; value: DifficultyFilterOption }[] = [
-    { label: 'All', value: 'all' },
-    { label: 'Easy', value: 'easy' },
-    { label: 'Medium', value: 'medium' },
-    { label: 'Hard', value: 'hard' },
+    { label: 'recipes.browse.all', value: 'all' },
+    { label: 'recipes.browse.easy', value: 'easy' },
+    { label: 'recipes.browse.medium', value: 'medium' },
+    { label: 'recipes.browse.hard', value: 'hard' },
   ];
 
   timeOptions: { label: string; value: number }[] = [
-    { label: 'Any', value: 0 },
-    { label: '< 15m', value: 15 },
-    { label: '< 30m', value: 30 },
-    { label: '< 60m', value: 60 },
+    { label: 'recipes.browse.anyTime', value: 0 },
+    { label: 'recipes.browse.time15', value: 15 },
+    { label: 'recipes.browse.time30', value: 30 },
+    { label: 'recipes.browse.time60', value: 60 },
   ];
 
   loadData(): void {
     this.isLoading = true;
+    this.loadFailed = false;
     forkJoin({
       recipes: this.recipeService.getRecipes(),
       items: this.itemService.getItems(),
@@ -136,6 +143,7 @@ export class RecipesComponent {
         this.cdr.markForCheck();
       },
       error: (err) => {
+        this.loadFailed = true;
         console.error('Failed to load recipe data', err);
         this.isLoading = false;
         this.cdr.markForCheck();
@@ -384,18 +392,5 @@ export class RecipesComponent {
 
   goToCreateRecipe(): void {
     this.router.navigate(['/recipes/new']);
-  }
-
-  onDeleteRecipe(id: string): void {
-    this.recipeService.deleteRecipe(id).subscribe({
-      next: () => {
-        this.toastService.showSuccess('Recipe deleted successfully.', 'Recipe Deleted');
-        this.loadData();
-      },
-      error: (err) => {
-        console.error('Failed to delete recipe', err);
-        this.toastService.showError('Failed to delete recipe. Please try again.', 'Error');
-      },
-    });
   }
 }

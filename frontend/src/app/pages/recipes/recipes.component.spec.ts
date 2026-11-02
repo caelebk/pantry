@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { Recipe } from '@models/recipe.model';
 import { of } from 'rxjs';
@@ -45,7 +45,6 @@ describe('RecipesComponent', () => {
     mockUnitService = { getUnits: vi.fn().mockReturnValue(of([])) };
     mockIngredientService = { getIngredients: vi.fn().mockReturnValue(of([])) };
     mockToastService = { showSuccess: vi.fn(), showError: vi.fn() };
-    mockRouter = { navigate: vi.fn() };
 
     TestBed.configureTestingModule({
       imports: [
@@ -62,11 +61,13 @@ describe('RecipesComponent', () => {
         { provide: UnitService, useValue: mockUnitService },
         { provide: IngredientService, useValue: mockIngredientService },
         { provide: ToastService, useValue: mockToastService },
-        { provide: Router, useValue: mockRouter },
+        provideRouter([]),
         { provide: AuthService, useValue: { activeKitchen: vi.fn().mockReturnValue('kitchen-1') } },
       ],
     });
 
+    mockRouter = TestBed.inject(Router);
+    vi.spyOn(mockRouter as Router, 'navigate').mockResolvedValue(true);
     fixture = TestBed.createComponent(RecipesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
