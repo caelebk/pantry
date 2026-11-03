@@ -514,7 +514,10 @@ export class InventoryComponent implements OnInit {
     });
 
     this.ingredientService.getIngredients().subscribe({
-      next: (ingredients) => (this.ingredients = ingredients),
+      next: (ingredients) => {
+        this.ingredients = ingredients;
+        this.cdr.markForCheck();
+      },
     });
 
     this.ingredientGroupService.getIngredientGroups().subscribe({

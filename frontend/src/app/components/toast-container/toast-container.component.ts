@@ -16,7 +16,7 @@ import { Toast, ToastService } from '../../services/toast.service';
           [attr.aria-live]="toast.type === 'error' ? 'assertive' : 'polite'"
           aria-atomic="true"
           [class]="
-            'toast-card pointer-events-auto rounded-2xl p-4 shadow-2xl border transition-all duration-300 transform translate-y-0 flex items-start gap-3 ' +
+            'toast-card pointer-events-auto rounded-xl p-4 shadow-xl border transition-all duration-300 transform translate-y-0 flex items-start gap-3 ' +
             getToastClass(toast.type)
           ">
           <!-- Icon -->
@@ -156,13 +156,13 @@ export class ToastContainerComponent implements OnInit {
   getToastClass(type: string): string {
     switch (type) {
       case 'success':
-        return 'glass-card border-emerald-500/30 text-emerald-950 dark:text-emerald-100';
+        return 'border-emerald-500/30 text-emerald-950 dark:text-emerald-100';
       case 'error':
-        return 'glass-card border-rose-500/30 text-rose-950 dark:text-rose-100';
+        return 'border-rose-500/30 text-rose-950 dark:text-rose-100';
       case 'warning':
-        return 'glass-card border-amber-500/30 text-amber-950 dark:text-amber-100';
+        return 'border-amber-500/30 text-amber-950 dark:text-amber-100';
       default:
-        return 'glass-card border-primary-500/30 text-primary-950 dark:text-primary-100';
+        return 'border-primary-500/30 text-primary-950 dark:text-primary-100';
     }
   }
 

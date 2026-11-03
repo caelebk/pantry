@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { IngredientItem, Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { ShoppingItem } from '@models/shopping-list.model';
-import { Unit, UnitType } from '@models/unit.model';
+import { Unit } from '@models/unit.model';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService, ItemSimilarityCandidate } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
@@ -14,6 +15,7 @@ import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
 import { BadgeComponent } from '@ui';
+import { convertQuantity } from '@utility/itemUtility/UnitConversion';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
@@ -42,6 +44,8 @@ export interface RestockDraftItem {
   bestMatch: ItemSimilarityCandidate | null;
   matchTier: 'exact' | 'similar' | 'none';
   isUnitLocked?: boolean;
+  sourceQuantity: number;
+  sourceUnit: string;
 }
 
 @Component({
@@ -54,6 +58,7 @@ export interface RestockDraftItem {
     DatePickerModule,
     InputNumberModule,
     BadgeComponent,
+    TranslocoPipe,
   ],
   templateUrl: './restock-review-page.component.html',
   styleUrl: './restock-review-page.component.scss',
@@ -70,22 +75,6 @@ export class RestockReviewPageComponent implements OnInit {
 
   readonly Math = Math;
 
-  readonly defaultLocations = ['Fridge', 'Freezer', 'Pantry Shelf', 'Spice Cabinet', 'Countertop'];
-  readonly defaultUnits = [
-    'g',
-    'kg',
-    'ml',
-    'L',
-    'pcs',
-    'pack',
-    'can',
-    'bottle',
-    'box',
-    'Gram',
-    'Liters',
-    'Pcs',
-  ];
-
   readonly draftItems = signal<RestockDraftItem[]>([]);
   readonly isSubmitting = signal<boolean>(false);
 
@@ -94,22 +83,29 @@ export class RestockReviewPageComponent implements OnInit {
   readonly availableUnits = signal<Unit[]>([]);
   readonly availableLocations = signal<Location[]>([]);
 
-  readonly unitsOptions = signal<string[]>(this.defaultUnits);
-  readonly locationsOptions = signal<string[]>(this.defaultLocations);
+  readonly unitsOptions = signal<string[]>([]);
+  readonly locationsOptions = signal<string[]>([]);
   private readonly selectedRestockIds = signal<Set<string> | null>(null);
+  private draftsInitialised = false;
 
   constructor() {
+    const ids = this.route?.snapshot.queryParamMap.get('ids');
+    if (ids) this.selectedRestockIds.set(new Set(ids.split(',').filter(Boolean)));
+
     effect(() => {
+      const hasLoaded = this.shoppingListService.hasLoaded();
       const shoppingItems = this.shoppingListService.items();
-      if (shoppingItems && this.draftItems().length === 0) {
-        this.initDrafts(shoppingItems);
+      if (hasLoaded && !this.draftsInitialised) {
+        untracked(() => this.initDrafts(shoppingItems));
       }
     });
   }
 
   ngOnInit(): void {
-    const ids = this.route?.snapshot.queryParamMap.get('ids');
-    if (ids) this.selectedRestockIds.set(new Set(ids.split(',').filter(Boolean)));
+    if (!this.shoppingListService.hasLoaded() && !this.shoppingListService.isLoading()) {
+      this.shoppingListService.loadItemsFromBackend();
+    }
+
     this.itemService
       .getIngredientItems()
       .pipe(catchError(() => of([])))
@@ -136,14 +132,8 @@ export class RestockReviewPageComponent implements OnInit {
       .subscribe((units) => {
         if (units && units.length > 0) {
           this.availableUnits.set(units);
-          const names = Array.from(
-            new Set([
-              ...units.map((u) => u.shortName),
-              ...units.map((u) => u.name),
-              ...this.defaultUnits,
-            ]),
-          );
-          this.unitsOptions.set(names);
+          this.unitsOptions.set(Array.from(new Set(units.map((u) => u.shortName))));
+          this.reevaluateSimilarityForDrafts();
         }
       });
 
@@ -153,22 +143,23 @@ export class RestockReviewPageComponent implements OnInit {
       .subscribe((locs) => {
         if (locs && locs.length > 0) {
           this.availableLocations.set(locs);
-          const names = Array.from(new Set([...locs.map((l) => l.name), ...this.defaultLocations]));
-          this.locationsOptions.set(names);
+          this.locationsOptions.set(Array.from(new Set(locs.map((l) => l.name))));
+          this.draftItems().forEach((draft) => {
+            if (!draft.location)
+              draft.location = this.getDefaultLocationForCategory(draft.category);
+          });
+          this.refreshDrafts();
         }
       });
-
-    const existingItems = this.shoppingListService.items();
-    if (existingItems.length > 0) {
-      this.initDrafts(existingItems);
-    }
   }
 
   private initDrafts(sourceList: ShoppingItem[]): void {
+    this.draftsInitialised = true;
     const scoped = this.selectedRestockIds();
-    const eligibleList = scoped ? sourceList.filter((item) => scoped.has(item.id)) : sourceList;
-    const boughtItems = eligibleList.filter((i) => i.checked);
-    const sourceItems: ShoppingItem[] = boughtItems.length > 0 ? boughtItems : eligibleList;
+    // Explicit ids are the user's intent (select mode), so unbought items count too.
+    const sourceItems: ShoppingItem[] = scoped
+      ? sourceList.filter((item) => scoped.has(item.id))
+      : sourceList.filter((i) => i.checked);
 
     const defaultExp = new Date(Date.now() + 14 * 86400000);
 
@@ -190,6 +181,8 @@ export class RestockReviewPageComponent implements OnInit {
         bestMatch: null,
         matchTier: 'none',
         isUnitLocked: false,
+        sourceQuantity: item.quantity || 1,
+        sourceUnit: item.unit || 'pcs',
       };
 
       this.fetchBackendSimilarityForDraft(draft);
@@ -232,7 +225,13 @@ export class RestockReviewPageComponent implements OnInit {
           draft.actionMode = 'create';
           this.updateUnitLockForDraft(draft, null);
         }
+        this.refreshDrafts();
       });
+  }
+
+  /** Drafts are mutated in place by async callbacks; publish a new array so OnPush views re-render. */
+  private refreshDrafts(): void {
+    this.draftItems.update((items) => [...items]);
   }
 
   private updateUnitLockForDraft(draft: RestockDraftItem, item: IngredientItem | null): void {
@@ -245,15 +244,45 @@ export class RestockReviewPageComponent implements OnInit {
       linkedIng = ingredients.find((i) => i.name.toLowerCase() === draft.name.trim().toLowerCase());
     }
 
-    if (linkedIng?.defaultUnit) {
-      draft.unit = linkedIng.defaultUnit.shortName || linkedIng.defaultUnit.name;
-      draft.isUnitLocked = true;
-    } else if (item?.unit) {
-      draft.unit = item.unit.shortName || item.unit.name;
-      draft.isUnitLocked = false;
+    const sourceUnit = this.findUnit(draft.sourceUnit);
+    const currentUnit = this.findUnit(draft.unit);
+    const targetUnit = linkedIng?.defaultUnit ?? item?.unit;
+    // Convert from what the draft holds now, so a quantity the user typed survives a mode toggle.
+    const converted = targetUnit ? convertQuantity(draft.quantity, currentUnit, targetUnit) : null;
+
+    if (targetUnit && converted !== null) {
+      draft.quantity = Math.round(converted * 1000) / 1000;
+      draft.unit = targetUnit.shortName || targetUnit.name;
+      draft.isUnitLocked = !!linkedIng?.defaultUnit;
     } else {
+      // No usable target unit: fall back to the shopping list unit, converting only if it differs.
+      const sameAsSource =
+        currentUnit && sourceUnit
+          ? currentUnit.id === sourceUnit.id
+          : draft.unit === draft.sourceUnit;
+      if (!sameAsSource) {
+        const back = convertQuantity(draft.quantity, currentUnit, sourceUnit);
+        draft.quantity = back !== null ? Math.round(back * 1000) / 1000 : draft.sourceQuantity;
+      }
+      draft.unit = sourceUnit ? sourceUnit.shortName || sourceUnit.name : draft.sourceUnit;
       draft.isUnitLocked = false;
     }
+
+    if (item && draft.actionMode === 'update' && this.getMergeableQuantity(draft, item) === null) {
+      draft.actionMode = 'create';
+    }
+  }
+
+  private findUnit(name: string): Unit | undefined {
+    const lower = (name || '').trim().toLowerCase();
+    return this.availableUnits().find(
+      (u) => u.shortName.toLowerCase() === lower || u.name.toLowerCase() === lower,
+    );
+  }
+
+  private getMergeableQuantity(draft: RestockDraftItem, matched: IngredientItem): number | null {
+    const converted = convertQuantity(draft.quantity || 0, this.findUnit(draft.unit), matched.unit);
+    return converted === null ? null : matched.quantity + converted;
   }
 
   private reevaluateSimilarityForDrafts(): void {
@@ -269,9 +298,6 @@ export class RestockReviewPageComponent implements OnInit {
     if (matched) {
       if (matched.location?.name) {
         draft.location = matched.location.name;
-      }
-      if (matched.unit?.shortName || matched.unit?.name) {
-        draft.unit = matched.unit.shortName || matched.unit.name;
       }
       this.updateUnitLockForDraft(draft, matched);
     }
@@ -313,12 +339,23 @@ export class RestockReviewPageComponent implements OnInit {
   getMergedQuantity(draft: RestockDraftItem): number {
     if (draft.actionMode === 'update') {
       const matched = this.getMatchedItem(draft);
-      return (matched ? matched.quantity : 0) + (draft.quantity || 0);
+      const merged = matched ? this.getMergeableQuantity(draft, matched) : null;
+      return merged ?? (draft.quantity || 0);
     }
     return draft.quantity || 0;
   }
 
+  getMergedUnitLabel(draft: RestockDraftItem): string {
+    const matched = this.getMatchedItem(draft);
+    if (matched && this.getMergeableQuantity(draft, matched) !== null) {
+      return matched.unit.shortName || matched.unit.name;
+    }
+    return draft.unit;
+  }
+
   getDefaultLocationForCategory(category: string): string {
+    const names = this.availableLocations().map((l) => l.name);
+    const find = (wanted: string) => names.find((n) => n.toLowerCase() === wanted);
     const cat = (category || '').toLowerCase();
     if (
       cat.includes('dairy') ||
@@ -326,12 +363,12 @@ export class RestockReviewPageComponent implements OnInit {
       cat.includes('meat') ||
       cat.includes('seafood')
     ) {
-      return 'Fridge';
+      return find('fridge') ?? find('pantry') ?? names[0] ?? '';
     }
     if (cat.includes('frozen')) {
-      return 'Freezer';
+      return find('freezer') ?? find('pantry') ?? names[0] ?? '';
     }
-    return 'Pantry Shelf';
+    return find('pantry') ?? names[0] ?? '';
   }
 
   setExpirationPreset(draft: RestockDraftItem, daysToAdd: number): void {
@@ -341,7 +378,9 @@ export class RestockReviewPageComponent implements OnInit {
   }
 
   toggleAll(checked: boolean): void {
-    this.draftItems.update((items) => items.map((i) => ({ ...i, included: checked })));
+    // Mutate in place: pending similarity callbacks hold references to these draft objects.
+    this.draftItems().forEach((draft) => (draft.included = checked));
+    this.refreshDrafts();
   }
 
   get selectedCount(): number {
@@ -367,44 +406,37 @@ export class RestockReviewPageComponent implements OnInit {
       return;
     }
 
+    const locsList = this.availableLocations();
+    const resolved = itemsToRestock.map((draft) => ({
+      draft,
+      unit: this.findUnit(draft.unit),
+      location: locsList.find((l) => l.name.toLowerCase() === (draft.location || '').toLowerCase()),
+    }));
+    if (resolved.some((r) => !r.unit || !r.location)) {
+      this.toastService.showWarning('Please choose a unit and storage location for every item');
+      return;
+    }
+
     this.isSubmitting.set(true);
 
-    const unitsList = this.availableUnits();
-    const locsList = this.availableLocations();
     let updatedCount = 0;
     let createdCount = 0;
 
-    const restockRequests = itemsToRestock.map((draft) => {
-      const matchedUnit: Unit = unitsList.find(
-        (u) =>
-          u.shortName.toLowerCase() === draft.unit.toLowerCase() ||
-          u.name.toLowerCase() === draft.unit.toLowerCase(),
-      ) || {
-        id: 1,
-        name: draft.unit,
-        shortName: draft.unit,
-        type: UnitType.Count,
-        toBaseFactor: 1,
-      };
-
-      const matchedLoc: Location = locsList.find(
-        (l) => l.name.toLowerCase() === draft.location.toLowerCase(),
-      ) || {
-        id: 1,
-        name: draft.location,
-      };
+    const restockRequests = resolved.map(({ draft, unit, location }) => {
+      const matchedUnit = unit as Unit;
+      const matchedLoc = location as Location;
 
       if (draft.actionMode === 'update' && draft.matchedItemId) {
         const existingItem = this.getMatchedItem(draft);
-        if (existingItem) {
+        const mergedQty = existingItem ? this.getMergeableQuantity(draft, existingItem) : null;
+        if (existingItem && mergedQty !== null) {
           updatedCount++;
-          const mergedQty = existingItem.quantity + (draft.quantity || 0);
           const updatedItem: Item = {
             id: existingItem.id,
             ingredientId: existingItem.ingredientId,
             name: draft.name,
             quantity: mergedQty,
-            unit: matchedUnit,
+            unit: existingItem.unit,
             purchaseDate: new Date(),
             expirationDate:
               draft.expirationDate instanceof Date

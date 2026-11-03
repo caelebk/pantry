@@ -6,6 +6,13 @@ import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Recipe, RecipeIngredientDTO } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
+import {
+  isIngredientAvailable,
+  RecipeAvailability,
+  recipeAvailability,
+  RecipeShortage,
+  recipeShortages,
+} from '@utility/recipe-stock';
 
 @Component({
   selector: 'pantry-recipe-card',
@@ -64,57 +71,20 @@ export class RecipeCardComponent {
   }
 
   getIngredientAvailability(ing: RecipeIngredientDTO): { isAvailable: boolean } {
-    const unit = ing.unitId ? this.unitMap.get(ing.unitId) : null;
-    const factor = unit?.toBaseFactor || 1;
-    const requiredBase = ing.quantity * factor;
-    const availableBase = this.availableBaseMap.get(ing.ingredientId) || 0;
-    return { isAvailable: availableBase >= requiredBase - 1e-6 };
+    return { isAvailable: isIngredientAvailable(ing, this.unitMap, this.availableBaseMap) };
   }
 
-  get ingredientStats(): {
-    availableCount: number;
-    totalCount: number;
-    percentage: number;
-    isFullyMakeable: boolean;
-  } {
-    const ingredients = this.recipe.ingredients || [];
-    const availableCount = ingredients.filter(
-      (ing) => this.getIngredientAvailability(ing).isAvailable,
-    ).length;
-    return {
-      availableCount,
-      totalCount: ingredients.length,
-      percentage: ingredients.length
-        ? Math.round((availableCount / ingredients.length) * 100)
-        : 100,
-      isFullyMakeable: availableCount === ingredients.length,
-    };
+  get ingredientStats(): RecipeAvailability {
+    return recipeAvailability(this.recipe.ingredients || [], this.unitMap, this.availableBaseMap);
   }
 
-  get shortages(): {
-    ingredientId: string;
-    name: string;
-    reason: 'absent' | 'insufficient' | 'expired';
-  }[] {
-    const now = new Date().getTime();
-    return (this.recipe.ingredients || [])
-      .filter((ing) => !this.getIngredientAvailability(ing).isAvailable)
-      .map((ing) => {
-        const available = this.availableBaseMap.get(ing.ingredientId) || 0;
-        const expiredStock = this.pantryItems.some(
-          (item) =>
-            item.ingredientId === ing.ingredientId &&
-            item.quantity > 0 &&
-            item.expirationDate &&
-            new Date(item.expirationDate).getTime() < now,
-        );
-        const reason: 'absent' | 'insufficient' | 'expired' =
-          available > 0 ? 'insufficient' : expiredStock ? 'expired' : 'absent';
-        return {
-          ingredientId: ing.ingredientId,
-          name: this.ingredientMap.get(ing.ingredientId)?.name || ing.ingredientId,
-          reason,
-        };
-      });
+  get shortages(): RecipeShortage[] {
+    return recipeShortages(
+      this.recipe.ingredients || [],
+      this.pantryItems,
+      this.unitMap,
+      this.ingredientMap,
+      this.availableBaseMap,
+    );
   }
 }

@@ -91,7 +91,7 @@ export class HomeComponent {
         next: ({ items, recipes, locations }) => {
           this.items.set(items);
           this.expiredItems.set(items.filter((item) => isExpired(item)));
-          this.soonToExpireItems.set(items.filter((item) => isExpiringSoon(item, 7)));
+          this.soonToExpireItems.set(items.filter((item) => isExpiringSoon(item)));
           this.recipes.set(recipes);
           this.locations.set(locations);
           this.isLoading.set(false);
@@ -111,12 +111,12 @@ export class HomeComponent {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
-            this.toastService.showSuccess(`Removed "${item.name}"`, 'Item successfully removed.');
+            this.toastService.showSuccess(`Removed "${item.name}".`, 'Item Removed');
             this.fetchData();
           },
           error: (err) => {
             console.error('Failed to remove item:', err);
-            this.toastService.showError('Error', 'Failed to remove item.');
+            this.toastService.showError('Failed to remove item.', 'Error');
           },
         });
     }

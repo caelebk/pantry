@@ -437,19 +437,50 @@ describe('SidebarComponent', () => {
     expect(compiled.textContent).toContain('Gourmet Studio');
   });
 
-  it('should display skillet pantry logo in kitchen dropdown list', () => {
+  it('renders the mobile header logo as a link to Home', () => {
     const fixture = TestBed.createComponent(SidebarComponent);
-    const comp = fixture.componentInstance;
-    comp.authService.userKitchens.set([
-      { id: 'k-1', name: 'Kitchen A', role: 'owner', isPrimary: true, memberCount: 1 },
-      { id: 'k-2', name: 'Kitchen B', role: 'editor', isPrimary: false, memberCount: 2 },
-    ]);
-    comp.kitchenMenuOpen.set(true);
     fixture.detectChanges();
+    const logo = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
+      'div.sticky a[href="/home"]',
+    );
+    expect(logo).not.toBeNull();
+    expect(logo?.getAttribute('aria-label')).toBe('nav.home');
+    expect(logo?.querySelector('pantry-skillet-icon')).not.toBeNull();
+  });
 
-    const compiled = fixture.nativeElement as HTMLElement;
-    const skilletIcons = compiled.querySelectorAll('.material-symbols-outlined');
-    const skilletTexts = Array.from(skilletIcons).map((el) => el.textContent?.trim());
-    expect(skilletTexts.filter((t) => t === 'skillet').length).toBeGreaterThanOrEqual(3);
+  it('orders the inventory sub-navigation by tier', () => {
+    const fixture = TestBed.createComponent(SidebarComponent);
+    fixture.detectChanges();
+    const hrefs = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLAnchorElement>(
+        '.sidebar-subnav-item',
+      ),
+    ).map((link) => link.getAttribute('href'));
+    expect(hrefs).toEqual(['/inventory/groups', '/inventory/ingredients', '/inventory/items']);
+  });
+
+  it('keeps shell headings out of the page outline and labels the nav landmark', () => {
+    const fixture = TestBed.createComponent(SidebarComponent);
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('h1')).toBeNull();
+    expect(element.querySelector('nav')?.getAttribute('aria-label')).toBe('sidebar.navigation');
+    // The only Material Symbols glyph in the shell is the skillet brand mark.
+    element
+      .querySelectorAll('.material-symbols-outlined')
+      .forEach((glyph) => expect(glyph.textContent?.trim()).toBe('skillet'));
+  });
+
+  it('collapses the rail at tablet widths and expands it again on desktop', () => {
+    const fixture = TestBed.createComponent(SidebarComponent);
+    const sidebar = fixture.componentInstance;
+    const originalWidth = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 800 });
+    sidebar.onResize();
+    expect(sidebar.isCollapsed()).toBe(true);
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1280 });
+    sidebar.onResize();
+    expect(sidebar.isCollapsed()).toBe(false);
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: originalWidth });
   });
 });

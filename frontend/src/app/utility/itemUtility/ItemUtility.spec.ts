@@ -1,6 +1,7 @@
 import { Item } from '@models/items.model';
 import { UnitType } from '@models/unit.model';
 import {
+  EXPIRING_SOON_DAYS,
   getItemTimeStatus,
   isExpired,
   isExpiringSoon,
@@ -60,7 +61,15 @@ describe('ItemUtility', () => {
   });
 
   describe('isExpiringSoon', () => {
-    it('should return true if expiring within 14 days and not already expired', () => {
+    it('uses a seven day window by default', () => {
+      expect(EXPIRING_SOON_DAYS).toBe(7);
+      expect(isExpiringSoon(createMockItem(2, 6))).toBeTrue();
+      expect(isExpiringSoon(createMockItem(2, 10))).toBeFalse();
+      expect(getItemTimeStatus(createMockItem(2, 6)).isClose).toBeTrue();
+      expect(getItemTimeStatus(createMockItem(2, 10)).isClose).toBeFalse();
+    });
+
+    it('should return true if expiring within 7 days and not already expired', () => {
       expect(isExpiringSoon(createMockItem(2, 5))).toBeTrue();
     });
 
@@ -83,6 +92,16 @@ describe('ItemUtility', () => {
   });
 
   describe('sortItemsByExpirationDate', () => {
+    it('does not mutate the source array', () => {
+      const first = createMockItem(1, 20);
+      const second = createMockItem(1, 2);
+      const source = [first, second];
+      const sorted = sortItemsByExpirationDate(source);
+      expect(sorted).not.toBe(source);
+      expect(source).toEqual([first, second]);
+      expect(sorted[0]).toBe(second);
+    });
+
     it('should sort items in ascending order of expiration date with no-expiration items at the end', () => {
       const itemFar = createMockItem(1, 20);
       const itemNear = createMockItem(1, 2);

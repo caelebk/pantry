@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
@@ -13,7 +14,8 @@ import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
+import { vi } from 'vitest';
 import { AuthService } from '../../core/services/auth.service';
 import { InventoryComponent } from './inventory.component';
 
@@ -24,6 +26,7 @@ describe('InventoryComponent', () => {
   let fixture: ComponentFixture<InventoryComponent>;
   let mockItemService: jasmine.SpyObj<ItemService>;
   let mockShoppingListService: jasmine.SpyObj<ShoppingListService>;
+  let ingredients$: Subject<Ingredient[]>;
 
   const mockItem1: Item = {
     id: '123e4567-e89b-12d3-a456-426614174001',
@@ -59,6 +62,7 @@ describe('InventoryComponent', () => {
   };
 
   beforeEach(async () => {
+    ingredients$ = new Subject<Ingredient[]>();
     mockItemService = jasmine.createSpyObj('ItemService', [
       'getItems',
       'addItem',
@@ -90,7 +94,7 @@ describe('InventoryComponent', () => {
         provideHttpClientTesting(),
         { provide: ItemService, useValue: mockItemService },
         { provide: ShoppingListService, useValue: mockShoppingListService },
-        { provide: IngredientService, useValue: { getIngredients: () => of([]) } },
+        { provide: IngredientService, useValue: { getIngredients: () => ingredients$ } },
         { provide: IngredientGroupService, useValue: { getIngredientGroups: () => of([]) } },
         { provide: IngredientCategoryService, useValue: { getIngredientCategories: () => of([]) } },
         { provide: LocationService, useValue: { getLocations: () => of([]) } },
@@ -120,6 +124,13 @@ describe('InventoryComponent', () => {
     expect(component.totalItemsCount).toBe(3);
     expect(component.outOfStockItemsCount).toBe(1);
     expect(component.expiredItemsCount).toBe(1);
+  });
+
+  it('marks the view for check when ingredients arrive after the items', () => {
+    const markForCheck = vi.spyOn(component['cdr'], 'markForCheck');
+    ingredients$.next([{ id: 'ing-1', name: 'Milk' } as Ingredient]);
+    expect(markForCheck).toHaveBeenCalled();
+    expect(component.getIngredientName('ing-1')).toBe('Milk');
   });
 
   it('should toggle item row selection correctly', () => {

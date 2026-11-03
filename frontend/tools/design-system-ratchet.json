@@ -1,0 +1,133 @@
+{
+  "src/app/pages/auth/login/login.component.ts": {
+    "no-font-extrabold": 1,
+    "no-pi-spin": 1
+  },
+  "src/app/pages/auth/signup/signup.component.ts": {
+    "no-font-extrabold": 2,
+    "no-pi-spin": 1,
+    "no-tiny-arbitrary-text": 7
+  },
+  "src/app/pages/home/home-components/location-overview-container/location-overview-container.component.html": {
+    "no-tiny-arbitrary-text": 1
+  },
+  "src/app/pages/home/home.component.html": {
+    "no-tailwind-red": 3
+  },
+  "src/app/pages/home/home.component.ts": {
+    "no-native-confirm": 1
+  },
+  "src/app/pages/inventory/add-ingredient-group-page/add-ingredient-group-page.component.html": {
+    "no-tailwind-red": 2,
+    "no-tiny-arbitrary-text": 1
+  },
+  "src/app/pages/inventory/add-ingredient-page/add-ingredient-page.component.html": {
+    "no-tailwind-red": 1
+  },
+  "src/app/pages/inventory/edit-ingredient-group-page/edit-ingredient-group-page.component.html": {
+    "no-tailwind-red": 1
+  },
+  "src/app/pages/inventory/edit-ingredient-page/edit-ingredient-page.component.html": {
+    "no-tailwind-red": 1
+  },
+  "src/app/pages/inventory/ingredient-categories-page/ingredient-categories-page.component.html": {
+    "no-page-root-wrapper": 1,
+    "no-tiny-arbitrary-text": 1,
+    "no-uppercase-tracking-label": 1
+  },
+  "src/app/pages/inventory/ingredient-detail-page/ingredient-detail-page.component.ts": {
+    "no-native-confirm": 1
+  },
+  "src/app/pages/inventory/ingredients-page/ingredients-page.component.html": {
+    "no-tiny-arbitrary-text": 8
+  },
+  "src/app/pages/inventory/ingredients-page/ingredients-page.component.ts": {
+    "no-native-confirm": 1
+  },
+  "src/app/pages/inventory/inventory-components/add-item-form/add-item-form.component.html": {
+    "no-tiny-arbitrary-text": 1
+  },
+  "src/app/pages/inventory/inventory-components/edit-item-form/edit-item-form.component.html": {
+    "no-tiny-arbitrary-text": 3,
+    "no-uppercase-tracking-label": 4
+  },
+  "src/app/pages/inventory/inventory-components/ingredient-group/ingredient-group.component.html": {
+    "no-tiny-arbitrary-text": 3
+  },
+  "src/app/pages/inventory/inventory-components/ingredient-row/ingredient-row.component.html": {
+    "no-tiny-arbitrary-text": 1
+  },
+  "src/app/pages/inventory/inventory-components/item-card/item-card.component.html": {
+    "no-font-extrabold": 2,
+    "no-tiny-arbitrary-text": 11,
+    "no-uppercase-tracking-label": 4
+  },
+  "src/app/pages/inventory/inventory-components/item-editor/item-editor.component.html": {
+    "no-forced-height": 2
+  },
+  "src/app/pages/inventory/inventory.component.html": {
+    "no-pi-spin": 2,
+    "no-tiny-arbitrary-text": 8
+  },
+  "src/app/pages/inventory/unit-reconciliation-page/unit-reconciliation-page.component.html": {
+    "no-tailwind-red": 2,
+    "no-uppercase-tracking-label": 4
+  },
+  "src/app/pages/meal-planner/daily-focus/daily-focus.component.html": {
+    "no-font-extrabold": 4,
+    "no-tiny-arbitrary-text": 1,
+    "no-uppercase-tracking-label": 4
+  },
+  "src/app/pages/meal-planner/plan-meal-page/plan-meal-page.component.html": {
+    "no-font-extrabold": 4,
+    "no-tiny-arbitrary-text": 1
+  },
+  "src/app/pages/meal-planner/weekly-view/weekly-view.component.html": {
+    "no-font-extrabold": 4,
+    "no-tiny-arbitrary-text": 4,
+    "no-uppercase-tracking-label": 1
+  },
+  "src/app/pages/profile/profile.component.ts": {
+    "no-native-select": 2,
+    "no-pi-spin": 4,
+    "no-tailwind-red": 1,
+    "no-uppercase-tracking-label": 1
+  },
+  "src/app/pages/recipes/recipe-components/add-recipe-form/add-recipe-form.component.html": {
+    "no-font-extrabold": 1,
+    "no-forced-height": 3,
+    "no-pi-spin": 1,
+    "no-tiny-arbitrary-text": 3,
+    "no-uppercase-tracking-label": 1
+  },
+  "src/app/pages/recipes/recipe-detail/recipe-detail.component.html": {
+    "no-font-extrabold": 4,
+    "no-text-gray": 2,
+    "no-tiny-arbitrary-text": 3,
+    "no-uppercase-tracking-label": 4
+  },
+  "src/app/pages/recipes/recipe-detail/recipe-detail.component.ts": {
+    "no-native-confirm": 1
+  },
+  "src/app/pages/shopping-list/add-item-page/add-item-page.component.html": {
+    "no-forced-height": 4
+  },
+  "src/app/pages/shopping-list/restock-review-page/restock-review-page.component.html": {
+    "no-font-extrabold": 3,
+    "no-forced-height": 4,
+    "no-tiny-arbitrary-text": 4
+  },
+  "src/app/pages/shopping-list/shopping-list.component.html": {
+    "no-font-extrabold": 4,
+    "no-tiny-arbitrary-text": 11,
+    "no-uppercase-tracking-label": 4
+  },
+  "src/app/pages/shopping-list/shopping-list.component.ts": {
+    "no-native-confirm": 1
+  },
+  "src/app/pages/shopping-list/stores-page/stores-page.component.html": {
+    "no-forced-height": 2,
+    "no-tiny-arbitrary-text": 1,
+    "no-uppercase-tracking-label": 1
+  }
+}

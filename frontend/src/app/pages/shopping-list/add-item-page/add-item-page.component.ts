@@ -17,6 +17,7 @@ import { FormFieldComponent } from '@ui';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
+import { forkJoin, tap } from 'rxjs';
 
 @Component({
   selector: 'pantry-add-shopping-item-page',
@@ -50,7 +51,7 @@ export class AddShoppingItemPageComponent implements OnInit {
   readonly selectedStore = signal<Store | null>(null);
   readonly editingId = signal<string | null>(null);
   readonly name = signal('');
-  readonly quantity = signal(1);
+  readonly quantity = signal<number | null>(1);
   readonly estimatedPrice = signal<number | null>(null);
   readonly storeName = signal('');
   readonly storeId = signal<string | undefined>(undefined);
@@ -66,22 +67,32 @@ export class AddShoppingItemPageComponent implements OnInit {
   readonly duplicateItem = signal<ShoppingItem | null>(null);
 
   ngOnInit(): void {
-    this.ingredientService.getIngredients().subscribe((items) => this.ingredients.set(items));
+    const ingredients$ = this.ingredientService
+      .getIngredients()
+      .pipe(tap((items) => this.ingredients.set(items)));
+    const stores$ = this.storeService
+      .getStores()
+      .pipe(tap((stores) => this.stores.set(stores.filter((store) => !store.archived))));
     this.ingredientGroupService
       .getIngredientGroups()
       .subscribe((groups) => this.groups.set(groups));
     this.unitService.getUnits().subscribe((units) => this.units.set(units));
-    this.storeService
-      .getStores()
-      .subscribe((stores) => this.stores.set(stores.filter((store) => !store.archived)));
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.editingId.set(id);
-      this.shoppingListService.getItem(id).subscribe({
-        next: (item) => this.populate(item),
+      // Populate only once the item and the option lists have all arrived.
+      forkJoin({
+        item: this.shoppingListService.getItem(id),
+        ingredients: ingredients$,
+        stores: stores$,
+      }).subscribe({
+        next: ({ item }) => this.populate(item),
         error: () => this.error.set('Shopping item could not be loaded.'),
       });
+    } else {
+      ingredients$.subscribe();
+      stores$.subscribe();
     }
   }
 
@@ -170,7 +181,8 @@ export class AddShoppingItemPageComponent implements OnInit {
       this.error.set('Select an ingredient before saving.');
       return;
     }
-    if (this.quantity() <= 0) {
+    const quantity = this.quantity();
+    if (quantity === null || !(quantity > 0)) {
       this.error.set('Quantity must be greater than zero.');
       return;
     }
@@ -186,7 +198,7 @@ export class AddShoppingItemPageComponent implements OnInit {
         ingredient.ingredientGroup?.ingredientCategoryName ||
         ingredient.ingredientGroup?.name ||
         'General',
-      quantity: this.quantity(),
+      quantity,
       unit: ingredient.defaultUnit?.shortName || 'pcs',
       estimatedPrice: this.estimatedPrice() ?? 0,
       storeName: store?.name || '',
@@ -224,7 +236,7 @@ export class AddShoppingItemPageComponent implements OnInit {
     const item = this.duplicateItem();
     if (!item) return;
     this.shoppingListService
-      .updateItem(item.id, { quantity: item.quantity + this.quantity() })
+      .updateItem(item.id, { quantity: item.quantity + (this.quantity() ?? 0) })
       .subscribe({
         next: () => this.router.navigate(['/shopping-list']),
         error: () => this.error.set('Unable to update the existing shopping item.'),

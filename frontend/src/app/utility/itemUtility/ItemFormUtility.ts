@@ -4,6 +4,9 @@ import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
 
+/** Smallest quantity allowed; matches the three decimal places the editor accepts. */
+export const MIN_QUANTITY = 0.001;
+
 export interface ItemFormControls {
   name: FormControl<string>;
   ingredient: FormControl<Ingredient | null>;
@@ -27,7 +30,7 @@ export function createItemForm(): FormGroup<ItemFormControls> {
     }),
     quantity: new FormControl<number>(1, {
       nonNullable: true,
-      validators: [Validators.required, Validators.min(1)],
+      validators: [Validators.required, Validators.min(MIN_QUANTITY)],
     }),
     unit: new FormControl<Unit | null>(null, {
       validators: Validators.required,

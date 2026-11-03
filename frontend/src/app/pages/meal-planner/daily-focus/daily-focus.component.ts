@@ -57,12 +57,13 @@ export class DailyFocusComponent {
     return sumKnownMetadata(this.dayMeals().map((meal) => meal.prepTimeMinutes));
   });
 
+  readonly stockKnown = computed(() => this.mealPlannerService.missingByMealId() !== null);
+
   readonly missingIngredients = computed(() => {
     const list: string[] = [];
     this.dayMeals().forEach((m) => {
-      if (m.missingIngredients) {
-        list.push(...m.missingIngredients);
-      }
+      if (m.cooked) return;
+      list.push(...(this.mealPlannerService.missingFor(m) ?? []));
     });
     return Array.from(new Set(list));
   });
@@ -81,6 +82,12 @@ export class DailyFocusComponent {
 
   removeMeal(id: string): void {
     this.mealPlannerService.removeMealPlan(id);
+  }
+
+  /** Cooked meals need nothing more, matching the weekly view and the header sync count. */
+  missingFor(meal: PlannedMeal): string[] | null {
+    if (meal.cooked) return [];
+    return this.mealPlannerService.missingFor(meal);
   }
 
   addMissingToShoppingList(meal: PlannedMeal): void {

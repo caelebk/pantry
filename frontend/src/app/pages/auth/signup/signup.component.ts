@@ -208,7 +208,7 @@ import { ToastService } from '../../../services/toast.service';
                 <div
                   id="fullName-error"
                   role="alert"
-                  class="text-xs text-rose-500 dark:text-rose-400 mt-1">
+                  class="text-xs text-rose-600 dark:text-rose-400 mt-1">
                   Full name is required.
                 </div>
               }
@@ -236,7 +236,7 @@ import { ToastService } from '../../../services/toast.service';
                 <div
                   id="username-error"
                   role="alert"
-                  class="text-xs text-rose-500 dark:text-rose-400 mt-1">
+                  class="text-xs text-rose-600 dark:text-rose-400 mt-1">
                   Username must be 3-30 letters, numbers, or underscores.
                 </div>
               }
@@ -264,7 +264,7 @@ import { ToastService } from '../../../services/toast.service';
                 <div
                   id="email-error"
                   role="alert"
-                  class="text-xs text-rose-500 dark:text-rose-400 mt-1">
+                  class="text-xs text-rose-600 dark:text-rose-400 mt-1">
                   Please enter a valid email address.
                 </div>
               }
@@ -403,7 +403,7 @@ import { ToastService } from '../../../services/toast.service';
                 <div
                   id="password-error"
                   role="alert"
-                  class="text-xs text-rose-500 dark:text-rose-400 mt-1">
+                  class="text-xs text-rose-600 dark:text-rose-400 mt-1">
                   Please meet all password requirements above.
                 </div>
               }
@@ -428,7 +428,7 @@ import { ToastService } from '../../../services/toast.service';
             <span>{{ 'auth.alreadyHaveAccount' | transloco }}</span>
             <a
               routerLink="/auth/login"
-              class="ml-1.5 font-bold text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+              class="ml-1.5 font-bold text-primary-700 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 transition-colors">
               {{ 'auth.signInNow' | transloco }}
             </a>
           </div>

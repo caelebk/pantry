@@ -177,7 +177,7 @@
                         [routerLink]="['/inventory/groups', group.id, 'edit']"
                         [queryParams]="{ from: 'groups' }"
                         (click)="$event.stopPropagation()"
-                        class="btn-icon-sm text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+                        class="btn-icon-sm shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
                         [attr.aria-label]="
                           'inventory.taxonomy.editGroupNamed' | transloco: { name: group.name }
                         "

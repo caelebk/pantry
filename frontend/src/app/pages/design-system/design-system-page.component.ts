@@ -1,13 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
+  AlertComponent,
   BadgeComponent,
   CardComponent,
+  ConfirmDialogComponent,
+  ConfirmDialogService,
   EmptyStateComponent,
   FormFieldComponent,
   SearchInputComponent,
+  SegmentedControlComponent,
+  SegmentedOption,
   SkeletonComponent,
   SpinnerComponent,
 } from '@ui';
@@ -26,11 +31,14 @@ import { SelectModule } from 'primeng/select';
     CommonModule,
     FormsModule,
     TranslocoModule,
+    AlertComponent,
     BadgeComponent,
     CardComponent,
+    ConfirmDialogComponent,
     EmptyStateComponent,
     FormFieldComponent,
     SearchInputComponent,
+    SegmentedControlComponent,
     SkeletonComponent,
     SpinnerComponent,
     SelectModule,
@@ -207,9 +215,83 @@ import { SelectModule } from 'primeng/select';
         <pantry-search-input placeholder="Search ingredients…" />
       </div>
     </pantry-card>
+    <!-- Segmented control -->
+    <pantry-card>
+      <h2 class="type-section-title text-surface-600 dark:text-surface-300 mb-4">
+        Segmented Control
+      </h2>
+      <pantry-segmented-control
+        ariaLabel="Storage view"
+        [options]="viewOptions"
+        [(value)]="selectedView" />
+      <p class="type-meta text-surface-500 dark:text-surface-400 mt-3">
+        Selected: {{ selectedView() }}. Use the arrow keys to move.
+      </p>
+    </pantry-card>
+
+    <!-- Alerts -->
+    <pantry-card>
+      <h2 class="type-section-title text-surface-600 dark:text-surface-300 mb-4">Alerts</h2>
+      <div class="space-y-3 max-w-xl">
+        <pantry-alert variant="info" title="Info"
+          >Your pantry syncs every few minutes.</pantry-alert
+        >
+        <pantry-alert variant="success" title="Saved">Milk was added to the fridge.</pantry-alert>
+        <pantry-alert variant="warning">Three items expire within two days.</pantry-alert>
+        @if (!dangerDismissed()) {
+          <pantry-alert
+            variant="danger"
+            title="Could not save"
+            [dismissible]="true"
+            dismissLabel="Dismiss error"
+            (dismissed)="dangerDismissed.set(true)">
+            Check your connection and try again.
+          </pantry-alert>
+        }
+      </div>
+    </pantry-card>
+
+    <!-- Confirm dialog -->
+    <pantry-card>
+      <h2 class="type-section-title text-surface-600 dark:text-surface-300 mb-4">Confirm Dialog</h2>
+      <div class="flex flex-wrap items-center gap-3">
+        <button type="button" class="btn-secondary" (click)="openConfirm(false)">Confirm</button>
+        <button type="button" class="btn-danger" (click)="openConfirm(true)">
+          Destructive confirm
+        </button>
+      </div>
+      @if (confirmResult() !== null) {
+        <p class="type-meta text-surface-500 dark:text-surface-400 mt-3">
+          Last result: {{ confirmResult() ? 'accepted' : 'cancelled' }}
+        </p>
+      }
+      <pantry-confirm-dialog />
+    </pantry-card>
   </div>`,
 })
 export class DesignSystemPageComponent {
   readonly units = ['g', 'kg', 'ml', 'l', 'pcs'];
   readonly selectedUnit = signal<string>('g');
+
+  readonly viewOptions: SegmentedOption[] = [
+    { value: 'all', label: 'All' },
+    { value: 'fridge', label: 'Fridge', icon: 'pi pi-box' },
+    { value: 'pantry', label: 'Pantry' },
+  ];
+  readonly selectedView = signal<string | undefined>('all');
+  readonly dangerDismissed = signal(false);
+
+  private readonly confirmDialog = inject(ConfirmDialogService);
+  readonly confirmResult = signal<boolean | null>(null);
+
+  async openConfirm(destructive: boolean): Promise<void> {
+    this.confirmResult.set(
+      await this.confirmDialog.confirm({
+        title: destructive ? 'Remove item?' : 'Save changes?',
+        message: destructive ? 'This item will be removed from your pantry.' : 'Apply your edits.',
+        acceptLabel: destructive ? 'Remove' : 'Save',
+        destructive,
+      }),
+    );
+  }
 }

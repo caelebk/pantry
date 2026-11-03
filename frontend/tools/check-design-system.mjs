@@ -8,9 +8,24 @@
  * Documented exceptions are allowlisted below with a reason. Adding to the
  * allowlist requires a matching entry in the docs (see "Requesting an
  * exception" in DESIGN.md → Implementation → Documented Exceptions).
+ *
+ * Two kinds of allowance:
+ *  - ALLOWLIST (below): documented, permanent exceptions per file and rule.
+ *  - RATCHET rules (`ratchet: true`): known legacy offenders are stored as
+ *    per-file counts in `tools/design-system-ratchet.json`. A file may never
+ *    exceed its stored count; new files start at zero. When you fix offenders,
+ *    lower the counts.
+ *
+ * Regenerate the ratchet counts from the current tree (run after fixing
+ * offenders; never to hide new ones):
+ *   npm run lint:ratchet:update        # this script + check-i18n.mjs
+ *   node tools/check-design-system.mjs --update   # this script only
  */
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
+
+const RATCHET_FILE = 'tools/design-system-ratchet.json';
+const UPDATE = process.argv.includes('--update');
 
 const ROOTS = ['src/app/pages', 'src/app/components'];
 // Standalone files outside ROOTS that must also comply (app shell).
@@ -20,7 +35,8 @@ const EXCLUDED_DIRS = new Set(['ui']); // canonical primitives may use raw patte
 const RULES = [
   {
     id: 'no-native-select',
-    pattern: /<select[\s>]/,
+    ratchet: true, // profile.component.ts was missed by the old regex
+    pattern: /<select(\s|>|$)/m,
     message: 'Raw <select> — use <p-select appendTo="body"> (dropdown contract).',
   },
   {
@@ -48,6 +64,87 @@ const RULES = [
     pattern: /#141[Cc]2[Ee]|#ea580c|#0d1322|#8b5cf6/i,
     message: 'Hardcoded brand hex — use tokens (bg-navy-900, bg-primary-600, bg-violet-500, ...).',
   },
+
+  // --- Ratchet rules: legacy offenders are counted in RATCHET_FILE ---
+  {
+    id: 'no-pi-spin',
+    ratchet: true,
+    pattern: /\bpi-spin\b/,
+    message:
+      'pi-spin spinner — use <pantry-skeleton> or the documented loading pattern (DESIGN.md → Feedback & Loading).',
+  },
+  {
+    id: 'no-native-confirm',
+    ratchet: true,
+    pattern: /(^|[^\w.])(window\.)?confirm\(/,
+    message:
+      'Native confirm() — use <p-confirmDialog> or <pantry-confirm-dialog> from @ui (DESIGN.md → Confirmation).',
+  },
+  {
+    id: 'no-font-extrabold',
+    ratchet: true,
+    pattern: /\bfont-extrabold\b/,
+    message:
+      'font-extrabold — use font-semibold / font-bold per the type scale (DESIGN.md → Typography).',
+  },
+  {
+    id: 'no-uppercase-tracking-label',
+    ratchet: true,
+    pattern: /\buppercase\b.*\btracking-|\btracking-.*\buppercase\b/,
+    message: 'All-caps tracked micro label — use sentence case (D25, DESIGN.md → Typography).',
+  },
+  {
+    id: 'no-tiny-arbitrary-text',
+    ratchet: true,
+    pattern: /\btext-\[(9|10|11)px\]/,
+    message: 'Arbitrary tiny text (9–11px) — use text-xs or larger (DESIGN.md → Typography).',
+  },
+  {
+    id: 'no-tailwind-red',
+    ratchet: true,
+    pattern:
+      /\b(?:[a-z-]+:)*(?:bg|text|border|ring|from|to|via|fill|stroke|divide|outline|decoration|shadow)-red-\d{2,3}/,
+    message: 'Tailwind red-* colour — use rose-* or status tokens (DESIGN.md → Colors).',
+  },
+  {
+    id: 'no-text-gray',
+    ratchet: true,
+    pattern: /\btext-gray-\d{2,3}/,
+    message: 'text-gray-* — use the slate/surface text tokens (DESIGN.md → Colors).',
+  },
+  {
+    id: 'no-forced-height',
+    ratchet: true,
+    pattern: /!h-\[/,
+    message:
+      'Forced height (!h-[...]) — use the primitive size variants or a token (DESIGN.md → Sizing).',
+  },
+];
+
+/**
+ * Whole-file rules (need more than one line of context).
+ * `check(content)` returns the 1-based line numbers of offences.
+ */
+const FILE_RULES = [
+  {
+    id: 'no-page-root-wrapper',
+    ratchet: true,
+    appliesTo: (rel) => rel.endsWith('.component.html') && !rel.startsWith('src/app/components/'),
+    message:
+      'Page root adds its own max-w-*/mx-auto container — the shell already provides it; use page-layout / page-header (DESIGN.md → Layout).',
+    check(content) {
+      // First real element of the template (skip comments / control flow / ng-container).
+      const stripped = content.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, ' '));
+      const re = /<(?!ng-|\/)([a-zA-Z][\w-]*)((?:"[^"]*"|'[^']*'|[^>"'])*)>/g;
+      const m = re.exec(stripped);
+      if (!m) return [];
+      const cls = /\bclass="([^"]*)"/.exec(m[2])?.[1] ?? '';
+      if (/\bmax-w-/.test(cls) && /\bmx-auto\b/.test(cls)) {
+        return [stripped.slice(0, m.index).split('\n').length];
+      }
+      return [];
+    },
+  },
 ];
 
 /** file -> ruleId -> reason (must be mirrored in DESIGN.md → Documented Exceptions) */
@@ -61,10 +158,6 @@ const ALLOWLIST = {
     'no-hardcoded-brand-hex':
       'Data-driven group colors; #8b5cf6 is the fallback for missing data values. See docs "Documented exceptions".',
   },
-  'src/app/app.component.html': {
-    'no-hardcoded-brand-hex':
-      'Decorative hero SVG artwork uses literal gradient stops (#38bdf8/#60a5fa/#3b82f6/#0ea5e9) that have no Tailwind token equivalent in SVG attributes. See docs "Documented exceptions".',
-  },
   'src/app/pages/inventory/inventory.component.html': {
     'no-hand-rolled-skeleton':
       'Live-status indicator dot (2px pulse dot next to pagination summary), not a loading skeleton.',
@@ -72,10 +165,6 @@ const ALLOWLIST = {
   'src/app/pages/inventory/ingredients-page/ingredients-page.component.html': {
     'no-hand-rolled-skeleton':
       'Live-status indicator dot (2px pulse dot next to pagination summary), not a loading skeleton.',
-  },
-  'src/app/pages/recipes/recipe-components/add-recipe-form/add-recipe-form.component.html': {
-    'no-inline-badge-pill':
-      'Difficulty segmented selector branches (bordered state buttons, not pills).',
   },
   'src/app/pages/meal-planner/daily-focus/daily-focus.component.html': {
     'no-inline-badge-pill': 'Status icon tile ternary (40px tile, not a badge pill).',
@@ -97,20 +186,35 @@ function* walk(dir) {
   }
 }
 
+const loadRatchet = () => {
+  try {
+    return JSON.parse(readFileSync(RATCHET_FILE, 'utf8'));
+  } catch {
+    return {};
+  }
+};
+const ratchet = loadRatchet();
 const violations = [];
+const counts = {}; // rel -> ruleId -> [line numbers] (ratchet rules only)
+const record = (rel, rule, line) => {
+  ((counts[rel] ??= {})[rule.id] ??= []).push(line);
+};
 const scanFile = (file) => {
   const rel = relative('.', file).split('\\').join('/');
-  const lines = readFileSync(file, 'utf8').split('\n');
-  lines.forEach((line, i) => {
+  const content = readFileSync(file, 'utf8');
+  content.split('\n').forEach((line, i) => {
     for (const rule of RULES) {
-      if (rule.pattern.test(line)) {
-        const allowed = ALLOWLIST[rel]?.[rule.id];
-        if (!allowed) {
-          violations.push(`${rel}:${i + 1} [${rule.id}] ${rule.message}`);
-        }
+      if (!rule.pattern.test(line)) continue;
+      if (rule.ratchet) record(rel, rule, i + 1);
+      else if (!ALLOWLIST[rel]?.[rule.id]) {
+        violations.push(`${rel}:${i + 1} [${rule.id}] ${rule.message}`);
       }
     }
   });
+  for (const rule of FILE_RULES) {
+    if (!rule.appliesTo(rel)) continue;
+    for (const line of rule.check(content)) record(rel, rule, line);
+  }
 };
 for (const root of ROOTS) {
   for (const file of walk(root)) {
@@ -122,6 +226,31 @@ for (const file of EXTRA_FILES) {
     scanFile(file);
   } catch {
     // Optional file — skip when absent.
+  }
+}
+
+const ALL_RATCHET_RULES = [...RULES, ...FILE_RULES].filter((r) => r.ratchet);
+if (UPDATE) {
+  const out = {};
+  for (const rel of Object.keys(counts).sort()) {
+    for (const id of Object.keys(counts[rel]).sort()) {
+      (out[rel] ??= {})[id] = counts[rel][id].length;
+    }
+  }
+  writeFileSync(RATCHET_FILE, JSON.stringify(out, null, 2) + '\n');
+  console.log(`✔ wrote ${RATCHET_FILE}`);
+  process.exit(0);
+}
+for (const rule of ALL_RATCHET_RULES) {
+  for (const rel of Object.keys(counts)) {
+    const lines = counts[rel][rule.id];
+    if (!lines) continue;
+    const allowed = ratchet[rel]?.[rule.id] ?? 0;
+    if (lines.length > allowed) {
+      violations.push(
+        `${rel}:${lines.join(',')} [${rule.id}] ${rule.message} (${lines.length} found, ${allowed} allowed by ratchet)`,
+      );
+    }
   }
 }
 

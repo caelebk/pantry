@@ -74,7 +74,7 @@ export class IngredientDetailPageComponent {
   readonly stock = computed(() => {
     const totals = new Map<number, { quantity: number; unit: string }>();
     for (const item of this.items()) {
-      if (item.quantity <= 0) continue;
+      if (item.quantity <= 0 || isExpired(item)) continue;
       const total = totals.get(item.unit.id) ?? {
         quantity: 0,
         unit: item.unit.shortName || item.unit.name,
@@ -142,7 +142,9 @@ export class IngredientDetailPageComponent {
         },
         error: (error: unknown) => {
           this.state.set(
-            error instanceof HttpErrorResponse && error.status === 404 ? 'not-found' : 'error',
+            error instanceof HttpErrorResponse && (error.status === 404 || error.status === 400)
+              ? 'not-found'
+              : 'error',
           );
         },
       });

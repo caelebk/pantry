@@ -18,7 +18,7 @@ import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import { CreateRecipeDTO } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
-import { FormFieldComponent } from '@ui';
+import { FormFieldComponent, SkeletonComponent } from '@ui';
 import { IngredientGroupService } from '../../../../services/inventory/ingredient-group.service';
 import { IngredientService } from '../../../../services/inventory/ingredient.service';
 import { UnitService } from '../../../../services/inventory/unit.service';
@@ -60,6 +60,7 @@ import { TextareaModule } from 'primeng/textarea';
     DialogModule,
     ButtonModule,
     FormFieldComponent,
+    SkeletonComponent,
   ],
   templateUrl: './add-recipe-form.component.html',
 })
@@ -89,6 +90,9 @@ export class AddRecipeFormComponent implements OnInit {
 
   isEditMode = false;
   editingRecipeId: string | null = null;
+  // Edit mode renders a skeleton until the recipe is patched, so create defaults never show
+  // and the user cannot edit a form that is about to be overwritten.
+  isLoadingRecipe = signal<boolean>(false);
 
   name = '';
   description = '';
@@ -96,9 +100,6 @@ export class AddRecipeFormComponent implements OnInit {
   prepTime = 10;
   cookTime = 20;
   difficultyId = 1;
-
-  tagInput = '';
-  tags: string[] = [];
 
   recipeIngredients: FormIngredientRow[] = [];
   recipeSteps: FormStepRow[] = [
@@ -137,6 +138,7 @@ export class AddRecipeFormComponent implements OnInit {
     if (id) {
       this.isEditMode = true;
       this.editingRecipeId = id;
+      this.isLoadingRecipe.set(true);
     }
 
     this.ingredientGroupService.getIngredientGroups().subscribe({
@@ -165,6 +167,11 @@ export class AddRecipeFormComponent implements OnInit {
       error: (err) => {
         console.error('Failed to load ingredients', err);
         this.toastService.showError('Unable to load ingredients from server.', 'Network Error');
+        if (this.isEditMode) {
+          // Without ingredients the edit form cannot show the recipe, so leave the endless skeleton.
+          this.isLoadingRecipe.set(false);
+          this.router.navigate(['/recipes']);
+        }
       },
     });
   }
@@ -178,7 +185,6 @@ export class AddRecipeFormComponent implements OnInit {
         this.prepTime = recipe.prepTime || 0;
         this.cookTime = recipe.cookTime || 0;
         this.difficultyId = recipe.difficultyId || 1;
-        this.tags = recipe.tags ? [...recipe.tags] : [];
 
         if (recipe.ingredients && recipe.ingredients.length > 0) {
           this.recipeIngredients = recipe.ingredients.map((ing) => ({
@@ -202,6 +208,7 @@ export class AddRecipeFormComponent implements OnInit {
         } else {
           this.recipeSteps = [{ id: crypto.randomUUID(), instructionText: '', timerSeconds: null }];
         }
+        this.isLoadingRecipe.set(false);
       },
       error: (err) => {
         console.error('Failed to load recipe for edit', err);
@@ -221,22 +228,6 @@ export class AddRecipeFormComponent implements OnInit {
     } else {
       this.router.navigate(['/recipes']);
     }
-  }
-
-  // --- Tag Handlers ---
-  addTag(event?: Event): void {
-    if (event) {
-      event.preventDefault();
-    }
-    const cleanTag = this.tagInput.trim();
-    if (cleanTag && !this.tags.includes(cleanTag)) {
-      this.tags.push(cleanTag);
-    }
-    this.tagInput = '';
-  }
-
-  removeTag(index: number): void {
-    this.tags.splice(index, 1);
   }
 
   // --- Ingredient Row Handlers ---

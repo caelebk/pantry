@@ -1,5 +1,8 @@
 import { Item, ItemTimeStatus } from '@models/items.model';
 
+/** Number of days ahead that counts as "expiring soon" across the app. */
+export const EXPIRING_SOON_DAYS = 7;
+
 export function isExpired(item: Item): boolean {
   if (!item.expirationDate || item.quantity <= 0) return false;
   return new Date(item.expirationDate) <= new Date();
@@ -9,7 +12,7 @@ export function isOutOfStock(item: Item): boolean {
   return item.quantity <= 0;
 }
 
-export function isExpiringSoon(item: Item, days = 14): boolean {
+export function isExpiringSoon(item: Item, days = EXPIRING_SOON_DAYS): boolean {
   if (!item.expirationDate || item.quantity <= 0) return false;
   const currentDate = new Date();
   const thresholdDate = new Date();
@@ -32,7 +35,7 @@ export function itemProgress(item: Item): number {
 }
 
 export function sortItemsByExpirationDate(items: Item[]): Item[] {
-  return items.sort((a: Item, b: Item) => {
+  return [...items].sort((a: Item, b: Item) => {
     if (!a.expirationDate && !b.expirationDate) return 0;
     if (!a.expirationDate) return 1;
     if (!b.expirationDate) return -1;
@@ -78,8 +81,8 @@ export function getItemTimeStatus(item: Item): ItemTimeStatus {
 
   const label = getTimeDifferenceString(now, expirationDate);
   const isExpired = diffMs < 0;
-  // Assuming "close" is within 14 days (matching isExpiringSoon utility default)
-  const isClose = !isExpired && diffMs <= 1209600000;
+  // "Close" matches the isExpiringSoon window
+  const isClose = !isExpired && diffMs <= EXPIRING_SOON_DAYS * 24 * 60 * 60 * 1000;
 
   return { label, isExpired, isClose };
 }

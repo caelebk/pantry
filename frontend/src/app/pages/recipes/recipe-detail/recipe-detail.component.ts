@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -13,6 +14,7 @@ import { RecipeService } from '../../../services/recipe.service';
 
 import { SubstitutionSuggestion } from '@models/inventory.models';
 import { Item } from '@models/items.model';
+import { buildAvailableBaseMap, isIngredientAvailable } from '@utility/recipe-stock';
 
 import { ChangeDetectionStrategy } from '@angular/core';
 import { BadgeComponent, BadgeVariant, EmptyStateComponent, SpinnerComponent } from '@ui';
@@ -44,6 +46,7 @@ export class RecipeDetailComponent implements OnInit {
 
   recipe: Recipe | null = null;
   isLoading = true;
+  loadFailed = false;
 
   ingredientMap = new Map<string, Ingredient>();
   unitMap = new Map<number, Unit>();
@@ -89,7 +92,18 @@ export class RecipeDetailComponent implements OnInit {
       return;
     }
 
+    this.load(id);
+  }
+
+  retryLoad(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) this.load(id);
+  }
+
+  private load(id: string): void {
     this.isLoading = true;
+    this.loadFailed = false;
+    this.recipe = null;
     forkJoin({
       recipe: this.recipeService.getRecipeById(id),
       ingredients: this.ingredientService.getIngredients(),
@@ -102,24 +116,17 @@ export class RecipeDetailComponent implements OnInit {
         this.unitMap = new Map(units.map((u) => [u.id, u]));
         this.pantryItems = items;
 
-        const map = new Map<string, number>();
-        const now = new Date();
-        for (const item of items) {
-          if (item.ingredientId) {
-            if (item.expirationDate && new Date(item.expirationDate) < now) {
-              continue;
-            }
-            const factor = item.unit?.toBaseFactor || 1;
-            const baseQty = item.quantity * factor;
-            map.set(item.ingredientId, (map.get(item.ingredientId) || 0) + baseQty);
-          }
-        }
-        this.availableBaseMap = map;
+        this.availableBaseMap = buildAvailableBaseMap(items);
         this.isLoading = false;
         this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load recipe details', err);
+        // Only a missing or malformed recipe id is "not found"; anything else is a load error.
+        this.loadFailed = !(
+          err instanceof HttpErrorResponse &&
+          (err.status === 404 || err.status === 400)
+        );
         this.isLoading = false;
         this.cdr.markForCheck();
       },
@@ -128,41 +135,11 @@ export class RecipeDetailComponent implements OnInit {
 
   onIngredientClick(event: Event, ing: { ingredientId: string }): void {
     event.stopPropagation();
-    const ingredientObj = this.ingredientMap.get(ing.ingredientId);
-    const ingredientName = ingredientObj?.name || ing.ingredientId;
-
-    // Search pantry items matching ingredientId or ingredient name
-    const matchingItems = this.pantryItems.filter(
-      (item) =>
-        item.ingredientId === ing.ingredientId ||
-        (ingredientName && item.name.toLowerCase().includes(ingredientName.toLowerCase())),
-    );
-
-    if (matchingItems.length === 1) {
-      // 1 item in inventory -> go directly to edit page
-      this.router.navigate(['/inventory', matchingItems[0].id, 'edit']);
-    } else {
-      // Multiple or 0 items -> go to inventory search
-      this.router.navigate(['/inventory'], { queryParams: { search: ingredientName } });
-    }
+    this.router.navigate(['/inventory/ingredients', ing.ingredientId]);
   }
 
-  loadRecipe(id: string): void {
-    this.isLoading = true;
-    this.recipeService.getRecipeById(id).subscribe({
-      next: (r) => {
-        this.recipe = r;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Failed to load recipe details', err);
-        this.isLoading = false;
-      },
-    });
-  }
-
-  get difficultyText(): string {
-    if (!this.recipe) return '';
+  get difficultyText(): string | null {
+    if (!this.recipe) return null;
     if (this.recipe.difficulty) return this.recipe.difficulty;
     switch (this.recipe.difficultyId) {
       case 1:
@@ -172,12 +149,12 @@ export class RecipeDetailComponent implements OnInit {
       case 3:
         return 'Hard';
       default:
-        return 'Easy';
+        return null;
     }
   }
 
   get difficultyVariant(): BadgeVariant {
-    const text = this.difficultyText.toLowerCase();
+    const text = (this.difficultyText ?? '').toLowerCase();
     if (text.includes('easy')) {
       return 'fresh';
     } else if (text.includes('medium')) {
@@ -206,12 +183,8 @@ export class RecipeDetailComponent implements OnInit {
   }): {
     isAvailable: boolean;
   } {
-    const unit = ing.unitId ? this.unitMap.get(ing.unitId) : null;
-    const factor = unit?.toBaseFactor || 1;
-    const requiredBase = ing.quantity * factor;
-    const availableBase = this.availableBaseMap.get(ing.ingredientId) || 0;
     return {
-      isAvailable: availableBase >= requiredBase - 1e-6,
+      isAvailable: isIngredientAvailable(ing, this.unitMap, this.availableBaseMap),
     };
   }
 

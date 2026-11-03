@@ -1,20 +1,17 @@
-<div class="max-w-3xl mx-auto space-y-6 pb-12">
-  <div class="flex items-center gap-3">
-    <button
-      (click)="goBack()"
-      type="button"
-      [attr.aria-label]="'shoppingList.form.cancel' | transloco"
-      class="btn-icon">
-      <i class="pi pi-arrow-left text-sm"></i>
-    </button>
+<div class="page-layout page-layout--form">
+  <header class="page-header">
     <div>
+      <button (click)="goBack()" type="button" class="btn-ghost hover:!bg-transparent mb-2">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        <span>{{ 'nav.back' | transloco }}</span>
+      </button>
       <h1 class="type-page-title text-surface-900 dark:text-white">
         {{
           (editingId() ? 'shoppingList.form.editTitle' : 'shoppingList.form.addTitle') | transloco
         }}
       </h1>
     </div>
-  </div>
+  </header>
 
   @if (error()) {
     <div
@@ -154,9 +151,12 @@
         <p-inputnumber
           inputId="quantity"
           [ngModel]="quantity()"
-          (ngModelChange)="quantity.set($event || 1)"
+          (ngModelChange)="quantity.set($event)"
           name="quantity"
-          [min]="1"
+          [min]="0"
+          [minFractionDigits]="0"
+          [maxFractionDigits]="3"
+          [required]="true"
           [showButtons]="true"
           styleClass="w-full"
           inputStyleClass="w-full !h-[42px] !rounded-xl"></p-inputnumber>

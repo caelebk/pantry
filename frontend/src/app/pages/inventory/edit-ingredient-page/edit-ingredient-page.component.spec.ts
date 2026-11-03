@@ -186,4 +186,13 @@ describe('EditIngredientPageComponent', () => {
     component.onCancel();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients']);
   });
+
+  it('sends an explicit null group when the ingredient group is cleared', () => {
+    component.ingredientForm.patchValue({ ingredientGroup: null });
+    component.onSubmit();
+    expect(mockIngredientService.updateIngredient).toHaveBeenCalledWith(
+      'ing-99',
+      jasmine.objectContaining({ ingredientGroupId: null }),
+    );
+  });
 });

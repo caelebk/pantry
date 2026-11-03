@@ -115,7 +115,7 @@ export class EditIngredientPageComponent implements OnInit {
             this.ingredientService
               .updateIngredient(id, {
                 name: val.name,
-                ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
+                ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : null,
               })
               .subscribe({
                 next: () => {
@@ -140,7 +140,7 @@ export class EditIngredientPageComponent implements OnInit {
             this.ingredientService
               .updateIngredient(id, {
                 name: val.name,
-                ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
+                ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : null,
                 defaultUnitId: newUnitId,
               })
               .subscribe({
@@ -165,7 +165,7 @@ export class EditIngredientPageComponent implements OnInit {
       this.ingredientService
         .updateIngredient(id, {
           name: val.name,
-          ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
+          ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : null,
           defaultUnitId: newUnitId,
         })
         .subscribe({

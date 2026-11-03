@@ -1,15 +1,21 @@
 import { HttpClient } from '@angular/common/http';
-import { effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
 import { ApiResponse } from '@models/http.model';
 import { Ingredient } from '@models/ingredient.model';
+import { IngredientItem } from '@models/items.model';
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
-import { Recipe, RecipeIngredientDTO } from '@models/recipe.model';
+import { Recipe } from '@models/recipe.model';
+import { Unit } from '@models/unit.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
 import { recipeTotalTime } from '@utility/recipe-metadata';
-import { of } from 'rxjs';
+import { buildAvailableBaseMap, recipeShortages } from '@utility/recipe-stock';
+import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../core/services/auth.service';
 import { IngredientService } from './inventory/ingredient.service';
+import { ItemService } from './inventory/item.service';
+import { UnitService } from './inventory/unit.service';
+import { RecipeService } from './recipe.service';
 import { ShoppingListService } from './shopping-list.service';
 import { ToastService } from './toast.service';
 
@@ -22,6 +28,9 @@ export class MealPlannerService {
   private readonly toastService = inject(ToastService);
   private readonly authService = inject(AuthService);
   private readonly ingredientService = inject(IngredientService, { optional: true });
+  private readonly recipeService = inject(RecipeService);
+  private readonly itemService = inject(ItemService);
+  private readonly unitService = inject(UnitService);
   private readonly apiUrl = '/api/v1/meal-plans';
 
   readonly days: DayOfWeek[] = [
@@ -39,13 +48,103 @@ export class MealPlannerService {
   readonly isLoading = signal(false);
   readonly hasLoaded = signal(false);
 
+  private readonly stockSignal = signal<{
+    recipes: Recipe[];
+    items: IngredientItem[];
+    units: Unit[];
+    ingredients: Ingredient[];
+  } | null>(null);
+  readonly stockFailed = signal(false);
+  /** Sorted missing recipe ids that already triggered a stock reload, to avoid reload loops. */
+  private reloadedForMissingKey = '';
+
+  /**
+   * Missing ingredients per planned meal id, computed from the recipe and current stock.
+   * `null` until recipes and stock are loaded; a meal is absent when its recipe is unknown.
+   */
+  readonly missingByMealId = computed(() => {
+    const stock = this.stockSignal();
+    if (!stock) return null;
+    const unitMap = new Map(stock.units.map((u) => [u.id, u]));
+    const ingredientMap = new Map(stock.ingredients.map((i) => [i.id, i]));
+    const recipeMap = new Map(stock.recipes.map((r) => [r.id, r]));
+    const availableBaseMap = buildAvailableBaseMap(stock.items);
+
+    const result = new Map<string, { ingredientId: string; name: string }[]>();
+    for (const meal of this.mealsSignal()) {
+      const recipe = recipeMap.get(meal.recipeId);
+      if (!recipe) continue;
+      const missing = recipeShortages(
+        recipe.ingredients || [],
+        stock.items,
+        unitMap,
+        ingredientMap,
+        availableBaseMap,
+      ).map(({ ingredientId, name }) => ({ ingredientId, name }));
+      result.set(meal.id, missing);
+    }
+    return result;
+  });
+
   constructor() {
     effect(() => {
       const activeKitchen = this.authService.activeKitchen();
       if (activeKitchen) {
         this.loadMealsFromBackend();
+        this.loadStock();
       }
     });
+
+    // A planned meal whose recipe is not in the loaded stock means the recipes are stale.
+    // Reload once per set of missing recipe ids.
+    effect(() => {
+      const stock = this.stockSignal();
+      const meals = this.mealsSignal();
+      if (!stock) return;
+      const known = new Set(stock.recipes.map((r) => r.id));
+      const key = [...new Set(meals.map((m) => m.recipeId).filter((id) => !known.has(id)))]
+        .sort()
+        .join(',');
+      if (key === this.reloadedForMissingKey) return;
+      this.reloadedForMissingKey = key;
+      if (key) untracked(() => this.loadStock());
+    });
+  }
+
+  /** Loads recipes and current stock used to compute missing ingredients. */
+  public loadStock(): void {
+    this.stockFailed.set(false);
+    forkJoin({
+      recipes: this.recipeService.getRecipes(),
+      items: this.itemService.getItems(),
+      units: this.unitService.getUnits(),
+      ingredients: this.ingredientService?.getIngredients() ?? of([] as Ingredient[]),
+    }).subscribe({
+      next: (stock) => this.stockSignal.set(stock),
+      error: (err) => {
+        console.error('Failed to load stock for meal planner:', err);
+        this.stockSignal.set(null);
+        this.stockFailed.set(true);
+      },
+    });
+  }
+
+  /** Missing ingredient names for a meal, or `null` when they cannot be determined. */
+  missingFor(meal: PlannedMeal): string[] | null {
+    const missing = this.missingByMealId()?.get(meal.id);
+    return missing ? missing.map((m) => m.name) : null;
+  }
+
+  /** Unique missing ingredients across meals that are not cooked yet. */
+  uniqueMissingIngredients(): { ingredientId: string; name: string }[] {
+    const byId = new Map<string, { ingredientId: string; name: string }>();
+    for (const meal of this.mealsSignal()) {
+      if (meal.cooked) continue;
+      for (const ing of this.missingByMealId()?.get(meal.id) ?? []) {
+        byId.set(ing.ingredientId, ing);
+      }
+    }
+    return [...byId.values()];
   }
 
   public loadMealsFromBackend(): void {
@@ -71,19 +170,12 @@ export class MealPlannerService {
     return this.mealsSignal().filter((m) => m.day === day);
   }
 
-  addMealPlan(day: DayOfWeek, mealType: MealType, recipe: Recipe): void {
-    const missing = recipe.ingredients
-      ? recipe.ingredients
-          .map(
-            (i: RecipeIngredientDTO) =>
-              (i as unknown as { ingredientName?: string; name?: string }).ingredientName ||
-              (i as unknown as { ingredientName?: string; name?: string }).name ||
-              i.ingredientId ||
-              'Ingredient',
-          )
-          .slice(0, 3)
-      : [];
-
+  addMealPlan(
+    day: DayOfWeek,
+    mealType: MealType,
+    recipe: Recipe,
+    callbacks?: { onSuccess?: () => void; onError?: () => void },
+  ): void {
     const newMealPayload = {
       day,
       mealType,
@@ -92,7 +184,7 @@ export class MealPlannerService {
       ...(recipeTotalTime(recipe) != null ? { prepTimeMinutes: recipeTotalTime(recipe) } : {}),
       ...(recipe.servings != null ? { servings: recipe.servings } : {}),
       cooked: false,
-      missingIngredients: missing,
+      missingIngredients: [],
       tags: recipe.difficulty ? [recipe.difficulty] : ['Custom'],
     };
 
@@ -106,10 +198,12 @@ export class MealPlannerService {
             `Planned "${created.recipeName}" for ${day} ${mealType}`,
             'Meal Planner',
           );
+          callbacks?.onSuccess?.();
         },
         error: (err) => {
           console.error('Failed to add meal plan:', err);
           this.toastService.showError('Failed to save meal plan to server.');
+          callbacks?.onError?.();
         },
       });
   }
@@ -159,12 +253,17 @@ export class MealPlannerService {
   }
 
   addMissingToShoppingList(meal: PlannedMeal): void {
-    if (!meal.missingIngredients || meal.missingIngredients.length === 0) {
+    const missing = this.missingFor(meal);
+    if (missing === null) {
+      this.toastService.showError('Could not check stock for this recipe.');
+      return;
+    }
+    if (missing.length === 0) {
       this.toastService.showInfo('All ingredients are in stock for this recipe!');
       return;
     }
 
-    const itemsToAdd = meal.missingIngredients.map((ing) => ({
+    const itemsToAdd = missing.map((ing) => ({
       name: ing,
       category: 'General',
       quantity: 1,
@@ -177,30 +276,18 @@ export class MealPlannerService {
   }
 
   addAllMissingToShoppingList(): void {
-    const allMeals = this.mealsSignal().filter((m) => !m.cooked);
-    const missingItems: {
-      name: string;
-      category: string;
-      quantity: number;
-      unit: string;
-      source: 'recipe_plan';
-      recipeName: string;
-    }[] = [];
-
-    allMeals.forEach((meal) => {
-      if (meal.missingIngredients && meal.missingIngredients.length > 0) {
-        meal.missingIngredients.forEach((ing) => {
-          missingItems.push({
-            name: ing,
-            category: 'General',
-            quantity: 1,
-            unit: 'pcs',
-            source: 'recipe_plan',
-            recipeName: meal.recipeName,
-          });
-        });
-      }
-    });
+    const missingItems = this.mealsSignal()
+      .filter((m) => !m.cooked)
+      .flatMap((meal) =>
+        (this.missingByMealId()?.get(meal.id) ?? []).map((ing) => ({
+          name: ing.name,
+          category: 'General',
+          quantity: 1,
+          unit: 'pcs',
+          source: 'recipe_plan' as const,
+          recipeName: meal.recipeName,
+        })),
+      );
 
     if (missingItems.length === 0) {
       this.toastService.showInfo('All planned meals are fully stocked!');

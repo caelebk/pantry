@@ -3,8 +3,9 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { BadgeComponent, FormFieldComponent } from '@ui';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
@@ -12,6 +13,7 @@ import { KitchenCreateDialogComponent } from '../../components/kitchen-create-di
 import { Kitchen, KitchenMember, UserSession } from '../../core/models/auth.model';
 import { AuthService } from '../../core/services/auth.service';
 import { KitchenService } from '../../core/services/kitchen.service';
+import { ThemeService } from '../../core/services/theme.service';
 
 @Component({
   selector: 'pantry-profile',
@@ -24,28 +26,60 @@ import { KitchenService } from '../../core/services/kitchen.service';
     InputTextModule,
     ToastModule,
     DialogModule,
+    ConfirmDialogModule,
     BadgeComponent,
     FormFieldComponent,
     KitchenCreateDialogComponent,
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   template: `
     <p-toast></p-toast>
-    <div class="space-y-8 max-w-6xl mx-auto">
+    <p-confirmDialog>
+      <ng-template #headless let-message let-onAccept="onAccept" let-onReject="onReject">
+        @if (message) {
+          <div class="glass-card rounded-2xl p-6 max-w-md">
+            <div class="flex items-start gap-4">
+              <div
+                class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/20 flex items-center justify-center shrink-0">
+                <i
+                  class="pi pi-exclamation-triangle text-xl text-rose-600 dark:text-rose-400"
+                  aria-hidden="true"></i>
+              </div>
+              <div class="flex-1">
+                <h3 class="type-section-title text-surface-900 dark:text-white mb-2">
+                  {{ 'profile.revokeAllConfirmTitle' | transloco }}
+                </h3>
+                <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">
+                  {{ 'profile.revokeAllConfirmMessage' | transloco }}
+                </p>
+                <div class="flex gap-3 justify-end">
+                  <button type="button" (click)="onReject()" class="btn-secondary">
+                    {{ 'profile.revokeAllConfirmCancel' | transloco }}
+                  </button>
+                  <button type="button" (click)="onAccept()" class="btn-danger">
+                    {{ 'profile.revokeAllSessionsBtn' | transloco }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </ng-template>
+    </p-confirmDialog>
+    <div class="page-layout">
       <!-- Page Header -->
-      <div
-        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-200 dark:border-surface-800 pb-6">
+      <header class="page-header">
         <div>
           <h1 class="type-page-title text-surface-900 dark:text-white">
             {{ 'profile.title' | transloco }}
           </h1>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="page-header__actions">
           <pantry-badge variant="neutral" class="uppercase tracking-wider">
             {{ authService.currentUser()?.globalRole }}
           </pantry-badge>
         </div>
-      </div>
+      </header>
 
       <!-- Main Layout Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -251,9 +285,12 @@ import { KitchenService } from '../../core/services/kitchen.service';
             <div class="space-y-3">
               @for (k of authService.userKitchens(); track k.id) {
                 <div
-                  [class.border-surface-400]="authService.activeKitchen()?.id === k.id"
-                  [class.bg-surface-100]="authService.activeKitchen()?.id === k.id"
-                  class="p-3 rounded-xl border border-surface-200 dark:border-surface-800 flex items-center gap-2 min-w-0">
+                  [class.border-primary-500/40]="authService.activeKitchen()?.id === k.id"
+                  [class.bg-primary-500/10]="authService.activeKitchen()?.id === k.id"
+                  [class.dark:bg-primary-500/20]="authService.activeKitchen()?.id === k.id"
+                  [class.border-surface-200]="authService.activeKitchen()?.id !== k.id"
+                  [class.dark:border-surface-800]="authService.activeKitchen()?.id !== k.id"
+                  class="p-3 rounded-xl border flex items-center gap-2 min-w-0">
                   <button
                     type="button"
                     data-select-kitchen
@@ -277,7 +314,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
                   </button>
                   @if (authService.activeKitchen()?.id === k.id) {
                     <i
-                      class="pi pi-check-circle text-surface-500 dark:text-surface-400 text-lg shrink-0"
+                      class="pi pi-check-circle text-primary-600 dark:text-primary-400 text-lg shrink-0"
                       aria-hidden="true"></i>
                   }
                   @if (k.role === 'owner') {
@@ -393,8 +430,10 @@ import { KitchenService } from '../../core/services/kitchen.service';
 export class ProfileComponent implements OnInit {
   authService = inject(AuthService);
   private kitchenService = inject(KitchenService);
+  private themeService = inject(ThemeService);
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
 
   readonly isSavingProfile = signal(false);
   readonly isChangingPassword = signal(false);
@@ -460,6 +499,7 @@ export class ProfileComponent implements OnInit {
       .subscribe({
         next: () => {
           this.isSavingProfile.set(false);
+          this.themeService.setUserPreference(themePreference as string);
           this.messageService.add({
             severity: 'success',
             summary: 'Profile Updated',
@@ -505,12 +545,25 @@ export class ProfileComponent implements OnInit {
   }
 
   onRevokeAllSessions() {
+    this.confirmationService.confirm({
+      accept: () => this.revokeAllSessions(),
+    });
+  }
+
+  private revokeAllSessions() {
     this.authService.revokeAllSessions().subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
           summary: 'Sessions Revoked',
           detail: 'Logged out from all devices',
+        });
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.error?.message || 'Failed to log out other devices',
         });
       },
     });

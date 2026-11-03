@@ -7,6 +7,7 @@ import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
+import { buildAvailableBaseMap, recipeAvailability } from '@utility/recipe-stock';
 import { SelectModule } from 'primeng/select';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
@@ -153,19 +154,7 @@ export class RecipesComponent {
   }
 
   private buildAvailableBaseMap(): void {
-    const map = new Map<string, number>();
-    const now = new Date();
-    for (const item of this.pantryItems) {
-      if (item.ingredientId) {
-        if (item.expirationDate && new Date(item.expirationDate) < now) {
-          continue; // skip expired items
-        }
-        const factor = item.unit?.toBaseFactor || 1;
-        const baseQty = item.quantity * factor;
-        map.set(item.ingredientId, (map.get(item.ingredientId) || 0) + baseQty);
-      }
-    }
-    this.availableBaseMap = map;
+    this.availableBaseMap = buildAvailableBaseMap(this.pantryItems);
   }
 
   getRecipeAvailability(recipe: Recipe): {
@@ -174,27 +163,7 @@ export class RecipesComponent {
     percentage: number;
     isFullyMakeable: boolean;
   } {
-    if (!recipe.ingredients || recipe.ingredients.length === 0) {
-      return { availableCount: 0, totalCount: 0, percentage: 100, isFullyMakeable: true };
-    }
-    let availableCount = 0;
-    for (const ing of recipe.ingredients) {
-      const unit = ing.unitId ? this.unitMap.get(ing.unitId) : null;
-      const factor = unit?.toBaseFactor || 1;
-      const requiredBase = ing.quantity * factor;
-      const availableBase = this.availableBaseMap.get(ing.ingredientId) || 0;
-      if (availableBase >= requiredBase - 1e-6) {
-        availableCount++;
-      }
-    }
-    const totalCount = recipe.ingredients.length;
-    const percentage = Math.round((availableCount / totalCount) * 100);
-    return {
-      availableCount,
-      totalCount,
-      percentage,
-      isFullyMakeable: availableCount === totalCount,
-    };
+    return recipeAvailability(recipe.ingredients || [], this.unitMap, this.availableBaseMap);
   }
 
   getRecipePriorityScore(recipe: Recipe): {

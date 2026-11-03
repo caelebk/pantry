@@ -23,7 +23,12 @@ const meal: PlannedMeal = {
 describe('Planner metadata honesty', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [{ provide: MealPlannerService, useValue: { days: ['Monday'] } }],
+      providers: [
+        {
+          provide: MealPlannerService,
+          useValue: { days: ['Monday'], missingFor: () => null, missingByMealId: () => null },
+        },
+      ],
     });
   });
 
@@ -90,13 +95,15 @@ describe('Planner metadata honesty', () => {
     const card = fixture.nativeElement.querySelector('h4').parentElement;
     expect(card.textContent).not.toContain('15m prep');
     expect(card.textContent).not.toContain('2 servings');
+    fixture.componentInstance.selectRecipe({ id: 'recipe', name: 'Unknown meal' });
     fixture.componentInstance.servings.set(3);
     fixture.componentInstance.saveMealPlan();
-    expect(addMealPlan).toHaveBeenCalledWith('Monday', 'Dinner', {
-      id: 'recipe',
-      name: 'Unknown meal',
-      servings: 3,
-    });
+    expect(addMealPlan).toHaveBeenCalledWith(
+      'Monday',
+      'Dinner',
+      { id: 'recipe', name: 'Unknown meal', servings: 3 },
+      expect.any(Object),
+    );
     fixture.componentInstance.availableRecipes.set([
       { id: 'recipe', name: 'Zero prep', prepTime: 0, servings: 0 },
     ]);

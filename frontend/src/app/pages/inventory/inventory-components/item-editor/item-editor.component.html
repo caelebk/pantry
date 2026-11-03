@@ -6,6 +6,7 @@
         [disabled]="submitting()"
         class="min-w-0 space-y-5">
         <pantry-form-field
+          #ingredientField
           forId="ingredient"
           [label]="t('itemEditor.ingredient')"
           [required]="true"
@@ -13,6 +14,7 @@
           <p-select
             [readonly]="submitting()"
             inputId="ingredient"
+            [ariaLabelledBy]="ingredientField.labelId()"
             [options]="ingredients()"
             formControlName="ingredient"
             optionLabel="name"
@@ -47,7 +49,7 @@
             <p-inputnumber
               inputId="quantity"
               formControlName="quantity"
-              [min]="1"
+              [min]="0"
               [maxFractionDigits]="3"
               [showButtons]="true"
               class="w-full"
@@ -89,6 +91,7 @@
         </div>
 
         <pantry-form-field
+          #locationField
           forId="location"
           [label]="t('itemEditor.location')"
           [required]="true"
@@ -96,6 +99,7 @@
           <p-select
             [readonly]="submitting()"
             inputId="location"
+            [ariaLabelledBy]="locationField.labelId()"
             formControlName="location"
             [options]="locations()"
             optionLabel="name"
@@ -106,12 +110,14 @@
         </pantry-form-field>
 
         <pantry-form-field
+          #expirationDateField
           forId="expirationDate"
           [label]="t('itemEditor.expiry')"
           [required]="true"
           [error]="fieldError('expirationDate', 'expiryError')">
           <p-datepicker
             inputId="expirationDate"
+            [ariaLabelledBy]="expirationDateField.labelId()"
             formControlName="expirationDate"
             [placeholder]="t('itemEditor.expiryPlaceholder')"
             [showIcon]="true"

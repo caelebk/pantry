@@ -1,12 +1,13 @@
-<div class="flex">
-  <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent">
-    <i class="pi pi-arrow-left" aria-hidden="true"></i>
-    <span>{{ 'nav.back' | transloco }}</span>
-  </button>
-</div>
-<div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
-  <!-- Page Header -->
-  <h2 class="type-page-title text-surface-900 dark:text-white">Add Ingredient Group</h2>
+<div class="page-layout page-layout--form">
+  <header class="page-header">
+    <div>
+      <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent mb-2">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        <span>{{ 'nav.back' | transloco }}</span>
+      </button>
+      <h1 class="type-page-title text-surface-900 dark:text-white">Add Ingredient Group</h1>
+    </div>
+  </header>
 
   @if (submitError()) {
     <div

@@ -12,6 +12,17 @@ import { NgControl } from '@angular/forms';
 
 let nextFieldId = 0;
 
+/**
+ * Label, hint, error and badge wrapper for one form control.
+ *
+ * - `hintId`, `errorId` and `labelId` are stable ids derived from `forId` (or a generated id).
+ * - Projected `NgControl` targets (or elements marked `#fieldControl`) get `aria-describedby`
+ *   (hint or error id, joined with any external tokens) and `aria-invalid="true"` on error.
+ * - PrimeNG comboboxes (`p-select`, `p-autoComplete`, `p-datepicker`) have an internal focus
+ *   target. Take a template reference to the field and pass its label id to PrimeNG:
+ *   `<pantry-form-field #f label="Unit" forId="unit"><p-select inputId="unit"
+ *   [ariaLabelledBy]="f.labelId()" /></pantry-form-field>`
+ */
 @Component({
   selector: 'pantry-form-field',
   standalone: true,
@@ -23,6 +34,7 @@ let nextFieldId = 0;
         <div class="flex items-start justify-between min-h-5 gap-2">
           @if (label()) {
             <label
+              [id]="labelId()"
               [attr.for]="forId()"
               class="type-label min-w-0 break-words block text-surface-600 dark:text-surface-300 select-none">
               {{ label() }}
@@ -48,7 +60,7 @@ let nextFieldId = 0;
       @if (error()) {
         <p
           [id]="errorId()"
-          class="text-xs font-medium text-rose-500 flex items-center gap-1 mt-1"
+          class="text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1 mt-1"
           role="alert">
           <i class="pi pi-exclamation-circle text-xs" aria-hidden="true"></i>
           <span>{{ error() }}</span>
@@ -64,6 +76,7 @@ let nextFieldId = 0;
 })
 export class FormFieldComponent {
   private readonly generatedId = `pantry-field-${++nextFieldId}`;
+  readonly labelId = computed(() => `${this.forId() || this.generatedId}-label`);
   readonly hintId = computed(() => `${this.forId() || this.generatedId}-hint`);
   readonly errorId = computed(() => `${this.forId() || this.generatedId}-error`);
   private readonly controls = contentChildren(NgControl, { descendants: true, read: ElementRef });
