@@ -28,9 +28,16 @@
 
   <body>
     <script>
-      // Prevent light-mode flash: the app defaults to dark before Angular boots
-      // and ThemeService reconciles this with the user preference on init.
-      document.documentElement.classList.add('dark');
+      // Apply the stored theme (or the OS colour scheme) before Angular boots to avoid a
+      // flash of the wrong theme. ThemeService reads the same key and reconciles on init.
+      (function () {
+        var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        try {
+          var stored = localStorage.getItem('pantry.theme');
+          if (stored === 'dark' || stored === 'light') dark = stored === 'dark';
+        } catch (e) {}
+        document.documentElement.classList.toggle('dark', dark);
+      })();
     </script>
     <pantry-root></pantry-root>
   </body>

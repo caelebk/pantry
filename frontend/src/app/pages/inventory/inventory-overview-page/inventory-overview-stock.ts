@@ -1,4 +1,5 @@
 import { Item } from '@models/items.model';
+import { EXPIRING_SOON_DAYS } from '@utility/itemUtility/ItemUtility';
 
 export type ExpiryBucket = 'expired' | 'expiring' | 'fresh' | 'undated' | 'empty';
 
@@ -14,7 +15,7 @@ export function expiryBucket(
   if (expiry <= now) return 'expired';
   // Match the existing Ingredient Items page's calendar-day window.
   const cutoff = new Date(now);
-  cutoff.setDate(cutoff.getDate() + 14);
+  cutoff.setDate(cutoff.getDate() + EXPIRING_SOON_DAYS);
   if (expiry <= cutoff.getTime()) return 'expiring';
   return 'fresh';
 }

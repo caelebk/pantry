@@ -18,15 +18,22 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { filter, map } from 'rxjs/operators';
-import { Tab } from '../tabs/tabs.model';
+import { Tab } from '../../core/models/tab.model';
 
 import { AuthService } from '../../core/services/auth.service';
 import { KitchenCreateDialogComponent } from '../kitchen-create-dialog/kitchen-create-dialog.component';
+import { SkilletIconComponent } from '../skillet-icon/skillet-icon.component';
 
 @Component({
   selector: 'pantry-sidebar',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, KitchenCreateDialogComponent, RouterLink],
+  imports: [
+    CommonModule,
+    TranslocoModule,
+    KitchenCreateDialogComponent,
+    RouterLink,
+    SkilletIconComponent,
+  ],
   styleUrl: './sidebar.component.scss',
   templateUrl: './sidebar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,18 +56,29 @@ export class SidebarComponent implements OnDestroy {
 
   tabs = Tab;
   mobileMenuOpen = signal(false);
-  isCollapsed = signal(false);
+  // Tablet widths (md to lg) start with the narrow rail so content keeps its room.
+  isCollapsed = signal(SidebarComponent.isTabletWidth(window.innerWidth));
   isMobile = signal(window.innerWidth < 768);
   readonly desktopCollapsed = computed(() => !this.isMobile() && this.isCollapsed());
   inventoryExpanded = signal(true);
   kitchenMenuOpen = signal(false);
   showAddKitchenDialog = signal(false);
+  private wasTablet = SidebarComponent.isTabletWidth(window.innerWidth);
+  private static isTabletWidth(width: number): boolean {
+    return width >= 768 && width < 1024;
+  }
+
   ngOnDestroy(): void {
     this.mobileMenuChanged.emit(false);
   }
 
   @HostListener('window:resize')
   onResize(): void {
+    const tablet = SidebarComponent.isTabletWidth(window.innerWidth);
+    if (tablet !== this.wasTablet) {
+      this.wasTablet = tablet;
+      this.isCollapsed.set(tablet);
+    }
     const mobile = window.innerWidth < 768;
     if (mobile === this.isMobile()) return;
     const focusWasInDrawer = this.drawer()?.nativeElement.contains(document.activeElement);
@@ -259,7 +277,11 @@ export class SidebarComponent implements OnDestroy {
     this.mobileMenuChanged.emit(true);
     afterNextRender(
       () => {
-        if (this.mobileMenuOpen()) this.focusableControls(this.drawer()?.nativeElement)[0]?.focus();
+        if (this.mobileMenuOpen()) {
+          const drawer = this.drawer()?.nativeElement;
+          const close = drawer?.querySelector<HTMLElement>('.mobile-drawer-close');
+          (close ?? this.focusableControls(drawer)[0])?.focus();
+        }
       },
       { injector: this.injector },
     );

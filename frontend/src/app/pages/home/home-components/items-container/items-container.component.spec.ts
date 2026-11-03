@@ -60,6 +60,13 @@ describe('Home stock rows', () => {
     remove?.click();
     expect(listener).toHaveBeenCalledWith(item);
   });
+  it('does not reorder the input array while sorting the preview', async () => {
+    const later = { ...item, id: 'later', expirationDate: new Date('2021-01-01') };
+    const sooner = { ...item, id: 'sooner', expirationDate: new Date('2020-01-01') };
+    const source = [later, sooner];
+    await render(source);
+    expect(source).toEqual([later, sooner]);
+  });
   it('provides a canonical empty state', async () => {
     const fixture = await render([]);
     const element = fixture.nativeElement as HTMLElement;

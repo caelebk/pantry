@@ -15,7 +15,7 @@ import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
-import { FormFieldComponent, SpinnerComponent } from '@ui';
+import { EmptyStateComponent, FormFieldComponent, SpinnerComponent } from '@ui';
 import { ingredientDetailReturnTo } from '@utility/ingredient-detail-return';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
 import { DialogModule } from 'primeng/dialog';
@@ -36,6 +36,7 @@ import { ItemEditorComponent } from '../inventory-components/item-editor/item-ed
     TranslocoModule,
     ItemEditorComponent,
     SpinnerComponent,
+    EmptyStateComponent,
     FormFieldComponent,
   ],
   templateUrl: './edit-item-page.component.html',
@@ -55,6 +56,7 @@ export class EditItemPageComponent implements OnInit {
 
   public itemId = signal<string | null>(null);
   public isLoading = signal<boolean>(true);
+  public loadFailed = signal<boolean>(false);
   public isSubmitting = signal<boolean>(false);
   public submitError = signal<string | null>(null);
 
@@ -124,6 +126,10 @@ export class EditItemPageComponent implements OnInit {
   }
 
   loadIngredients(itemId?: string, selectNewId?: string): void {
+    if (itemId) {
+      this.loadFailed.set(false);
+      this.isLoading.set(true);
+    }
     this.ingredientService.getIngredients().subscribe({
       next: (ings) => {
         this.ingredients.set(ings);
@@ -162,13 +168,25 @@ export class EditItemPageComponent implements OnInit {
             },
             error: (err) => {
               console.error('Failed to load item:', err);
-              this.toastService.showError('Unable to load item details.');
-              this.router.navigate(['/inventory']);
+              this.isLoading.set(false);
+              this.loadFailed.set(true);
             },
           });
         }
       },
+      error: (err) => {
+        console.error('Failed to load ingredients:', err);
+        if (itemId) {
+          this.isLoading.set(false);
+          this.loadFailed.set(true);
+        }
+      },
     });
+  }
+
+  retryLoad(): void {
+    const id = this.itemId();
+    if (id) this.loadIngredients(id);
   }
 
   openQuickCreateIngredient(): void {

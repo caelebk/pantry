@@ -1,25 +1,23 @@
-<div class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-  <!-- Page Title & Header Actions -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+<div class="page-layout">
+  <header class="page-header">
     <div>
-      <h2 class="type-page-title text-surface-900 dark:text-white">
+      <h1 class="type-page-title text-surface-900 dark:text-white">
         {{ 'inventory.title' | transloco }}
-      </h2>
+      </h1>
       <p class="text-sm text-surface-600 dark:text-surface-300 mt-2">
         {{ 'inventory.description' | transloco }}
       </p>
     </div>
-
-    <div class="flex items-center gap-3">
+    <div class="page-header__actions">
       <button (click)="openAddModal()" class="btn-primary">
         <i class="pi pi-plus text-base"></i>
         <span>Add New Item</span>
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- Filter & Control Bar (Clean & Borderless) -->
-  <div class="mb-8 relative z-20">
+  <div class="relative z-20">
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <!-- Search Input -->
       <div class="flex-1 min-w-[240px]">
@@ -862,7 +860,7 @@
   <button
     (click)="scrollToTop()"
     @fadeInOut
-    class="btn-icon !border-transparent bg-primary-600 !text-white hover:!bg-primary-700 hover:!text-white fixed bottom-8 right-8 z-50 hover:scale-110 active:scale-95"
+    class="btn-icon !border-transparent bg-primary-600 !text-white hover:!bg-primary-700 hover:!text-white fixed bottom-8 right-8 z-50 hover:scale-110 motion-reduce:hover:scale-100 active:scale-95"
     aria-label="Scroll to top">
     <i class="pi pi-arrow-up text-lg"></i>
   </button>

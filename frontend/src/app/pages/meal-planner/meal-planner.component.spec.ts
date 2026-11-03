@@ -32,7 +32,11 @@ describe('MealPlannerComponent', () => {
   beforeEach(() => {
     mockMealPlannerService = {
       days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      meals: () => [mockMeal],
+      meals: () => [mockMeal, { ...mockMeal, id: 'mp-2', day: 'Tuesday' }],
+      uniqueMissingIngredients: () => [{ ingredientId: 'ing-lettuce', name: 'Lettuce' }],
+      stockFailed: () => false,
+      missingByMealId: () => null,
+      loadStock: vi.fn(),
       loadMealsFromBackend: vi.fn(),
       addMealPlan: vi.fn(),
       removeMealPlan: vi.fn(),
@@ -62,8 +66,17 @@ describe('MealPlannerComponent', () => {
 
   it('should create meal planner component', () => {
     expect(component).toBeTruthy();
-    expect(component.totalPlannedCount()).toBe(1);
+    expect(component.totalPlannedCount()).toBe(2);
     expect(component.missingItemsCount()).toBe(1);
+  });
+
+  it('counts unique missing ingredients from the service, not per meal', () => {
+    expect(component.missingItemsCount()).toBe(1);
+  });
+
+  it('refreshes stock when the page is entered', () => {
+    component.ngOnInit();
+    expect(mockMealPlannerService.loadStock).toHaveBeenCalledTimes(1);
   });
 
   it('should switch sub tabs', () => {

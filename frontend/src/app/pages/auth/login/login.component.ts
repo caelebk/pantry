@@ -212,7 +212,7 @@ import { ToastService } from '../../../services/toast.service';
                 <div
                   id="identifier-error"
                   role="alert"
-                  class="text-xs text-rose-500 dark:text-rose-400 mt-1">
+                  class="text-xs text-rose-600 dark:text-rose-400 mt-1">
                   Please enter your email or username.
                 </div>
               }
@@ -224,11 +224,6 @@ import { ToastService } from '../../../services/toast.service';
                 <label for="password" class="type-label text-surface-600 dark:text-surface-300">
                   {{ 'auth.password' | transloco }}
                 </label>
-                <button
-                  type="button"
-                  class="text-xs font-semibold text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 cursor-pointer">
-                  {{ 'auth.forgotPassword' | transloco }}
-                </button>
               </div>
               <div class="relative">
                 <i
@@ -255,7 +250,7 @@ import { ToastService } from '../../../services/toast.service';
                 <div
                   id="password-error"
                   role="alert"
-                  class="text-xs text-rose-500 dark:text-rose-400 mt-1">
+                  class="text-xs text-rose-600 dark:text-rose-400 mt-1">
                   Password is required.
                 </div>
               }
@@ -277,7 +272,7 @@ import { ToastService } from '../../../services/toast.service';
             <span>{{ 'auth.dontHaveAccount' | transloco }}</span>
             <a
               routerLink="/auth/signup"
-              class="ml-1.5 font-bold text-primary-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+              class="ml-1.5 font-bold text-primary-700 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 transition-colors">
               {{ 'auth.signUpNow' | transloco }}
             </a>
           </div>

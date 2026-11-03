@@ -100,6 +100,10 @@ export class WeeklyViewComponent {
     this.mealPlannerService.removeMealPlan(id);
   }
 
+  missingFor(meal: PlannedMeal): string[] | null {
+    return this.mealPlannerService.missingFor(meal);
+  }
+
   addMissingToShoppingList(meal: PlannedMeal): void {
     this.mealPlannerService.addMissingToShoppingList(meal);
   }

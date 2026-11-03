@@ -19,7 +19,12 @@ const units = [
   { id: 1, name: 'Gram', shortName: 'g', type: UnitType.Weight, toBaseFactor: 1 },
   { id: 2, name: 'Millilitre', shortName: 'ml', type: UnitType.Volume, toBaseFactor: 1 },
 ];
-const dto = (id: string, quantity: number, unitId = 1): IngredientItemDTO => ({
+const dto = (
+  id: string,
+  quantity: number,
+  unitId = 1,
+  expirationDate?: string,
+): IngredientItemDTO => ({
   id,
   quantity,
   unitId,
@@ -27,6 +32,7 @@ const dto = (id: string, quantity: number, unitId = 1): IngredientItemDTO => ({
   label: id,
   locationId: 1,
   purchaseDate: '2026-01-01',
+  expirationDate,
 });
 describe('IngredientDetailPageComponent', () => {
   let fixture: ComponentFixture<IngredientDetailPageComponent>;
@@ -105,6 +111,22 @@ describe('IngredientDetailPageComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href*="items/new"]').href).toContain(
       'ingredientId=rice',
     );
+  });
+  it('excludes expired quantity from the total stock', () => {
+    ingredients.getItemsByIngredientId.mockReturnValue(
+      of([dto('fresh', 250), dto('old', 500, 1, '2020-01-01')]),
+    );
+    component.retry();
+    fixture.detectChanges();
+    expect(component.stock()).toEqual([{ quantity: 250, unit: 'g' }]);
+  });
+  it('treats a malformed id (400) as not found', () => {
+    ingredients.getIngredientById.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 400 })),
+    );
+    component.retry();
+    fixture.detectChanges();
+    expect(component.state()).toBe('not-found');
   });
   it('cancels old requests and clears data when the kitchen changes', () => {
     const pending = new Subject<IngredientItemDTO[]>();

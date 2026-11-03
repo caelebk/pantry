@@ -1,10 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Injector,
+  OnInit,
+  afterNextRender,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Store } from '@models/store.model';
 import { StoreService } from '@services/store.service';
+import { ToastService } from '@services/toast.service';
 import { BadgeComponent } from '@ui';
 import { InputTextModule } from 'primeng/inputtext';
 
@@ -17,6 +26,10 @@ import { InputTextModule } from 'primeng/inputtext';
 export class StoresPageComponent implements OnInit {
   private readonly service = inject(StoreService);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
   readonly stores = signal<Store[]>([]);
   readonly draftNames = signal<Record<string, string>>({});
   readonly newStoreName = signal<string>('');
@@ -37,10 +50,31 @@ export class StoresPageComponent implements OnInit {
   startEditing(store: Store): void {
     this.setDraftName(store.id, store.name);
     this.editingStoreId.set(store.id);
+    afterNextRender(
+      () =>
+        this.host.nativeElement.querySelector<HTMLInputElement>('input[data-edit-input]')?.focus(),
+      { injector: this.injector },
+    );
   }
 
   cancelEditing(): void {
+    const id = this.editingStoreId();
     this.editingStoreId.set(null);
+    if (id) this.focusRenameButton(id);
+  }
+
+  private focusRenameButton(id: string): void {
+    afterNextRender(
+      () =>
+        this.host.nativeElement
+          .querySelector<HTMLElement>(`[data-rename-id="${CSS.escape(id)}"]`)
+          ?.focus(),
+      { injector: this.injector },
+    );
+  }
+
+  private showError(key: string): void {
+    this.toast.showError(this.transloco.translate(key));
   }
 
   createStore(): void {
@@ -56,6 +90,7 @@ export class StoresPageComponent implements OnInit {
       },
       error: () => {
         this.isCreating.set(false);
+        this.showError('stores.errors.create');
       },
     });
   }
@@ -63,9 +98,13 @@ export class StoresPageComponent implements OnInit {
   save(store: Store): void {
     const name = this.draftNames()[store.id]?.trim();
     if (!name) return;
-    this.service.updateStore(store.id, { name }).subscribe(() => {
-      this.editingStoreId.set(null);
-      this.load();
+    this.service.updateStore(store.id, { name }).subscribe({
+      next: () => {
+        this.editingStoreId.set(null);
+        this.focusRenameButton(store.id);
+        this.load();
+      },
+      error: () => this.showError('stores.errors.rename'),
     });
   }
 
@@ -74,7 +113,10 @@ export class StoresPageComponent implements OnInit {
   }
 
   archive(store: Store): void {
-    this.service.updateStore(store.id, { archived: !store.archived }).subscribe(() => this.load());
+    this.service.updateStore(store.id, { archived: !store.archived }).subscribe({
+      next: () => this.load(),
+      error: () => this.showError('stores.errors.archive'),
+    });
   }
 
   goBack(): void {

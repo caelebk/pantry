@@ -52,31 +52,33 @@
         </div>
       </div>
     }
-    <div
-      class="glass-card p-4 rounded-2xl border border-surface-200 dark:border-surface-700/80 shadow-xs flex items-center justify-between">
-      <div>
-        <div
-          class="text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider">
-          Stock Readiness
-        </div>
-        <div class="text-2xl font-extrabold text-surface-900 dark:text-white mt-1">
-          {{
-            missingIngredients().length === 0
-              ? '100% Ready'
-              : missingIngredients().length + ' Missing'
-          }}
-        </div>
-      </div>
+    @if (stockKnown()) {
       <div
-        [class]="
-          missingIngredients().length === 0
-            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
-        "
-        class="w-10 h-10 rounded-xl flex items-center justify-center text-lg">
-        {{ missingIngredients().length === 0 ? '✅' : '⚠️' }}
+        class="glass-card p-4 rounded-2xl border border-surface-200 dark:border-surface-700/80 shadow-xs flex items-center justify-between">
+        <div>
+          <div
+            class="text-xs font-bold text-surface-600 dark:text-surface-300 uppercase tracking-wider">
+            Stock Readiness
+          </div>
+          <div class="text-2xl font-extrabold text-surface-900 dark:text-white mt-1">
+            {{
+              missingIngredients().length === 0
+                ? '100% Ready'
+                : missingIngredients().length + ' Missing'
+            }}
+          </div>
+        </div>
+        <div
+          [class]="
+            missingIngredients().length === 0
+              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+              : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+          "
+          class="w-10 h-10 rounded-xl flex items-center justify-center text-lg">
+          {{ missingIngredients().length === 0 ? '✅' : '⚠️' }}
+        </div>
       </div>
-    </div>
+    }
   </div>
 
   <!-- Focused Timeline & Recipe Details -->
@@ -131,17 +133,16 @@
                   }
                 </div>
 
-                @if (meal.missingIngredients && meal.missingIngredients.length > 0) {
+                @let missing = missingFor(meal);
+                @if (missing && missing.length > 0) {
                   <div class="text-xs text-rose-600 dark:text-rose-400 font-semibold pt-1">
-                    Missing ingredients: {{ meal.missingIngredients.join(', ') }}
+                    Missing ingredients: {{ missing.join(', ') }}
                   </div>
                 }
               </div>
 
               <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                @if (
-                  meal.missingIngredients && meal.missingIngredients.length > 0 && !meal.cooked
-                ) {
+                @if (missing && missing.length > 0 && !meal.cooked) {
                   <button (click)="addMissingToShoppingList(meal)" class="btn-danger">
                     Add Missing
                   </button>
@@ -198,8 +199,11 @@
                   {{ meal.recipeName }}
                 </div>
 
-                @if (meal.missingIngredients && meal.missingIngredients.length > 0) {
-                  @for (ing of meal.missingIngredients; track ing) {
+                @let missingList = missingFor(meal);
+                @if (missingList === null) {
+                  <div class="text-surface-500 font-medium pl-2">Stock status unavailable</div>
+                } @else if (missingList.length > 0) {
+                  @for (ing of missingList; track ing) {
                     <div
                       class="flex items-center justify-between text-rose-700 dark:text-rose-300 font-medium pl-2">
                       <span>{{ ing }}</span>

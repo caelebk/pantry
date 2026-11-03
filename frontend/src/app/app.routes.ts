@@ -1,7 +1,7 @@
 import { inject, isDevMode } from '@angular/core';
 import { Router, Routes, UrlTree } from '@angular/router';
-import { Tab } from './components/tabs/tabs.model';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { Tab } from './core/models/tab.model';
 
 export const routes: Routes = [
   // Guest Routes (Only accessible when NOT logged in)

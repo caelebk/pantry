@@ -203,6 +203,16 @@
         "role": "neutral",
         "displayName": "White",
         "canonical": "#ffffff"
+      },
+      "ember-orange-deeper": {
+        "role": "primary",
+        "displayName": "Ember Orange Deeper",
+        "canonical": "#9a3412"
+      },
+      "ember-orange-deepest": {
+        "role": "primary",
+        "displayName": "Ember Orange Deepest",
+        "canonical": "#7c2d12"
       }
     },
     "typographyMeta": {
@@ -250,7 +260,7 @@
       {
         "name": "floating-overlay",
         "value": "0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1)",
-        "purpose": "Select overlays, date pickers, popovers; the only surfaces that visibly lift."
+        "purpose": "Select overlays, date pickers, popovers, dialogs, toasts; the only surfaces that visibly lift."
       },
       {
         "name": "focus-ring",
@@ -304,9 +314,9 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The main action on a page or form. Ember Orange, 42px.",
+      "description": "The main action on a page or form. Ember Orange Deep, 42px.",
       "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg>Add stock</button>",
-      "css": ".ds-btn-primary { height: 42px; padding: 0 20px; border: none; border-radius: 12px; background: #ea580c; color: #fff; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; } .ds-btn-primary:hover { background: #c2410c; } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(249,115,22,0.5); }"
+      "css": ".ds-btn-primary { height: 42px; padding: 0 20px; border: none; border-radius: 12px; background: #c2410c; color: #fff; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; } .ds-btn-primary:hover { background: #9a3412; } .ds-btn-primary:active { background: #7c2d12; transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(249,115,22,0.5); }"
     },
     {
       "name": "Secondary Button",
@@ -337,8 +347,8 @@
       "kind": "chip",
       "refersTo": "badge-neutral",
       "description": "Fresh / expiring / expired stock status plus a storage location badge.",
-      "html": "<div class=\"ds-badges\"><span class=\"ds-badge ds-badge-fresh\"><i></i>Fresh</span><span class=\"ds-badge ds-badge-expiring\"><i></i>Expires in 3 days</span><span class=\"ds-badge ds-badge-expired\"><i></i>Expired</span><span class=\"ds-badge ds-badge-location\"><i></i>Fridge</span></div>",
-      "css": ".ds-badges { display: flex; flex-wrap: wrap; gap: 8px; } .ds-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; border: 1px solid; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 12px; font-weight: 500; transition: background-color 0.2s; } .ds-badge i { width: 6px; height: 6px; border-radius: 9999px; } .ds-badge-fresh { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.2); color: #059669; } .ds-badge-fresh i { background: #10b981; } .ds-badge-expiring { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); color: #d97706; } .ds-badge-expiring i { background: #f59e0b; } .ds-badge-expired { background: rgba(244,63,94,0.1); border-color: rgba(244,63,94,0.2); color: #e11d48; } .ds-badge-expired i { background: #f43f5e; } .ds-badge-location { background: #f1f5f9; border-color: #e2e8f0; color: #1e293b; } .ds-badge-location i { background: #f97316; }"
+      "html": "<div class=\"ds-badges\"><span class=\"ds-badge ds-badge-fresh\"><i></i>Fresh</span><span class=\"ds-badge ds-badge-expiring\"><i></i>Expires in 3 days</span><span class=\"ds-badge ds-badge-expired\"><i></i>Expired</span><span class=\"ds-badge ds-badge-location\">Fridge</span></div>",
+      "css": ".ds-badges { display: flex; flex-wrap: wrap; gap: 8px; } .ds-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; border: 1px solid; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 12px; font-weight: 500; transition: background-color 0.2s; } .ds-badge i { width: 6px; height: 6px; border-radius: 9999px; } .ds-badge-fresh { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.2); color: #047857; } .ds-badge-fresh i { background: #10b981; } .ds-badge-expiring { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); color: #b45309; } .ds-badge-expiring i { background: #f59e0b; } .ds-badge-expired { background: rgba(244,63,94,0.1); border-color: rgba(244,63,94,0.2); color: #be123c; } .ds-badge-expired i { background: #f43f5e; } .ds-badge-location { background: #f1f5f9; border-color: #e2e8f0; color: #1e293b; }"
     },
     {
       "name": "Card",
@@ -353,20 +363,20 @@
       "kind": "nav",
       "refersTo": "nav-item-active",
       "description": "Sidebar items with an orange left rule and tint on the active item.",
-      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item\" href=\"#\">Home</a><a class=\"ds-nav-item ds-nav-active\" href=\"#\">Inventory</a><a class=\"ds-nav-sub ds-nav-sub-active\" href=\"#\">Ingredient Items</a><a class=\"ds-nav-sub\" href=\"#\">Ingredients</a><a class=\"ds-nav-item\" href=\"#\">Recipes</a><a class=\"ds-nav-item\" href=\"#\">Shopping List</a></nav>",
-      "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; width: 220px; padding: 8px; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; } .ds-nav-item { padding: 10px 12px; border-left: 3.5px solid transparent; border-radius: 8px; color: #475569; font-weight: 500; text-decoration: none; transition: background-color 240ms cubic-bezier(0.22,1,0.36,1), border-color 240ms cubic-bezier(0.22,1,0.36,1), color 200ms ease; } .ds-nav-item:hover:not(.ds-nav-active) { background: rgba(226,232,240,0.5); color: #0f172a; } .ds-nav-item:focus-visible, .ds-nav-sub:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.5); } .ds-nav-active { background: rgba(249,115,22,0.1); border-left-color: #f97316; color: #ea580c; font-weight: 600; } .ds-nav-sub { padding: 6px 12px 6px 28px; color: #64748b; font-weight: 500; text-decoration: none; transition: color 180ms ease; } .ds-nav-sub:hover:not(.ds-nav-sub-active) { color: #0f172a; } .ds-nav-sub-active { color: #ea580c; font-weight: 600; }"
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item\" href=\"#\">Home</a><a class=\"ds-nav-item ds-nav-active\" href=\"#\">Inventory</a><a class=\"ds-nav-sub ds-nav-sub-active\" href=\"#\">Ingredient items</a><a class=\"ds-nav-sub\" href=\"#\">Ingredients</a><a class=\"ds-nav-item\" href=\"#\">Recipes</a><a class=\"ds-nav-item\" href=\"#\">Shopping list</a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; width: 220px; padding: 8px; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; } .ds-nav-item { padding: 10px 12px; border-left: 3.5px solid transparent; border-radius: 8px; color: #475569; font-weight: 500; text-decoration: none; transition: background-color 240ms cubic-bezier(0.22,1,0.36,1), border-color 240ms cubic-bezier(0.22,1,0.36,1), color 200ms ease; } .ds-nav-item:hover:not(.ds-nav-active) { background: rgba(226,232,240,0.5); color: #0f172a; } .ds-nav-item:focus-visible, .ds-nav-sub:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.5); } .ds-nav-active { background: rgba(249,115,22,0.1); border-left-color: #f97316; color: #c2410c; font-weight: 600; } .ds-nav-sub { padding: 6px 12px 6px 28px; color: #64748b; font-weight: 500; text-decoration: none; transition: color 180ms ease; } .ds-nav-sub:hover:not(.ds-nav-sub-active) { color: #0f172a; } .ds-nav-sub-active { color: #c2410c; font-weight: 600; }"
     }
   ],
   "narrative": {
     "northStar": "The Calm Kitchen Ledger",
-    "overview": "Pantry is a quiet, trustworthy record of a household's food. The interface behaves like a well-kept ledger. Content sits on clean, nearly opaque surfaces with even rhythm and predictable controls, so you can trust a glance on a phone in the kitchen as much as a planning session at a desk. The system shows information plainly and does not perform.\n\nThe atmosphere stays in the background. The app shell carries a pale Morning Haze sky (soft radial glows and a faint 28px dot grid) behind every page. Content never competes with it: cards are 92–96% opaque, so the haze only reads at the margins. Ember Orange is the one warm note in a cool, slate-and-sky world. It marks where you act and where you are, and it does nothing else. Status colors (emerald, amber, rose) carry the food's condition and never decorate.\n\nDensity is moderate and intentional. Body text starts at 14px, every single-line control is 42px tall, and pages keep useful information visible instead of hiding it behind extra framing. Minimalism here means fewer decisions and clearer relationships, not less information. Light and dark themes are first-class peers; neither is the fallback.",
+    "overview": "Pantry is a quiet, trustworthy record of a household's food. The interface behaves like a well-kept ledger. Content sits on clean, nearly opaque surfaces with even rhythm and predictable controls, so you can trust a glance on a phone in the kitchen as much as a planning session at a desk. The system shows information plainly and does not perform.\n\nThe atmosphere stays in the background. The app shell carries a static pale Morning Haze sky (soft radial glows and a faint 28px dot grid) behind every page. Content never competes with it: cards are 92–96% opaque, so the haze only reads at the margins. Ember Orange is the one warm note in a cool, slate-and-sky world. It marks where you act and where you are, and it does nothing else. Status colors (emerald, amber, rose) carry the food's condition and never decorate.\n\nDensity is moderate and intentional. Body text starts at 14px, every single-line control is 42px tall, and pages keep useful information visible instead of hiding it behind extra framing. Minimalism here means fewer decisions and clearer relationships, not less information. Light and dark themes are first-class peers; neither is the fallback.",
     "keyCharacteristics": [
       "Cool slate neutrals over a pale sky-blue haze; Ember Orange reserved for actions and the current location.",
       "Nearly opaque frosted cards, quietly layered on borders and tone rather than shadow.",
       "One 42px control height and soft 12px corners across buttons, inputs, selects, and date pickers.",
       "Native system sans with five named type roles; natural case, no tracked uppercase labels.",
       "Emerald / amber / rose status language for fresh / expiring / expired stock.",
-      "Full light and dark themes, toggled by a `.dark` class."
+      "Full light and dark themes, toggled by a `.dark` class. The first visit follows `prefers-color-scheme`."
     ],
     "rules": [
       {
@@ -381,7 +391,7 @@
       },
       {
         "name": "The Natural Case Rule",
-        "body": "Labels keep their source casing. Uppercase is only for a deliberate short overline, never for routine field labels.",
+        "body": "Use sentence case for all UI text. Uppercase is only for a deliberate short overline, never for routine field labels. Do not combine `uppercase` with `tracking-*`.",
         "section": "typography"
       },
       {
@@ -409,7 +419,10 @@
       "Do let the shell own outer gutters; pages set only their content measure.",
       "Do verify light and dark themes together; check contrast against the composited card surface, not the raw token.",
       "Do provide `prefers-reduced-motion` fallbacks for any animation.",
-      "Do use design tokens (`primary-*`, `surface-*`, `navy-900`) instead of hex values in templates."
+      "Do use design tokens (`primary-*`, `surface-*`, `navy-900`) instead of hex values in templates.",
+      "Do use `pantry-confirm-dialog` for confirmations, `pantry-alert` for inline messages, and `pantry-segmented-control` for single-choice toggles.",
+      "Do use sentence case for all UI text.",
+      "Do keep touch targets at 42px or larger on phones."
     ],
     "donts": [
       "Don't use emerald, amber, or rose for decoration, categories, or branding.",
@@ -418,10 +431,12 @@
       "Don't add outer horizontal or vertical padding wrappers to pages.",
       "Don't put content directly on the haze background; it belongs on a card.",
       "Don't shrink desktop tables or controls to fit phones; restructure instead.",
-      "Don't hand-roll search inputs, spinners, skeletons, empty states, badge pills, native selects, or popup menus; use the `@ui` primitive or PrimeNG control.",
+      "Don't hand-roll search inputs, spinners, skeletons, empty states, badge pills, segmented controls, alerts, confirm dialogs, native selects, or popup menus; use the `@ui` primitive or PrimeNG control.",
       "Don't write long inline Tailwind button strings; use the `btn-*` classes.",
       "Don't hardcode brand hexes (`#ea580c`, `#141c2e`, `#0d1322`, `#f8fafc`) in templates.",
-      "Don't introduce new control heights, radii, button variants, or badge variants without recording them in this file."
+      "Don't introduce new control heights, radii, button variants, or badge variants without recording them in this file.",
+      "Don't use native `confirm()`, `pi-spin`, `font-extrabold`, `text-gray-*`, `red-*` colors, or text smaller than 12px.",
+      "Don't use an orange fill on an element that is not clickable or current."
     ]
   }
 }

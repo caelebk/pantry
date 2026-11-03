@@ -25,8 +25,8 @@
     "dashboard": "Home",
     "inventory": "Inventory",
     "recipes": "Recipes",
-    "shoppingList": "Shopping List",
-    "mealPlanner": "Meal Planner",
+    "shoppingList": "Shopping list",
+    "mealPlanner": "Meal planner",
     "profile": "Profile"
   },
   "home": {
@@ -142,7 +142,7 @@
       "expired": "Expired",
       "canMake": "Can Make",
       "inInventory": "in inventory",
-      "within7Days": "in 14 days",
+      "within7Days": "in 7 days",
       "needsRemoval": "needs removal",
       "recipes": "recipes"
     },
@@ -236,7 +236,10 @@
       "colPrevStock": "Previous Stock",
       "colNewQty": "New Quantity ({{unit}})",
       "cancelBtn": "Cancel",
-      "confirmBtn": "Confirm Update"
+      "confirmBtn": "Confirm Update",
+      "manualHint": "{{from}} can't be converted to {{to}} automatically. Enter the new quantity yourself.",
+      "quantityRequired": "Enter a quantity of 0 or more.",
+      "unknownLocation": "Unknown location"
     },
     "taxonomy": {
       "title": "Ingredient Categories & Groups",
@@ -350,6 +353,11 @@
         "insufficient": "More needed",
         "expired": "Replace expired stock"
       }
+    },
+    "detail": {
+      "loadErrorTitle": "Couldn't load recipe",
+      "loadErrorDescription": "Something went wrong while loading this recipe. Check your connection and try again.",
+      "retry": "Try again"
     }
   },
   "mealPlanner": {
@@ -380,7 +388,13 @@
       "pieces": "pieces",
       "tbsp": "tbsp",
       "g": "g"
-    }
+    },
+    "stockLoadError": "Couldn't check your stock",
+    "stockLoadErrorHint": "Missing ingredients are hidden until your recipes and inventory load.",
+    "recipesLoadError": "Couldn't load recipes",
+    "recipesLoadErrorHint": "Check your connection and try again. You can't save a meal until recipes load.",
+    "retry": "Retry",
+    "saveError": "Couldn't save this meal plan. Your selection is kept. Try again."
   },
   "addItemForm": {
     "title": "Add New Ingredient Item",
@@ -428,7 +442,8 @@
     },
     "cancelButton": "Cancel",
     "saveRecipe": "Save Recipe",
-    "updateRecipe": "Update Recipe"
+    "updateRecipe": "Update Recipe",
+    "loading": "Loading recipe"
   },
   "itemCard": {
     "category": "Category:",
@@ -484,25 +499,30 @@
     "successToast": "Successfully restocked items! {updated} updated, {created} created."
   },
   "sidebar": {
-    "mainNav": "Main Navigation",
     "subTitle": "Inventory & Recipes",
     "ingredients": "Ingredients",
-    "ingredientItems": "Ingredient Items",
-    "ingredientCategoriesAndGroups": "Ingredient Categories & Groups",
-    "lightMode": "Light Mode",
-    "darkMode": "Dark Mode",
-    "switchToLight": "Switch to Light Mode",
-    "switchToDark": "Switch to Dark Mode",
-    "expandSidebar": "Expand Sidebar",
-    "collapseSidebar": "Collapse Sidebar",
-    "expandInventory": "Expand Inventory Sub-Menu",
-    "collapseInventory": "Collapse Inventory Sub-Menu",
-    "toggleMobileMenu": "Toggle Navigation Menu",
-    "logout": "Log Out",
+    "ingredientItems": "Ingredient items",
+    "ingredientCategoriesAndGroups": "Ingredient categories & groups",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "expandInventory": "Expand inventory sub-menu",
+    "collapseInventory": "Collapse inventory sub-menu",
+    "toggleMobileMenu": "Toggle navigation menu",
+    "logout": "Log out",
     "closeMobileMenu": "Close navigation",
     "navigation": "Main navigation",
     "member": "member",
-    "members": "members"
+    "members": "members",
+    "switchKitchen": "Switch kitchen, current: {{name}}",
+    "roles": {
+      "owner": "Owner",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    }
   },
   "inventoryTable": {
     "addNewItem": "Add New Item",
@@ -567,7 +587,8 @@
     "selectItem": "Select item {{name}}",
     "sortBy": "Sort by {{field}}",
     "scrollTop": "Scroll to top of page",
-    "breadcrumb": "Breadcrumb navigation"
+    "breadcrumb": "Breadcrumb navigation",
+    "skipToContent": "Skip to content"
   },
   "auth": {
     "login": "Sign In",
@@ -615,9 +636,12 @@
     "confirmNewPassword": "Confirm New Password",
     "updateProfileBtn": "Save Profile",
     "updatePasswordBtn": "Update Password",
-    "revokeAllSessionsBtn": "Log Out Other Devices",
+    "revokeAllSessionsBtn": "Log out of all devices",
     "currentDevice": "This Device",
-    "activeStatus": "Active Now"
+    "activeStatus": "Active Now",
+    "revokeAllConfirmTitle": "Log out of all devices?",
+    "revokeAllConfirmMessage": "This signs you out everywhere, including this device. You will need to log in again.",
+    "revokeAllConfirmCancel": "Cancel"
   },
   "kitchens": {
     "title": "Kitchen Workspaces",
@@ -646,7 +670,9 @@
       "markToBuy": "Mark as To Buy",
       "delete": "Delete",
       "clearSelection": "Clear",
-      "clearFilters": "Clear Filters"
+      "clearFilters": "Clear Filters",
+      "selectMode": "Select",
+      "doneSelecting": "Done"
     },
     "stats": {
       "combinedTitle": "Progress & Budget",
@@ -676,7 +702,10 @@
       "status": "Status",
       "noStore": "No store assigned",
       "uncategorized": "Uncategorized",
-      "editItem": "Edit {{name}}"
+      "editItem": "Edit {{name}}",
+      "markItemBought": "Mark {{name}} as bought",
+      "editQuantity": "Edit quantity for {{name}}",
+      "editPrice": "Edit estimated price for {{name}}"
     },
     "empty": {
       "title": "Your shopping list is empty",
@@ -702,7 +731,8 @@
       "save": "Save Changes",
       "add": "Add to Shopping List",
       "saving": "Saving...",
-      "newStorePlaceholder": "New store name..."
+      "newStorePlaceholder": "New store name...",
+      "cancelCreateStore": "Cancel new store"
     }
   },
   "stores": {
@@ -716,7 +746,12 @@
     "noStoresDesc": "Add your first store above to organize your shopping trips.",
     "archivedBadge": "Archived",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "errors": {
+      "create": "Could not add the store. Try again.",
+      "rename": "Could not rename the store. Try again.",
+      "archive": "Could not update the store. Try again."
+    }
   },
   "recipeDetail": {
     "backToRecipes": "Back to Recipes",
@@ -784,8 +819,8 @@
     "stockedCount": "{{count}} ingredient items with stock",
     "availability": "{{stocked}} with stock · {{empty}} without stock",
     "expiredCount": "{{count}} expired",
-    "expiringCount": "{{count}} due within 14 days",
-    "expiringCount_one": "{{count}} due within 14 days",
+    "expiringCount": "{{count}} due within 7 days",
+    "expiringCount_one": "{{count}} due within 7 days",
     "organizationCount": "{{categories}} ingredient categories · {{groups}} ingredient groups",
     "ungroupedCount": "{{count}} ingredients without an ingredient group",
     "browseIngredients": "Browse ingredients",
@@ -794,8 +829,8 @@
     "loadingSummary": "Loading summary…",
     "unavailable": "Summary unavailable",
     "attention": "Needs attention",
-    "attentionDescription": "Expired or due within 14 days",
-    "nothingUrgent": "No recorded stock is expired or due within 14 days.",
+    "attentionDescription": "Expired or due within 7 days",
+    "nothingUrgent": "No recorded stock is expired or due within 7 days.",
     "undatedCount": "Expiry date missing or invalid for {{count}} stock batches.",
     "undatedCount_one": "Expiry date missing or invalid for {{count}} stock batch.",
     "noLocation": "No location",
@@ -892,7 +927,7 @@
     "createIngredient": "Create ingredient",
     "ingredientError": "Choose an ingredient.",
     "quantity": "Quantity",
-    "quantityError": "Enter a quantity of at least 1.",
+    "quantityError": "Enter a quantity greater than 0.",
     "unit": "Unit",
     "unitPlaceholder": "Choose a unit",
     "unitHint": "Uses the ingredient’s default unit.",
@@ -936,7 +971,10 @@
     "defaultUnit": "Default unit",
     "create": "Create & select",
     "creating": "Creating…",
-    "createError": "Could not create the ingredient. Your entries are saved here; please try again."
+    "createError": "Could not create the ingredient. Your entries are saved here; please try again.",
+    "loadErrorTitle": "Unable to load this item",
+    "loadErrorDescription": "Check your connection and try again.",
+    "retry": "Try again"
   },
   "ingredientDetail": {
     "back": "Back to ingredients",

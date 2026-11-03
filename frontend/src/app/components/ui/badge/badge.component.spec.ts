@@ -21,7 +21,7 @@ describe('BadgeComponent', () => {
     fixture.detectChanges();
 
     const span = fixture.nativeElement.querySelector('span');
-    expect(span.className).toContain('text-emerald-600');
+    expect(span.className).toContain('text-emerald-700');
   });
 
   it('should render expiring badge with amber styling and dot', () => {
@@ -30,7 +30,7 @@ describe('BadgeComponent', () => {
     fixture.detectChanges();
 
     const span = fixture.nativeElement.querySelector('span');
-    expect(span.className).toContain('text-amber-600');
+    expect(span.className).toContain('text-amber-700');
     const dot = fixture.nativeElement.querySelector('.bg-amber-500');
     expect(dot).toBeTruthy();
   });
@@ -39,7 +39,7 @@ describe('BadgeComponent', () => {
     fixture.componentRef.setInput('variant', 'primary');
     fixture.detectChanges();
     const span = fixture.nativeElement.querySelector('span');
-    expect(span.className).toContain('text-primary-600');
+    expect(span.className).toContain('text-primary-700');
   });
 
   it('should render outline tone badge', () => {

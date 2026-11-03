@@ -1,12 +1,13 @@
-<div class="flex">
-  <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent">
-    <i class="pi pi-arrow-left" aria-hidden="true"></i>
-    <span>{{ 'nav.back' | transloco }}</span>
-  </button>
-</div>
-<div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
-  <!-- Page Header -->
-  <h2 class="type-page-title text-surface-900 dark:text-white">Add Ingredient</h2>
+<div class="page-layout page-layout--form">
+  <header class="page-header">
+    <div>
+      <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent mb-2">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        <span>{{ 'nav.back' | transloco }}</span>
+      </button>
+      <h1 class="type-page-title text-surface-900 dark:text-white">Add Ingredient</h1>
+    </div>
+  </header>
 
   @if (submitError()) {
     <div
@@ -51,11 +52,13 @@
 
       <!-- Ingredient Group Select -->
       <pantry-form-field
-        [label]="'Ingredient Group (Taxonomy Category)'"
+        [label]="'Ingredient group'"
+        #groupField
         forId="add-ingredient-group"
         hint="Classifies this ingredient for taxonomy and smart substitutions.">
         <p-select
           inputId="add-ingredient-group"
+          [ariaLabelledBy]="groupField.labelId()"
           [options]="ingredientGroups()"
           formControlName="ingredientGroup"
           optionLabel="name"
@@ -72,6 +75,7 @@
       <!-- Default Unit Select -->
       <pantry-form-field
         [label]="'Default Measurement Unit'"
+        #unitField
         forId="add-default-unit"
         [required]="true"
         [error]="
@@ -81,6 +85,7 @@
         ">
         <p-select
           inputId="add-default-unit"
+          [ariaLabelledBy]="unitField.labelId()"
           [options]="units()"
           formControlName="defaultUnit"
           optionLabel="name"

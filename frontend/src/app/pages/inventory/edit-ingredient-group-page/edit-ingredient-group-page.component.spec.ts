@@ -52,4 +52,45 @@ describe('EditIngredientGroupPageComponent navigation and category assignment', 
     });
     expect(navigate).toHaveBeenCalledWith(['/inventory/groups']);
   });
+
+  it('binds the parent category select by id so the current parent is displayed', async () => {
+    const groups = {
+      getIngredientGroupById: jasmine
+        .createSpy()
+        .and.returnValue(
+          of({ id: 1, name: 'Baking', ingredientCategoryId: 2, ingredientCategoryName: 'Pantry' }),
+        ),
+      updateIngredientGroup: jasmine.createSpy().and.returnValue(of({ id: 1, name: 'Baking' })),
+    };
+    await TestBed.configureTestingModule({
+      imports: [
+        EditIngredientGroupPageComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: {} },
+          translocoConfig: { defaultLang: 'en', availableLangs: ['en'] },
+        }),
+      ],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { paramMap: convertToParamMap({ id: '1' }) } },
+        },
+        { provide: IngredientGroupService, useValue: groups },
+        {
+          provide: IngredientCategoryService,
+          useValue: { getIngredientCategories: () => of([{ id: 2, name: 'Pantry' }]) },
+        },
+        {
+          provide: ToastService,
+          useValue: { showSuccess: jasmine.createSpy(), showError: jasmine.createSpy() },
+        },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(EditIngredientGroupPageComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('p-select').textContent).toContain('Pantry');
+  });
 });

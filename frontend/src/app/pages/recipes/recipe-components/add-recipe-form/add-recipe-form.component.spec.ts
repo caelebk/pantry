@@ -3,13 +3,14 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
+import { Recipe } from '@models/recipe.model';
 import { UnitType } from '@models/unit.model';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { RecipeService } from '@services/recipe.service';
 import { ToastService } from '@services/toast.service';
-import { of } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { TranslocoHttpLoader } from '../../../../transloco-loader';
 import { AddRecipeFormComponent } from './add-recipe-form.component';
 
@@ -22,6 +23,7 @@ describe('AddRecipeFormComponent', () => {
   let mockUnitService: jasmine.SpyObj<UnitService>;
   let mockToastService: jasmine.SpyObj<ToastService>;
   let mockRouter: jasmine.SpyObj<Router>;
+  let routeId: string | null = null;
 
   const mockUnitGrams = {
     id: 1,
@@ -46,6 +48,7 @@ describe('AddRecipeFormComponent', () => {
   };
 
   beforeEach(async () => {
+    routeId = null;
     mockRecipeService = jasmine.createSpyObj('RecipeService', [
       'getRecipeById',
       'createRecipe',
@@ -99,7 +102,7 @@ describe('AddRecipeFormComponent', () => {
           useValue: {
             snapshot: {
               paramMap: {
-                get: () => null,
+                get: () => routeId,
               },
             },
           },
@@ -280,6 +283,53 @@ describe('AddRecipeFormComponent', () => {
           timerSeconds: undefined,
         },
       ],
+    });
+  });
+
+  it('does not render the tags input because the backend has no recipe tags', () => {
+    expect(fixture.nativeElement.querySelector('#recipe-tags')).toBeNull();
+  });
+
+  describe('edit mode', () => {
+    const recipe$ = new Subject<Recipe>();
+
+    function createEditFixture(): void {
+      routeId = 'recipe-9';
+      mockRecipeService.getRecipeById.and.returnValue(recipe$);
+      fixture = TestBed.createComponent(AddRecipeFormComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }
+
+    it('leaves the skeleton and returns to recipes when ingredients fail to load', () => {
+      mockIngredientService.getIngredients.and.returnValue(throwError(() => new Error('down')));
+      createEditFixture();
+      expect(component.isLoadingRecipe()).toBeFalse();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/recipes']);
+      expect(mockRecipeService.getRecipeById).not.toHaveBeenCalled();
+    });
+
+    it('shows a skeleton instead of create defaults until the recipe loads', () => {
+      createEditFixture();
+      expect(component.isLoadingRecipe()).toBeTrue();
+      expect(fixture.nativeElement.querySelector('pantry-skeleton')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('#recipe-name')).toBeNull();
+
+      recipe$.next({
+        id: 'recipe-9',
+        name: 'Loaded Soup',
+        servings: 2,
+        prepTime: 5,
+        cookTime: 15,
+        difficultyId: 2,
+      } as Recipe);
+      fixture.detectChanges();
+
+      expect(component.isLoadingRecipe()).toBeFalse();
+      expect(fixture.nativeElement.querySelector('pantry-skeleton')).toBeNull();
+      expect(fixture.nativeElement.querySelector('#recipe-name')).toBeTruthy();
+      expect(component.name).toBe('Loaded Soup');
+      expect(component.totalTime).toBe(20);
     });
   });
 });

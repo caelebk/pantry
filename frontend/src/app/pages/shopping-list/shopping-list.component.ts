@@ -1,7 +1,15 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Injector,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ShoppingItem } from '@models/shopping-list.model';
 import { MealPlannerService } from '@services/meal-planner.service';
@@ -9,12 +17,15 @@ import { ShoppingListService } from '@services/shopping-list.service';
 
 import { BadgeComponent, SearchInputComponent, SkeletonComponent } from '@ui';
 
+type ShoppingSortColumn = 'name' | 'category' | 'store' | 'quantity' | 'price';
+
 @Component({
   selector: 'pantry-shopping-list',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     TranslocoModule,
     SearchInputComponent,
     SkeletonComponent,
@@ -28,17 +39,33 @@ export class ShoppingListComponent {
   private readonly router = inject(Router);
   readonly shoppingListService = inject(ShoppingListService);
   readonly mealPlannerService = inject(MealPlannerService);
+  private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
 
   // Filter state
   activeFilter = signal<'all' | 'unchecked' | 'checked'>('all');
   readonly searchQuery = signal('');
   readonly selectedIds = signal<Set<string>>(new Set());
+  // Bulk selection is a secondary mode; the primary row control marks the item bought.
+  readonly selectMode = signal(false);
 
   // Sort state
-  readonly sortBy = signal<'name' | 'category' | 'store' | 'quantity' | 'price'>('name');
+  readonly sortBy = signal<ShoppingSortColumn>('name');
   readonly sortDirection = signal<'asc' | 'desc'>('asc');
+  readonly sortColumns: { key: ShoppingSortColumn; label: string }[] = [
+    { key: 'name', label: 'shoppingList.table.item' },
+    { key: 'category', label: 'shoppingList.table.category' },
+    { key: 'store', label: 'shoppingList.table.store' },
+    { key: 'quantity', label: 'shoppingList.table.quantity' },
+    { key: 'price', label: 'shoppingList.table.price' },
+  ];
 
-  toggleSort(column: 'name' | 'category' | 'store' | 'quantity' | 'price'): void {
+  ariaSort(column: ShoppingSortColumn): 'ascending' | 'descending' | 'none' {
+    if (this.sortBy() !== column) return 'none';
+    return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
+  }
+
+  toggleSort(column: ShoppingSortColumn): void {
     if (this.sortBy() === column) {
       this.sortDirection.update((dir) => (dir === 'asc' ? 'desc' : 'asc'));
     } else {
@@ -53,6 +80,7 @@ export class ShoppingListComponent {
 
   startEditingQuantity(id: string): void {
     this.editingQuantityId.set(id);
+    this.focusAfterRender('[data-inline-input]');
   }
 
   stopEditingQuantity(): void {
@@ -61,10 +89,42 @@ export class ShoppingListComponent {
 
   startEditingPrice(id: string): void {
     this.editingPriceId.set(id);
+    this.focusAfterRender('[data-inline-input]');
   }
 
   stopEditingPrice(): void {
     this.editingPriceId.set(null);
+  }
+
+  /** Saves the quantity edit; Enter (restoreFocus) returns focus to the trigger button. */
+  commitQuantity(item: ShoppingItem, quantity: number, restoreFocus = false): void {
+    if (this.editingQuantityId() !== item.id) return;
+    this.updateInlineQuantity(item, quantity);
+    this.stopEditingQuantity();
+    if (restoreFocus) this.focusAfterRender(`[data-edit-trigger="qty-${item.id}"]`);
+  }
+
+  cancelQuantity(item: ShoppingItem): void {
+    this.stopEditingQuantity();
+    this.focusAfterRender(`[data-edit-trigger="qty-${item.id}"]`);
+  }
+
+  commitPrice(item: ShoppingItem, price: number, restoreFocus = false): void {
+    if (this.editingPriceId() !== item.id) return;
+    this.updateInlinePrice(item, price);
+    this.stopEditingPrice();
+    if (restoreFocus) this.focusAfterRender(`[data-edit-trigger="price-${item.id}"]`);
+  }
+
+  cancelPrice(item: ShoppingItem): void {
+    this.stopEditingPrice();
+    this.focusAfterRender(`[data-edit-trigger="price-${item.id}"]`);
+  }
+
+  private focusAfterRender(selector: string): void {
+    afterNextRender(() => this.document.querySelector<HTMLElement>(selector)?.focus(), {
+      injector: this.injector,
+    });
   }
 
   // Filtered & sorted items signal
@@ -209,6 +269,11 @@ export class ShoppingListComponent {
     if (this.allVisibleSelected()) this.filteredItems().forEach((item) => next.delete(item.id));
     else this.filteredItems().forEach((item) => next.add(item.id));
     this.selectedIds.set(next);
+  }
+
+  toggleSelectMode(): void {
+    this.selectMode.update((on) => !on);
+    if (!this.selectMode()) this.clearSelection();
   }
 
   clearSelection(): void {

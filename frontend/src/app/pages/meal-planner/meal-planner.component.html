@@ -1,12 +1,11 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-  <!-- Page Header & Action Bar -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="page-layout">
+  <header class="page-header">
     <div>
       <h1 class="type-page-title text-surface-900 dark:text-white">Weekly Meal Planner</h1>
     </div>
 
     <!-- Quick Actions Group -->
-    <div class="flex flex-wrap items-center gap-2.5 shrink-0 self-start md:self-auto">
+    <div class="page-header__actions">
       @if (missingItemsCount() > 0) {
         <button (click)="syncAllMissingToShoppingList()" class="btn-danger">
           Sync {{ missingItemsCount() }} Missing Item{{ missingItemsCount() > 1 ? 's' : '' }}
@@ -26,7 +25,7 @@
         <span>Plan a Meal</span>
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- Sub-Page Navigation Tabs -->
   <div
@@ -54,6 +53,15 @@
       </button>
     </div>
   </div>
+
+  @if (mealPlannerService.stockFailed()) {
+    <pantry-empty-state
+      icon="pi pi-exclamation-circle"
+      [title]="'mealPlanner.stockLoadError' | transloco"
+      [description]="'mealPlanner.stockLoadErrorHint' | transloco"
+      [actionText]="'mealPlanner.retry' | transloco"
+      (actionClick)="retryLoadStock()" />
+  }
 
   <!-- Dynamic Views -->
   <div class="panel-reveal panel-delay-2">

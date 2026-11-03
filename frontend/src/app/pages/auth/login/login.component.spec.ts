@@ -85,4 +85,16 @@ describe('LoginComponent', () => {
     component.togglePasswordVisibility();
     expect(component.showPassword()).toBe(true);
   });
+
+  it('should not render a forgot password control (no reset flow exists)', () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+    const buttons = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button'),
+    );
+    expect(buttons.some((button) => /forgot/i.test(button.textContent ?? ''))).toBe(false);
+    expect(buttons.some((button) => button.textContent?.includes('auth.forgotPassword'))).toBe(
+      false,
+    );
+  });
 });

@@ -12,6 +12,7 @@ import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
 import { ingredientDetailReturnTo } from '@utility/ingredient-detail-return';
+import { convertQuantity } from '@utility/itemUtility/UnitConversion';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
@@ -20,10 +21,11 @@ import { forkJoin } from 'rxjs';
 interface ReconcileItemRow {
   id: string;
   label: string;
-  locationName: string;
+  locationName: string | null;
   oldQuantity: number;
   oldUnitName: string;
-  newQuantity: number;
+  newQuantity: number | null;
+  needsManualInput: boolean;
 }
 
 import { SpinnerComponent } from '@ui';
@@ -58,6 +60,7 @@ export class UnitReconciliationPageComponent implements OnInit {
   public isLoading = signal<boolean>(true);
   public isSubmitting = signal<boolean>(false);
   public submitError = signal<string | null>(null);
+  public submitAttempted = signal<boolean>(false);
 
   private get returnTo(): string | null {
     return ingredientDetailReturnTo(this.route.snapshot.queryParams?.['returnTo']);
@@ -92,25 +95,16 @@ export class UnitReconciliationPageComponent implements OnInit {
 
         const rows: ReconcileItemRow[] = items.map((item: IngredientItemDTO) => {
           const itemUnit = units.find((u) => u.id === item.unitId);
-          let suggestedQty = item.quantity;
-
-          if (
-            itemUnit &&
-            foundTarget &&
-            itemUnit.toBaseFactor &&
-            foundTarget.toBaseFactor &&
-            itemUnit.type === foundTarget.type
-          ) {
-            suggestedQty = (item.quantity * itemUnit.toBaseFactor) / foundTarget.toBaseFactor;
-          }
+          const converted = convertQuantity(item.quantity, itemUnit, foundTarget);
 
           return {
             id: item.id,
             label: item.label,
-            locationName: locMap.get(item.locationId) || 'Pantry',
+            locationName: locMap.get(item.locationId) ?? null,
             oldQuantity: item.quantity,
             oldUnitName: itemUnit ? itemUnit.shortName : 'unit',
-            newQuantity: Math.round(suggestedQty * 1000) / 1000,
+            newQuantity: converted === null ? null : Math.round(converted * 1000) / 1000,
+            needsManualInput: converted === null,
           };
         });
 
@@ -125,17 +119,24 @@ export class UnitReconciliationPageComponent implements OnInit {
     });
   }
 
+  isRowInvalid(row: ReconcileItemRow): boolean {
+    return row.newQuantity === null || row.newQuantity === undefined || row.newQuantity < 0;
+  }
+
   onSubmit(): void {
     const id = this.ingredientId();
     const target = this.targetUnit();
     if (!id || !target) return;
+
+    this.submitAttempted.set(true);
+    if (this.itemRows().some((row) => this.isRowInvalid(row))) return;
 
     this.isSubmitting.set(true);
     this.submitError.set(null);
 
     const payloadItems = this.itemRows().map((row) => ({
       id: row.id,
-      quantity: row.newQuantity,
+      quantity: row.newQuantity as number,
     }));
 
     this.ingredientService.reconcileIngredientUnit(id, target.id, payloadItems).subscribe({

@@ -1,5 +1,8 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+import { provideTransloco } from '@jsverse/transloco';
+import { Ingredient } from '@models/ingredient.model';
 import { IngredientItem, IngredientItemDTO } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { ShoppingItem } from '@models/shopping-list.model';
@@ -24,6 +27,8 @@ describe('RestockReviewPageComponent', () => {
   let mockUnitService: jasmine.SpyObj<UnitService>;
   let mockLocationService: jasmine.SpyObj<LocationService>;
   let mockIngredientService: jasmine.SpyObj<IngredientService>;
+  let mockToastService: jasmine.SpyObj<ToastService>;
+  let itemsSignal: ReturnType<typeof signal<ShoppingItem[]>>;
 
   const mockUnits: Unit[] = [
     { id: 1, name: 'pcs', shortName: 'pcs', type: UnitType.Count, toBaseFactor: 1 },
@@ -81,11 +86,14 @@ describe('RestockReviewPageComponent', () => {
 
   beforeEach(async () => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+    itemsSignal = signal<ShoppingItem[]>(mockShoppingItems);
     mockShoppingListService = jasmine.createSpyObj(
       'ShoppingListService',
       ['loadItemsFromBackend', 'removeItem'],
       {
-        items: jasmine.createSpy('items').and.returnValue(mockShoppingItems),
+        items: itemsSignal.asReadonly(),
+        hasLoaded: signal(true),
+        isLoading: signal(false),
       },
     );
 
@@ -161,6 +169,7 @@ describe('RestockReviewPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RestockReviewPageComponent],
       providers: [
+        provideTransloco({ config: { availableLangs: ['en'], defaultLang: 'en' } }),
         { provide: Router, useValue: mockRouter },
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: ItemService, useValue: mockItemService },
@@ -302,11 +311,11 @@ describe('RestockReviewPageComponent', () => {
         name: 'Olive Oil',
         category: 'Carbs & Grains',
         quantity: 2,
-        unit: 'bottle',
+        unit: 'pcs',
         checked: true,
       },
     ];
-    (mockShoppingListService.items as jasmine.Spy).and.returnValue(shoppingWithOliveOil);
+    itemsSignal.set(shoppingWithOliveOil);
 
     fixture = TestBed.createComponent(RestockReviewPageComponent);
     component = fixture.componentInstance;
@@ -344,5 +353,188 @@ describe('RestockReviewPageComponent', () => {
     expect(candidate).toBeDefined();
     expect(candidate?.score).toBe(1.0);
     expect(candidate?.item.name).toBe('Whole Milk');
+  });
+
+  it('should not loop and should show the empty state when the shopping list is empty', () => {
+    itemsSignal.set([]);
+
+    fixture = TestBed.createComponent(RestockReviewPageComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.draftItems().length).toBe(0);
+    expect(fixture.nativeElement.textContent).toContain('No items ready to restock');
+  });
+
+  it('should trigger loading the shopping list when it has not loaded yet', () => {
+    (mockShoppingListService.hasLoaded as unknown as ReturnType<typeof signal<boolean>>).set(false);
+
+    fixture = TestBed.createComponent(RestockReviewPageComponent);
+    fixture.detectChanges();
+
+    expect(mockShoppingListService.loadItemsFromBackend).toHaveBeenCalled();
+    expect(fixture.componentInstance.draftItems().length).toBe(0);
+  });
+
+  it('should offer only bought items and show the empty state when none are bought', () => {
+    itemsSignal.set([
+      { ...mockShoppingItems[0], checked: true },
+      { ...mockShoppingItems[1], checked: false },
+    ]);
+    fixture = TestBed.createComponent(RestockReviewPageComponent);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.draftItems().map((d) => d.shoppingId)).toEqual(['shop-1']);
+
+    itemsSignal.set(mockShoppingItems.map((i) => ({ ...i, checked: false })));
+    fixture = TestBed.createComponent(RestockReviewPageComponent);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.draftItems().length).toBe(0);
+    expect(fixture.nativeElement.textContent).toContain('No items ready to restock');
+  });
+
+  it('should include unbought items when ids are given explicitly', async () => {
+    itemsSignal.set([
+      { ...mockShoppingItems[0], checked: true },
+      { ...mockShoppingItems[1], checked: false },
+    ]);
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [RestockReviewPageComponent],
+      providers: [
+        provideTransloco({ config: { availableLangs: ['en'], defaultLang: 'en' } }),
+        { provide: Router, useValue: mockRouter },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { queryParamMap: convertToParamMap({ ids: 'shop-2' }) } },
+        },
+        { provide: ShoppingListService, useValue: mockShoppingListService },
+        { provide: ItemService, useValue: mockItemService },
+        { provide: IngredientService, useValue: mockIngredientService },
+        { provide: UnitService, useValue: mockUnitService },
+        { provide: LocationService, useValue: mockLocationService },
+        { provide: ToastService, useValue: mockToastService },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(RestockReviewPageComponent);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.draftItems().map((d) => d.shoppingId)).toEqual(['shop-2']);
+  });
+
+  it('should keep a user-edited quantity when toggling between update and create', () => {
+    fixture.detectChanges();
+    const milk = component.draftItems().find((d) => d.name === 'Whole Milk')!;
+    milk.quantity = 7;
+
+    component.setActionMode(milk, 'create');
+    expect(milk.quantity).toBe(7);
+    component.setActionMode(milk, 'update');
+    expect(milk.quantity).toBe(7);
+    expect(milk.unit).toBe('pcs');
+  });
+
+  it('should convert the current quantity when the target unit changes', () => {
+    const grams: Unit = {
+      id: 3,
+      name: 'Gram',
+      shortName: 'g',
+      type: UnitType.Weight,
+      toBaseFactor: 1,
+    };
+    mockUnitService.getUnits.and.returnValue(of([...mockUnits, grams]));
+    mockIngredientService.getIngredients.and.returnValue(
+      of([{ id: 'ing-flour', name: 'Flour', defaultUnit: grams } as unknown as Ingredient]),
+    );
+    itemsSignal.set([
+      {
+        id: 'shop-flour',
+        name: 'Flour',
+        category: 'Grains',
+        quantity: 2,
+        unit: 'kg',
+        checked: true,
+      },
+    ]);
+    fixture = TestBed.createComponent(RestockReviewPageComponent);
+    fixture.detectChanges();
+
+    const flour = fixture.componentInstance.draftItems()[0];
+    expect(flour.quantity).toBe(2000);
+    flour.quantity = 3000;
+    fixture.componentInstance.setActionMode(flour, 'create');
+    expect(flour.quantity).toBe(3000);
+    expect(flour.unit).toBe('g');
+  });
+
+  it('should convert the quantity when switching to the ingredient default unit', () => {
+    const grams: Unit = {
+      id: 3,
+      name: 'Gram',
+      shortName: 'g',
+      type: UnitType.Weight,
+      toBaseFactor: 1,
+    };
+    const kg = mockUnits[1];
+    mockUnitService.getUnits.and.returnValue(of([...mockUnits, grams]));
+    mockIngredientService.getIngredients.and.returnValue(
+      of([{ id: 'ing-flour', name: 'Flour', defaultUnit: grams } as unknown as Ingredient]),
+    );
+    itemsSignal.set([
+      {
+        id: 'shop-flour',
+        name: 'Flour',
+        category: 'Grains',
+        quantity: 2,
+        unit: 'kg',
+        checked: true,
+      },
+    ]);
+
+    fixture = TestBed.createComponent(RestockReviewPageComponent);
+    fixture.detectChanges();
+
+    const flour = fixture.componentInstance.draftItems()[0];
+    expect(kg.shortName).toBe('kg');
+    expect(flour.unit).toBe('g');
+    expect(flour.quantity).toBe(2000);
+  });
+
+  it('should keep the original unit and quantity when units cannot be converted', () => {
+    const ml: Unit = {
+      id: 4,
+      name: 'Milliliter',
+      shortName: 'ml',
+      type: UnitType.Volume,
+      toBaseFactor: 1,
+    };
+    mockUnitService.getUnits.and.returnValue(of([...mockUnits, ml]));
+    mockIngredientService.getIngredients.and.returnValue(
+      of([{ id: 'ing-oil', name: 'Olive Oil', defaultUnit: ml } as unknown as Ingredient]),
+    );
+    itemsSignal.set([
+      {
+        id: 'shop-oil',
+        name: 'Olive Oil',
+        category: 'Oils',
+        quantity: 1,
+        unit: 'pcs',
+        checked: true,
+      },
+    ]);
+
+    fixture = TestBed.createComponent(RestockReviewPageComponent);
+    fixture.detectChanges();
+
+    const oil = fixture.componentInstance.draftItems()[0];
+    expect(oil.unit).toBe('pcs');
+    expect(oil.quantity).toBe(1);
+    expect(oil.isUnitLocked).toBeFalse();
+  });
+
+  it('should only offer the kitchen locations and units from the services', () => {
+    fixture.detectChanges();
+
+    expect(component.locationsOptions()).toEqual(['Fridge', 'Pantry Shelf']);
+    expect(component.unitsOptions()).toEqual(['pcs', 'kg']);
   });
 });

@@ -1,33 +1,33 @@
-<div class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-  @if (fromGroups()) {
-    <a routerLink="/inventory/groups" class="btn-ghost self-start">
-      <i class="pi pi-arrow-left" aria-hidden="true"></i>
-      <span>{{ 'taxonomy.backToGroups' | transloco }}</span>
-    </a>
-  }
-  @if (unavailableGroup()) {
-    <p role="status" class="text-sm text-surface-600 dark:text-surface-300">
-      {{ 'taxonomy.invalidGroupFilter' | transloco }}
-    </p>
-  }
-  <!-- Page Title & Header Actions -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+<div class="page-layout">
+  <header class="page-header">
     <div>
-      <h2 class="type-page-title text-surface-900 dark:text-white">Ingredients Catalog</h2>
+      @if (fromGroups()) {
+        <a routerLink="/inventory/groups" class="btn-ghost mb-2">
+          <i class="pi pi-arrow-left" aria-hidden="true"></i>
+          <span>{{ 'taxonomy.backToGroups' | transloco }}</span>
+        </a>
+      }
+      <h1 class="type-page-title text-surface-900 dark:text-white">Ingredients Catalog</h1>
       <p class="text-sm text-surface-600 dark:text-surface-300 mt-2">
         {{ 'inventory.catalogDescription' | transloco }}
       </p>
     </div>
-    <div class="flex items-center gap-3">
+    <div class="page-header__actions">
       <button (click)="onAddIngredient()" class="btn-primary">
         <i class="pi pi-plus text-base"></i>
         <span>Add Ingredient</span>
       </button>
     </div>
-  </div>
+  </header>
+
+  @if (unavailableGroup()) {
+    <p role="status" class="text-sm text-surface-600 dark:text-surface-300">
+      {{ 'taxonomy.invalidGroupFilter' | transloco }}
+    </p>
+  }
 
   <!-- Filter & Control Bar (Clean & Borderless - Aligned with Inventory Page) -->
-  <div class="mb-8 relative z-20">
+  <div class="relative z-20">
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <!-- Search Input -->
       <div class="flex-1 min-w-[240px]">

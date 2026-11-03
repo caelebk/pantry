@@ -1,30 +1,35 @@
 <ng-container *transloco="let t">
-  <div class="flex">
-    <button
-      type="button"
-      class="btn-ghost hover:!bg-transparent"
-      (click)="onCancel()"
-      [disabled]="isSubmitting()"
-      [attr.aria-label]="t('itemEditor.back')">
-      <i class="pi pi-arrow-left" aria-hidden="true"></i>
-      <span>{{ t('nav.back') }}</span>
-    </button>
-  </div>
-  <div class="page-layout max-w-4xl mx-auto px-4 py-6">
+  <div class="page-layout page-layout--form">
     <header class="page-header">
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="min-w-0">
-          <h1 class="type-page-title text-surface-900 dark:text-white">
-            {{ t('itemEditor.editTitle') }}
-          </h1>
-          <p class="text-sm text-surface-600 dark:text-surface-300 mt-2">
-            {{ t('itemEditor.editSubtitle') }}
-          </p>
-        </div>
+      <div class="min-w-0">
+        <button
+          type="button"
+          class="btn-ghost hover:!bg-transparent mb-2"
+          (click)="onCancel()"
+          [disabled]="isSubmitting()"
+          [attr.aria-label]="t('itemEditor.back')">
+          <i class="pi pi-arrow-left" aria-hidden="true"></i>
+          <span>{{ t('nav.back') }}</span>
+        </button>
+        <h1 class="type-page-title text-surface-900 dark:text-white">
+          {{ t('itemEditor.editTitle') }}
+        </h1>
+        <p class="text-sm text-surface-600 dark:text-surface-300 mt-2">
+          {{ t('itemEditor.editSubtitle') }}
+        </p>
       </div>
     </header>
     @if (isLoading()) {
       <pantry-spinner size="lg" [label]="t('itemEditor.loading')" />
+    } @else if (loadFailed()) {
+      <div role="alert">
+        <pantry-empty-state
+          icon="pi pi-exclamation-circle"
+          [title]="t('itemEditor.loadErrorTitle')"
+          [description]="t('itemEditor.loadErrorDescription')"
+          [actionText]="t('itemEditor.retry')"
+          (actionClick)="retryLoad()"></pantry-empty-state>
+      </div>
     } @else {
       <pantry-item-editor
         [form]="editItemForm"

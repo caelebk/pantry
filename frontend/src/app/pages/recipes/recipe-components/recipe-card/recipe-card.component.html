@@ -69,7 +69,7 @@
       <div class="w-24 min-w-0" aria-hidden="true">
         <div class="progress-track h-1.5">
           <div
-            class="h-full rounded-full transition-all duration-500"
+            class="h-full rounded-full transition-[width] duration-500 motion-reduce:transition-none"
             [ngClass]="stats.isFullyMakeable ? 'bg-emerald-500' : 'bg-amber-500'"
             [style.width.%]="stats.percentage"></div>
         </div>
