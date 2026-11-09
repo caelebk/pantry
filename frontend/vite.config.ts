@@ -5,6 +5,8 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(() => ({
   plugins: [angular()],
+  // Keep the Vite/Vitest cache in frontend/node_modules (gitignored), not src/node_modules.
+  cacheDir: resolve(__dirname, './node_modules/.vite'),
   resolve: {
     alias: {
       '@models': resolve(__dirname, './src/app/models'),

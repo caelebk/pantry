@@ -1,12 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { beforeEach, describe, expect, it } from 'vitest';
+import translations from '../../../../../public/i18n/en.json';
 import { AlertComponent } from './alert.component';
 
 describe('AlertComponent', () => {
   let fixture: ComponentFixture<AlertComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [AlertComponent] }).compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [
+        AlertComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { defaultLang: 'en', availableLangs: ['en'] },
+        }),
+      ],
+    }).compileComponents();
     fixture = TestBed.createComponent(AlertComponent);
   });
 
@@ -48,5 +58,12 @@ describe('AlertComponent', () => {
     expect(button.getAttribute('aria-label')).toBe('Close message');
     button.click();
     expect(count).toBe(1);
+  });
+
+  it('should fall back to the translated dismiss label', () => {
+    fixture.componentRef.setInput('dismissible', true);
+    fixture.detectChanges();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+    expect(button.getAttribute('aria-label')).toBe(translations.common.dismiss);
   });
 });

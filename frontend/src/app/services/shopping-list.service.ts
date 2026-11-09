@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { ApiResponse } from '@models/http.model';
 import { AddShoppingItemDTO, ShoppingItem } from '@models/shopping-list.model';
 import { mapResponseData } from '@utility/httpUtility/HttpResponse.operator';
@@ -13,6 +14,7 @@ import { ToastService } from './toast.service';
 export class ShoppingListService {
   private readonly http = inject(HttpClient);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
   private readonly authService = inject(AuthService);
   private readonly apiUrl = '/api/v1/shopping-list';
 
@@ -63,11 +65,14 @@ export class ShoppingListService {
     this.createItem(dto).subscribe({
       next: (newItem) => {
         this.itemsSignal.update((curr) => [newItem, ...curr]);
-        this.toastService.showSuccess(`Added "${dto.name}" to shopping list`, 'Shopping List');
+        this.toastService.showSuccess(
+          this.transloco.translate('shoppingList.toast.added', { name: dto.name }),
+          this.transloco.translate('shoppingList.toast.title'),
+        );
       },
       error: (err) => {
         console.error('Failed to add shopping list item:', err);
-        this.toastService.showError('Failed to add item to shopping list on server.');
+        this.toastService.showError(this.transloco.translate('shoppingList.toast.addFailed'));
       },
     });
   }
@@ -113,13 +118,13 @@ export class ShoppingListService {
         next: (newItems) => {
           this.itemsSignal.update((curr) => [...newItems, ...curr]);
           this.toastService.showSuccess(
-            `Added ${items.length} missing ingredient(s) to shopping list`,
-            'Shopping List',
+            this.transloco.translate('shoppingList.toast.addedMissing', { count: items.length }),
+            this.transloco.translate('shoppingList.toast.title'),
           );
         },
         error: (err) => {
           console.error('Failed to add multiple shopping list items:', err);
-          this.toastService.showError('Failed to add items to shopping list on server.');
+          this.toastService.showError(this.transloco.translate('shoppingList.toast.addManyFailed'));
         },
       });
   }
@@ -191,7 +196,9 @@ export class ShoppingListService {
         next: () => {
           this.itemsSignal.update((curr) => curr.filter((i) => i.id !== id));
           if (item) {
-            this.toastService.showInfo(`Removed "${item.name}" from shopping list`);
+            this.toastService.showInfo(
+              this.transloco.translate('shoppingList.toast.removed', { name: item.name }),
+            );
           }
         },
         error: (err) => {
@@ -210,7 +217,9 @@ export class ShoppingListService {
       .subscribe({
         next: () => {
           this.itemsSignal.update((curr) => curr.filter((i) => !i.checked));
-          this.toastService.showInfo(`Cleared ${count} completed item(s)`);
+          this.toastService.showInfo(
+            this.transloco.translate('shoppingList.toast.cleared', { count }),
+          );
         },
         error: (err) => {
           console.error('Failed to clear checked shopping list items:', err);
@@ -221,7 +230,9 @@ export class ShoppingListService {
   restockCheckedItems(): void {
     const checkedItems = this.itemsSignal().filter((i) => i.checked);
     if (checkedItems.length === 0) {
-      this.toastService.showWarning('No checked items to restock');
+      this.toastService.showWarning(
+        this.transloco.translate('shoppingList.toast.nothingToRestock'),
+      );
       return;
     }
 
@@ -232,8 +243,10 @@ export class ShoppingListService {
         next: () => {
           this.itemsSignal.update((curr) => curr.filter((i) => !i.checked));
           this.toastService.showSuccess(
-            `Restocked ${checkedItems.length} item(s) directly into your pantry inventory!`,
-            'Restock Complete',
+            this.transloco.translate('shoppingList.toast.restocked', {
+              count: checkedItems.length,
+            }),
+            this.transloco.translate('shoppingList.toast.restockedTitle'),
           );
         },
         error: (err) => {

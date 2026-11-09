@@ -147,8 +147,7 @@ export class RecipeDetailComponent implements OnInit {
     });
   }
 
-  onIngredientClick(event: Event, ing: { ingredientId: string }): void {
-    event.stopPropagation();
+  onIngredientClick(ing: { ingredientId: string }): void {
     this.router.navigate(['/inventory/ingredients', ing.ingredientId]);
   }
 

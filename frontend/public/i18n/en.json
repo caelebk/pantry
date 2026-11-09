@@ -248,6 +248,7 @@
       "colLocation": "Location",
       "colPrevStock": "Previous Stock",
       "colNewQty": "New Quantity ({{unit}})",
+      "newQtyFor": "New quantity for {{label}} ({{unit}})",
       "cancelBtn": "Cancel",
       "confirmBtn": "Confirm Update",
       "manualHint": "{{from}} can't be converted to {{to}} automatically. Enter the new quantity yourself.",
@@ -539,6 +540,20 @@
       "servingsToPrepare": "Servings to prepare:",
       "cancel": "Cancel",
       "save": "Save to meal plan"
+    },
+    "toast": {
+      "title": "Meal planner",
+      "planned": "Planned \"{{name}}\" for {{day}} {{mealType}}",
+      "saveFailed": "Failed to save meal plan to server.",
+      "removed": "Removed {{name}} from plan",
+      "removeFailed": "Failed to remove meal plan from server.",
+      "cookedTitle": "Meal completed",
+      "cooked": "Bon appétit! Marked \"{{name}}\" as cooked.",
+      "updateFailed": "Failed to update meal status.",
+      "stockCheckFailed": "Could not check stock for this recipe.",
+      "allInStock": "All ingredients are in stock for this recipe!",
+      "allPlannedStocked": "All planned meals are fully stocked!",
+      "alreadyOnList": "All missing ingredients are already on your shopping list."
     }
   },
   "addItemForm": {
@@ -696,7 +711,19 @@
   },
   "common": {
     "expired": "Expired",
-    "showLess": "Show Less"
+    "showLess": "Show Less",
+    "loading": "Loading...",
+    "loadingContent": "Loading content",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info",
+    "dismiss": "Dismiss",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "search": "Search",
+    "searchPlaceholder": "Search...",
+    "clearSearch": "Clear search"
   },
   "restockReview": {
     "title": "Restock Review",
@@ -1179,6 +1206,18 @@
       "title": "Delete selected items",
       "messageOne": "Delete the selected item?",
       "messageOther": "Delete {{count}} selected items?"
+    },
+    "toast": {
+      "title": "Shopping list",
+      "added": "Added \"{{name}}\" to shopping list",
+      "addFailed": "Failed to add item to shopping list on server.",
+      "addedMissing": "Added {{count}} missing ingredient(s) to shopping list",
+      "addManyFailed": "Failed to add items to shopping list on server.",
+      "removed": "Removed \"{{name}}\" from shopping list",
+      "cleared": "Cleared {{count}} completed item(s)",
+      "nothingToRestock": "No checked items to restock",
+      "restocked": "Restocked {{count}} item(s) directly into your pantry inventory!",
+      "restockedTitle": "Restock complete"
     }
   },
   "stores": {

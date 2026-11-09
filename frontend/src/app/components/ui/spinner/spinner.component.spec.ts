@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { beforeEach, describe, expect, it } from 'vitest';
+import translations from '../../../../../public/i18n/en.json';
 import { SpinnerComponent } from './spinner.component';
 
 describe('SpinnerComponent', () => {
@@ -8,7 +10,13 @@ describe('SpinnerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SpinnerComponent],
+      imports: [
+        SpinnerComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { defaultLang: 'en', availableLangs: ['en'] },
+        }),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SpinnerComponent);
@@ -50,7 +58,9 @@ describe('SpinnerComponent', () => {
     const wrapper = fixture.nativeElement.querySelector('[role="status"]');
     expect(wrapper).toBeTruthy();
     expect(wrapper.getAttribute('aria-live')).toBe('polite');
-    expect(fixture.nativeElement.querySelector('.sr-only')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.sr-only').textContent).toBe(
+      translations.common.loading,
+    );
   });
 
   it('should drop live region and screen-reader text when announce is false', () => {

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, effect, inject, Injectable, signal, untracked } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { ApiResponse } from '@models/http.model';
 import { Ingredient } from '@models/ingredient.model';
 import { IngredientItem } from '@models/items.model';
@@ -26,6 +27,7 @@ export class MealPlannerService {
   private readonly http = inject(HttpClient);
   private readonly shoppingListService = inject(ShoppingListService);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
   private readonly authService = inject(AuthService);
   private readonly ingredientService = inject(IngredientService, { optional: true });
   private readonly recipeService = inject(RecipeService);
@@ -195,14 +197,18 @@ export class MealPlannerService {
         next: (created) => {
           this.mealsSignal.update((curr) => [...curr, created]);
           this.toastService.showSuccess(
-            `Planned "${created.recipeName}" for ${day} ${mealType}`,
-            'Meal Planner',
+            this.transloco.translate('mealPlanner.toast.planned', {
+              name: created.recipeName,
+              day,
+              mealType,
+            }),
+            this.transloco.translate('mealPlanner.toast.title'),
           );
           callbacks?.onSuccess?.();
         },
         error: (err) => {
           console.error('Failed to add meal plan:', err);
-          this.toastService.showError('Failed to save meal plan to server.');
+          this.toastService.showError(this.transloco.translate('mealPlanner.toast.saveFailed'));
           callbacks?.onError?.();
         },
       });
@@ -217,12 +223,14 @@ export class MealPlannerService {
         next: () => {
           this.mealsSignal.update((curr) => curr.filter((m) => m.id !== id));
           if (meal) {
-            this.toastService.showInfo(`Removed ${meal.recipeName} from plan`);
+            this.toastService.showInfo(
+              this.transloco.translate('mealPlanner.toast.removed', { name: meal.recipeName }),
+            );
           }
         },
         error: (err) => {
           console.error('Failed to remove meal plan:', err);
-          this.toastService.showError('Failed to remove meal plan from server.');
+          this.toastService.showError(this.transloco.translate('mealPlanner.toast.removeFailed'));
         },
       });
   }
@@ -240,14 +248,14 @@ export class MealPlannerService {
           this.mealsSignal.update((curr) => curr.map((m) => (m.id === id ? updated : m)));
           if (nextCooked) {
             this.toastService.showSuccess(
-              `Bon Appétit! Marked "${meal.recipeName}" as cooked.`,
-              'Meal Completed',
+              this.transloco.translate('mealPlanner.toast.cooked', { name: meal.recipeName }),
+              this.transloco.translate('mealPlanner.toast.cookedTitle'),
             );
           }
         },
         error: (err) => {
           console.error('Failed to toggle cooked state:', err);
-          this.toastService.showError('Failed to update meal status.');
+          this.toastService.showError(this.transloco.translate('mealPlanner.toast.updateFailed'));
         },
       });
   }
@@ -255,11 +263,11 @@ export class MealPlannerService {
   addMissingToShoppingList(meal: PlannedMeal): void {
     const missing = this.missingFor(meal);
     if (missing === null) {
-      this.toastService.showError('Could not check stock for this recipe.');
+      this.toastService.showError(this.transloco.translate('mealPlanner.toast.stockCheckFailed'));
       return;
     }
     if (missing.length === 0) {
-      this.toastService.showInfo('All ingredients are in stock for this recipe!');
+      this.toastService.showInfo(this.transloco.translate('mealPlanner.toast.allInStock'));
       return;
     }
 
@@ -290,7 +298,7 @@ export class MealPlannerService {
       );
 
     if (missingItems.length === 0) {
-      this.toastService.showInfo('All planned meals are fully stocked!');
+      this.toastService.showInfo(this.transloco.translate('mealPlanner.toast.allPlannedStocked'));
       return;
     }
 
@@ -346,7 +354,7 @@ export class MealPlannerService {
           });
 
         if (resolved.length === 0) {
-          this.toastService.showInfo('All missing ingredients are already on your shopping list.');
+          this.toastService.showInfo(this.transloco.translate('mealPlanner.toast.alreadyOnList'));
           return;
         }
         this.shoppingListService.addMultipleItems(resolved);

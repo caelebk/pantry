@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { NavigationStart, Router } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import translations from '../../../../../public/i18n/en.json';
 import { ConfirmDialogService } from './confirm-dialog.service';
 
 describe('ConfirmDialogService', () => {
@@ -12,6 +14,13 @@ describe('ConfirmDialogService', () => {
   beforeEach(() => {
     events = new Subject<unknown>();
     TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          preloadLangs: true,
+          translocoConfig: { defaultLang: 'en', availableLangs: ['en'] },
+        }),
+      ],
       providers: [{ provide: Router, useValue: { events } }],
     });
     service = TestBed.inject(ConfirmDialogService);

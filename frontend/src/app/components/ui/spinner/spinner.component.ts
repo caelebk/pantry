@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 export type SpinnerSize = 'xs' | 'sm' | 'md' | 'lg';
 export type SpinnerColor = 'primary' | 'white' | 'surface';
@@ -8,7 +9,7 @@ export type SpinnerLayout = 'inline' | 'stacked';
 @Component({
   selector: 'pantry-spinner',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoModule],
   template: `
     <div
       class="inline-flex items-center justify-center"
@@ -38,7 +39,7 @@ export type SpinnerLayout = 'inline' | 'stacked';
         <span [class]="labelClasses()">{{ label() }}</span>
       }
       @if (announce()) {
-        <span class="sr-only">{{ label() || 'Loading...' }}</span>
+        <span class="sr-only">{{ label() || ('common.loading' | transloco) }}</span>
       }
     </div>
   `,
