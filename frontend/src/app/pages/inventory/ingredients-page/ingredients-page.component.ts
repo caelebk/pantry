@@ -15,7 +15,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
@@ -24,7 +24,6 @@ import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { ToastService } from '@services/toast.service';
 import { SelectModule } from 'primeng/select';
-import { SkeletonModule } from 'primeng/skeleton';
 import { AuthService } from '../../../core/services/auth.service';
 
 import { forkJoin, Subscription } from 'rxjs';
@@ -33,10 +32,15 @@ import { IngredientCatalogStateService } from './ingredient-catalog-state.servic
 export type StatusFilterOption = 'all' | 'in-stock' | 'out-of-stock';
 
 import {
+  AlertComponent,
   BadgeComponent,
+  ConfirmDialogService,
   DataTablePaginationComponent,
   EmptyStateComponent,
   SearchInputComponent,
+  SegmentedControlComponent,
+  SegmentedOption,
+  SkeletonComponent,
 } from '@ui';
 
 @Component({
@@ -47,10 +51,12 @@ import {
     RouterLink,
     FormsModule,
     SelectModule,
-    SkeletonModule,
     TranslocoModule,
     SearchInputComponent,
+    SegmentedControlComponent,
+    SkeletonComponent,
     EmptyStateComponent,
+    AlertComponent,
     BadgeComponent,
     DataTablePaginationComponent,
   ],
@@ -74,12 +80,16 @@ export class IngredientsPageComponent implements OnDestroy {
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly itemService = inject(ItemService);
   private readonly toastService = inject(ToastService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly authService = inject(AuthService);
+  private readonly transloco = inject(TranslocoService);
 
   public ingredients = signal<Ingredient[]>([]);
   public items = signal<Item[]>([]);
   public ingredientGroups = signal<IngredientGroup[]>([]);
   public isLoading = signal<boolean>(true);
+  public loadFailed = signal<boolean>(false);
+  public readonly loadErrorMessage = this.transloco.translate('ingredientsCatalog.loadError');
   public searchQuery = signal<string>('');
   public readonly fromGroups = computed(() => this.queryParams().get('from') === 'groups');
   public unavailableGroup = signal(false);
@@ -185,6 +195,7 @@ export class IngredientsPageComponent implements OnDestroy {
   loadData(scrollTop?: number): void {
     this.request?.unsubscribe();
     this.isLoading.set(true);
+    this.loadFailed.set(false);
     this.request = forkJoin({
       groups: this.ingredientGroupService.getIngredientGroups(),
       items: this.itemService.getItems(),
@@ -206,7 +217,8 @@ export class IngredientsPageComponent implements OnDestroy {
         }
       },
       error: () => {
-        this.toastService.showError('Unable to load ingredients catalog.');
+        this.toastService.showError(this.loadErrorMessage);
+        this.loadFailed.set(true);
         this.isLoading.set(false);
       },
     });
@@ -235,7 +247,7 @@ export class IngredientsPageComponent implements OnDestroy {
 
     itemsMap.forEach((connected, ingId) => {
       if (connected.length === 0) {
-        summaryMap.set(ingId, '0 items');
+        summaryMap.set(ingId, this.transloco.translate('ingredientsCatalog.noItems'));
         return;
       }
       const unitMap = new Map<string, number>();
@@ -269,6 +281,25 @@ export class IngredientsPageComponent implements OnDestroy {
   public outOfStockCount = computed(
     () => this.ingredients().filter((ing) => this.getConnectedItems(ing.id).length === 0).length,
   );
+
+  public statusOptions = computed<SegmentedOption<StatusFilterOption>[]>(() => [
+    {
+      value: 'all',
+      label: this.transloco.translate('ingredientsCatalog.statusAll', { count: this.totalCount() }),
+    },
+    {
+      value: 'in-stock',
+      label: this.transloco.translate('ingredientsCatalog.inStock', {
+        count: this.inStockCount(),
+      }),
+    },
+    {
+      value: 'out-of-stock',
+      label: this.transloco.translate('ingredientsCatalog.statusOutOfStock', {
+        count: this.outOfStockCount(),
+      }),
+    },
+  ]);
 
   public filteredIngredients = computed(() => {
     const list = this.ingredients();
@@ -341,6 +372,17 @@ export class IngredientsPageComponent implements OnDestroy {
     }
   }
 
+  public ariaSort(
+    column: 'name' | 'group' | 'unit' | 'status',
+  ): 'ascending' | 'descending' | 'none' {
+    if (this.sortBy() !== column) return 'none';
+    return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
+  }
+
+  public onStatusChange(status: StatusFilterOption | undefined): void {
+    if (status) this.setStatusFilter(status);
+  }
+
   public onSearchChange(query: string): void {
     this.searchQuery.set(query || '');
     this.resetPagination();
@@ -365,20 +407,25 @@ export class IngredientsPageComponent implements OnDestroy {
     this.router.navigate(['/inventory/ingredients', ing.id, 'edit']);
   }
 
-  onDeleteIngredient(ing: Ingredient): void {
-    if (confirm(`Are you sure you want to delete "${ing.name}" from the ingredients catalog?`)) {
-      this.ingredientService.deleteIngredient(ing.id).subscribe({
-        next: () => {
-          this.toastService.showSuccess(`Ingredient "${ing.name}" deleted.`);
-          this.loadData();
-        },
-        error: (err) => {
-          console.error('Delete error:', err);
-          this.toastService.showError(
-            'Failed to delete ingredient. It may have items associated with it.',
-          );
-        },
-      });
-    }
+  async onDeleteIngredient(ing: Ingredient): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.transloco.translate('ingredientsCatalog.deleteTitle', { name: ing.name }),
+      message: this.transloco.translate('ingredientsCatalog.deleteConfirm', { name: ing.name }),
+      acceptLabel: this.transloco.translate('ingredientsCatalog.deleteAction'),
+      destructive: true,
+    });
+    if (!confirmed) return;
+    this.ingredientService.deleteIngredient(ing.id).subscribe({
+      next: () => {
+        this.toastService.showSuccess(
+          this.transloco.translate('ingredientsCatalog.deleteSuccess', { name: ing.name }),
+        );
+        this.loadData();
+      },
+      error: (err) => {
+        console.error('Delete error:', err);
+        this.toastService.showError(this.transloco.translate('ingredientsCatalog.deleteError'));
+      },
+    });
   }
 }

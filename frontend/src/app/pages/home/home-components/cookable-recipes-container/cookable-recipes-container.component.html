@@ -1,4 +1,4 @@
-<section class="glass-card rounded-2xl p-5 sm:p-6">
+<pantry-card>
   <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
     <h3 class="type-section-title text-surface-900 dark:text-white">
       {{ 'home.cookSpotlight.title' | transloco }}
@@ -13,7 +13,7 @@
       @for (recipe of recipes().slice(0, 4); track recipe.id) {
         <a
           [routerLink]="['/recipes', recipe.id]"
-          class="recipe-row flex items-center gap-4 py-4 rounded-lg transition-colors hover:bg-surface-100/60 dark:hover:bg-surface-800/40">
+          class="recipe-row flex items-center gap-4 py-4 rounded-xl transition-colors hover:bg-surface-100/60 dark:hover:bg-surface-800/40">
           <div class="min-w-0 flex-1">
             <h4 class="type-label text-surface-900 dark:text-white break-words">
               {{ recipe.name }}
@@ -50,4 +50,4 @@
       [title]="'home.recipe.emptyTitle' | transloco"
       [description]="'home.recipe.emptyDescription' | transloco" />
   }
-</section>
+</pantry-card>

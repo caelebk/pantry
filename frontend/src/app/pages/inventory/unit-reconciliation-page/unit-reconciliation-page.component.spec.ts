@@ -127,4 +127,51 @@ describe('UnitReconciliationPageComponent', () => {
     component.onCancel();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients']);
   });
+
+  it('leaves the quantity empty and flags manual input when units cannot be converted', () => {
+    component.itemRows.set([]);
+    mockUnitService.getUnits.and.returnValue(
+      of([
+        { id: 2, name: 'Gram', shortName: 'g', type: UnitType.Weight, toBaseFactor: 1 },
+        { id: 7, name: 'Piece', shortName: 'pc', type: UnitType.Count, toBaseFactor: 1 },
+      ]),
+    );
+    mockIngredientService.getItemsByIngredientId.and.returnValue(
+      of([
+        {
+          id: 'item-2',
+          label: 'Eggs',
+          quantity: 6,
+          unitId: 7,
+          locationId: 99,
+          purchaseDate: '2026-08-01',
+          expirationDate: '2026-08-10',
+        },
+      ]),
+    );
+    component.ngOnInit();
+    const row = component.itemRows()[0];
+    expect(row.newQuantity).toBeNull();
+    expect(row.needsManualInput).toBeTrue();
+    expect(row.locationName).toBeNull();
+  });
+
+  it('blocks saving when a row has an empty or negative quantity', () => {
+    component.itemRows.update((rows) => rows.map((r) => ({ ...r, newQuantity: null })));
+    component.onSubmit();
+    expect(mockIngredientService.reconcileIngredientUnit).not.toHaveBeenCalled();
+    expect(component.submitAttempted()).toBeTrue();
+    component.itemRows.update((rows) => rows.map((r) => ({ ...r, newQuantity: -1 })));
+    component.onSubmit();
+    expect(mockIngredientService.reconcileIngredientUnit).not.toHaveBeenCalled();
+  });
+
+  it('allows saving a row with a zero quantity', () => {
+    mockIngredientService.reconcileIngredientUnit.and.returnValue(of(undefined));
+    component.itemRows.update((rows) => rows.map((r) => ({ ...r, newQuantity: 0 })));
+    component.onSubmit();
+    expect(mockIngredientService.reconcileIngredientUnit).toHaveBeenCalledWith('ing-1', 2, [
+      { id: 'item-1', quantity: 0 },
+    ]);
+  });
 });

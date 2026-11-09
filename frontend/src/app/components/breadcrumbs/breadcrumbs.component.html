@@ -1,7 +1,7 @@
-@if (breadcrumbs().length > 0) {
+@if (breadcrumbs().length > 1) {
   <nav
     [attr.aria-label]="'a11y.breadcrumb' | transloco"
-    class="type-meta mb-4 text-surface-500 dark:text-surface-400">
+    class="type-meta mb-4 text-surface-600 dark:text-surface-400">
     <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
       @for (item of breadcrumbs(); track $index; let last = $last; let index = $index) {
         <li
@@ -12,19 +12,19 @@
             <a
               [routerLink]="item.url"
               [queryParams]="item.queryParams"
-              class="inline-flex items-center min-h-[42px] break-words hover:text-primary-600 dark:hover:text-primary-400 rounded focus-visible:outline-2 focus-visible:outline-primary-500 focus-visible:outline-offset-2">
+              class="inline-flex items-center min-h-[42px] break-words hover:text-primary-700 dark:hover:text-primary-400 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
               {{ item.label | transloco }}
             </a>
           } @else {
             <span
               [attr.aria-current]="last ? 'page' : null"
-              class="inline-flex items-center min-h-[42px] break-words font-medium text-surface-700 dark:text-surface-200">
+              class="inline-flex items-center min-h-[42px] break-words type-label text-surface-700 dark:text-surface-200">
               {{ item.label | transloco }}
             </span>
           }
           @if (!last) {
             <i
-              class="pi pi-chevron-right text-[9px] shrink-0 text-surface-400 dark:text-surface-500"
+              class="pi pi-chevron-right type-meta shrink-0 text-surface-500 dark:text-surface-400"
               aria-hidden="true"></i>
           }
         </li>

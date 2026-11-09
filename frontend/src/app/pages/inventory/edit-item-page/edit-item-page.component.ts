@@ -15,7 +15,13 @@ import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
-import { FormFieldComponent, SpinnerComponent } from '@ui';
+import {
+  AlertComponent,
+  EmptyStateComponent,
+  FormFieldComponent,
+  SkeletonComponent,
+  SpinnerComponent,
+} from '@ui';
 import { ingredientDetailReturnTo } from '@utility/ingredient-detail-return';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
 import { DialogModule } from 'primeng/dialog';
@@ -36,7 +42,10 @@ import { ItemEditorComponent } from '../inventory-components/item-editor/item-ed
     TranslocoModule,
     ItemEditorComponent,
     SpinnerComponent,
+    EmptyStateComponent,
     FormFieldComponent,
+    AlertComponent,
+    SkeletonComponent,
   ],
   templateUrl: './edit-item-page.component.html',
 })
@@ -55,6 +64,7 @@ export class EditItemPageComponent implements OnInit {
 
   public itemId = signal<string | null>(null);
   public isLoading = signal<boolean>(true);
+  public loadFailed = signal<boolean>(false);
   public isSubmitting = signal<boolean>(false);
   public submitError = signal<string | null>(null);
 
@@ -81,7 +91,7 @@ export class EditItemPageComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      this.toastService.showError('Invalid item ID');
+      this.toastService.showError(this.transloco.translate('itemEditor.invalidId'));
       this.router.navigate(['/inventory']);
       return;
     }
@@ -124,6 +134,10 @@ export class EditItemPageComponent implements OnInit {
   }
 
   loadIngredients(itemId?: string, selectNewId?: string): void {
+    if (itemId) {
+      this.loadFailed.set(false);
+      this.isLoading.set(true);
+    }
     this.ingredientService.getIngredients().subscribe({
       next: (ings) => {
         this.ingredients.set(ings);
@@ -162,13 +176,25 @@ export class EditItemPageComponent implements OnInit {
             },
             error: (err) => {
               console.error('Failed to load item:', err);
-              this.toastService.showError('Unable to load item details.');
-              this.router.navigate(['/inventory']);
+              this.isLoading.set(false);
+              this.loadFailed.set(true);
             },
           });
         }
       },
+      error: (err) => {
+        console.error('Failed to load ingredients:', err);
+        if (itemId) {
+          this.isLoading.set(false);
+          this.loadFailed.set(true);
+        }
+      },
     });
+  }
+
+  retryLoad(): void {
+    const id = this.itemId();
+    if (id) this.loadIngredients(id);
   }
 
   openQuickCreateIngredient(): void {
@@ -185,12 +211,12 @@ export class EditItemPageComponent implements OnInit {
     this.quickCreateError.set(null);
     const name = this.newIngredientName().trim();
     if (!name) {
-      this.toastService.showError('Please enter an ingredient name.');
+      this.toastService.showError(this.transloco.translate('itemEditor.ingredientNameRequired'));
       return;
     }
     const defaultUnit = this.newIngredientDefaultUnit();
     if (!defaultUnit) {
-      this.toastService.showError('Please select a default measurement unit.');
+      this.toastService.showError(this.transloco.translate('itemEditor.defaultUnitRequired'));
       return;
     }
 
@@ -205,7 +231,10 @@ export class EditItemPageComponent implements OnInit {
       next: (createdDto) => {
         this.isCreatingIngredient.set(false);
         this.displayQuickCreateDialog.set(false);
-        this.toastService.showSuccess(`Ingredient "${name}" created!`, 'Ingredient Created');
+        this.toastService.showSuccess(
+          this.transloco.translate('itemEditor.ingredientCreatedMessage', { name }),
+          this.transloco.translate('itemEditor.ingredientCreatedTitle'),
+        );
         this.loadIngredients(undefined, createdDto.id);
       },
       error: (err) => {
@@ -226,7 +255,7 @@ export class EditItemPageComponent implements OnInit {
 
     const item = toItem(this.editItemForm);
     if (!item || !this.itemId()) {
-      this.submitError.set('Failed to construct item update.');
+      this.submitError.set(this.transloco.translate('itemEditor.buildFailed'));
       return;
     }
 
@@ -240,13 +269,15 @@ export class EditItemPageComponent implements OnInit {
 
     this.itemService.updateItem(updatedItem).subscribe({
       next: () => {
-        this.toastService.showSuccess(`"${updatedItem.name}" updated successfully!`);
+        this.toastService.showSuccess(
+          this.transloco.translate('itemEditor.itemUpdated', { name: updatedItem.name }),
+        );
         this.router.navigate([this.returnTo ?? '/inventory/items']);
       },
       error: (err) => {
         console.error('Error updating item:', err);
         this.isSubmitting.set(false);
-        this.submitError.set(err.message || 'An error occurred while saving the item.');
+        this.submitError.set(err.message || this.transloco.translate('itemEditor.updateFailed'));
       },
     });
   }

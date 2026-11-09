@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { TranslocoTestingModule } from '@jsverse/transloco';
-import { Item, ItemsContainerTheme } from '@models/items.model';
+import { Item } from '@models/items.model';
 import { UnitType } from '@models/unit.model';
 import { describe, expect, it, vi } from 'vitest';
 import { ItemsContainerComponent } from './items-container.component';
@@ -38,7 +38,6 @@ describe('Home stock rows', () => {
     fixture.componentRef.setInput('items', items);
     fixture.componentRef.setInput('titleKey', 'home.stock.title');
     fixture.componentRef.setInput('footerMessageKey', 'home.stock.more');
-    fixture.componentRef.setInput('theme', ItemsContainerTheme.Red);
     fixture.detectChanges();
     return fixture;
   }
@@ -59,6 +58,13 @@ describe('Home stock rows', () => {
     fixture.componentInstance.removeItem.subscribe(listener);
     remove?.click();
     expect(listener).toHaveBeenCalledWith(item);
+  });
+  it('does not reorder the input array while sorting the preview', async () => {
+    const later = { ...item, id: 'later', expirationDate: new Date('2021-01-01') };
+    const sooner = { ...item, id: 'sooner', expirationDate: new Date('2020-01-01') };
+    const source = [later, sooner];
+    await render(source);
+    expect(source).toEqual([later, sooner]);
   });
   it('provides a canonical empty state', async () => {
     const fixture = await render([]);

@@ -1,7 +1,7 @@
 <div class="page-layout">
   <div class="page-header">
     <div>
-      <p class="type-meta text-surface-500 dark:text-surface-400 mb-1">{{ currentDateString() }}</p>
+      <p class="type-meta text-surface-600 dark:text-surface-400 mb-1">{{ currentDateString() }}</p>
       <h1 class="type-page-title text-surface-900 dark:text-white">{{ kitchenName() }}</h1>
     </div>
     @if (!loadFailed() && (isLoading() || totalItemsCount() > 0)) {
@@ -19,6 +19,7 @@
   @if (isLoading()) {
     <div
       class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+      role="status"
       aria-busy="true"
       [attr.aria-label]="'home.overview.loading' | transloco">
       <pantry-skeleton variant="card" height="280px"></pantry-skeleton>
@@ -44,64 +45,31 @@
     </pantry-empty-state>
   } @else {
     @if (expiredItemsCount() > 0 || expiringSoonItemsCount() > 0) {
-      <aside
-        class="rounded-xl p-4 border flex flex-col items-start sm:flex-row sm:items-center justify-between gap-4"
-        [ngClass]="
-          expiredItemsCount() > 0
-            ? 'bg-red-500/10 border-red-500/20'
-            : 'bg-amber-500/10 border-amber-500/20'
-        "
-        aria-labelledby="attention-heading">
-        <div class="flex items-start gap-3 min-w-0">
-          <i
-            aria-hidden="true"
-            class="pi mt-1 shrink-0"
-            [ngClass]="
-              expiredItemsCount() > 0
-                ? 'pi-exclamation-triangle text-red-600 dark:text-red-400'
-                : 'pi-clock text-amber-600 dark:text-amber-400'
-            "></i>
-          <div class="min-w-0">
-            <h2
-              id="attention-heading"
-              class="type-label"
-              [ngClass]="
-                expiredItemsCount() > 0
-                  ? 'text-red-900 dark:text-red-200'
-                  : 'text-amber-900 dark:text-amber-200'
-              ">
-              {{
-                (expiredItemsCount() > 0
-                  ? 'home.overview.expiredCallout'
-                  : 'home.overview.soonCallout'
-                )
-                  | transloco
-                    : {
-                        count:
-                          expiredItemsCount() > 0 ? expiredItemsCount() : expiringSoonItemsCount(),
-                      }
-              }}
-            </h2>
-            <p class="type-meta mt-1 text-surface-700 dark:text-surface-300">
-              {{
-                (expiredItemsCount() > 0
-                  ? 'home.overview.expiredDescription'
-                  : 'home.overview.soonDescription'
-                ) | transloco
-              }}
-            </p>
-          </div>
-        </div>
+      <pantry-alert
+        [variant]="expiredItemsCount() > 0 ? 'danger' : 'warning'"
+        [title]="
+          (expiredItemsCount() > 0 ? 'home.overview.expiredCallout' : 'home.overview.soonCallout')
+            | transloco
+              : { count: expiredItemsCount() > 0 ? expiredItemsCount() : expiringSoonItemsCount() }
+        ">
+        <p>
+          {{
+            (expiredItemsCount() > 0
+              ? 'home.overview.expiredDescription'
+              : 'home.overview.soonDescription'
+            ) | transloco
+          }}
+        </p>
         @if (expiredItemsCount() > 0) {
-          <button (click)="onReviewExpired()" class="btn-danger shrink-0">
+          <button (click)="onReviewExpired()" class="btn-danger mt-3">
             {{ 'home.overview.reviewExpired' | transloco }}
           </button>
         } @else {
-          <button (click)="onNavigateToRecipes()" class="btn-secondary shrink-0">
+          <button (click)="onNavigateToRecipes()" class="btn-secondary mt-3">
             {{ 'home.recipe.browseAll' | transloco }}
           </button>
         }
-      </aside>
+      </pantry-alert>
     }
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
       <section
@@ -111,12 +79,11 @@
           <section
             id="expired-items-section"
             tabindex="-1"
-            class="rounded-2xl focus:outline-2 focus:outline-primary-500 focus:outline-offset-4"
+            class="rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4"
             [attr.aria-label]="'dashboard.expiredItems.title' | transloco">
             <pantry-items-container
               [titleKey]="'dashboard.expiredItems.title'"
               [items]="expiredItems()"
-              [theme]="Theme.Red"
               [footerMessageKey]="'dashboard.expiredItems.moreItems'"
               (removeItem)="onRemoveItem($event)">
             </pantry-items-container>
@@ -126,7 +93,6 @@
           <pantry-items-container
             [titleKey]="'dashboard.expiringSoonItems.title'"
             [items]="soonToExpireItems()"
-            [theme]="Theme.Amber"
             [footerMessageKey]="'dashboard.expiringSoonItems.moreItems'"
             (removeItem)="onRemoveItem($event)">
           </pantry-items-container>

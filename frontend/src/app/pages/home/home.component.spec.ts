@@ -3,11 +3,13 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { Item } from '@models/items.model';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { RecipeService } from '@services/recipe.service';
 import { ToastService } from '@services/toast.service';
+import { ConfirmDialogService } from '@ui';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { AuthService } from '../../core/services/auth.service';
@@ -39,8 +41,18 @@ describe('HomeComponent', () => {
         { provide: ToastService, useValue: mockToastService },
         { provide: Router, useValue: mockRouter },
         { provide: AuthService, useValue: mockAuthService },
+        provideTransloco({ config: { availableLangs: ['en'], defaultLang: 'en' } }),
       ],
     });
+    TestBed.inject(TranslocoService).setTranslation(
+      {
+        home: {
+          myKitchen: 'My kitchen',
+          removeConfirm: { title: 'Remove item', message: 'Remove "{{ name }}" from inventory?' },
+        },
+      },
+      'en',
+    );
 
     component = TestBed.runInInjectionContext(() => new HomeComponent());
   });
@@ -53,7 +65,7 @@ describe('HomeComponent', () => {
 
   it('should fallback to default kitchen name if active kitchen is null', () => {
     mockAuthService.activeKitchen.set(null);
-    expect(component.kitchenName()).toBe('My Kitchen');
+    expect(component.kitchenName()).toBe('My kitchen');
   });
 
   it('distinguishes load failure from a first-use kitchen and supports retry', () => {
@@ -65,6 +77,22 @@ describe('HomeComponent', () => {
     component.fetchData();
     expect(component.loadFailed()).toBe(false);
     expect(component.totalItemsCount()).toBe(0);
+  });
+
+  it('removes an item only after the confirm dialog resolves true', async () => {
+    const confirmDialog = TestBed.inject(ConfirmDialogService);
+    const confirmSpy = vi.spyOn(confirmDialog, 'confirm');
+    mockItemService.removeItem = vi.fn().mockReturnValue(of(undefined));
+    const target = { id: 'a', name: 'Milk' } as Item;
+
+    confirmSpy.mockResolvedValueOnce(false);
+    await component.onRemoveItem(target);
+    expect(mockItemService.removeItem).not.toHaveBeenCalled();
+
+    confirmSpy.mockResolvedValueOnce(true);
+    await component.onRemoveItem(target);
+    expect(confirmSpy).toHaveBeenLastCalledWith(expect.objectContaining({ destructive: true }));
+    expect(mockItemService.removeItem).toHaveBeenCalledWith(target);
   });
 
   it('uses the canonical stock routes', () => {

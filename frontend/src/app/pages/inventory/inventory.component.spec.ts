@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
@@ -13,7 +14,10 @@ import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
-import { of } from 'rxjs';
+import { ConfirmDialogService } from '@ui';
+import { ConfirmationService } from 'primeng/api';
+import { of, Subject, throwError } from 'rxjs';
+import { vi } from 'vitest';
 import { AuthService } from '../../core/services/auth.service';
 import { InventoryComponent } from './inventory.component';
 
@@ -24,6 +28,8 @@ describe('InventoryComponent', () => {
   let fixture: ComponentFixture<InventoryComponent>;
   let mockItemService: jasmine.SpyObj<ItemService>;
   let mockShoppingListService: jasmine.SpyObj<ShoppingListService>;
+  let ingredients$: Subject<Ingredient[]>;
+  let confirmSpy: jasmine.Spy;
 
   const mockItem1: Item = {
     id: '123e4567-e89b-12d3-a456-426614174001',
@@ -59,6 +65,8 @@ describe('InventoryComponent', () => {
   };
 
   beforeEach(async () => {
+    ingredients$ = new Subject<Ingredient[]>();
+    confirmSpy = jasmine.createSpy('confirm').and.returnValue(Promise.resolve(true));
     mockItemService = jasmine.createSpyObj('ItemService', [
       'getItems',
       'addItem',
@@ -90,7 +98,11 @@ describe('InventoryComponent', () => {
         provideHttpClientTesting(),
         { provide: ItemService, useValue: mockItemService },
         { provide: ShoppingListService, useValue: mockShoppingListService },
-        { provide: IngredientService, useValue: { getIngredients: () => of([]) } },
+        {
+          provide: ConfirmDialogService,
+          useValue: { confirm: confirmSpy, confirmationService: new ConfirmationService() },
+        },
+        { provide: IngredientService, useValue: { getIngredients: () => ingredients$ } },
         { provide: IngredientGroupService, useValue: { getIngredientGroups: () => of([]) } },
         { provide: IngredientCategoryService, useValue: { getIngredientCategories: () => of([]) } },
         { provide: LocationService, useValue: { getLocations: () => of([]) } },
@@ -120,6 +132,13 @@ describe('InventoryComponent', () => {
     expect(component.totalItemsCount).toBe(3);
     expect(component.outOfStockItemsCount).toBe(1);
     expect(component.expiredItemsCount).toBe(1);
+  });
+
+  it('marks the view for check when ingredients arrive after the items', () => {
+    const markForCheck = vi.spyOn(component['cdr'], 'markForCheck');
+    ingredients$.next([{ id: 'ing-1', name: 'Milk' } as Ingredient]);
+    expect(markForCheck).toHaveBeenCalled();
+    expect(component.getIngredientName('ing-1')).toBe('Milk');
   });
 
   it('should toggle item row selection correctly', () => {
@@ -215,7 +234,29 @@ describe('InventoryComponent', () => {
     expect(component.restockExpirationDate()).toBeTruthy();
 
     component.clearRestockExpiry();
-    expect(component.restockExpirationDate()).toBe('');
+    expect(component.restockExpirationDate()).toBeNull();
+  });
+
+  it('computes expiry presets from the local date near midnight', () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date(2026, 5, 30, 23, 30));
+      component.setRestockExpiryDays(3);
+      expect(component.restockExpirationDate()).toEqual(new Date(2026, 6, 3));
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('parses date-only strings as local calendar days and full timestamps via local getters', () => {
+    const toLocalDate = (value: string) =>
+      (component as unknown as { toLocalDate(v: string): Date }).toLocalDate(value);
+    expect(toLocalDate('2026-07-03')).toEqual(new Date(2026, 6, 3));
+    const timestamp = '2026-07-03T23:30:00.000Z';
+    const local = new Date(timestamp);
+    expect(toLocalDate(timestamp)).toEqual(
+      new Date(local.getFullYear(), local.getMonth(), local.getDate()),
+    );
   });
 
   it('should add single item to shopping list', () => {
@@ -264,5 +305,57 @@ describe('InventoryComponent', () => {
     expect(fixture.nativeElement.querySelector('pantry-item-card')).toBeNull();
     expect(fixture.nativeElement.querySelector('[title="Grid Cards View"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('[title="Table View"]')).toBeNull();
+  });
+
+  it('should confirm destructively before bulk deleting selected items', async () => {
+    component.toggleSelectItem(mockItem1.id);
+    await component.onBulkDelete();
+
+    expect(confirmSpy).toHaveBeenCalledWith(jasmine.objectContaining({ destructive: true }));
+    expect(mockItemService.bulkDeleteItems).toHaveBeenCalledWith([mockItem1.id]);
+  });
+
+  it('should not bulk delete when the confirmation is declined', async () => {
+    confirmSpy.and.returnValue(Promise.resolve(false));
+    component.toggleSelectItem(mockItem1.id);
+    await component.onBulkDelete();
+
+    expect(mockItemService.bulkDeleteItems).not.toHaveBeenCalled();
+    expect(component.selectedItemIds().size).toBe(1);
+  });
+
+  it('should show an error state with retry when items fail to load', () => {
+    mockItemService.getItems.and.returnValue(throwError(() => new Error('offline')));
+    component.retryLoad();
+    fixture.detectChanges();
+
+    expect(component.loadFailed()).toBeTrue();
+    expect(fixture.nativeElement.querySelector('pantry-empty-state')).toBeTruthy();
+
+    mockItemService.getItems.and.returnValue(of([mockItem1]));
+    component.retryLoad();
+    fixture.detectChanges();
+
+    expect(component.loadFailed()).toBeFalse();
+    expect(fixture.nativeElement.querySelectorAll('tbody tr').length).toBe(1);
+  });
+
+  it('should keep the exact Date emitted by the datepicker as the bound model', () => {
+    const picked = new Date(2026, 8, 5);
+    component.onRestockExpirationChange(picked);
+    expect(component.restockExpirationDate()).toBe(picked);
+    expect(component.restockExpirationDate()).toBe(component.restockExpirationDate());
+    component.onRestockExpirationChange(null);
+    expect(component.restockExpirationDate()).toBeNull();
+  });
+
+  it('should send the local date of the picked expiry on confirm', () => {
+    mockItemService.updateItem.and.returnValue(of({} as IngredientItemDTO));
+    component.openRestockDialog(mockItem1);
+    component.onRestockExpirationChange(new Date(2026, 8, 5, 23, 30));
+    component.onConfirmRestock();
+    expect(mockItemService.updateItem).toHaveBeenCalledWith(
+      jasmine.objectContaining({ expirationDate: new Date(2026, 8, 5) }),
+    );
   });
 });

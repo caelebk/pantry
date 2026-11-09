@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
+import translations from '../../../../public/i18n/en.json';
 import { DailyFocusComponent } from './daily-focus/daily-focus.component';
 import { PlanMealPageComponent } from './plan-meal-page/plan-meal-page.component';
 import { WeeklyViewComponent } from './weekly-view/weekly-view.component';
@@ -23,7 +25,18 @@ const meal: PlannedMeal = {
 describe('Planner metadata honesty', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [{ provide: MealPlannerService, useValue: { days: ['Monday'] } }],
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+        }),
+      ],
+      providers: [
+        {
+          provide: MealPlannerService,
+          useValue: { days: ['Monday'], missingFor: () => null, missingByMealId: () => null },
+        },
+      ],
     });
   });
 
@@ -61,13 +74,13 @@ describe('Planner metadata honesty', () => {
     const fixture = TestBed.createComponent(DailyFocusComponent);
     fixture.componentInstance.meals = [meal];
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).not.toContain('Total Planned Calories');
-    expect(fixture.nativeElement.textContent).not.toContain('Estimated Kitchen Time');
+    expect(fixture.nativeElement.textContent).not.toContain('Total planned calories');
+    expect(fixture.nativeElement.textContent).not.toContain('Estimated kitchen time');
     expect(fixture.nativeElement.textContent).not.toContain('15 mins');
     expect(fixture.nativeElement.textContent).not.toContain('400 kcal');
     fixture.componentInstance.meals = [{ ...meal, calories: 0, prepTimeMinutes: 0 }];
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Total Planned Calories');
+    expect(fixture.nativeElement.textContent).toContain('Total planned calories');
     expect(fixture.nativeElement.textContent).toContain('0 mins');
     expect(fixture.nativeElement.textContent).toContain('0 kcal');
   });
@@ -90,13 +103,15 @@ describe('Planner metadata honesty', () => {
     const card = fixture.nativeElement.querySelector('h4').parentElement;
     expect(card.textContent).not.toContain('15m prep');
     expect(card.textContent).not.toContain('2 servings');
+    fixture.componentInstance.selectRecipe({ id: 'recipe', name: 'Unknown meal' });
     fixture.componentInstance.servings.set(3);
     fixture.componentInstance.saveMealPlan();
-    expect(addMealPlan).toHaveBeenCalledWith('Monday', 'Dinner', {
-      id: 'recipe',
-      name: 'Unknown meal',
-      servings: 3,
-    });
+    expect(addMealPlan).toHaveBeenCalledWith(
+      'Monday',
+      'Dinner',
+      { id: 'recipe', name: 'Unknown meal', servings: 3 },
+      expect.any(Object),
+    );
     fixture.componentInstance.availableRecipes.set([
       { id: 'recipe', name: 'Zero prep', prepTime: 0, servings: 0 },
     ]);

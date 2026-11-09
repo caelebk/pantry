@@ -1,49 +1,43 @@
-<div class="flex">
-  <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent">
-    <i class="pi pi-arrow-left" aria-hidden="true"></i>
-    <span>{{ 'nav.back' | transloco }}</span>
-  </button>
-</div>
-<div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
-  <!-- Page Header -->
-  <h2 class="type-page-title text-surface-900 dark:text-white">Edit Ingredient</h2>
+<div class="page-layout page-layout--form">
+  <header class="page-header">
+    <div>
+      <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent mb-2">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        <span>{{ 'nav.back' | transloco }}</span>
+      </button>
+      <h1 class="type-page-title text-surface-900 dark:text-white">
+        {{ 'ingredientForm.editTitle' | transloco }}
+      </h1>
+    </div>
+  </header>
 
   @if (isLoading()) {
-    <div
-      class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 p-8 flex items-center justify-center">
-      <pantry-spinner size="lg" label="Loading ingredient details..."></pantry-spinner>
+    <pantry-skeleton variant="card" height="320px" />
+  } @else if (loadFailed()) {
+    <div role="alert">
+      <pantry-empty-state
+        icon="pi pi-exclamation-circle"
+        [title]="'itemEditor.loadErrorTitle' | transloco"
+        [description]="'itemEditor.loadErrorDescription' | transloco"
+        [actionText]="'itemEditor.retry' | transloco"
+        (actionClick)="retryLoad()"></pantry-empty-state>
     </div>
   } @else {
     @if (submitError()) {
-      <div
-        class="type-label p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 flex items-center gap-2">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-          class="w-5 h-5 shrink-0">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-        </svg>
-        <span>{{ submitError() }}</span>
-      </div>
+      <pantry-alert variant="danger">{{ submitError() }}</pantry-alert>
     }
 
     <!-- Form Card -->
-    <div class="glass-card rounded-2xl p-6 shadow-xl space-y-6">
+    <pantry-card padding="md">
       <form [formGroup]="ingredientForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <!-- Name Field -->
         <pantry-form-field
-          [label]="'Ingredient Name'"
+          [label]="'ingredientForm.name' | transloco"
           forId="edit-ingredient-name"
           [required]="true"
           [error]="
             ingredientForm.get('name')?.invalid && ingredientForm.get('name')?.touched
-              ? 'Ingredient name is required (min 2 characters).'
+              ? ('ingredientForm.nameError' | transloco)
               : ''
           ">
           <input
@@ -51,23 +45,26 @@
             type="text"
             id="edit-ingredient-name"
             formControlName="name"
-            placeholder="e.g. Spaghetti, Fuji Apples, Chicken Breast"
-            class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white" />
+            [placeholder]="'ingredientForm.namePlaceholder' | transloco"
+            class="w-full" />
         </pantry-form-field>
 
         <!-- Ingredient Group Select -->
         <pantry-form-field
-          [label]="'Ingredient Group (Taxonomy Category)'"
+          [label]="'ingredientForm.group' | transloco"
+          #groupField
           forId="edit-ingredient-group">
           <p-select
             inputId="edit-ingredient-group"
+            [ariaLabelledBy]="groupField.labelId()"
             [options]="ingredientGroups()"
             formControlName="ingredientGroup"
+            dataKey="id"
             optionLabel="name"
-            placeholder="Select Ingredient Group (e.g. Pasta, Bakery, Grains)"
+            [placeholder]="'ingredientForm.groupPlaceholder' | transloco"
             [filter]="true"
             filterBy="name"
-            filterPlaceholder="Search ingredient groups..."
+            [filterPlaceholder]="'ingredientForm.groupFilterPlaceholder' | transloco"
             [showClear]="true"
             class="w-full"
             appendTo="body">
@@ -76,23 +73,26 @@
 
         <!-- Default Unit Select -->
         <pantry-form-field
-          [label]="'Default Measurement Unit'"
+          [label]="'ingredientForm.unit' | transloco"
+          #unitField
           forId="edit-default-unit"
           [required]="true"
           [error]="
             ingredientForm.get('defaultUnit')?.invalid && ingredientForm.get('defaultUnit')?.touched
-              ? 'Default measurement unit is required.'
+              ? ('ingredientForm.unitError' | transloco)
               : ''
           ">
           <p-select
             inputId="edit-default-unit"
+            [ariaLabelledBy]="unitField.labelId()"
             [options]="units()"
             formControlName="defaultUnit"
+            dataKey="id"
             optionLabel="name"
-            placeholder="Select Default Unit (e.g. Grams, Pieces, Liters)"
+            [placeholder]="'ingredientForm.unitPlaceholder' | transloco"
             [filter]="true"
             filterBy="name"
-            filterPlaceholder="Search units..."
+            [filterPlaceholder]="'ingredientForm.unitFilterPlaceholder' | transloco"
             [showClear]="true"
             class="w-full"
             appendTo="body">
@@ -102,15 +102,21 @@
         <!-- Action Buttons -->
         <div
           class="flex items-center justify-end gap-3 pt-4 border-t border-surface-200/40 dark:border-surface-800/40">
-          <button type="button" (click)="onCancel()" class="btn-secondary">Cancel</button>
-          <button type="submit" [disabled]="isSubmitting()" class="btn-primary">
+          <button type="button" (click)="onCancel()" class="btn-secondary">
+            {{ 'ingredientForm.cancel' | transloco }}
+          </button>
+          <button
+            type="submit"
+            [disabled]="isSubmitting()"
+            [attr.aria-busy]="isSubmitting()"
+            class="btn-primary">
             @if (isSubmitting()) {
-              <pantry-spinner size="sm" color="white" />
+              <pantry-spinner [announce]="false" size="sm" color="white" />
             }
-            <span>Save Changes</span>
+            <span>{{ 'ingredientForm.saveChanges' | transloco }}</span>
           </button>
         </div>
       </form>
-    </div>
+    </pantry-card>
   }
 </div>

@@ -61,3 +61,7 @@ images/
 **/images/
 
 
+
+# Impeccable design-audit outputs
+.impeccable/critique/
+.impeccable/surfaces/

@@ -25,14 +25,14 @@ Pantry keeps an accurate record of the household's food and turns it into decisi
 Pantry does three things together that a notes app or a generic inventory app does not:
 
 1. **Know what I have.** A low-friction, trustworthy record of physical stock per storage location, with quantities, purchase dates, and expiry dates.
-2. **Reduce food waste.** Expiry-aware stock drives what to cook and what to use first (expired and expiring-soon items surface on Home and feed recipe suggestions).
+2. **Reduce food waste.** Expiry-aware stock drives what to cook and what to use first. Expired items and items that expire within 7 days surface on Home. They also feed recipe suggestions.
 3. **Closed loop.** Stock, recipes, meal plan, shopping list, and restock are connected through one shared ingredient taxonomy, so recipes know what is cookable from current stock and buying something flows back into stock through restock review. (Whether cooking a recipe deducts stock automatically is not confirmed in the current app.)
 
 The shared taxonomy is the mechanism that makes the loop work; features that bypass it weaken the product.
 
 ## Operating Context
 
-- Routes: Home, Inventory (overview, stock items, ingredients catalog, categories and groups, unit reconciliation), Recipes (list, detail, editor), Meal Planner, Shopping List (items, stores, restock review), Profile, Auth (login, signup).
+- Routes: Home, Inventory (overview, stock items, ingredients catalog, categories and groups, unit reconciliation), Recipes (list, detail, editor), Meal Planner, Shopping List (items, stores, restock review), Profile, Auth (login, signup). Password reset is a follow-up feature. The login page has no "Forgot password" link until password reset exists.
 - Physical storage locations are part of the domain: Fridge, Freezer, Pantry.
 - Shopping is organized by store; a restock review moves purchased items back into stock.
 - Use spans short glances on a phone (mid-cooking, mid-aisle) and longer focused sessions at a desk.
@@ -44,12 +44,12 @@ The shared taxonomy is the mechanism that makes the loop work; features that byp
 - **All user-facing strings go through Transloco** (`frontend/public/i18n/en.json`); no hard-coded copy.
 - **Workspace rules** live in `.agents/AGENTS.md`; UI work must pass `npm run validate:design-system` in `frontend/`.
 - **Visual authority** lives in `DESIGN.md` (single source of truth); the `/design-system` gallery route renders its primitives.
-- **Undecided:** whether outside households will ever be supported; formal accessibility conformance target.
+- **Undecided:** whether outside households will ever be supported.
 
 ## Brand Commitments
 
 - Name: **Pantry**.
-- Voice: calm, practical household tool. Plain kitchen language over jargon; existing copy retains its source casing.
+- Voice: calm, practical household tool. Plain kitchen language over jargon. UI text uses sentence case.
 
 ## Evidence on Hand
 
@@ -70,4 +70,5 @@ The shared taxonomy is the mechanism that makes the loop work; features that byp
 - Primary workflows (recipe editing, shopping, meal planning, forms, navigation) must work on phones and with a keyboard, including 320px reflow and real mobile keyboards.
 - Text and status colors must stay legible in both light and dark themes against their actual backgrounds; status must not rely on color alone.
 - Respect `prefers-reduced-motion`.
-- Formal WCAG level: not yet decided.
+- The theme follows the stored choice. If no stored choice exists, the theme follows the operating system setting (`prefers-color-scheme`). Light and dark are equal.
+- Target WCAG 2.2 AA: 4.5:1 contrast for text, 3:1 for icons and control edges. Touch targets are at least 42px on phones.

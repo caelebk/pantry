@@ -3,8 +3,9 @@ import { Component, DestroyRef, effect, inject, input, model, output, signal } f
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { FormFieldComponent, SpinnerComponent } from '@ui';
+import { AlertComponent, FormFieldComponent, SpinnerComponent } from '@ui';
 import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
 import { Kitchen } from '../../core/models/auth.model';
 import { KitchenService } from '../../core/services/kitchen.service';
 import { ToastService } from '../../services/toast.service';
@@ -18,7 +19,9 @@ let nextDialogId = 0;
     DialogModule,
     ReactiveFormsModule,
     TranslocoModule,
+    AlertComponent,
     FormFieldComponent,
+    InputTextModule,
     SpinnerComponent,
   ],
   template: `
@@ -52,29 +55,29 @@ let nextDialogId = 0;
               : ''
           ">
           <input
+            pInputText
             [id]="nameId"
             type="text"
             formControlName="name"
             required
             [readOnly]="pending()"
             [placeholder]="'kitchenCreate.namePlaceholder' | transloco"
-            class="w-full h-[42px] px-4 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-primary-500/50 outline-none" />
+            class="w-full" />
         </pantry-form-field>
         <pantry-form-field
           [label]="'kitchenCreate.description' | transloco"
           [forId]="descriptionId">
           <input
+            pInputText
             [id]="descriptionId"
             type="text"
             formControlName="description"
             [readOnly]="pending()"
             [placeholder]="'kitchenCreate.descriptionPlaceholder' | transloco"
-            class="w-full h-[42px] px-4 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-primary-500/50 outline-none" />
+            class="w-full" />
         </pantry-form-field>
         @if (errorKey()) {
-          <p role="alert" class="type-body text-rose-600 dark:text-rose-400 break-words">
-            {{ errorKey() | transloco }}
-          </p>
+          <pantry-alert variant="danger">{{ errorKey() | transloco }}</pantry-alert>
         }
         <div class="flex flex-wrap justify-end gap-3 pt-2">
           <button
@@ -86,7 +89,7 @@ let nextDialogId = 0;
           </button>
           <button type="submit" [disabled]="pending()" class="btn-primary">
             @if (pending()) {
-              <pantry-spinner size="sm" />
+              <pantry-spinner [announce]="false" size="sm" />
             }
             {{ (pending() ? 'kitchenCreate.creating' : 'kitchenCreate.create') | transloco }}
           </button>

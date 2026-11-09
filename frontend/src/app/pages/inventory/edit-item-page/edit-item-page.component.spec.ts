@@ -11,7 +11,7 @@ import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import translations from '../../../../../public/i18n/en.json';
 import { EditItemPageComponent } from './edit-item-page.component';
 
@@ -125,6 +125,30 @@ describe('EditItemPageComponent', () => {
     expect(component).toBeTruthy();
     expect(mockItemService.getItemById).toHaveBeenCalledWith('item-100');
     expect(component.editItemForm.controls.unit.disabled).toBeTrue();
+  });
+
+  it('shows a retryable error state when the item fails to load', () => {
+    mockItemService.getItemById.and.returnValue(throwError(() => new Error('boom')));
+    component.retryLoad();
+    fixture.detectChanges();
+    expect(component.loadFailed()).toBeTrue();
+    expect(component.isLoading()).toBeFalse();
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('pantry-empty-state')).not.toBeNull();
+
+    mockItemService.getItemById.and.returnValue(of({ ...mockItemDTO } as unknown as Item));
+    component.retryLoad();
+    expect(component.loadFailed()).toBeFalse();
+    expect(component.isLoading()).toBeFalse();
+  });
+
+  it('allows fractional quantities above zero', () => {
+    const control = component.editItemForm.controls.quantity;
+    control.setValue(0.5);
+    expect(control.valid).toBeTrue();
+    control.setValue(0);
+    expect(control.valid).toBeFalse();
   });
 
   it('should update unit when ingredient choice changes', () => {

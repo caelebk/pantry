@@ -16,92 +16,27 @@ import { Toast, ToastService } from '../../services/toast.service';
           [attr.aria-live]="toast.type === 'error' ? 'assertive' : 'polite'"
           aria-atomic="true"
           [class]="
-            'toast-card pointer-events-auto rounded-2xl p-4 shadow-2xl border transition-all duration-300 transform translate-y-0 flex items-start gap-3 ' +
+            'toast-card pointer-events-auto rounded-xl p-4 shadow-xl border flex items-start gap-3 ' +
             getToastClass(toast.type)
           ">
           <!-- Icon -->
-          <div class="shrink-0 mt-0.5" aria-hidden="true">
-            @switch (toast.type) {
-              @case ('success') {
-                <div
-                  class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2.5"
-                    stroke="currentColor"
-                    class="w-4 h-4">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                </div>
-              }
-              @case ('error') {
-                <div
-                  class="w-7 h-7 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2.5"
-                    stroke="currentColor"
-                    class="w-4 h-4">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                  </svg>
-                </div>
-              }
-              @case ('warning') {
-                <div
-                  class="w-7 h-7 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2.5"
-                    stroke="currentColor"
-                    class="w-4 h-4">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.008v.008H12v-.008z" />
-                  </svg>
-                </div>
-              }
-              @default {
-                <div
-                  class="w-7 h-7 rounded-full bg-primary-500/20 text-primary-600 dark:text-primary-400 flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2.5"
-                    stroke="currentColor"
-                    class="w-4 h-4">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                  </svg>
-                </div>
-              }
-            }
+          <div
+            [class]="
+              'w-7 h-7 shrink-0 mt-0.5 rounded-full flex items-center justify-center ' +
+              getIconClass(toast.type)
+            "
+            aria-hidden="true">
+            <i [class]="getIconName(toast.type) + ' text-sm'"></i>
           </div>
 
           <!-- Message Body -->
           <div class="toast-message flex-1 min-w-0">
             @if (toast.title) {
-              <h5
-                class="text-sm font-semibold text-surface-900 dark:text-white leading-tight mb-0.5">
+              <p class="type-label text-surface-900 dark:text-white mb-0.5">
                 {{ toast.title }}
-              </h5>
+              </p>
             }
-            <p class="text-sm text-surface-600 dark:text-surface-300 leading-normal">
+            <p class="text-sm text-surface-600 dark:text-surface-300">
               {{ toast.message }}
             </p>
           </div>
@@ -112,15 +47,7 @@ import { Toast, ToastService } from '../../services/toast.service';
             (click)="dismiss(toast.id)"
             [attr.aria-label]="'COMMON.DISMISS_NOTIFICATION' | transloco"
             class="btn-icon-sm shrink-0">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="2"
-              stroke="currentColor"
-              class="w-4 h-4">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <i class="pi pi-times text-xs" aria-hidden="true"></i>
           </button>
         </div>
       }
@@ -135,10 +62,10 @@ import { Toast, ToastService } from '../../services/toast.service';
       overflow-y: auto;
     }
     .toast-card {
-      background: color-mix(in srgb, var(--color-surface-50) 97%, transparent);
+      background: var(--color-surface-50);
     }
     :host-context(.dark) .toast-card {
-      background: color-mix(in srgb, var(--color-surface-900) 97%, transparent);
+      background: var(--color-surface-900);
     }
     .toast-message {
       overflow-wrap: anywhere;
@@ -156,13 +83,39 @@ export class ToastContainerComponent implements OnInit {
   getToastClass(type: string): string {
     switch (type) {
       case 'success':
-        return 'glass-card border-emerald-500/30 text-emerald-950 dark:text-emerald-100';
+        return 'border-emerald-500/20 text-emerald-950 dark:text-emerald-100';
       case 'error':
-        return 'glass-card border-rose-500/30 text-rose-950 dark:text-rose-100';
+        return 'border-rose-500/20 text-rose-950 dark:text-rose-100';
       case 'warning':
-        return 'glass-card border-amber-500/30 text-amber-950 dark:text-amber-100';
+        return 'border-amber-500/20 text-amber-950 dark:text-amber-100';
       default:
-        return 'glass-card border-primary-500/30 text-primary-950 dark:text-primary-100';
+        return 'border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-100';
+    }
+  }
+
+  getIconClass(type: string): string {
+    switch (type) {
+      case 'success':
+        return 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400';
+      case 'error':
+        return 'bg-rose-500/10 text-rose-700 dark:text-rose-400';
+      case 'warning':
+        return 'bg-amber-500/10 text-amber-700 dark:text-amber-400';
+      default:
+        return 'bg-surface-500/10 text-surface-700 dark:text-surface-300';
+    }
+  }
+
+  getIconName(type: string): string {
+    switch (type) {
+      case 'success':
+        return 'pi pi-check';
+      case 'error':
+        return 'pi pi-times-circle';
+      case 'warning':
+        return 'pi pi-exclamation-triangle';
+      default:
+        return 'pi pi-info-circle';
     }
   }
 

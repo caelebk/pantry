@@ -2,16 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, Input, Output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
-import { FormFieldComponent } from '@ui';
+import { BadgeComponent, CardComponent, FormFieldComponent } from '@ui';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
 import { DatePicker } from 'primeng/datepicker';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { PanelModule } from 'primeng/panel';
 import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { Subject } from 'rxjs';
@@ -30,13 +29,15 @@ import { Ingredient } from '@models/ingredient.model';
     InputNumber,
     DatePicker,
     Textarea,
-    PanelModule,
+    BadgeComponent,
+    CardComponent,
     FormFieldComponent,
   ],
   templateUrl: './add-item-form.component.html',
 })
 export class AddItemFormComponent {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly transloco = inject(TranslocoService);
 
   @Input()
   units: Unit[] = [];
@@ -49,6 +50,7 @@ export class AddItemFormComponent {
   addItem$ = new Subject<Item>();
 
   addItemForm: FormGroup<ItemFormControls> = createItemForm();
+  detailsOpen = false;
 
   constructor() {
     this.addItemForm.controls.ingredient.valueChanges
@@ -68,6 +70,11 @@ export class AddItemFormComponent {
           this.addItemForm.controls.unit.enable();
         }
       });
+  }
+
+  fieldError(field: keyof ItemFormControls, key: string): string {
+    const control = this.addItemForm.controls[field];
+    return control.touched && control.invalid ? this.transloco.translate(`itemEditor.${key}`) : '';
   }
 
   onSubmit() {

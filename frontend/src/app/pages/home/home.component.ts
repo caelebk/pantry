@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
-import { Item, ItemsContainerTheme } from '@models/items.model';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
 import { Recipe } from '@models/recipe.model';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { RecipeService } from '@services/recipe.service';
 import { ToastService } from '@services/toast.service';
-import { EmptyStateComponent, SkeletonComponent } from '@ui';
+import { AlertComponent, ConfirmDialogService, EmptyStateComponent, SkeletonComponent } from '@ui';
 import { isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
 import { CookableRecipesContainerComponent } from './home-components/cookable-recipes-container/cookable-recipes-container.component';
 import { ItemsContainerComponent } from './home-components/items-container/items-container.component';
@@ -28,6 +28,7 @@ import { AuthService } from '../../core/services/auth.service';
     TranslocoModule,
     SkeletonComponent,
     EmptyStateComponent,
+    AlertComponent,
     ItemsContainerComponent,
     LocationOverviewContainerComponent,
     CookableRecipesContainerComponent,
@@ -36,7 +37,6 @@ import { AuthService } from '../../core/services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent {
-  protected readonly Theme = ItemsContainerTheme;
   private readonly itemService = inject(ItemService);
   private readonly recipeService = inject(RecipeService);
   private readonly locationService = inject(LocationService);
@@ -44,6 +44,8 @@ export class HomeComponent {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly transloco = inject(TranslocoService);
 
   items = signal<Item[]>([]);
   recipes = signal<Recipe[]>([]);
@@ -55,7 +57,9 @@ export class HomeComponent {
   expiredItemsCount = computed(() => this.expiredItems().length);
   expiringSoonItemsCount = computed(() => this.soonToExpireItems().length);
 
-  kitchenName = computed(() => this.authService.activeKitchen()?.name || 'My Kitchen');
+  kitchenName = computed(
+    () => this.authService.activeKitchen()?.name || this.transloco.translate('home.myKitchen'),
+  );
 
   currentDateString = computed(() => {
     const options: Intl.DateTimeFormatOptions = {
@@ -91,7 +95,7 @@ export class HomeComponent {
         next: ({ items, recipes, locations }) => {
           this.items.set(items);
           this.expiredItems.set(items.filter((item) => isExpired(item)));
-          this.soonToExpireItems.set(items.filter((item) => isExpiringSoon(item, 7)));
+          this.soonToExpireItems.set(items.filter((item) => isExpiringSoon(item)));
           this.recipes.set(recipes);
           this.locations.set(locations);
           this.isLoading.set(false);
@@ -104,22 +108,33 @@ export class HomeComponent {
       });
   }
 
-  onRemoveItem(item: Item): void {
-    if (confirm(`Remove "${item.name}" from inventory?`)) {
-      this.itemService
-        .removeItem(item)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe({
-          next: () => {
-            this.toastService.showSuccess(`Removed "${item.name}"`, 'Item successfully removed.');
-            this.fetchData();
-          },
-          error: (err) => {
-            console.error('Failed to remove item:', err);
-            this.toastService.showError('Error', 'Failed to remove item.');
-          },
-        });
-    }
+  async onRemoveItem(item: Item): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.transloco.translate('home.removeConfirm.title'),
+      message: this.transloco.translate('home.removeConfirm.message', { name: item.name }),
+      acceptLabel: this.transloco.translate('home.removeConfirm.accept'),
+      destructive: true,
+    });
+    if (!confirmed) return;
+    this.itemService
+      .removeItem(item)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.toastService.showSuccess(
+            this.transloco.translate('home.toasts.removedMessage', { name: item.name }),
+            this.transloco.translate('home.toasts.removedTitle'),
+          );
+          this.fetchData();
+        },
+        error: (err) => {
+          console.error('Failed to remove item:', err);
+          this.toastService.showError(
+            this.transloco.translate('home.toasts.removeFailed'),
+            this.transloco.translate('home.toasts.errorTitle'),
+          );
+        },
+      });
   }
 
   onReviewExpired(): void {
@@ -141,10 +156,6 @@ export class HomeComponent {
 
   onNavigateToAddRecipe(): void {
     this.router.navigate(['/recipes/new']);
-  }
-
-  onNavigateToAssign(): void {
-    this.router.navigate(['/inventory/items'], { queryParams: { tab: 'assign' } });
   }
 
   onNavigateToRecipes(): void {

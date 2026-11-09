@@ -2,11 +2,13 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
+import translations from '../../../../public/i18n/en.json';
 import { MealPlannerComponent } from './meal-planner.component';
 
 describe('MealPlannerComponent', () => {
@@ -32,7 +34,11 @@ describe('MealPlannerComponent', () => {
   beforeEach(() => {
     mockMealPlannerService = {
       days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      meals: () => [mockMeal],
+      meals: () => [mockMeal, { ...mockMeal, id: 'mp-2', day: 'Tuesday' }],
+      uniqueMissingIngredients: () => [{ ingredientId: 'ing-lettuce', name: 'Lettuce' }],
+      stockFailed: () => false,
+      missingByMealId: () => null,
+      loadStock: vi.fn(),
       loadMealsFromBackend: vi.fn(),
       addMealPlan: vi.fn(),
       removeMealPlan: vi.fn(),
@@ -48,6 +54,12 @@ describe('MealPlannerComponent', () => {
     mockRouter = { navigate: vi.fn() };
 
     TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+        }),
+      ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -62,8 +74,17 @@ describe('MealPlannerComponent', () => {
 
   it('should create meal planner component', () => {
     expect(component).toBeTruthy();
-    expect(component.totalPlannedCount()).toBe(1);
+    expect(component.totalPlannedCount()).toBe(2);
     expect(component.missingItemsCount()).toBe(1);
+  });
+
+  it('counts unique missing ingredients from the service, not per meal', () => {
+    expect(component.missingItemsCount()).toBe(1);
+  });
+
+  it('refreshes stock when the page is entered', () => {
+    component.ngOnInit();
+    expect(mockMealPlannerService.loadStock).toHaveBeenCalledTimes(1);
   });
 
   it('should switch sub tabs', () => {

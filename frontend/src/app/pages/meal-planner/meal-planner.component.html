@@ -1,15 +1,21 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-  <!-- Page Header & Action Bar -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="page-layout">
+  <header class="page-header">
     <div>
-      <h1 class="type-page-title text-surface-900 dark:text-white">Weekly Meal Planner</h1>
+      <h1 class="type-page-title text-surface-900 dark:text-white">
+        {{ 'mealPlanner.pageTitle' | transloco }}
+      </h1>
     </div>
 
     <!-- Quick Actions Group -->
-    <div class="flex flex-wrap items-center gap-2.5 shrink-0 self-start md:self-auto">
+    <div class="page-header__actions">
       @if (missingItemsCount() > 0) {
-        <button (click)="syncAllMissingToShoppingList()" class="btn-danger">
-          Sync {{ missingItemsCount() }} Missing Item{{ missingItemsCount() > 1 ? 's' : '' }}
+        <button (click)="syncAllMissingToShoppingList()" class="btn-secondary">
+          {{
+            (missingItemsCount() === 1
+              ? 'mealPlanner.syncMissingOne'
+              : 'mealPlanner.syncMissingOther'
+            ) | transloco: { count: missingItemsCount() }
+          }}
         </button>
       }
 
@@ -23,37 +29,29 @@
           class="w-4 h-4">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
-        <span>Plan a Meal</span>
+        <span>{{ 'mealPlanner.planMeal' | transloco }}</span>
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- Sub-Page Navigation Tabs -->
   <div
     class="flex items-center justify-between border-b border-surface-200/80 dark:border-surface-800/80 pb-3 panel-reveal panel-delay-1">
-    <div
-      class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800/60 p-1 rounded-xl border border-surface-200/80 dark:border-surface-800/80">
-      <button
-        (click)="setSubTab('calendar')"
-        [class]="
-          activeSubTab() === 'calendar'
-            ? 'px-4 py-2 font-bold rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-white shadow-xs transition-all text-xs flex items-center gap-2 cursor-pointer'
-            : 'px-4 py-2 font-medium rounded-lg text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all text-xs flex items-center gap-2 cursor-pointer'
-        ">
-        <span>Weekly Calendar</span>
-      </button>
-
-      <button
-        (click)="setSubTab('daily')"
-        [class]="
-          activeSubTab() === 'daily'
-            ? 'px-4 py-2 font-bold rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-white shadow-xs transition-all text-xs flex items-center gap-2 cursor-pointer'
-            : 'px-4 py-2 font-medium rounded-lg text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all text-xs flex items-center gap-2 cursor-pointer'
-        ">
-        <span>Daily Focus</span>
-      </button>
-    </div>
+    <pantry-segmented-control
+      [ariaLabel]="'mealPlanner.plannerView' | transloco"
+      [options]="subTabOptions()"
+      [value]="activeSubTab()"
+      (valueChange)="setSubTab($event)" />
   </div>
+
+  @if (mealPlannerService.stockFailed()) {
+    <pantry-empty-state
+      icon="pi pi-exclamation-circle"
+      [title]="'mealPlanner.stockLoadError' | transloco"
+      [description]="'mealPlanner.stockLoadErrorHint' | transloco"
+      [actionText]="'mealPlanner.retry' | transloco"
+      (actionClick)="retryLoadStock()" />
+  }
 
   <!-- Dynamic Views -->
   <div class="panel-reveal panel-delay-2">

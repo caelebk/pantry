@@ -1,73 +1,63 @@
-<div
-  class="max-w-5xl mx-auto px-4 py-6 space-y-6"
-  *transloco="let t; read: 'inventory.reconciliation'">
-  <!-- Header -->
-  <div class="flex items-center justify-between mb-2">
-    <div class="flex items-center gap-3">
-      <button
-        (click)="onCancel()"
-        type="button"
-        class="p-2.5 rounded-xl text-surface-500 hover:text-surface-900 dark:hover:text-white bg-surface-100 hover:bg-surface-200 dark:bg-surface-800 dark:hover:bg-surface-700 transition-all cursor-pointer"
-        title="Back">
-        <i class="pi pi-arrow-left text-base"></i>
+<div class="page-layout" *transloco="let t; read: 'inventory.reconciliation'">
+  <header class="page-header">
+    <div>
+      <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent mb-2">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        <span>{{ 'nav.back' | transloco }}</span>
       </button>
-      <div>
-        <h2 class="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
-          {{ t('title') }}
-        </h2>
-      </div>
+      <h1 class="type-page-title text-surface-900 dark:text-white">
+        {{ t('title') }}
+      </h1>
     </div>
-  </div>
+  </header>
 
   @if (isLoading()) {
-    <div
-      class="glass-card rounded-2xl border border-surface-200/60 dark:border-surface-800/80 p-8 flex items-center justify-center">
-      <pantry-spinner size="md" [label]="t('loading')"></pantry-spinner>
-    </div>
+    <pantry-skeleton variant="card" height="320px" />
   } @else {
     <!-- Ingredient Banner -->
-    <div
-      class="glass-card rounded-2xl p-6 border-l-4 border-surface-400 dark:border-surface-600 bg-surface-100/60 dark:bg-surface-800/40 space-y-2">
-      <div class="flex items-center justify-between">
+    <pantry-card variant="sub" padding="md" class="block space-y-2">
+      <div class="flex flex-wrap items-center justify-between gap-2">
         <div
-          class="flex items-center gap-2 text-surface-800 dark:text-surface-200 font-bold text-lg">
-          <i class="pi pi-exclamation-triangle text-xl text-surface-500 dark:text-surface-400"></i>
+          class="type-section-title flex items-center gap-2 text-surface-800 dark:text-surface-200">
+          <i
+            class="pi pi-exclamation-triangle text-surface-500 dark:text-surface-400"
+            aria-hidden="true"></i>
           <span>{{ t('bannerTitle', { name: ingredient()?.name }) }}</span>
         </div>
-        <div class="flex items-center gap-2 text-xs font-semibold">
-          <span
-            class="px-2.5 py-1 rounded-full bg-surface-200 dark:bg-surface-800 text-surface-700 dark:text-surface-300">
-            {{ t('bannerCurrent', { unit: oldUnit()?.name || 'Unset' }) }}
-          </span>
-          <i class="pi pi-arrow-right text-surface-400"></i>
-          <span
-            class="px-2.5 py-1 rounded-full bg-surface-200 dark:bg-surface-800 text-surface-900 dark:text-white font-bold">
+        <div class="flex items-center gap-2">
+          <pantry-badge variant="neutral">
+            {{
+              t('bannerCurrent', {
+                unit: oldUnit()?.name || ('inventory.unitReconciliation.unset' | transloco),
+              })
+            }}
+          </pantry-badge>
+          <i
+            class="pi pi-arrow-right text-surface-500 dark:text-surface-400"
+            aria-hidden="true"></i>
+          <pantry-badge variant="outline">
             {{ t('bannerNew', { unit: targetUnit()?.name }) }}
-          </span>
+          </pantry-badge>
         </div>
       </div>
-      <p class="text-xs text-surface-600 dark:text-surface-400">
+      <p class="type-meta text-surface-600 dark:text-surface-400">
         {{ t('bannerDesc') }}
       </p>
-    </div>
+    </pantry-card>
 
     @if (submitError()) {
-      <div
-        class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm font-medium flex items-center gap-2">
-        <i class="pi pi-times-circle text-base"></i>
-        <span>{{ submitError() }}</span>
-      </div>
+      <pantry-alert variant="danger">{{ submitError() }}</pantry-alert>
     }
 
     <!-- Table Card -->
-    <div class="glass-card rounded-2xl p-6 shadow-xl space-y-6">
+    <pantry-card padding="md" class="block space-y-6">
       <p-table [value]="itemRows()" class="p-datatable-sm" responsiveLayout="scroll">
         <ng-template pTemplate="header">
           <tr>
-            <th class="!text-xs !font-bold uppercase tracking-wider">{{ t('colLabel') }}</th>
-            <th class="!text-xs !font-bold uppercase tracking-wider">{{ t('colLocation') }}</th>
-            <th class="!text-xs !font-bold uppercase tracking-wider">{{ t('colPrevStock') }}</th>
-            <th class="!text-xs !font-bold uppercase tracking-wider">
+            <th class="type-label">{{ t('colLabel') }}</th>
+            <th class="type-label">{{ t('colLocation') }}</th>
+            <th class="type-label">{{ t('colPrevStock') }}</th>
+            <th class="type-label">
               {{ t('colNewQty', { unit: targetUnit()?.shortName }) }}
             </th>
           </tr>
@@ -75,24 +65,38 @@
         <ng-template pTemplate="body" let-row>
           <tr>
             <td class="font-semibold text-surface-900 dark:text-white">{{ row.label }}</td>
-            <td class="text-surface-500 text-sm">{{ row.locationName }}</td>
-            <td class="text-surface-500 text-sm font-medium">
+            <td class="text-surface-500 dark:text-surface-400 text-sm">
+              {{ row.locationName ?? t('unknownLocation') }}
+            </td>
+            <td class="text-surface-500 dark:text-surface-400 text-sm font-medium">
               {{ row.oldQuantity }} {{ row.oldUnitName }}
             </td>
             <td>
               <div class="flex items-center gap-2">
                 <p-inputNumber
                   [(ngModel)]="row.newQuantity"
-                  [min]="0.01"
+                  [min]="0"
                   [step]="0.1"
                   [minFractionDigits]="0"
                   [maxFractionDigits]="3"
+                  [invalid]="submitAttempted() && isRowInvalid(row)"
+                  [ariaLabel]="t('colNewQty', { unit: targetUnit()?.shortName })"
                   class="w-36">
                 </p-inputNumber>
-                <span class="text-xs font-semibold text-surface-400">
+                <span class="type-meta font-semibold text-surface-500 dark:text-surface-400">
                   {{ targetUnit()?.shortName }}
                 </span>
               </div>
+              @if (row.needsManualInput) {
+                <p class="mt-1 text-xs text-surface-600 dark:text-surface-400">
+                  {{ t('manualHint', { from: row.oldUnitName, to: targetUnit()?.shortName }) }}
+                </p>
+              }
+              @if (submitAttempted() && isRowInvalid(row)) {
+                <p class="mt-1 text-xs text-rose-600 dark:text-rose-400" role="alert">
+                  {{ t('quantityRequired') }}
+                </p>
+              }
             </td>
           </tr>
         </ng-template>
@@ -104,13 +108,18 @@
         <button type="button" (click)="onCancel()" class="btn-secondary">
           {{ t('cancelBtn') }}
         </button>
-        <button type="button" (click)="onSubmit()" [disabled]="isSubmitting()" class="btn-primary">
+        <button
+          type="button"
+          (click)="onSubmit()"
+          [disabled]="isSubmitting()"
+          [attr.aria-busy]="isSubmitting()"
+          class="btn-primary">
           @if (isSubmitting()) {
-            <pantry-spinner size="sm" color="white" />
+            <pantry-spinner [announce]="false" size="sm" color="white" />
           }
           <span>{{ t('confirmBtn') }}</span>
         </button>
       </div>
-    </div>
+    </pantry-card>
   }
 </div>

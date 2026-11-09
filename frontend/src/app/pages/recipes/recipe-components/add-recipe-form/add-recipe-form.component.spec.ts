@@ -2,15 +2,16 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { provideTransloco } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
+import { Recipe } from '@models/recipe.model';
 import { UnitType } from '@models/unit.model';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { RecipeService } from '@services/recipe.service';
 import { ToastService } from '@services/toast.service';
-import { of } from 'rxjs';
-import { TranslocoHttpLoader } from '../../../../transloco-loader';
+import { of, Subject, throwError } from 'rxjs';
+import translations from '../../../../../../public/i18n/en.json';
 import { AddRecipeFormComponent } from './add-recipe-form.component';
 
 describe('AddRecipeFormComponent', () => {
@@ -22,6 +23,7 @@ describe('AddRecipeFormComponent', () => {
   let mockUnitService: jasmine.SpyObj<UnitService>;
   let mockToastService: jasmine.SpyObj<ToastService>;
   let mockRouter: jasmine.SpyObj<Router>;
+  let routeId: string | null = null;
 
   const mockUnitGrams = {
     id: 1,
@@ -46,6 +48,7 @@ describe('AddRecipeFormComponent', () => {
   };
 
   beforeEach(async () => {
+    routeId = null;
     mockRecipeService = jasmine.createSpyObj('RecipeService', [
       'getRecipeById',
       'createRecipe',
@@ -80,14 +83,16 @@ describe('AddRecipeFormComponent', () => {
     mockUnitService.getUnits.and.returnValue(of([mockUnitGrams, mockUnitTbsp]));
 
     await TestBed.configureTestingModule({
-      imports: [AddRecipeFormComponent],
+      imports: [
+        AddRecipeFormComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+        }),
+      ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideTransloco({
-          config: { availableLangs: ['en'], defaultLang: 'en' },
-          loader: TranslocoHttpLoader,
-        }),
         { provide: RecipeService, useValue: mockRecipeService },
         { provide: IngredientService, useValue: mockIngredientService },
         { provide: IngredientGroupService, useValue: mockIngredientGroupService },
@@ -99,7 +104,7 @@ describe('AddRecipeFormComponent', () => {
           useValue: {
             snapshot: {
               paramMap: {
-                get: () => null,
+                get: () => routeId,
               },
             },
           },
@@ -280,6 +285,122 @@ describe('AddRecipeFormComponent', () => {
           timerSeconds: undefined,
         },
       ],
+    });
+  });
+
+  describe('keyboard reorder buttons', () => {
+    const button = (id: string): HTMLButtonElement =>
+      fixture.nativeElement.querySelector(`[id="${id}"]`);
+
+    beforeEach(() => {
+      component.recipeIngredients = [
+        { id: 'r1', ingredientId: 'ing-1', quantity: 1, unitId: 2 },
+        { id: 'r2', ingredientId: '', quantity: 1, unitId: null },
+        { id: 'r3', ingredientId: '', quantity: 1, unitId: null },
+      ];
+      component.recipeSteps = [
+        { id: 's1', instructionText: 'First', timerSeconds: null },
+        { id: 's2', instructionText: 'Second', timerSeconds: null },
+      ];
+      fixture.detectChanges();
+    });
+
+    it('labels ingredient buttons with the ingredient name or row position', () => {
+      expect(button('ing-move-up-r1').getAttribute('aria-label')).toBe('Move Olive Oil up');
+      expect(button('ing-move-down-r2').getAttribute('aria-label')).toBe('Move ingredient 2 down');
+    });
+
+    it('labels step buttons with the step position', () => {
+      expect(button('step-move-up-s2').getAttribute('aria-label')).toBe('Move step 2 up');
+      expect(button('step-move-down-s1').getAttribute('aria-label')).toBe('Move step 1 down');
+    });
+
+    it('disables up on the first row and down on the last row', () => {
+      expect(button('ing-move-up-r1').disabled).toBe(true);
+      expect(button('ing-move-down-r1').disabled).toBe(false);
+      expect(button('ing-move-down-r3').disabled).toBe(true);
+      expect(button('ing-move-up-r3').disabled).toBe(false);
+      expect(button('step-move-up-s1').disabled).toBe(true);
+      expect(button('step-move-down-s2').disabled).toBe(true);
+    });
+
+    it('moves an ingredient row down when its button is clicked', () => {
+      const original = component.recipeIngredients;
+      button('ing-move-down-r1').click();
+      fixture.detectChanges();
+      expect(component.recipeIngredients.map((row) => row.id)).toEqual(['r2', 'r1', 'r3']);
+      expect(component.recipeIngredients).not.toBe(original);
+    });
+
+    it('moves a step row up when its button is clicked', () => {
+      button('step-move-up-s2').click();
+      fixture.detectChanges();
+      expect(component.recipeSteps.map((step) => step.id)).toEqual(['s2', 's1']);
+    });
+
+    it('ignores moves past either end', () => {
+      component.moveIngredientUp(0);
+      component.moveIngredientDown(2);
+      component.moveStepUp(0);
+      component.moveStepDown(1);
+      expect(component.recipeIngredients.map((row) => row.id)).toEqual(['r1', 'r2', 'r3']);
+      expect(component.recipeSteps.map((step) => step.id)).toEqual(['s1', 's2']);
+    });
+
+    it('keeps focus on the moved row button', async () => {
+      button('step-move-down-s1').focus();
+      button('step-move-down-s1').click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      // s1 is now last, so its down button is disabled and focus falls back to its up button.
+      expect(document.activeElement).toBe(button('step-move-up-s1'));
+    });
+  });
+
+  it('does not render the tags input because the backend has no recipe tags', () => {
+    expect(fixture.nativeElement.querySelector('#recipe-tags')).toBeNull();
+  });
+
+  describe('edit mode', () => {
+    const recipe$ = new Subject<Recipe>();
+
+    function createEditFixture(): void {
+      routeId = 'recipe-9';
+      mockRecipeService.getRecipeById.and.returnValue(recipe$);
+      fixture = TestBed.createComponent(AddRecipeFormComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }
+
+    it('leaves the skeleton and returns to recipes when ingredients fail to load', () => {
+      mockIngredientService.getIngredients.and.returnValue(throwError(() => new Error('down')));
+      createEditFixture();
+      expect(component.isLoadingRecipe()).toBeFalse();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/recipes']);
+      expect(mockRecipeService.getRecipeById).not.toHaveBeenCalled();
+    });
+
+    it('shows a skeleton instead of create defaults until the recipe loads', () => {
+      createEditFixture();
+      expect(component.isLoadingRecipe()).toBeTrue();
+      expect(fixture.nativeElement.querySelector('pantry-skeleton')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('#recipe-name')).toBeNull();
+
+      recipe$.next({
+        id: 'recipe-9',
+        name: 'Loaded Soup',
+        servings: 2,
+        prepTime: 5,
+        cookTime: 15,
+        difficultyId: 2,
+      } as Recipe);
+      fixture.detectChanges();
+
+      expect(component.isLoadingRecipe()).toBeFalse();
+      expect(fixture.nativeElement.querySelector('pantry-skeleton')).toBeNull();
+      expect(fixture.nativeElement.querySelector('#recipe-name')).toBeTruthy();
+      expect(component.name).toBe('Loaded Soup');
+      expect(component.totalTime).toBe(20);
     });
   });
 });

@@ -21,7 +21,15 @@ import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
-import { BadgeComponent, BadgeVariant, EmptyStateComponent, SkeletonComponent } from '@ui';
+import {
+  AlertComponent,
+  BadgeComponent,
+  BadgeVariant,
+  CardComponent,
+  ConfirmDialogService,
+  EmptyStateComponent,
+  SkeletonComponent,
+} from '@ui';
 import { mapItemDTOToItem } from '@utility/itemUtility/ItemMapper';
 import { isExpired, isExpiringSoon } from '@utility/itemUtility/ItemUtility';
 import { forkJoin, Subscription } from 'rxjs';
@@ -34,7 +42,9 @@ import { AuthService } from '../../../core/services/auth.service';
     CommonModule,
     RouterLink,
     TranslocoModule,
+    AlertComponent,
     BadgeComponent,
+    CardComponent,
     EmptyStateComponent,
     SkeletonComponent,
   ],
@@ -47,6 +57,7 @@ export class IngredientDetailPageComponent {
   private readonly injector = inject(Injector);
   private readonly itemService = inject(ItemService);
   private readonly toastService = inject(ToastService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly transloco = inject(TranslocoService);
   private readonly route = inject(ActivatedRoute);
   private readonly ingredientService = inject(IngredientService);
@@ -74,7 +85,7 @@ export class IngredientDetailPageComponent {
   readonly stock = computed(() => {
     const totals = new Map<number, { quantity: number; unit: string }>();
     for (const item of this.items()) {
-      if (item.quantity <= 0) continue;
+      if (item.quantity <= 0 || isExpired(item)) continue;
       const total = totals.get(item.unit.id) ?? {
         quantity: 0,
         unit: item.unit.shortName || item.unit.name,
@@ -142,7 +153,9 @@ export class IngredientDetailPageComponent {
         },
         error: (error: unknown) => {
           this.state.set(
-            error instanceof HttpErrorResponse && error.status === 404 ? 'not-found' : 'error',
+            error instanceof HttpErrorResponse && (error.status === 404 || error.status === 400)
+              ? 'not-found'
+              : 'error',
           );
         },
       });
@@ -157,13 +170,19 @@ export class IngredientDetailPageComponent {
     this.reload.update((value) => value + 1);
   }
 
-  deleteItem(item: IngredientItem): void {
-    if (
-      this.deletingId() ||
-      !confirm(this.transloco.translate('ingredientDetail.deleteConfirm', { name: item.name }))
-    )
-      return;
+  async deleteItem(item: IngredientItem): Promise<void> {
+    if (this.deletingId()) return;
     this.deletingId.set(item.id);
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.transloco.translate('ingredientDetail.deleteItem', { name: item.name }),
+      message: this.transloco.translate('ingredientDetail.deleteConfirm', { name: item.name }),
+      acceptLabel: this.transloco.translate('shoppingList.actions.delete'),
+      destructive: true,
+    });
+    if (!confirmed) {
+      this.deletingId.set(null);
+      return;
+    }
     this.deleteError.set(false);
     this.deletion = this.itemService.removeIngredientItem(item).subscribe({
       next: () => {

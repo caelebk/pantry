@@ -2,14 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Unit } from '@models/unit.model';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
-import { FormFieldComponent, SpinnerComponent } from '@ui';
+import { AlertComponent, CardComponent, FormFieldComponent, SpinnerComponent } from '@ui';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 
@@ -24,6 +24,8 @@ import { SelectModule } from 'primeng/select';
     SelectModule,
     FormFieldComponent,
     SpinnerComponent,
+    AlertComponent,
+    CardComponent,
   ],
   templateUrl: './add-ingredient-page.component.html',
 })
@@ -34,6 +36,7 @@ export class AddIngredientPageComponent implements OnInit {
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly unitService = inject(UnitService);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
 
   public ingredientForm!: FormGroup;
   public ingredientGroups = signal<IngredientGroup[]>([]);
@@ -61,7 +64,7 @@ export class AddIngredientPageComponent implements OnInit {
     this.submitError.set(null);
     if (this.ingredientForm.invalid) {
       this.ingredientForm.markAllAsTouched();
-      this.submitError.set('Please fill in all required fields.');
+      this.submitError.set(this.transloco.translate('ingredientForm.requiredFields'));
       return;
     }
 
@@ -77,12 +80,14 @@ export class AddIngredientPageComponent implements OnInit {
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);
-          this.toastService.showSuccess(`Ingredient "${val.name}" added successfully.`);
+          this.toastService.showSuccess(
+            this.transloco.translate('ingredientForm.created', { name: val.name }),
+          );
           this.router.navigate(['/inventory/ingredients']);
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          const msg = err?.message || 'Failed to create ingredient.';
+          const msg = err?.message || this.transloco.translate('ingredientForm.createFailed');
           this.submitError.set(msg);
           this.toastService.showError(msg);
         },

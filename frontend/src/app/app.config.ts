@@ -8,7 +8,7 @@ import {
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideTransloco } from '@jsverse/transloco';
+import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
@@ -80,6 +80,10 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const authService = inject(AuthService);
       return firstValueFrom(authService.initializeAuth());
+    }),
+    provideAppInitializer(() => {
+      const transloco = inject(TranslocoService);
+      return firstValueFrom(transloco.load(transloco.getActiveLang()));
     }),
     provideAnimationsAsync(),
     providePrimeNG({

@@ -10,6 +10,8 @@ import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
+import { ConfirmDialogService } from '@ui';
+import { ConfirmationService } from 'primeng/api';
 import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import translations from '../../../../../public/i18n/en.json';
@@ -19,7 +21,12 @@ const units = [
   { id: 1, name: 'Gram', shortName: 'g', type: UnitType.Weight, toBaseFactor: 1 },
   { id: 2, name: 'Millilitre', shortName: 'ml', type: UnitType.Volume, toBaseFactor: 1 },
 ];
-const dto = (id: string, quantity: number, unitId = 1): IngredientItemDTO => ({
+const dto = (
+  id: string,
+  quantity: number,
+  unitId = 1,
+  expirationDate?: string,
+): IngredientItemDTO => ({
   id,
   quantity,
   unitId,
@@ -27,6 +34,7 @@ const dto = (id: string, quantity: number, unitId = 1): IngredientItemDTO => ({
   label: id,
   locationId: 1,
   purchaseDate: '2026-01-01',
+  expirationDate,
 });
 describe('IngredientDetailPageComponent', () => {
   let fixture: ComponentFixture<IngredientDetailPageComponent>;
@@ -38,6 +46,10 @@ describe('IngredientDetailPageComponent', () => {
     getItemsByIngredientId: ReturnType<typeof vi.fn>;
   };
   let itemService: { removeIngredientItem: ReturnType<typeof vi.fn> };
+  let confirmDialog: {
+    confirm: ReturnType<typeof vi.fn>;
+    confirmationService: ConfirmationService;
+  };
   beforeEach(async () => {
     params = new BehaviorSubject(convertToParamMap({ id: 'rice' }));
     kitchen = signal<{ id: string } | null>({ id: 'kitchen-one' });
@@ -48,6 +60,10 @@ describe('IngredientDetailPageComponent', () => {
       ),
     };
     itemService = { removeIngredientItem: vi.fn(() => of(undefined)) };
+    confirmDialog = {
+      confirm: vi.fn(() => Promise.resolve(true)),
+      confirmationService: new ConfirmationService(),
+    };
     await TestBed.configureTestingModule({
       imports: [
         IngredientDetailPageComponent,
@@ -70,6 +86,7 @@ describe('IngredientDetailPageComponent', () => {
           useValue: { getLocations: () => of([{ id: 1, name: 'Pantry' }]) },
         },
         { provide: ItemService, useValue: itemService },
+        { provide: ConfirmDialogService, useValue: confirmDialog },
         { provide: ToastService, useValue: { showSuccess: vi.fn() } },
       ],
     }).compileComponents();
@@ -105,6 +122,22 @@ describe('IngredientDetailPageComponent', () => {
     expect(fixture.nativeElement.querySelector('a[href*="items/new"]').href).toContain(
       'ingredientId=rice',
     );
+  });
+  it('excludes expired quantity from the total stock', () => {
+    ingredients.getItemsByIngredientId.mockReturnValue(
+      of([dto('fresh', 250), dto('old', 500, 1, '2020-01-01')]),
+    );
+    component.retry();
+    fixture.detectChanges();
+    expect(component.stock()).toEqual([{ quantity: 250, unit: 'g' }]);
+  });
+  it('treats a malformed id (400) as not found', () => {
+    ingredients.getIngredientById.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 400 })),
+    );
+    component.retry();
+    fixture.detectChanges();
+    expect(component.state()).toBe('not-found');
   });
   it('cancels old requests and clears data when the kitchen changes', () => {
     const pending = new Subject<IngredientItemDTO[]>();
@@ -145,13 +178,22 @@ describe('IngredientDetailPageComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('No ingredient items yet');
     expect(fixture.nativeElement.querySelector('table')).toBeNull();
   });
-  it('blocks duplicate deletion and retains the item after failure', () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
+  it('does not delete when the confirmation is cancelled', async () => {
+    confirmDialog.confirm.mockResolvedValue(false);
+    await component.deleteItem(component.items()[0]);
+    expect(confirmDialog.confirm).toHaveBeenCalledWith(
+      expect.objectContaining({ destructive: true }),
+    );
+    expect(itemService.removeIngredientItem).not.toHaveBeenCalled();
+    expect(component.deletingId()).toBeNull();
+  });
+  it('blocks duplicate deletion and retains the item after failure', async () => {
     const deletion = new Subject<void>();
     itemService.removeIngredientItem.mockReturnValue(deletion);
     const item = component.items()[0];
-    component.deleteItem(item);
-    component.deleteItem(item);
+    const first = component.deleteItem(item);
+    const second = component.deleteItem(item);
+    await Promise.all([first, second]);
     expect(itemService.removeIngredientItem).toHaveBeenCalledTimes(1);
     deletion.error(new Error('Failed'));
     expect(component.items()).toContain(item);

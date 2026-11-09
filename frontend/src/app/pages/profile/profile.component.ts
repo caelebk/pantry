@@ -1,17 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TranslocoModule } from '@jsverse/transloco';
-import { BadgeComponent, FormFieldComponent } from '@ui';
-import { MessageService } from 'primeng/api';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import {
+  BadgeComponent,
+  CardComponent,
+  ConfirmDialogService,
+  FormFieldComponent,
+  SegmentedControlComponent,
+  SegmentedOption,
+  SkeletonComponent,
+  SpinnerComponent,
+} from '@ui';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { ToastModule } from 'primeng/toast';
+import { SelectModule } from 'primeng/select';
 import { KitchenCreateDialogComponent } from '../../components/kitchen-create-dialog/kitchen-create-dialog.component';
 import { Kitchen, KitchenMember, UserSession } from '../../core/models/auth.model';
 import { AuthService } from '../../core/services/auth.service';
 import { KitchenService } from '../../core/services/kitchen.service';
+import { ThemeService } from '../../core/services/theme.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'pantry-profile',
@@ -22,38 +33,38 @@ import { KitchenService } from '../../core/services/kitchen.service';
     TranslocoModule,
     ButtonModule,
     InputTextModule,
-    ToastModule,
     DialogModule,
+    SelectModule,
     BadgeComponent,
+    CardComponent,
     FormFieldComponent,
+    SegmentedControlComponent,
+    SkeletonComponent,
+    SpinnerComponent,
     KitchenCreateDialogComponent,
   ],
-  providers: [MessageService],
   template: `
-    <p-toast></p-toast>
-    <div class="space-y-8 max-w-6xl mx-auto">
+    <div class="page-layout">
       <!-- Page Header -->
-      <div
-        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-200 dark:border-surface-800 pb-6">
+      <header class="page-header">
         <div>
           <h1 class="type-page-title text-surface-900 dark:text-white">
             {{ 'profile.title' | transloco }}
           </h1>
         </div>
-        <div class="flex items-center gap-3">
-          <pantry-badge variant="neutral" class="uppercase tracking-wider">
+        <div class="page-header__actions">
+          <pantry-badge variant="neutral">
             {{ authService.currentUser()?.globalRole }}
           </pantry-badge>
         </div>
-      </div>
+      </header>
 
       <!-- Main Layout Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Left Column: Personal Info & Password -->
-        <div class="lg:col-span-2 space-y-8">
+        <div class="lg:col-span-2 space-y-6">
           <!-- Profile Form Card -->
-          <div
-            class="glass-card p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl">
+          <pantry-card padding="lg">
             <h2
               class="type-section-title text-surface-800 dark:text-surface-100 mb-6 flex items-center gap-2">
               <i class="pi pi-user text-surface-500 dark:text-surface-400"></i>
@@ -67,14 +78,15 @@ import { KitchenService } from '../../core/services/kitchen.service';
                 [required]="true"
                 [error]="
                   profileForm.controls.fullName.invalid && profileForm.controls.fullName.touched
-                    ? 'Full name is required'
+                    ? ('profile.errors.fullNameRequired' | transloco)
                     : ''
                 ">
                 <input
+                  pInputText
                   type="text"
                   id="fullName"
                   formControlName="fullName"
-                  class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none" />
+                  class="w-full" />
               </pantry-form-field>
 
               <pantry-form-field
@@ -82,53 +94,56 @@ import { KitchenService } from '../../core/services/kitchen.service';
                 forId="username"
                 [error]="
                   profileForm.controls.username.invalid && profileForm.controls.username.touched
-                    ? 'Username must be 3-30 letters, numbers, or underscores'
+                    ? ('profile.errors.usernameInvalid' | transloco)
                     : ''
                 ">
                 <input
+                  pInputText
                   type="text"
                   id="username"
                   formControlName="username"
-                  class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none" />
+                  class="w-full" />
               </pantry-form-field>
 
               <pantry-form-field [label]="'auth.email' | transloco" forId="email">
                 <input
+                  pInputText
                   type="email"
                   id="email"
                   [value]="authService.currentUser()?.email"
                   disabled
-                  class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-900/80 border border-surface-300 dark:border-surface-800 text-surface-500 dark:text-surface-400 text-sm cursor-not-allowed outline-none" />
+                  class="w-full" />
               </pantry-form-field>
 
-              <pantry-form-field label="Theme Preference" forId="themePreference" [required]="true">
-                <select
+              <pantry-form-field
+                [label]="'profile.theme.label' | transloco"
+                forId="themePreference"
+                [required]="true">
+                <pantry-segmented-control
                   id="themePreference"
-                  formControlName="themePreference"
-                  class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none">
-                  <option value="system">System (Match OS)</option>
-                  <option value="light">Light Mode</option>
-                  <option value="dark">Dark Mode</option>
-                </select>
+                  [options]="themeOptions()"
+                  [value]="profileForm.controls.themePreference.value"
+                  (valueChange)="profileForm.controls.themePreference.setValue($event ?? 'system')"
+                  ariaLabelledBy="themePreference-label" />
               </pantry-form-field>
 
               <div class="flex justify-end">
                 <button
                   type="submit"
                   [disabled]="profileForm.invalid || isSavingProfile()"
+                  [attr.aria-busy]="isSavingProfile()"
                   class="btn-primary">
                   @if (isSavingProfile()) {
-                    <i class="pi pi-spin pi-spinner"></i>
+                    <pantry-spinner [announce]="false" size="sm" color="white" />
                   }
                   <span>{{ 'profile.updateProfileBtn' | transloco }}</span>
                 </button>
               </div>
             </form>
-          </div>
+          </pantry-card>
 
           <!-- Password Change Form Card -->
-          <div
-            class="glass-card p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl">
+          <pantry-card padding="lg">
             <h2
               class="type-section-title text-surface-800 dark:text-surface-100 mb-6 flex items-center gap-2">
               <i class="pi pi-lock text-surface-500 dark:text-surface-400"></i>
@@ -137,101 +152,107 @@ import { KitchenService } from '../../core/services/kitchen.service';
 
             <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="space-y-6">
               <pantry-form-field
-                label="Current Password"
+                [label]="'profile.currentPassword' | transloco"
                 forId="currentPassword"
                 [required]="true"
                 [error]="
                   passwordForm.controls.currentPassword.invalid &&
                   passwordForm.controls.currentPassword.touched
-                    ? 'Current password is required'
+                    ? ('profile.errors.currentPasswordRequired' | transloco)
                     : ''
                 ">
                 <input
+                  pInputText
                   type="password"
                   id="currentPassword"
                   formControlName="currentPassword"
-                  class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none" />
+                  class="w-full" />
               </pantry-form-field>
 
               <pantry-form-field
-                label="New Password"
+                [label]="'profile.newPassword' | transloco"
                 forId="newPassword"
                 [required]="true"
                 [error]="
                   passwordForm.controls.newPassword.invalid &&
                   passwordForm.controls.newPassword.touched
-                    ? 'New password must be at least 8 characters'
+                    ? ('profile.errors.newPasswordMin' | transloco)
                     : ''
                 ">
                 <input
+                  pInputText
                   type="password"
                   id="newPassword"
                   formControlName="newPassword"
-                  class="w-full h-[42px] px-4 rounded-xl bg-surface-100/80 dark:bg-surface-800/80 border border-surface-300/80 dark:border-surface-700/80 text-surface-900 dark:text-surface-50 text-sm focus:ring-2 focus:ring-orange-500/50 outline-none" />
+                  class="w-full" />
               </pantry-form-field>
 
               <div class="flex justify-end">
                 <button
                   type="submit"
                   [disabled]="passwordForm.invalid || isChangingPassword()"
+                  [attr.aria-busy]="isChangingPassword()"
                   class="btn-secondary">
                   @if (isChangingPassword()) {
-                    <i class="pi pi-spin pi-spinner"></i>
+                    <pantry-spinner [announce]="false" size="sm" />
                   }
-                  <span>Change Password</span>
+                  <span>{{ 'profile.changePasswordBtn' | transloco }}</span>
                 </button>
               </div>
             </form>
-          </div>
+          </pantry-card>
 
           <!-- Active Security Sessions Card -->
-          <div
-            class="glass-card p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl">
+          <pantry-card padding="lg">
             <div class="flex items-center justify-between mb-6">
               <h2
                 class="type-section-title text-surface-800 dark:text-surface-100 flex items-center gap-2">
                 <i class="pi pi-shield text-surface-500 dark:text-surface-400"></i>
                 {{ 'profile.activeSessions' | transloco }}
               </h2>
-              <button (click)="onRevokeAllSessions()" class="btn-danger">
+              <button type="button" (click)="onRevokeAllSessions()" class="btn-danger">
                 {{ 'profile.revokeAllSessionsBtn' | transloco }}
               </button>
             </div>
 
             <div class="space-y-3">
               @for (s of sessions(); track s.id) {
-                <div
-                  class="flex items-center justify-between p-4 rounded-xl bg-surface-100/40 dark:bg-surface-800/40 border border-surface-200/50 dark:border-surface-700/50">
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-surface-200 dark:bg-surface-800 flex items-center justify-center text-surface-600 dark:text-surface-300">
-                      <i class="pi pi-desktop text-lg"></i>
-                    </div>
-                    <div>
+                <pantry-card variant="sub" padding="sm" class="block">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
                       <div
-                        class="text-sm font-medium text-surface-800 dark:text-surface-100 flex items-center gap-2">
-                        <span>{{ s.userAgent }}</span>
-                        @if (s.isCurrent) {
-                          <pantry-badge variant="fresh" size="sm" class="uppercase">
-                            {{ 'profile.currentDevice' | transloco }}
-                          </pantry-badge>
-                        }
+                        class="w-10 h-10 rounded-xl bg-surface-200 dark:bg-surface-800 flex items-center justify-center text-surface-600 dark:text-surface-300">
+                        <i class="pi pi-desktop text-lg"></i>
                       </div>
-                      <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                        IP: {{ s.ipAddress }} • Connected {{ s.createdAt | date: 'mediumDate' }}
+                      <div>
+                        <div
+                          class="type-label text-surface-800 dark:text-surface-100 flex items-center gap-2">
+                          <span>{{ s.userAgent }}</span>
+                          @if (s.isCurrent) {
+                            <pantry-badge variant="fresh" size="sm">
+                              {{ 'profile.currentDevice' | transloco }}
+                            </pantry-badge>
+                          }
+                        </div>
+                        <div class="type-meta text-surface-500 dark:text-surface-400 mt-0.5">
+                          {{
+                            'profile.sessionMeta'
+                              | transloco
+                                : { ip: s.ipAddress, date: (s.createdAt | date: 'mediumDate') }
+                          }}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </pantry-card>
               }
             </div>
-          </div>
+          </pantry-card>
         </div>
 
         <!-- Right Column: Kitchen Workspaces -->
-        <div class="space-y-8">
-          <div
-            class="glass-card p-6 rounded-2xl bg-white/60 dark:bg-surface-900/60 border border-surface-200/80 dark:border-surface-800/80 backdrop-blur-xl">
+        <div class="space-y-6">
+          <pantry-card>
             <div class="flex items-center justify-between mb-6">
               <h2
                 class="type-section-title text-surface-800 dark:text-surface-100 flex items-center gap-2">
@@ -243,7 +264,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
                 data-create-kitchen
                 (click)="showCreateKitchenModal.set(true)"
                 [attr.aria-label]="'kitchenCreate.title' | transloco"
-                class="btn-icon text-surface-500 hover:text-surface-700 dark:hover:text-surface-300">
+                class="btn-icon">
                 <i class="pi pi-plus text-sm"></i>
               </button>
             </div>
@@ -251,9 +272,12 @@ import { KitchenService } from '../../core/services/kitchen.service';
             <div class="space-y-3">
               @for (k of authService.userKitchens(); track k.id) {
                 <div
-                  [class.border-surface-400]="authService.activeKitchen()?.id === k.id"
-                  [class.bg-surface-100]="authService.activeKitchen()?.id === k.id"
-                  class="p-3 rounded-xl border border-surface-200 dark:border-surface-800 flex items-center gap-2 min-w-0">
+                  [class.border-primary-500/40]="authService.activeKitchen()?.id === k.id"
+                  [class.bg-primary-500/10]="authService.activeKitchen()?.id === k.id"
+                  [class.dark:bg-primary-500/20]="authService.activeKitchen()?.id === k.id"
+                  [class.border-surface-200]="authService.activeKitchen()?.id !== k.id"
+                  [class.dark:border-surface-800]="authService.activeKitchen()?.id !== k.id"
+                  class="p-3 rounded-xl border flex items-center gap-2 min-w-0">
                   <button
                     type="button"
                     data-select-kitchen
@@ -277,7 +301,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
                   </button>
                   @if (authService.activeKitchen()?.id === k.id) {
                     <i
-                      class="pi pi-check-circle text-surface-500 dark:text-surface-400 text-lg shrink-0"
+                      class="pi pi-check-circle text-primary-600 dark:text-primary-400 text-lg shrink-0"
                       aria-hidden="true"></i>
                   }
                   @if (k.role === 'owner') {
@@ -292,7 +316,7 @@ import { KitchenService } from '../../core/services/kitchen.service';
                 </div>
               }
             </div>
-          </div>
+          </pantry-card>
         </div>
       </div>
     </div>
@@ -300,89 +324,96 @@ import { KitchenService } from '../../core/services/kitchen.service';
     <pantry-kitchen-create-dialog [(visible)]="showCreateKitchenModal" />
     <!-- Manage Kitchen Modal -->
     <p-dialog
-      header="Manage Kitchen Members"
+      [header]="'profile.manageMembers' | transloco"
       [(visible)]="showManageKitchenModal"
       [modal]="true"
+      appendTo="body"
       [style]="{ width: '90%', 'max-width': '500px' }">
       <div class="space-y-6 pt-2">
         <!-- Invite Form -->
-        <form
-          [formGroup]="inviteForm"
-          (ngSubmit)="onInviteMember()"
-          class="flex flex-col gap-3 p-4 rounded-xl bg-surface-100 dark:bg-surface-800">
-          <h3 class="text-sm font-semibold text-surface-800 dark:text-surface-100">
-            Invite New Member
-          </h3>
-          <div class="flex gap-2 items-start">
-            <div class="flex-1">
+        <pantry-card variant="sub" padding="sm">
+          <form [formGroup]="inviteForm" (ngSubmit)="onInviteMember()" class="flex flex-col gap-3">
+            <h3 class="type-section-title text-surface-800 dark:text-surface-100">
+              {{ 'profile.inviteNewMember' | transloco }}
+            </h3>
+            <div class="flex gap-2 items-start">
+              <div class="flex-1">
+                <pantry-form-field
+                  forId="inviteEmail"
+                  [label]="'profile.userEmail' | transloco"
+                  [required]="true"
+                  [error]="
+                    inviteForm.controls.email.invalid && inviteForm.controls.email.touched
+                      ? ('profile.errors.emailInvalid' | transloco)
+                      : ''
+                  ">
+                  <input
+                    pInputText
+                    type="email"
+                    id="inviteEmail"
+                    formControlName="email"
+                    [placeholder]="'profile.userEmail' | transloco"
+                    class="w-full" />
+                </pantry-form-field>
+              </div>
               <pantry-form-field
-                forId="inviteEmail"
-                label="User Email"
-                [required]="true"
-                [error]="
-                  inviteForm.controls.email.invalid && inviteForm.controls.email.touched
-                    ? 'A valid email is required'
-                    : ''
-                ">
-                <input
-                  type="email"
-                  id="inviteEmail"
-                  formControlName="email"
-                  placeholder="User Email"
-                  class="w-full h-[42px] px-4 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm outline-none" />
+                #roleField
+                forId="inviteRole"
+                [label]="'kitchens.memberRole' | transloco"
+                [required]="true">
+                <p-select
+                  inputId="inviteRole"
+                  formControlName="role"
+                  [options]="roleOptions()"
+                  optionLabel="label"
+                  optionValue="value"
+                  appendTo="body"
+                  [ariaLabelledBy]="roleField.labelId()" />
               </pantry-form-field>
             </div>
-            <pantry-form-field forId="inviteRole" label="Role" [required]="true">
-              <select
-                id="inviteRole"
-                formControlName="role"
-                class="h-[42px] px-3 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm outline-none">
-                <option value="editor">Editor</option>
-                <option value="viewer">Viewer</option>
-              </select>
-            </pantry-form-field>
-          </div>
-          <button
-            type="submit"
-            [disabled]="inviteForm.invalid || isInviting()"
-            class="btn-secondary w-full">
-            @if (isInviting()) {
-              <i class="pi pi-spin pi-spinner"></i>
-            }
-            Send Invitation
-          </button>
-        </form>
+            <button
+              type="submit"
+              [disabled]="inviteForm.invalid || isInviting()"
+              [attr.aria-busy]="isInviting()"
+              class="btn-secondary w-full">
+              @if (isInviting()) {
+                <pantry-spinner [announce]="false" size="sm" />
+              }
+              {{ 'profile.sendInvitation' | transloco }}
+            </button>
+          </form>
+        </pantry-card>
 
         <!-- Member List -->
         <div class="space-y-3">
-          <h3 class="text-sm font-semibold text-surface-800 dark:text-surface-100">
-            Current Members
+          <h3 class="type-section-title text-surface-800 dark:text-surface-100">
+            {{ 'profile.currentMembers' | transloco }}
           </h3>
           @if (isLoadingMembers()) {
-            <div class="text-center p-4 text-surface-500">
-              <i class="pi pi-spin pi-spinner text-xl"></i>
-            </div>
+            <pantry-skeleton variant="row" [count]="2" />
           } @else {
             @for (m of kitchenMembers(); track m.id) {
-              <div
-                class="flex items-center justify-between p-3 rounded-lg border border-surface-200 dark:border-surface-700">
-                <div>
-                  <div class="text-sm font-medium text-surface-800 dark:text-surface-100">
-                    {{ m.fullName }}
+              <pantry-card variant="sub" padding="sm" class="block">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="type-label text-surface-800 dark:text-surface-100">
+                      {{ m.fullName }}
+                    </div>
+                    <div class="type-meta text-surface-500 dark:text-surface-400">
+                      {{ m.email }} • <span class="capitalize">{{ m.role }}</span>
+                    </div>
                   </div>
-                  <div class="text-xs text-surface-500">
-                    {{ m.email }} • <span class="capitalize">{{ m.role }}</span>
-                  </div>
+                  @if (m.userId !== authService.currentUser()?.id) {
+                    <button
+                      type="button"
+                      (click)="onRemoveMember(m.userId)"
+                      [attr.aria-label]="'profile.removeMember' | transloco"
+                      class="btn-icon-sm text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300">
+                      <i class="pi pi-trash"></i>
+                    </button>
+                  }
                 </div>
-                @if (m.userId !== authService.currentUser()?.id) {
-                  <button
-                    (click)="onRemoveMember(m.userId)"
-                    aria-label="Remove member"
-                    class="btn-icon-sm text-red-500 hover:text-red-600">
-                    <i class="pi pi-trash"></i>
-                  </button>
-                }
-              </div>
+              </pantry-card>
             }
           }
         </div>
@@ -393,8 +424,28 @@ import { KitchenService } from '../../core/services/kitchen.service';
 export class ProfileComponent implements OnInit {
   authService = inject(AuthService);
   private kitchenService = inject(KitchenService);
+  private themeService = inject(ThemeService);
   private fb = inject(FormBuilder);
-  private messageService = inject(MessageService);
+  private toastService = inject(ToastService);
+  private confirmDialog = inject(ConfirmDialogService);
+  private transloco = inject(TranslocoService);
+
+  private readonly activeLang = toSignal(this.transloco.langChanges$);
+  readonly themeOptions = computed<SegmentedOption[]>(() => {
+    this.activeLang();
+    return [
+      { value: 'system', label: this.transloco.translate('profile.theme.system') },
+      { value: 'light', label: this.transloco.translate('profile.theme.light') },
+      { value: 'dark', label: this.transloco.translate('profile.theme.dark') },
+    ];
+  });
+  readonly roleOptions = computed(() => {
+    this.activeLang();
+    return [
+      { value: 'editor', label: this.transloco.translate('kitchens.roleEditor') },
+      { value: 'viewer', label: this.transloco.translate('kitchens.roleViewer') },
+    ];
+  });
 
   readonly isSavingProfile = signal(false);
   readonly isChangingPassword = signal(false);
@@ -460,19 +511,18 @@ export class ProfileComponent implements OnInit {
       .subscribe({
         next: () => {
           this.isSavingProfile.set(false);
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Profile Updated',
-            detail: 'Your profile has been saved successfully.',
-          });
+          this.themeService.setUserPreference(themePreference as string);
+          this.toastService.showSuccess(
+            this.transloco.translate('profile.toasts.profileSaved'),
+            this.transloco.translate('profile.toasts.profileSavedTitle'),
+          );
         },
         error: (err) => {
           this.isSavingProfile.set(false);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Update Failed',
-            detail: err.error?.message || 'Failed to update profile.',
-          });
+          this.toastService.showError(
+            err.error?.message || this.transloco.translate('profile.toasts.profileFailed'),
+            this.transloco.translate('profile.toasts.profileFailedTitle'),
+          );
         },
       });
   }
@@ -487,31 +537,48 @@ export class ProfileComponent implements OnInit {
       next: () => {
         this.isChangingPassword.set(false);
         this.passwordForm.reset();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Password changed successfully',
-        });
+        this.toastService.showSuccess(
+          this.transloco.translate('profile.toasts.passwordChanged'),
+          this.transloco.translate('profile.toasts.success'),
+        );
       },
       error: (err) => {
         this.isChangingPassword.set(false);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: err.error?.message || 'Failed to change password',
-        });
+        this.toastService.showError(
+          err.error?.message || this.transloco.translate('profile.toasts.passwordFailed'),
+          this.transloco.translate('profile.toasts.error'),
+        );
       },
     });
   }
 
   onRevokeAllSessions() {
+    void this.confirmDialog
+      .confirm({
+        title: this.transloco.translate('profile.revokeAllConfirmTitle'),
+        message: this.transloco.translate('profile.revokeAllConfirmMessage'),
+        acceptLabel: this.transloco.translate('profile.revokeAllSessionsBtn'),
+        rejectLabel: this.transloco.translate('profile.revokeAllConfirmCancel'),
+        destructive: true,
+      })
+      .then((accepted) => {
+        if (accepted) this.revokeAllSessions();
+      });
+  }
+
+  private revokeAllSessions() {
     this.authService.revokeAllSessions().subscribe({
       next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sessions Revoked',
-          detail: 'Logged out from all devices',
-        });
+        this.toastService.showSuccess(
+          this.transloco.translate('profile.toasts.sessionsRevoked'),
+          this.transloco.translate('profile.toasts.sessionsRevokedTitle'),
+        );
+      },
+      error: (err) => {
+        this.toastService.showError(
+          err.error?.message || this.transloco.translate('profile.toasts.sessionsFailed'),
+          this.transloco.translate('profile.toasts.error'),
+        );
       },
     });
   }
@@ -532,11 +599,10 @@ export class ProfileComponent implements OnInit {
       },
       error: () => {
         this.isLoadingMembers.set(false);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load members',
-        });
+        this.toastService.showError(
+          this.transloco.translate('profile.toasts.membersFailed'),
+          this.transloco.translate('profile.toasts.error'),
+        );
       },
     });
   }
@@ -554,19 +620,17 @@ export class ProfileComponent implements OnInit {
           this.isInviting.set(false);
           this.inviteForm.reset({ role: 'editor' });
           this.loadKitchenMembers(this.manageKitchenId()!);
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Member invited',
-          });
+          this.toastService.showSuccess(
+            this.transloco.translate('profile.toasts.memberInvited'),
+            this.transloco.translate('profile.toasts.success'),
+          );
         },
         error: () => {
           this.isInviting.set(false);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to invite member',
-          });
+          this.toastService.showError(
+            this.transloco.translate('profile.toasts.inviteFailed'),
+            this.transloco.translate('profile.toasts.error'),
+          );
         },
       });
   }
@@ -577,18 +641,16 @@ export class ProfileComponent implements OnInit {
     this.kitchenService.removeMember(this.manageKitchenId()!, userId).subscribe({
       next: () => {
         this.loadKitchenMembers(this.manageKitchenId()!);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Member removed',
-        });
+        this.toastService.showSuccess(
+          this.transloco.translate('profile.toasts.memberRemoved'),
+          this.transloco.translate('profile.toasts.success'),
+        );
       },
       error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to remove member',
-        });
+        this.toastService.showError(
+          this.transloco.translate('profile.toasts.removeFailed'),
+          this.transloco.translate('profile.toasts.error'),
+        );
       },
     });
   }

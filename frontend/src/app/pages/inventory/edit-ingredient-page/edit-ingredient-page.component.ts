@@ -2,14 +2,21 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Unit } from '@models/unit.model';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
-import { FormFieldComponent, SpinnerComponent } from '@ui';
+import {
+  AlertComponent,
+  CardComponent,
+  EmptyStateComponent,
+  FormFieldComponent,
+  SkeletonComponent,
+  SpinnerComponent,
+} from '@ui';
 import { ingredientDetailReturnTo } from '@utility/ingredient-detail-return';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -25,6 +32,10 @@ import { SelectModule } from 'primeng/select';
     SelectModule,
     FormFieldComponent,
     SpinnerComponent,
+    AlertComponent,
+    CardComponent,
+    EmptyStateComponent,
+    SkeletonComponent,
   ],
   templateUrl: './edit-ingredient-page.component.html',
 })
@@ -36,6 +47,7 @@ export class EditIngredientPageComponent implements OnInit {
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly unitService = inject(UnitService);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
 
   public ingredientId = signal<string | null>(null);
   public originalDefaultUnitId = signal<number | null>(null);
@@ -43,6 +55,7 @@ export class EditIngredientPageComponent implements OnInit {
   public ingredientGroups = signal<IngredientGroup[]>([]);
   public units = signal<Unit[]>([]);
   public isLoading = signal<boolean>(true);
+  public loadFailed = signal<boolean>(false);
   public isSubmitting = signal<boolean>(false);
   public submitError = signal<string | null>(null);
 
@@ -53,7 +66,7 @@ export class EditIngredientPageComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
-      this.toastService.showError('Invalid ingredient ID');
+      this.toastService.showError(this.transloco.translate('ingredientForm.invalidId'));
       this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
       return;
     }
@@ -65,14 +78,38 @@ export class EditIngredientPageComponent implements OnInit {
       defaultUnit: [null, [Validators.required]],
     });
 
+    this.loadAll(id);
+  }
+
+  retryLoad(): void {
+    const id = this.ingredientId();
+    if (!id) return;
+    this.loadFailed.set(false);
+    this.isLoading.set(true);
+    this.loadAll(id);
+  }
+
+  private loadAll(id: string): void {
     this.ingredientGroupService.getIngredientGroups().subscribe({
       next: (groups) => this.ingredientGroups.set(groups),
+      error: (err) => this.handleLoadError('ingredient groups', err),
     });
 
     this.unitService.getUnits().subscribe({
       next: (units) => this.units.set(units),
+      error: (err) => this.handleLoadError('units', err),
     });
 
+    this.loadIngredient(id);
+  }
+
+  private handleLoadError(what: string, err: unknown): void {
+    console.error(`Error fetching ${what}:`, err);
+    this.isLoading.set(false);
+    this.loadFailed.set(true);
+  }
+
+  private loadIngredient(id: string): void {
     this.ingredientService.getIngredientById(id).subscribe({
       next: (ing) => {
         this.originalDefaultUnitId.set(ing.defaultUnit ? ing.defaultUnit.id : null);
@@ -84,9 +121,12 @@ export class EditIngredientPageComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('Error fetching ingredient:', err);
-        this.toastService.showError('Failed to load ingredient details.');
-        this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
+        if (err?.status === 404) {
+          this.toastService.showError(this.transloco.translate('ingredientForm.loadFailed'));
+          this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
+          return;
+        }
+        this.handleLoadError('ingredient', err);
       },
     });
   }
@@ -98,7 +138,7 @@ export class EditIngredientPageComponent implements OnInit {
     this.submitError.set(null);
     if (this.ingredientForm.invalid) {
       this.ingredientForm.markAllAsTouched();
-      this.submitError.set('Please fill in all required fields.');
+      this.submitError.set(this.transloco.translate('ingredientForm.requiredFields'));
       return;
     }
 
@@ -115,14 +155,14 @@ export class EditIngredientPageComponent implements OnInit {
             this.ingredientService
               .updateIngredient(id, {
                 name: val.name,
-                ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
+                ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : null,
               })
               .subscribe({
                 next: () => {
                   this.isSubmitting.set(false);
                   this.toastService.showInfo(
-                    'Default measurement unit changed. Please reconcile physical stock measures.',
-                    'Unit Changed',
+                    this.transloco.translate('ingredientForm.unitChangedMessage'),
+                    this.transloco.translate('ingredientForm.unitChangedTitle'),
                   );
                   this.router.navigate([`/inventory/ingredients/${id}/unit-reconciliation`], {
                     queryParams: {
@@ -133,50 +173,62 @@ export class EditIngredientPageComponent implements OnInit {
                 },
                 error: (err) => {
                   this.isSubmitting.set(false);
-                  this.submitError.set(err?.message || 'Failed to update ingredient.');
+                  this.submitError.set(
+                    err?.message || this.transloco.translate('ingredientForm.updateFailed'),
+                  );
                 },
               });
           } else {
             this.ingredientService
               .updateIngredient(id, {
                 name: val.name,
-                ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
+                ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : null,
                 defaultUnitId: newUnitId,
               })
               .subscribe({
                 next: () => {
                   this.isSubmitting.set(false);
-                  this.toastService.showSuccess(`Ingredient "${val.name}" updated successfully.`);
+                  this.toastService.showSuccess(
+                    this.transloco.translate('ingredientForm.updated', { name: val.name }),
+                  );
                   this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
                 },
                 error: (err) => {
                   this.isSubmitting.set(false);
-                  this.submitError.set(err?.message || 'Failed to update ingredient.');
+                  this.submitError.set(
+                    err?.message || this.transloco.translate('ingredientForm.updateFailed'),
+                  );
                 },
               });
           }
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          this.submitError.set(err?.message || 'Failed to verify ingredient stock items.');
+          this.submitError.set(
+            err?.message || this.transloco.translate('ingredientForm.verifyFailed'),
+          );
         },
       });
     } else {
       this.ingredientService
         .updateIngredient(id, {
           name: val.name,
-          ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : undefined,
+          ingredientGroupId: val.ingredientGroup ? val.ingredientGroup.id : null,
           defaultUnitId: newUnitId,
         })
         .subscribe({
           next: () => {
             this.isSubmitting.set(false);
-            this.toastService.showSuccess(`Ingredient "${val.name}" updated successfully.`);
+            this.toastService.showSuccess(
+              this.transloco.translate('ingredientForm.updated', { name: val.name }),
+            );
             this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
           },
           error: (err) => {
             this.isSubmitting.set(false);
-            this.submitError.set(err?.message || 'Failed to update ingredient.');
+            this.submitError.set(
+              err?.message || this.transloco.translate('ingredientForm.updateFailed'),
+            );
           },
         });
     }

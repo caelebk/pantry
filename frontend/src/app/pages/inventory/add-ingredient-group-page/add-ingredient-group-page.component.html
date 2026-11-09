@@ -1,43 +1,30 @@
-<div class="flex">
-  <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent">
-    <i class="pi pi-arrow-left" aria-hidden="true"></i>
-    <span>{{ 'nav.back' | transloco }}</span>
-  </button>
-</div>
-<div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
-  <!-- Page Header -->
-  <h2 class="type-page-title text-surface-900 dark:text-white">Add Ingredient Group</h2>
-
-  @if (submitError()) {
-    <div
-      class="type-label p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 flex items-center gap-2">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="2"
-        stroke="currentColor"
-        class="w-5 h-5 shrink-0">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-      </svg>
-      <span>{{ submitError() }}</span>
+<div class="page-layout page-layout--form">
+  <header class="page-header">
+    <div>
+      <button (click)="onCancel()" type="button" class="btn-ghost hover:!bg-transparent mb-2">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        <span>{{ 'nav.back' | transloco }}</span>
+      </button>
+      <h1 class="type-page-title text-surface-900 dark:text-white">
+        {{ 'groupForm.addTitle' | transloco }}
+      </h1>
     </div>
+  </header>
+  @if (submitError()) {
+    <pantry-alert variant="danger">{{ submitError() }}</pantry-alert>
   }
 
   <!-- Form Card -->
-  <div class="glass-card rounded-2xl p-6 shadow-xl space-y-6">
+  <pantry-card padding="md">
     <form [formGroup]="groupForm" (ngSubmit)="onSubmit()" class="space-y-6">
       <!-- Name Field -->
       <pantry-form-field
-        [label]="'Group Name'"
+        [label]="'groupForm.name' | transloco"
         forId="add-group-name"
         [required]="true"
         [error]="
           groupForm.get('name')?.invalid && groupForm.get('name')?.touched
-            ? 'Group name is required (min 2 characters).'
+            ? ('groupForm.nameError' | transloco)
             : ''
         ">
         <input
@@ -45,21 +32,23 @@
           type="text"
           id="add-group-name"
           formControlName="name"
-          placeholder="e.g. Pasta, Grains, Dairy, Bakery, Sweets"
-          class="w-full !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white" />
+          [placeholder]="'groupForm.namePlaceholder' | transloco"
+          class="w-full" />
       </pantry-form-field>
 
       <!-- Parent Ingredient Category Select -->
       <pantry-form-field
-        [label]="'Parent Ingredient Category'"
+        #categoryField
+        [label]="'groupForm.parentCategory' | transloco"
         forId="add-parent-category"
-        hint="Classifies this ingredient group under top-level ingredient categories.">
+        [hint]="'groupForm.parentCategoryHint' | transloco">
         <p-select
           inputId="add-parent-category"
+          [ariaLabelledBy]="categoryField.labelId()"
           [options]="ingredientCategories()"
           formControlName="ingredientCategory"
           optionLabel="name"
-          placeholder="Select Ingredient Category (e.g. Fiber & Produce, Protein, Carbs)"
+          [placeholder]="'groupForm.categoryPlaceholder' | transloco"
           [showClear]="true"
           class="w-full"
           appendTo="body">
@@ -67,115 +56,109 @@
       </pantry-form-field>
 
       <!-- Ingredients Section with Autocomplete -->
-      <div
-        class="pt-2 border-t border-surface-200/50 dark:border-surface-800/50 space-y-3 relative">
-        <div>
-          <label class="type-label block text-surface-700 dark:text-surface-300 mb-1">
-            Ingredients in this Group (Optional)
-          </label>
-          <p class="type-meta text-surface-500 dark:text-surface-400">
-            Search existing ingredients or type a new name (e.g. Spaghetti, Fettuccine, Penne).
-          </p>
-        </div>
+      <div class="pt-2 border-t border-surface-200/50 dark:border-surface-800/50 space-y-3">
+        <pantry-form-field
+          [label]="'groupForm.ingredients' | transloco"
+          forId="add-group-ingredient-search"
+          [hint]="'groupForm.ingredientsHint' | transloco">
+          <!-- Add Input Box & Autocomplete Dropdown -->
+          <div class="relative">
+            <div class="flex items-center gap-2">
+              <div class="relative flex-1">
+                <input
+                  pInputText
+                  type="text"
+                  id="add-group-ingredient-search"
+                  [ngModel]="newIngredientInput()"
+                  (ngModelChange)="onInputChange($event)"
+                  [ngModelOptions]="{ standalone: true }"
+                  (focus)="isDropdownOpen.set(newIngredientInput().trim().length > 0)"
+                  (keydown.enter)="addIngredient($event)"
+                  [placeholder]="'groupForm.ingredientSearchPlaceholder' | transloco"
+                  class="w-full" />
+              </div>
 
-        <!-- Add Input Box & Autocomplete Dropdown -->
-        <div class="relative">
-          <div class="flex items-center gap-2">
-            <div class="relative flex-1">
-              <input
-                pInputText
-                type="text"
-                [ngModel]="newIngredientInput()"
-                (ngModelChange)="onInputChange($event)"
-                [ngModelOptions]="{ standalone: true }"
-                (focus)="isDropdownOpen.set(newIngredientInput().trim().length > 0)"
-                (keydown.enter)="addIngredient($event)"
-                placeholder="Search or type ingredient name (e.g. Chicken Breast)..."
-                class="w-full !p-3 !rounded-xl !bg-white/80 dark:!bg-surface-900/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-sm" />
+              <button type="button" (click)="addIngredient($event)" class="btn-primary shrink-0">
+                <i class="pi pi-plus text-xs" aria-hidden="true"></i>
+                <span>{{ 'groupForm.add' | transloco }}</span>
+              </button>
             </div>
 
-            <button
-              type="button"
-              (click)="addIngredient($event)"
-              class="btn-primary !h-10 shrink-0">
-              <i class="pi pi-plus text-xs"></i>
-              <span>Add</span>
-            </button>
-          </div>
-
-          <!-- Floating Autocomplete Suggestion Dropdown -->
-          @if (isDropdownOpen() && newIngredientInput().trim().length > 0) {
-            <div
-              class="absolute left-0 right-16 top-full mt-1.5 bg-white/95 dark:bg-surface-800/95 backdrop-blur-md border border-surface-200 dark:border-surface-700 rounded-xl shadow-xl z-50 max-h-56 overflow-y-auto py-1 divide-y divide-surface-100 dark:divide-surface-700/50">
-              @if (suggestions().length > 0) {
-                @for (sug of suggestions(); track sug.id) {
-                  <button
-                    type="button"
-                    (click)="selectSuggestion(sug)"
-                    class="w-full px-3.5 py-2.5 text-left hover:bg-primary-50 dark:hover:bg-surface-700/60 transition-colors flex items-center justify-between group/sug cursor-pointer">
-                    <div class="flex items-center gap-2.5">
-                      <span
-                        class="type-label text-surface-900 dark:text-white group-hover/sug:text-primary-600 dark:group-hover/sug:text-primary-400">
-                        {{ sug.name }}
-                      </span>
-                      @if (sug.ingredientGroup?.name || sug.category?.name) {
+            <!-- Floating Autocomplete Suggestion Dropdown -->
+            @if (isDropdownOpen() && newIngredientInput().trim().length > 0) {
+              <div
+                class="absolute left-0 right-16 top-full mt-1.5 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl shadow-lg z-50 max-h-56 overflow-y-auto py-1 divide-y divide-surface-100 dark:divide-surface-700/50">
+                @if (suggestions().length > 0) {
+                  @for (sug of suggestions(); track sug.id) {
+                    <button
+                      type="button"
+                      (click)="selectSuggestion(sug)"
+                      class="w-full min-h-[42px] px-3.5 py-2.5 text-left hover:bg-primary-50 dark:hover:bg-surface-700/60 transition-colors flex items-center justify-between gap-2 group/sug cursor-pointer">
+                      <div class="flex items-center gap-2.5 min-w-0">
                         <span
-                          class="type-label px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-700 text-surface-500 dark:text-surface-400">
-                          Current: {{ sug.ingredientGroup?.name || sug.category?.name }}
+                          class="type-label text-surface-900 dark:text-white group-hover/sug:text-primary-700 dark:group-hover/sug:text-primary-400">
+                          {{ sug.name }}
                         </span>
-                      }
-                    </div>
-                    <span
-                      class="type-label text-primary-600 dark:text-primary-400 opacity-0 group-hover/sug:opacity-100 transition-opacity">
-                      + Select
-                    </span>
-                  </button>
+                        @if (sug.ingredientGroup?.name || sug.category?.name) {
+                          <pantry-badge variant="neutral" size="sm">
+                            {{
+                              'groupForm.current'
+                                | transloco
+                                  : { name: sug.ingredientGroup?.name || sug.category?.name }
+                            }}
+                          </pantry-badge>
+                        }
+                      </div>
+                      <span class="type-label shrink-0 text-primary-700 dark:text-primary-400">
+                        {{ 'groupForm.select' | transloco }}
+                      </span>
+                    </button>
+                  }
+                } @else {
+                  <div
+                    class="type-meta px-3.5 py-3 text-surface-500 dark:text-surface-400 flex items-center gap-2">
+                    <i class="pi pi-info-circle text-surface-500" aria-hidden="true"></i>
+                    <span>{{
+                      'groupForm.noMatch' | transloco: { name: newIngredientInput() }
+                    }}</span>
+                  </div>
                 }
-              } @else {
-                <div
-                  class="type-meta px-3.5 py-3 text-surface-500 dark:text-surface-400 flex items-center gap-2">
-                  <i class="pi pi-info-circle text-surface-400"></i>
-                  <span
-                    >No matching ingredients found. Click <b class="font-medium">Add</b> or press
-                    <b class="font-medium">Enter</b> to create
-                    <b class="font-medium">"{{ newIngredientInput() }}"</b> as a new
-                    ingredient.</span
-                  >
-                </div>
-              }
-            </div>
-          }
-        </div>
+              </div>
+            }
+          </div>
+        </pantry-form-field>
 
         <!-- Added Ingredients Tag Chips List -->
         @if (initialIngredients().length > 0) {
           <div class="flex flex-wrap gap-2 pt-1">
             @for (item of initialIngredients(); track item.name || $index) {
-              <pantry-badge [variant]="item.isExisting ? 'neutral' : 'fresh'" class="shadow-2xs">
+              <pantry-badge [variant]="item.isExisting ? 'neutral' : 'outline'">
                 <span class="flex items-center gap-1.5">
                   @if (item.isExisting) {
                     <span>{{ item.name }}</span>
                     @if (item.groupName) {
-                      <span class="type-label opacity-75">(from {{ item.groupName }})</span>
+                      <span class="type-meta">{{
+                        'groupForm.fromGroup' | transloco: { name: item.groupName }
+                      }}</span>
                     }
                   } @else {
-                    <span>{{ item.name }} (New)</span>
+                    <span>{{ 'groupForm.newIngredient' | transloco: { name: item.name } }}</span>
                   }
                 </span>
                 <button
                   type="button"
                   (click)="removeIngredient($index)"
-                  class="type-label hover:text-red-500 transition-colors cursor-pointer ml-1"
-                  aria-label="Remove ingredient"
-                  title="Remove ingredient">
-                  <i class="pi pi-times text-[10px]"></i>
+                  class="btn-icon-sm -my-1.5 ml-1 hover:!text-rose-600 dark:hover:!text-rose-400"
+                  [attr.aria-label]="'groupForm.removeIngredient' | transloco"
+                  [attr.title]="'groupForm.removeIngredient' | transloco">
+                  <i class="pi pi-times text-xs" aria-hidden="true"></i>
                 </button>
               </pantry-badge>
             }
           </div>
         } @else {
-          <p class="type-meta text-surface-400 italic">
-            No ingredients added yet. Search existing ingredients or type a new name above.
+          <p class="type-meta text-surface-500 dark:text-surface-400 italic">
+            {{ 'groupForm.noIngredients' | transloco }}
           </p>
         }
       </div>
@@ -183,14 +166,20 @@
       <!-- Action Buttons -->
       <div
         class="flex items-center justify-end gap-3 pt-4 border-t border-surface-200/40 dark:border-surface-800/40">
-        <button type="button" (click)="onCancel()" class="btn-secondary">Cancel</button>
-        <button type="submit" [disabled]="isSubmitting()" class="btn-primary">
+        <button type="button" (click)="onCancel()" class="btn-secondary">
+          {{ 'groupForm.cancel' | transloco }}
+        </button>
+        <button
+          type="submit"
+          [disabled]="isSubmitting()"
+          [attr.aria-busy]="isSubmitting()"
+          class="btn-primary">
           @if (isSubmitting()) {
-            <pantry-spinner size="sm" color="white" />
+            <pantry-spinner [announce]="false" size="sm" color="white" />
           }
-          <span>Save Group</span>
+          <span>{{ 'groupForm.saveGroup' | transloco }}</span>
         </button>
       </div>
     </form>
-  </div>
+  </pantry-card>
 </div>

@@ -1,261 +1,293 @@
-<div class="max-w-3xl mx-auto space-y-6 pb-12">
-  <div class="flex items-center gap-3">
-    <button
-      (click)="goBack()"
-      type="button"
-      [attr.aria-label]="'shoppingList.form.cancel' | transloco"
-      class="btn-icon">
-      <i class="pi pi-arrow-left text-sm"></i>
-    </button>
+<div class="page-layout page-layout--form">
+  <header class="page-header">
     <div>
+      <button (click)="goBack()" type="button" class="btn-ghost mb-2">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        <span>{{ 'nav.back' | transloco }}</span>
+      </button>
       <h1 class="type-page-title text-surface-900 dark:text-white">
         {{
           (editingId() ? 'shoppingList.form.editTitle' : 'shoppingList.form.addTitle') | transloco
         }}
       </h1>
     </div>
-  </div>
+  </header>
 
   @if (error()) {
-    <div
-      role="alert"
-      class="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-sm font-medium text-rose-700 dark:text-rose-300">
-      {{ error() }}
-    </div>
+    <pantry-alert variant="danger">{{ error() }}</pantry-alert>
   }
   @if (duplicateItem(); as duplicate) {
-    <div
-      class="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 space-y-3">
-      <p class="text-sm text-amber-900 dark:text-amber-200 font-medium">
-        {{ duplicate.name }} is already listed with {{ duplicate.quantity }} {{ duplicate.unit }}.
+    <pantry-alert variant="warning">
+      <p class="font-medium">
+        {{
+          'shoppingList.form.duplicateListed'
+            | transloco
+              : { name: duplicate.name, quantity: duplicate.quantity, unit: duplicate.unit }
+        }}
       </p>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-2 mt-3">
         <button type="button" (click)="increaseDuplicateQuantity()" class="btn-primary">
-          Increase existing quantity
+          {{ 'shoppingList.form.increaseExisting' | transloco }}
         </button>
         <button type="button" (click)="openDuplicate()" class="btn-secondary">
-          Open existing item
+          {{ 'shoppingList.form.openExisting' | transloco }}
         </button>
       </div>
-    </div>
+    </pantry-alert>
   }
 
-  <form
-    (ngSubmit)="saveItem()"
-    class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-6 shadow-xs space-y-6">
-    <section class="space-y-4">
-      <div class="flex items-center justify-between gap-3">
-        <div>
-          <h2 class="type-label text-surface-900 dark:text-white">
-            {{ 'shoppingList.form.ingredientSection' | transloco }}
-          </h2>
-          <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-            {{ 'shoppingList.form.ingredientHint' | transloco }}
-          </p>
-        </div>
-        <button
-          type="button"
-          (click)="toggleIngredientCreation()"
-          class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline cursor-pointer">
-          {{ isCreatingIngredient() ? 'Cancel' : '+ Create ingredient' }}
-        </button>
-      </div>
+  <pantry-card>
+    <form (ngSubmit)="saveItem()" class="space-y-6">
+      <section class="flex flex-col gap-4">
+        <pantry-form-field
+          #ingredientField
+          [label]="'shoppingList.form.ingredientSection' | transloco"
+          [hint]="'shoppingList.form.ingredientHint' | transloco"
+          forId="ingredient">
+          <p-select
+            inputId="ingredient"
+            [ariaLabelledBy]="ingredientField.labelId()"
+            [options]="ingredients()"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            [ngModel]="selectedIngredient()"
+            (ngModelChange)="selectIngredient($event)"
+            name="ingredient"
+            [placeholder]="'shoppingList.form.searchPlaceholder' | transloco"
+            styleClass="w-full"
+            appendTo="body">
+            <ng-template pTemplate="item" let-item>
+              <div class="flex flex-col py-1">
+                <span class="font-semibold">{{ item.name }}</span>
+                <span class="text-xs text-surface-500">
+                  {{
+                    item.ingredientGroup?.ingredientCategoryName ||
+                      item.ingredientGroup?.name ||
+                      ('shoppingList.table.uncategorized' | transloco)
+                  }}
+                  ·
+                  {{ item.defaultUnit?.shortName || ('shoppingList.form.unitNotSet' | transloco) }}
+                </span>
+              </div>
+            </ng-template>
+          </p-select>
+        </pantry-form-field>
 
-      <p-select
-        inputId="ingredient"
-        [options]="ingredients()"
-        optionLabel="name"
-        [filter]="true"
-        filterBy="name"
-        [ngModel]="selectedIngredient()"
-        (ngModelChange)="selectIngredient($event)"
-        name="ingredient"
-        [placeholder]="'shoppingList.form.searchPlaceholder' | transloco"
-        styleClass="w-full"
-        appendTo="body">
-        <ng-template pTemplate="item" let-item>
-          <div class="flex flex-col py-1">
-            <span class="font-semibold">{{ item.name }}</span>
-            <span class="text-xs text-surface-500">
-              {{
-                item.ingredientGroup?.ingredientCategoryName ||
-                  item.ingredientGroup?.name ||
-                  'Uncategorized'
-              }}
-              · {{ item.defaultUnit?.shortName || 'unit not set' }}
-            </span>
-          </div>
-        </ng-template>
-      </p-select>
-
-      @if (selectedIngredient(); as ingredient) {
-        <div
-          class="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-primary-50/70 dark:bg-primary-950/30 border border-primary-200 dark:border-primary-900">
-          <span class="font-bold text-sm text-surface-900 dark:text-white">{{
-            ingredient.name
-          }}</span>
-          <span
-            class="px-2 py-1 rounded-lg bg-white/80 dark:bg-surface-900/70 text-xs text-surface-600 dark:text-surface-300 font-medium"
-            >Category:
+        <div class="flex justify-end">
+          <button type="button" (click)="toggleIngredientCreation()" class="btn-ghost">
             {{
-              ingredient.ingredientGroup?.ingredientCategoryName ||
-                ingredient.ingredientGroup?.name ||
-                'Uncategorized'
-            }}</span
-          >
-          <span
-            class="px-2 py-1 rounded-lg bg-white/80 dark:bg-surface-900/70 text-xs text-surface-600 dark:text-surface-300 font-medium"
-            >Unit: {{ ingredient.defaultUnit?.shortName || 'Not set' }}</span
-          >
-        </div>
-      }
-
-      @if (isCreatingIngredient()) {
-        <div
-          class="sub-card rounded-xl p-4 space-y-3 bg-surface-50 dark:bg-surface-800/40 border border-surface-200 dark:border-surface-700">
-          <input
-            pInputText
-            [ngModel]="newIngredientName()"
-            (ngModelChange)="newIngredientName.set($event)"
-            name="newIngredientName"
-            placeholder="Ingredient name"
-            class="w-full !h-[42px]" />
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <p-select
-              [options]="groups()"
-              optionLabel="name"
-              optionValue="id"
-              [ngModel]="newIngredientGroupId()"
-              (ngModelChange)="newIngredientGroupId.set($event)"
-              name="newIngredientGroup"
-              placeholder="Ingredient group"
-              styleClass="w-full"
-              appendTo="body"></p-select>
-            <p-select
-              [options]="units()"
-              optionLabel="name"
-              optionValue="id"
-              [ngModel]="newIngredientUnitId()"
-              (ngModelChange)="newIngredientUnitId.set($event)"
-              name="newIngredientUnit"
-              placeholder="Default unit"
-              styleClass="w-full"
-              appendTo="body"></p-select>
-          </div>
-          <button type="button" (click)="createIngredient()" class="btn-primary">
-            Create and select
-          </button>
-        </div>
-      }
-    </section>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <pantry-form-field [label]="'shoppingList.form.quantity' | transloco" forId="quantity">
-        <p-inputnumber
-          inputId="quantity"
-          [ngModel]="quantity()"
-          (ngModelChange)="quantity.set($event || 1)"
-          name="quantity"
-          [min]="1"
-          [showButtons]="true"
-          styleClass="w-full"
-          inputStyleClass="w-full !h-[42px] !rounded-xl"></p-inputnumber>
-      </pantry-form-field>
-      <pantry-form-field forId="price" [label]="'shoppingList.form.price' | transloco">
-        <p-inputnumber
-          inputId="price"
-          [ngModel]="estimatedPrice()"
-          (ngModelChange)="estimatedPrice.set($event)"
-          name="estimatedPrice"
-          mode="currency"
-          currency="USD"
-          [min]="0"
-          [placeholder]="'shoppingList.form.pricePlaceholder' | transloco"
-          styleClass="w-full"
-          inputStyleClass="w-full !h-[42px] !rounded-xl"></p-inputnumber>
-      </pantry-form-field>
-    </div>
-
-    <!-- Store Select with Direct Create Shortcut -->
-    <div class="space-y-2">
-      <div class="flex items-center justify-between">
-        <label for="store" class="type-label block text-surface-700 dark:text-surface-300">
-          {{ 'shoppingList.form.store' | transloco }}
-        </label>
-        <button
-          type="button"
-          (click)="toggleStoreCreation()"
-          class="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline cursor-pointer">
-          {{
-            (isCreatingStore()
-              ? 'shoppingList.form.cancelCreateStore'
-              : 'shoppingList.form.createStore'
-            ) | transloco
-          }}
-        </button>
-      </div>
-
-      @if (isCreatingStore()) {
-        <div
-          class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/40 border border-surface-200 dark:border-surface-700 flex flex-col sm:flex-row gap-2">
-          <input
-            pInputText
-            [ngModel]="newStoreName()"
-            (ngModelChange)="newStoreName.set($event)"
-            name="newStoreName"
-            (keydown.enter)="$event.preventDefault(); createStore()"
-            [placeholder]="'shoppingList.form.newStorePlaceholder' | transloco"
-            class="flex-1 !h-[42px]" />
-          <button
-            type="button"
-            (click)="createStore()"
-            [disabled]="!newStoreName().trim() || isSavingStore()"
-            class="btn-primary whitespace-nowrap">
-            {{
-              isSavingStore()
-                ? ('shoppingList.form.saving' | transloco)
-                : ('shoppingList.form.saveStore' | transloco)
+              (isCreatingIngredient()
+                ? 'shoppingList.form.cancel'
+                : 'shoppingList.form.createIngredient'
+              ) | transloco
             }}
           </button>
         </div>
-      }
 
-      <p-select
-        inputId="store"
-        [options]="stores()"
-        optionLabel="name"
-        [filter]="true"
-        filterBy="name"
-        [showClear]="true"
-        [ngModel]="selectedStore()"
-        (ngModelChange)="onStoreSelect($event)"
-        name="store"
-        [placeholder]="'shoppingList.form.storePlaceholder' | transloco"
-        styleClass="w-full"
-        appendTo="body">
-        <ng-template pTemplate="item" let-item>
-          <div class="flex items-center gap-2 py-0.5">
-            <i class="pi pi-map-marker text-xs text-surface-400 dark:text-surface-500"></i>
-            <span class="font-medium text-sm">{{ item.name }}</span>
-          </div>
-        </ng-template>
-      </p-select>
-    </div>
+        @if (selectedIngredient(); as ingredient) {
+          <pantry-card variant="sub" padding="sm">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-semibold text-sm text-surface-900 dark:text-white">{{
+                ingredient.name
+              }}</span>
+              <pantry-badge variant="neutral" size="sm">{{
+                'shoppingList.form.categoryBadge'
+                  | transloco
+                    : {
+                        name:
+                          ingredient.ingredientGroup?.ingredientCategoryName ||
+                          ingredient.ingredientGroup?.name ||
+                          ('shoppingList.table.uncategorized' | transloco),
+                      }
+              }}</pantry-badge>
+              <pantry-badge variant="neutral" size="sm">{{
+                'shoppingList.form.unitBadge'
+                  | transloco
+                    : {
+                        name:
+                          ingredient.defaultUnit?.shortName ||
+                          ('shoppingList.form.notSet' | transloco),
+                      }
+              }}</pantry-badge>
+            </div>
+          </pantry-card>
+        }
 
-    <div
-      class="flex justify-end gap-3 pt-4 border-t border-surface-200/80 dark:border-surface-800/80">
-      <button type="button" (click)="goBack()" class="btn-secondary">
-        {{ 'shoppingList.form.cancel' | transloco }}
-      </button>
-      <button type="submit" [disabled]="isSaving()" class="btn-primary">
-        {{
-          isSaving()
-            ? ('shoppingList.form.saving' | transloco)
-            : editingId()
-              ? ('shoppingList.form.save' | transloco)
-              : ('shoppingList.form.add' | transloco)
-        }}
-      </button>
-    </div>
-  </form>
+        @if (isCreatingIngredient()) {
+          <pantry-card variant="sub" padding="sm">
+            <div class="flex flex-col gap-3">
+              <pantry-form-field
+                [label]="'shoppingList.form.ingredientName' | transloco"
+                forId="new-ingredient-name">
+                <input
+                  id="new-ingredient-name"
+                  pInputText
+                  [ngModel]="newIngredientName()"
+                  (ngModelChange)="newIngredientName.set($event)"
+                  name="newIngredientName"
+                  class="w-full" />
+              </pantry-form-field>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <pantry-form-field
+                  #groupField
+                  [label]="'shoppingList.form.ingredientGroup' | transloco"
+                  forId="new-ingredient-group">
+                  <p-select
+                    inputId="new-ingredient-group"
+                    [ariaLabelledBy]="groupField.labelId()"
+                    [options]="groups()"
+                    optionLabel="name"
+                    optionValue="id"
+                    [ngModel]="newIngredientGroupId()"
+                    (ngModelChange)="newIngredientGroupId.set($event)"
+                    name="newIngredientGroup"
+                    styleClass="w-full"
+                    appendTo="body"></p-select>
+                </pantry-form-field>
+                <pantry-form-field
+                  #unitField
+                  [label]="'shoppingList.form.defaultUnit' | transloco"
+                  forId="new-ingredient-unit">
+                  <p-select
+                    inputId="new-ingredient-unit"
+                    [ariaLabelledBy]="unitField.labelId()"
+                    [options]="units()"
+                    optionLabel="name"
+                    optionValue="id"
+                    [ngModel]="newIngredientUnitId()"
+                    (ngModelChange)="newIngredientUnitId.set($event)"
+                    name="newIngredientUnit"
+                    styleClass="w-full"
+                    appendTo="body"></p-select>
+                </pantry-form-field>
+              </div>
+              <button type="button" (click)="createIngredient()" class="btn-primary">
+                {{ 'shoppingList.form.createAndSelect' | transloco }}
+              </button>
+            </div>
+          </pantry-card>
+        }
+      </section>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <pantry-form-field [label]="'shoppingList.form.quantity' | transloco" forId="quantity">
+          <p-inputnumber
+            inputId="quantity"
+            [ngModel]="quantity()"
+            (ngModelChange)="quantity.set($event)"
+            name="quantity"
+            [min]="0"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="3"
+            [required]="true"
+            [showButtons]="true"
+            styleClass="w-full"
+            inputStyleClass="w-full"></p-inputnumber>
+        </pantry-form-field>
+        <pantry-form-field forId="price" [label]="'shoppingList.form.price' | transloco">
+          <p-inputnumber
+            inputId="price"
+            [ngModel]="estimatedPrice()"
+            (ngModelChange)="estimatedPrice.set($event)"
+            name="estimatedPrice"
+            mode="currency"
+            currency="USD"
+            [min]="0"
+            [placeholder]="'shoppingList.form.pricePlaceholder' | transloco"
+            styleClass="w-full"
+            inputStyleClass="w-full"></p-inputnumber>
+        </pantry-form-field>
+      </div>
+
+      <!-- Store Select with Direct Create Shortcut -->
+      <div class="flex flex-col gap-3">
+        <pantry-form-field
+          #storeField
+          [label]="'shoppingList.form.store' | transloco"
+          forId="store">
+          <p-select
+            inputId="store"
+            [ariaLabelledBy]="storeField.labelId()"
+            [options]="stores()"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            [ngModel]="selectedStore()"
+            (ngModelChange)="onStoreSelect($event)"
+            name="store"
+            [placeholder]="'shoppingList.form.storePlaceholder' | transloco"
+            styleClass="w-full"
+            appendTo="body">
+            <ng-template pTemplate="item" let-item>
+              <div class="flex items-center gap-2 py-0.5">
+                <i
+                  class="pi pi-map-marker text-xs text-surface-500 dark:text-surface-400"
+                  aria-hidden="true"></i>
+                <span class="font-medium text-sm">{{ item.name }}</span>
+              </div>
+            </ng-template>
+          </p-select>
+        </pantry-form-field>
+
+        <div class="flex justify-end">
+          <button type="button" (click)="toggleStoreCreation()" class="btn-ghost">
+            {{
+              (isCreatingStore()
+                ? 'shoppingList.form.cancelCreateStore'
+                : 'shoppingList.form.createStore'
+              ) | transloco
+            }}
+          </button>
+        </div>
+
+        @if (isCreatingStore()) {
+          <pantry-card variant="sub" padding="sm">
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input
+                pInputText
+                [ngModel]="newStoreName()"
+                (ngModelChange)="newStoreName.set($event)"
+                name="newStoreName"
+                (keydown.enter)="$event.preventDefault(); createStore()"
+                [placeholder]="'shoppingList.form.newStorePlaceholder' | transloco"
+                [attr.aria-label]="'shoppingList.form.newStorePlaceholder' | transloco"
+                class="flex-1" />
+              <button
+                type="button"
+                (click)="createStore()"
+                [disabled]="!newStoreName().trim() || isSavingStore()"
+                class="btn-primary whitespace-nowrap">
+                {{
+                  isSavingStore()
+                    ? ('shoppingList.form.saving' | transloco)
+                    : ('shoppingList.form.saveStore' | transloco)
+                }}
+              </button>
+            </div>
+          </pantry-card>
+        }
+      </div>
+
+      <div
+        class="flex justify-end gap-3 pt-4 border-t border-surface-200/80 dark:border-surface-800/80">
+        <button type="button" (click)="goBack()" class="btn-secondary">
+          {{ 'shoppingList.form.cancel' | transloco }}
+        </button>
+        <button type="submit" [disabled]="isSaving()" class="btn-primary">
+          @if (isSaving()) {
+            <pantry-spinner [announce]="false" size="xs" color="white" />
+          }
+          {{
+            isSaving()
+              ? ('shoppingList.form.saving' | transloco)
+              : editingId()
+                ? ('shoppingList.form.save' | transloco)
+                : ('shoppingList.form.add' | transloco)
+          }}
+        </button>
+      </div>
+    </form>
+  </pantry-card>
 </div>

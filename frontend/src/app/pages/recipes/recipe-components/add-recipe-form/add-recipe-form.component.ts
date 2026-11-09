@@ -13,12 +13,20 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import { CreateRecipeDTO } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
-import { FormFieldComponent } from '@ui';
+import {
+  AlertComponent,
+  CardComponent,
+  FormFieldComponent,
+  SegmentedControlComponent,
+  SegmentedOption,
+  SkeletonComponent,
+  SpinnerComponent,
+} from '@ui';
 import { IngredientGroupService } from '../../../../services/inventory/ingredient-group.service';
 import { IngredientService } from '../../../../services/inventory/ingredient.service';
 import { UnitService } from '../../../../services/inventory/unit.service';
@@ -60,6 +68,11 @@ import { TextareaModule } from 'primeng/textarea';
     DialogModule,
     ButtonModule,
     FormFieldComponent,
+    SkeletonComponent,
+    AlertComponent,
+    CardComponent,
+    SegmentedControlComponent,
+    SpinnerComponent,
   ],
   templateUrl: './add-recipe-form.component.html',
 })
@@ -71,6 +84,7 @@ export class AddRecipeFormComponent implements OnInit {
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly unitService = inject(UnitService);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -89,6 +103,9 @@ export class AddRecipeFormComponent implements OnInit {
 
   isEditMode = false;
   editingRecipeId: string | null = null;
+  // Edit mode renders a skeleton until the recipe is patched, so create defaults never show
+  // and the user cannot edit a form that is about to be overwritten.
+  isLoadingRecipe = signal<boolean>(false);
 
   name = '';
   description = '';
@@ -97,8 +114,18 @@ export class AddRecipeFormComponent implements OnInit {
   cookTime = 20;
   difficultyId = 1;
 
-  tagInput = '';
-  tags: string[] = [];
+  readonly difficultyOptions: SegmentedOption<number>[] = [
+    { value: 1, label: 'addRecipeForm.difficulties.easy' },
+    { value: 2, label: 'addRecipeForm.difficulties.medium' },
+    { value: 3, label: 'addRecipeForm.difficulties.hard' },
+  ];
+
+  localizedDifficultyOptions(): SegmentedOption<number>[] {
+    return this.difficultyOptions.map((option) => ({
+      ...option,
+      label: this.transloco.translate(option.label),
+    }));
+  }
 
   recipeIngredients: FormIngredientRow[] = [];
   recipeSteps: FormStepRow[] = [
@@ -137,6 +164,7 @@ export class AddRecipeFormComponent implements OnInit {
     if (id) {
       this.isEditMode = true;
       this.editingRecipeId = id;
+      this.isLoadingRecipe.set(true);
     }
 
     this.ingredientGroupService.getIngredientGroups().subscribe({
@@ -147,7 +175,10 @@ export class AddRecipeFormComponent implements OnInit {
       next: (u) => (this.availableUnits = u),
       error: (err) => {
         console.error('Failed to load units', err);
-        this.toastService.showError('Unable to load units from server.', 'Network Error');
+        this.toastService.showError(
+          this.transloco.translate('addRecipeForm.toast.unitsLoadError'),
+          this.transloco.translate('addRecipeForm.toast.networkErrorTitle'),
+        );
       },
     });
 
@@ -164,7 +195,15 @@ export class AddRecipeFormComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load ingredients', err);
-        this.toastService.showError('Unable to load ingredients from server.', 'Network Error');
+        this.toastService.showError(
+          this.transloco.translate('addRecipeForm.toast.ingredientsLoadError'),
+          this.transloco.translate('addRecipeForm.toast.networkErrorTitle'),
+        );
+        if (this.isEditMode) {
+          // Without ingredients the edit form cannot show the recipe, so leave the endless skeleton.
+          this.isLoadingRecipe.set(false);
+          this.router.navigate(['/recipes']);
+        }
       },
     });
   }
@@ -178,7 +217,6 @@ export class AddRecipeFormComponent implements OnInit {
         this.prepTime = recipe.prepTime || 0;
         this.cookTime = recipe.cookTime || 0;
         this.difficultyId = recipe.difficultyId || 1;
-        this.tags = recipe.tags ? [...recipe.tags] : [];
 
         if (recipe.ingredients && recipe.ingredients.length > 0) {
           this.recipeIngredients = recipe.ingredients.map((ing) => ({
@@ -202,10 +240,14 @@ export class AddRecipeFormComponent implements OnInit {
         } else {
           this.recipeSteps = [{ id: crypto.randomUUID(), instructionText: '', timerSeconds: null }];
         }
+        this.isLoadingRecipe.set(false);
       },
       error: (err) => {
         console.error('Failed to load recipe for edit', err);
-        this.toastService.showError('Could not load recipe details.', 'Not Found');
+        this.toastService.showError(
+          this.transloco.translate('addRecipeForm.toast.recipeLoadError'),
+          this.transloco.translate('addRecipeForm.toast.notFoundTitle'),
+        );
         this.router.navigate(['/recipes']);
       },
     });
@@ -221,22 +263,6 @@ export class AddRecipeFormComponent implements OnInit {
     } else {
       this.router.navigate(['/recipes']);
     }
-  }
-
-  // --- Tag Handlers ---
-  addTag(event?: Event): void {
-    if (event) {
-      event.preventDefault();
-    }
-    const cleanTag = this.tagInput.trim();
-    if (cleanTag && !this.tags.includes(cleanTag)) {
-      this.tags.push(cleanTag);
-    }
-    this.tagInput = '';
-  }
-
-  removeTag(index: number): void {
-    this.tags.splice(index, 1);
   }
 
   // --- Ingredient Row Handlers ---
@@ -291,18 +317,56 @@ export class AddRecipeFormComponent implements OnInit {
     this.draggedIngredientIndex = null;
   }
 
+  ingredientRowLabel(row: FormIngredientRow, index: number): string {
+    return (
+      this.getIngredientName(row.ingredientId) ||
+      this.transloco.translate('addRecipeForm.ingredientRowFallback', { position: index + 1 })
+    );
+  }
+
   moveIngredientUp(index: number): void {
-    if (index <= 0) return;
-    const temp = this.recipeIngredients[index];
-    this.recipeIngredients[index] = this.recipeIngredients[index - 1];
-    this.recipeIngredients[index - 1] = temp;
+    this.moveIngredient(index, -1);
   }
 
   moveIngredientDown(index: number): void {
-    if (index >= this.recipeIngredients.length - 1) return;
-    const temp = this.recipeIngredients[index];
-    this.recipeIngredients[index] = this.recipeIngredients[index + 1];
-    this.recipeIngredients[index + 1] = temp;
+    this.moveIngredient(index, 1);
+  }
+
+  private moveIngredient(index: number, offset: -1 | 1): void {
+    const moved = this.moveRow(this.recipeIngredients, index, offset);
+    if (!moved) return;
+    this.recipeIngredients = moved.rows;
+    this.refocusMoveButton('ing', moved.rows[moved.index].id, offset);
+  }
+
+  /** Returns a reordered copy with the row at `index` swapped with its neighbour, or null at an edge. */
+  private moveRow<T>(
+    rows: T[],
+    index: number,
+    offset: -1 | 1,
+  ): { rows: T[]; index: number } | null {
+    const target = index + offset;
+    if (index < 0 || index >= rows.length || target < 0 || target >= rows.length) return null;
+    const next = [...rows];
+    [next[index], next[target]] = [next[target], next[index]];
+    return { rows: next, index: target };
+  }
+
+  /** Keeps keyboard focus on the moved row's button, or its opposite when the row hit an edge. */
+  private refocusMoveButton(kind: 'ing' | 'step', rowId: string, offset: -1 | 1): void {
+    afterNextRender(
+      () => {
+        const direction = offset < 0 ? 'up' : 'down';
+        const other = offset < 0 ? 'down' : 'up';
+        const find = (dir: string) =>
+          this.host.nativeElement.querySelector<HTMLButtonElement>(
+            `[id="${kind}-move-${dir}-${rowId}"]`,
+          );
+        const same = find(direction);
+        (same && !same.disabled ? same : find(other))?.focus();
+      },
+      { injector: this.injector },
+    );
   }
 
   getUnitShortName(unitId: number | null): string {
@@ -344,12 +408,16 @@ export class AddRecipeFormComponent implements OnInit {
   submitQuickCreateIngredient(): void {
     const name = this.newIngredientName().trim();
     if (!name) {
-      this.toastService.showError('Please enter an ingredient name.');
+      this.toastService.showError(
+        this.transloco.translate('addRecipeForm.toast.enterIngredientName'),
+      );
       return;
     }
     const defaultUnit = this.newIngredientDefaultUnit();
     if (!defaultUnit) {
-      this.toastService.showError('Please select a default measurement unit.');
+      this.toastService.showError(
+        this.transloco.translate('addRecipeForm.toast.selectDefaultUnit'),
+      );
       return;
     }
 
@@ -364,7 +432,10 @@ export class AddRecipeFormComponent implements OnInit {
       next: (created) => {
         this.isCreatingIngredient.set(false);
         this.displayQuickCreateDialog.set(false);
-        this.toastService.showSuccess(`Ingredient "${name}" created!`, 'Ingredient Created');
+        this.toastService.showSuccess(
+          this.transloco.translate('addRecipeForm.toast.ingredientCreated', { name }),
+          this.transloco.translate('addRecipeForm.toast.ingredientCreatedTitle'),
+        );
 
         this.ingredientService.getIngredients().subscribe({
           next: (ingredients) => {
@@ -391,7 +462,9 @@ export class AddRecipeFormComponent implements OnInit {
       error: (err) => {
         this.isCreatingIngredient.set(false);
         console.error('Failed to create ingredient:', err);
-        this.toastService.showError('Failed to create ingredient.');
+        this.toastService.showError(
+          this.transloco.translate('addRecipeForm.toast.ingredientCreateFailed'),
+        );
       },
     });
   }
@@ -451,17 +524,18 @@ export class AddRecipeFormComponent implements OnInit {
   }
 
   moveStepUp(index: number): void {
-    if (index <= 0) return;
-    const temp = this.recipeSteps[index];
-    this.recipeSteps[index] = this.recipeSteps[index - 1];
-    this.recipeSteps[index - 1] = temp;
+    this.moveStep(index, -1);
   }
 
   moveStepDown(index: number): void {
-    if (index >= this.recipeSteps.length - 1) return;
-    const temp = this.recipeSteps[index];
-    this.recipeSteps[index] = this.recipeSteps[index + 1];
-    this.recipeSteps[index + 1] = temp;
+    this.moveStep(index, 1);
+  }
+
+  private moveStep(index: number, offset: -1 | 1): void {
+    const moved = this.moveRow(this.recipeSteps, index, offset);
+    if (!moved) return;
+    this.recipeSteps = moved.rows;
+    this.refocusMoveButton('step', moved.rows[moved.index].id, offset);
   }
 
   validateForm(): boolean {
@@ -470,16 +544,22 @@ export class AddRecipeFormComponent implements OnInit {
     this.serverErrorBanner = null;
 
     if (!this.name.trim()) {
-      this.addValidationError('Recipe name is required.', 'recipe-name');
+      this.addValidationError(
+        this.transloco.translate('addRecipeForm.validation.nameRequired'),
+        'recipe-name',
+      );
     }
 
     if (Number(this.servings) <= 0) {
-      this.addValidationError('Servings must be at least 1.', 'recipe-servings');
+      this.addValidationError(
+        this.transloco.translate('addRecipeForm.validation.servingsMin'),
+        'recipe-servings',
+      );
     }
 
     if (Number(this.prepTime) < 0 || Number(this.cookTime) < 0) {
       this.addValidationError(
-        'Prep time and cook time cannot be negative.',
+        this.transloco.translate('addRecipeForm.validation.timesNegative'),
         Number(this.prepTime) < 0 ? 'recipe-prep-time' : 'recipe-cook-time',
       );
     }
@@ -488,7 +568,7 @@ export class AddRecipeFormComponent implements OnInit {
     if (validIngredients.length === 0) {
       if (!this.recipeIngredients.length) this.addIngredientRow();
       this.addValidationError(
-        'Please select at least one valid ingredient for the recipe.',
+        this.transloco.translate('addRecipeForm.validation.ingredientRequired'),
         `ing-select-${this.recipeIngredients[0].id}`,
       );
     }
@@ -496,7 +576,11 @@ export class AddRecipeFormComponent implements OnInit {
     for (const row of this.recipeIngredients) {
       if (row.ingredientId && (Number(row.quantity) <= 0 || isNaN(Number(row.quantity)))) {
         this.addValidationError(
-          `Ingredient "${this.getIngredientName(row.ingredientId) || 'item'}" must have a quantity greater than 0.`,
+          this.transloco.translate('addRecipeForm.validation.quantityRequired', {
+            name:
+              this.getIngredientName(row.ingredientId) ||
+              this.transloco.translate('addRecipeForm.validation.ingredientFallbackName'),
+          }),
           `ing-quantity-${row.id}`,
         );
       }
@@ -506,7 +590,7 @@ export class AddRecipeFormComponent implements OnInit {
     if (validSteps.length === 0) {
       if (!this.recipeSteps.length) this.addStepRow();
       this.addValidationError(
-        'Please add at least one instruction step.',
+        this.transloco.translate('addRecipeForm.validation.stepRequired'),
         `recipe-step-${this.recipeSteps[0].id}`,
       );
     }
@@ -580,11 +664,10 @@ export class AddRecipeFormComponent implements OnInit {
     request$.subscribe({
       next: (res) => {
         this.isSubmitting = false;
+        const toastKey = this.isEditMode ? 'recipeUpdated' : 'recipeCreated';
         this.toastService.showSuccess(
-          this.isEditMode
-            ? `"${this.name}" updated successfully!`
-            : `"${this.name}" created successfully!`,
-          this.isEditMode ? 'Recipe Updated' : 'Recipe Created',
+          this.transloco.translate(`addRecipeForm.toast.${toastKey}`, { name: this.name }),
+          this.transloco.translate(`addRecipeForm.toast.${toastKey}Title`),
         );
         this.recipeCreated.emit();
         if (this.isEditMode) {
@@ -597,9 +680,10 @@ export class AddRecipeFormComponent implements OnInit {
         this.isSubmitting = false;
         console.error('Failed to save recipe', err);
         const errMsg =
-          err.error?.message || err.message || 'Server error occurred while saving the recipe.';
+          err.error?.message ||
+          err.message ||
+          this.transloco.translate('addRecipeForm.toast.saveFailed');
         this.serverErrorBanner = errMsg;
-        this.toastService.showError(errMsg, 'Submission Failed');
       },
     });
   }

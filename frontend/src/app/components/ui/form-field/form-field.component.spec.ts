@@ -38,6 +38,38 @@ describe('FormFieldComponent', () => {
     const alert = fixture.nativeElement.querySelector('[role="alert"]');
     expect(alert).toBeTruthy();
     expect(alert.textContent).toContain('Name is required');
+    expect(alert.className).toContain('text-rose-600');
+    expect(alert.className).toContain('dark:text-rose-400');
+    expect(alert.className).not.toContain('red-');
+  });
+
+  it('should generate stable label, hint and error ids', () => {
+    fixture.componentRef.setInput('label', 'Name');
+    fixture.componentRef.setInput('forId', 'name');
+    fixture.componentRef.setInput('hint', 'Hint');
+    fixture.detectChanges();
+    expect(component.labelId()).toBe('name-label');
+    expect(component.hintId()).toBe('name-hint');
+    expect(component.errorId()).toBe('name-error');
+    expect(fixture.nativeElement.querySelector('label').id).toBe('name-label');
+    expect(fixture.nativeElement.querySelector('#name-hint').textContent).toContain('Hint');
+  });
+
+  it('should not render a leading icon by default', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('i.pi')).toBeNull();
+    expect(fixture.nativeElement.classList.contains('pantry-field--icon')).toBe(false);
+  });
+
+  it('should render a decorative leading icon and mark the host', () => {
+    fixture.componentRef.setInput('icon', 'pi pi-envelope');
+    fixture.detectChanges();
+
+    const icon = fixture.nativeElement.querySelector('i.pi-envelope');
+    expect(icon).toBeTruthy();
+    expect(icon.getAttribute('aria-hidden')).toBe('true');
+    expect(icon.classList.contains('text-surface-500')).toBe(true);
+    expect(fixture.nativeElement.classList.contains('pantry-field--icon')).toBe(true);
   });
 });
 
@@ -47,8 +79,12 @@ describe('FormFieldComponent', () => {
   template: `<pantry-form-field label="Name" forId="name" [hint]="hint()" [error]="error()">
       <input id="name" [(ngModel)]="value" aria-describedby="external" />
     </pantry-form-field>
-    <pantry-form-field label="Unit" forId="unit" [hint]="hint()" [error]="error()">
-      <p-select inputId="unit" [(ngModel)]="value" [options]="['grams']" />
+    <pantry-form-field #unitField label="Unit" forId="unit" [hint]="hint()" [error]="error()">
+      <p-select
+        inputId="unit"
+        [ariaLabelledBy]="unitField.labelId()"
+        [(ngModel)]="value"
+        [options]="['grams']" />
     </pantry-form-field>`,
 })
 class FieldHost {
@@ -58,6 +94,15 @@ class FieldHost {
 }
 
 describe('projected field semantics', () => {
+  it('labels the PrimeNG combobox through ariaLabelledBy', async () => {
+    const fixture = TestBed.createComponent(FieldHost);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const select = fixture.nativeElement.querySelector('[role="combobox"]');
+    expect(select.getAttribute('aria-labelledby')).toBe('unit-label');
+    expect(fixture.nativeElement.querySelector('#unit-label').textContent).toContain('Unit');
+  });
+
   it('associates help and errors with native and PrimeNG focus targets and removes stale associations', async () => {
     const fixture = TestBed.createComponent(FieldHost);
     fixture.detectChanges();

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { IngredientGroup } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
 import { ShoppingItem } from '@models/shopping-list.model';
@@ -13,10 +13,17 @@ import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { StoreService } from '@services/store.service';
-import { FormFieldComponent } from '@ui';
+import {
+  AlertComponent,
+  BadgeComponent,
+  CardComponent,
+  FormFieldComponent,
+  SpinnerComponent,
+} from '@ui';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
+import { forkJoin, tap } from 'rxjs';
 
 @Component({
   selector: 'pantry-add-shopping-item-page',
@@ -28,13 +35,18 @@ import { SelectModule } from 'primeng/select';
     InputTextModule,
     SelectModule,
     InputNumberModule,
+    AlertComponent,
+    BadgeComponent,
+    CardComponent,
     FormFieldComponent,
+    SpinnerComponent,
   ],
   templateUrl: './add-item-page.component.html',
   styleUrl: './add-item-page.component.scss',
 })
 export class AddShoppingItemPageComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
   private readonly route = inject(ActivatedRoute);
   readonly shoppingListService = inject(ShoppingListService);
   private readonly ingredientService = inject(IngredientService);
@@ -50,7 +62,7 @@ export class AddShoppingItemPageComponent implements OnInit {
   readonly selectedStore = signal<Store | null>(null);
   readonly editingId = signal<string | null>(null);
   readonly name = signal('');
-  readonly quantity = signal(1);
+  readonly quantity = signal<number | null>(1);
   readonly estimatedPrice = signal<number | null>(null);
   readonly storeName = signal('');
   readonly storeId = signal<string | undefined>(undefined);
@@ -66,22 +78,32 @@ export class AddShoppingItemPageComponent implements OnInit {
   readonly duplicateItem = signal<ShoppingItem | null>(null);
 
   ngOnInit(): void {
-    this.ingredientService.getIngredients().subscribe((items) => this.ingredients.set(items));
+    const ingredients$ = this.ingredientService
+      .getIngredients()
+      .pipe(tap((items) => this.ingredients.set(items)));
+    const stores$ = this.storeService
+      .getStores()
+      .pipe(tap((stores) => this.stores.set(stores.filter((store) => !store.archived))));
     this.ingredientGroupService
       .getIngredientGroups()
       .subscribe((groups) => this.groups.set(groups));
     this.unitService.getUnits().subscribe((units) => this.units.set(units));
-    this.storeService
-      .getStores()
-      .subscribe((stores) => this.stores.set(stores.filter((store) => !store.archived)));
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.editingId.set(id);
-      this.shoppingListService.getItem(id).subscribe({
-        next: (item) => this.populate(item),
-        error: () => this.error.set('Shopping item could not be loaded.'),
+      // Populate only once the item and the option lists have all arrived.
+      forkJoin({
+        item: this.shoppingListService.getItem(id),
+        ingredients: ingredients$,
+        stores: stores$,
+      }).subscribe({
+        next: ({ item }) => this.populate(item),
+        error: () => this.error.set(this.transloco.translate('shoppingList.form.errors.loadItem')),
       });
+    } else {
+      ingredients$.subscribe();
+      stores$.subscribe();
     }
   }
 
@@ -112,7 +134,7 @@ export class AddShoppingItemPageComponent implements OnInit {
     const groupId = this.newIngredientGroupId();
     const unitId = this.newIngredientUnitId();
     if (!name || !groupId || !unitId) {
-      this.error.set('Ingredient name, group, and default unit are required.');
+      this.error.set(this.transloco.translate('shoppingList.form.errors.ingredientRequired'));
       return;
     }
     this.ingredientService
@@ -125,7 +147,8 @@ export class AddShoppingItemPageComponent implements OnInit {
             this.isCreatingIngredient.set(false);
           });
         },
-        error: () => this.error.set('Unable to create ingredient.'),
+        error: () =>
+          this.error.set(this.transloco.translate('shoppingList.form.errors.createIngredient')),
       });
   }
 
@@ -153,7 +176,7 @@ export class AddShoppingItemPageComponent implements OnInit {
       },
       error: () => {
         this.isSavingStore.set(false);
-        this.error.set('Unable to create store.');
+        this.error.set(this.transloco.translate('shoppingList.form.errors.createStore'));
       },
     });
   }
@@ -167,11 +190,12 @@ export class AddShoppingItemPageComponent implements OnInit {
   saveItem(): void {
     const ingredient = this.selectedIngredient();
     if (!ingredient) {
-      this.error.set('Select an ingredient before saving.');
+      this.error.set(this.transloco.translate('shoppingList.form.errors.selectIngredient'));
       return;
     }
-    if (this.quantity() <= 0) {
-      this.error.set('Quantity must be greater than zero.');
+    const quantity = this.quantity();
+    if (quantity === null || !(quantity > 0)) {
+      this.error.set(this.transloco.translate('shoppingList.form.errors.quantityPositive'));
       return;
     }
     this.error.set(null);
@@ -186,7 +210,7 @@ export class AddShoppingItemPageComponent implements OnInit {
         ingredient.ingredientGroup?.ingredientCategoryName ||
         ingredient.ingredientGroup?.name ||
         'General',
-      quantity: this.quantity(),
+      quantity,
       unit: ingredient.defaultUnit?.shortName || 'pcs',
       estimatedPrice: this.estimatedPrice() ?? 0,
       storeName: store?.name || '',
@@ -209,8 +233,8 @@ export class AddShoppingItemPageComponent implements OnInit {
             .getItems()
             .find((item) => item.ingredientId === ingredient.id);
           this.duplicateItem.set(existing || null);
-          this.error.set('This ingredient is already on your shopping list.');
-        } else this.error.set('Unable to save shopping ingredient.');
+          this.error.set(this.transloco.translate('shoppingList.form.errors.duplicate'));
+        } else this.error.set(this.transloco.translate('shoppingList.form.errors.save'));
       },
     });
   }
@@ -224,10 +248,11 @@ export class AddShoppingItemPageComponent implements OnInit {
     const item = this.duplicateItem();
     if (!item) return;
     this.shoppingListService
-      .updateItem(item.id, { quantity: item.quantity + this.quantity() })
+      .updateItem(item.id, { quantity: item.quantity + (this.quantity() ?? 0) })
       .subscribe({
         next: () => this.router.navigate(['/shopping-list']),
-        error: () => this.error.set('Unable to update the existing shopping item.'),
+        error: () =>
+          this.error.set(this.transloco.translate('shoppingList.form.errors.updateExisting')),
       });
   }
 

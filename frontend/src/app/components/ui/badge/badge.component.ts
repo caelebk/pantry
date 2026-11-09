@@ -17,7 +17,7 @@ export type BadgeSize = 'sm' | 'md';
   imports: [CommonModule],
   template: `
     <span [class]="badgeClasses()">
-      @if (dot()) {
+      @if (dot() && variant() !== 'location') {
         <span [class]="dotClasses()" aria-hidden="true"></span>
       }
       @if (icon()) {
@@ -46,11 +46,11 @@ export class BadgeComponent {
 
     const variantMap: Record<BadgeVariant, string> = {
       fresh:
-        'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20',
-      expiring: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
-      expired: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20',
+        'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20',
+      expiring: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20',
+      expired: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20',
       primary:
-        'bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20',
+        'bg-primary-500/10 text-primary-800 dark:text-primary-400 border border-primary-500/20',
       neutral:
         'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700',
       location:

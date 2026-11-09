@@ -302,7 +302,7 @@ describe('InventoryOverviewPageComponent', () => {
     expect(expiredLink).toBeTruthy();
     expect(expiredLink?.textContent).toContain('1 expired');
     expect(upcomingLink).toBeTruthy();
-    expect(upcomingLink?.textContent).toContain('1 due within 14 days');
+    expect(upcomingLink?.textContent).toContain('1 due within 7 days');
   });
 
   it('does not render warning links in attention region when counts are zero', () => {
@@ -366,7 +366,7 @@ describe('InventoryOverviewPageComponent', () => {
         id: 'soon-3',
         name: 'Fish',
         quantity: 1,
-        expirationDate: new Date(now + 86400000 * 10),
+        expirationDate: new Date(now + 86400000 * 6),
       }),
     ];
 
@@ -387,7 +387,7 @@ describe('InventoryOverviewPageComponent', () => {
     const expiredLink = attentionSection?.querySelector('a[href*="status=expired"]');
     const upcomingLink = attentionSection?.querySelector('a[href*="status=expiring"]');
     expect(expiredLink?.textContent).toContain('3 expired');
-    expect(upcomingLink?.textContent).toContain('3 due within 14 days');
+    expect(upcomingLink?.textContent).toContain('3 due within 7 days');
   });
 
   it('does not label a failed summary as loading when another collection is pending, and keeps available ingredient totals visible when stock fails', () => {

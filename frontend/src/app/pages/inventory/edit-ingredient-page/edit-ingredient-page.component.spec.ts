@@ -7,7 +7,7 @@ import { IngredientGroupService } from '@services/inventory/ingredient-group.ser
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import translations from '../../../../../public/i18n/en.json';
 import { EditIngredientPageComponent } from './edit-ingredient-page.component';
 
@@ -185,5 +185,45 @@ describe('EditIngredientPageComponent', () => {
     mockQueryParams['returnTo'] = '/inventory/ingredients/new';
     component.onCancel();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients']);
+  });
+
+  it('sends an explicit null group when the ingredient group is cleared', () => {
+    component.ingredientForm.patchValue({ ingredientGroup: null });
+    component.onSubmit();
+    expect(mockIngredientService.updateIngredient).toHaveBeenCalledWith(
+      'ing-99',
+      jasmine.objectContaining({ ingredientGroupId: null }),
+    );
+  });
+
+  it('shows an error toast and navigates away when the ingredient is not found', () => {
+    mockIngredientService.getIngredientById.and.returnValue(throwError(() => ({ status: 404 })));
+    component.retryLoad();
+    expect(mockToastService.showError).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/inventory/ingredients']);
+    expect(component.loadFailed()).toBe(false);
+  });
+
+  it('keeps a retry state on other load errors and retry re-runs every loader', () => {
+    mockIngredientService.getIngredientById.and.returnValue(throwError(() => ({ status: 500 })));
+    component.retryLoad();
+    expect(component.loadFailed()).toBe(true);
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+
+    mockIngredientService.getIngredientById.and.returnValue(
+      of(mockIngredient as unknown as Ingredient),
+    );
+    component.retryLoad();
+    // once on init, once per retry (two retries in this test)
+    expect(mockIngredientService.getIngredientById).toHaveBeenCalledTimes(3);
+    expect(mockIngredientGroupService.getIngredientGroups).toHaveBeenCalledTimes(3);
+    expect(mockUnitService.getUnits).toHaveBeenCalledTimes(3);
+    expect(component.loadFailed()).toBe(false);
+  });
+
+  it('sets loadFailed when the units load fails', () => {
+    mockUnitService.getUnits.and.returnValue(throwError(() => ({ status: 500 })));
+    component.retryLoad();
+    expect(component.loadFailed()).toBe(true);
   });
 });

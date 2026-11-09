@@ -12,10 +12,21 @@ import { NgControl } from '@angular/forms';
 
 let nextFieldId = 0;
 
+/**
+ * Label, hint, error and badge wrapper for one form control.
+ *
+ * - `hintId`, `errorId` and `labelId` are stable ids derived from `forId` (or a generated id).
+ * - Projected `NgControl` targets (or elements marked `#fieldControl`) get `aria-describedby`
+ *   (hint or error id, joined with any external tokens) and `aria-invalid="true"` on error.
+ * - PrimeNG comboboxes (`p-select`, `p-autoComplete`, `p-datepicker`) have an internal focus
+ *   target. Take a template reference to the field and pass its label id to PrimeNG:
+ *   `<pantry-form-field #f label="Unit" forId="unit"><p-select inputId="unit"
+ *   [ariaLabelledBy]="f.labelId()" /></pantry-form-field>`
+ */
 @Component({
   selector: 'pantry-form-field',
   standalone: true,
-  host: { class: 'block' },
+  host: { class: 'block', '[class.pantry-field--icon]': '!!icon()' },
   imports: [CommonModule],
   template: `
     <div class="space-y-1.5 w-full">
@@ -23,6 +34,7 @@ let nextFieldId = 0;
         <div class="flex items-start justify-between min-h-5 gap-2">
           @if (label()) {
             <label
+              [id]="labelId()"
               [attr.for]="forId()"
               class="type-label min-w-0 break-words block text-surface-600 dark:text-surface-300 select-none">
               {{ label() }}
@@ -41,14 +53,22 @@ let nextFieldId = 0;
         </div>
       }
 
-      <div class="w-full">
+      <div class="w-full relative">
+        @if (icon()) {
+          <i
+            [class]="
+              icon() +
+              ' absolute left-3.5 top-[21px] -translate-y-1/2 text-sm pointer-events-none text-surface-500 dark:text-surface-400'
+            "
+            aria-hidden="true"></i>
+        }
         <ng-content></ng-content>
       </div>
 
       @if (error()) {
         <p
           [id]="errorId()"
-          class="text-xs font-medium text-rose-500 flex items-center gap-1 mt-1"
+          class="text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1 mt-1"
           role="alert">
           <i class="pi pi-exclamation-circle text-xs" aria-hidden="true"></i>
           <span>{{ error() }}</span>
@@ -60,10 +80,17 @@ let nextFieldId = 0;
       }
     </div>
   `,
+  // Global form control padding uses !important, so the icon offset needs higher specificity.
+  styles: `
+    :host(.pantry-field--icon) ::ng-deep input {
+      padding-left: 2.5rem !important;
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormFieldComponent {
   private readonly generatedId = `pantry-field-${++nextFieldId}`;
+  readonly labelId = computed(() => `${this.forId() || this.generatedId}-label`);
   readonly hintId = computed(() => `${this.forId() || this.generatedId}-hint`);
   readonly errorId = computed(() => `${this.forId() || this.generatedId}-error`);
   private readonly controls = contentChildren(NgControl, { descendants: true, read: ElementRef });
@@ -126,4 +153,6 @@ export class FormFieldComponent {
   hint = input<string>();
   error = input<string>();
   badge = input<string>();
+  /** PrimeIcons class for a leading icon, for example `pi pi-envelope`. */
+  icon = input<string>();
 }

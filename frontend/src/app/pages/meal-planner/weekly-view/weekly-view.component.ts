@@ -9,17 +9,35 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
-import { BadgeComponent } from '@ui';
+import {
+  AlertComponent,
+  BadgeComponent,
+  CardComponent,
+  EmptyStateComponent,
+  SegmentedControlComponent,
+  SegmentedOption,
+} from '@ui';
 import { sumKnownMetadata } from '@utility/recipe-metadata';
+import { switchMap } from 'rxjs';
 
 export type WeeklyLayoutMode = 'grid' | 'timeline';
 
 @Component({
   selector: 'pantry-weekly-view',
   standalone: true,
-  imports: [CommonModule, BadgeComponent],
+  imports: [
+    CommonModule,
+    TranslocoModule,
+    AlertComponent,
+    BadgeComponent,
+    CardComponent,
+    EmptyStateComponent,
+    SegmentedControlComponent,
+  ],
   templateUrl: './weekly-view.component.html',
   styleUrl: './weekly-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +58,28 @@ export class WeeklyViewComponent {
 
   readonly days = this.mealPlannerService.days;
   readonly mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+
+  private readonly transloco = inject(TranslocoService);
+  // Re-emits once the active language's translations are loaded, so computed labels refresh.
+  private readonly translationsReady = toSignal(
+    this.transloco.langChanges$.pipe(switchMap((lang) => this.transloco.load(lang))),
+  );
+
+  readonly layoutOptions = computed<SegmentedOption<WeeklyLayoutMode>[]>(() => {
+    this.translationsReady();
+    return [
+      {
+        value: 'grid',
+        label: this.transloco.translate('mealPlanner.weekly.cards'),
+        icon: 'pi pi-th-large',
+      },
+      {
+        value: 'timeline',
+        label: this.transloco.translate('mealPlanner.weekly.dayRows'),
+        icon: 'pi pi-list',
+      },
+    ];
+  });
 
   layoutMode = signal<WeeklyLayoutMode>('grid');
 
@@ -72,8 +112,8 @@ export class WeeklyViewComponent {
     return map;
   });
 
-  setLayoutMode(mode: WeeklyLayoutMode): void {
-    this.layoutMode.set(mode);
+  setLayoutMode(mode: WeeklyLayoutMode | undefined): void {
+    if (mode) this.layoutMode.set(mode);
   }
 
   getMealsForDay(day: DayOfWeek): PlannedMeal[] {
@@ -98,6 +138,10 @@ export class WeeklyViewComponent {
 
   removeMeal(id: string): void {
     this.mealPlannerService.removeMealPlan(id);
+  }
+
+  missingFor(meal: PlannedMeal): string[] | null {
+    return this.mealPlannerService.missingFor(meal);
   }
 
   addMissingToShoppingList(meal: PlannedMeal): void {

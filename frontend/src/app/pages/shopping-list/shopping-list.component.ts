@@ -1,13 +1,33 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Injector,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { Router, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ShoppingItem } from '@models/shopping-list.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { ShoppingListService } from '@services/shopping-list.service';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
 
-import { BadgeComponent, SearchInputComponent, SkeletonComponent } from '@ui';
+import {
+  BadgeComponent,
+  CardComponent,
+  ConfirmDialogService,
+  EmptyStateComponent,
+  SearchInputComponent,
+  SegmentedControlComponent,
+  SkeletonComponent,
+} from '@ui';
+
+type ShoppingSortColumn = 'name' | 'category' | 'store' | 'quantity' | 'price';
 
 @Component({
   selector: 'pantry-shopping-list',
@@ -15,10 +35,16 @@ import { BadgeComponent, SearchInputComponent, SkeletonComponent } from '@ui';
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     TranslocoModule,
+    CheckboxModule,
+    InputTextModule,
     SearchInputComponent,
     SkeletonComponent,
     BadgeComponent,
+    CardComponent,
+    EmptyStateComponent,
+    SegmentedControlComponent,
   ],
   templateUrl: './shopping-list.component.html',
   styleUrl: './shopping-list.component.scss',
@@ -28,17 +54,35 @@ export class ShoppingListComponent {
   private readonly router = inject(Router);
   readonly shoppingListService = inject(ShoppingListService);
   readonly mealPlannerService = inject(MealPlannerService);
+  private readonly document = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
+  private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly transloco = inject(TranslocoService);
 
   // Filter state
   activeFilter = signal<'all' | 'unchecked' | 'checked'>('all');
   readonly searchQuery = signal('');
   readonly selectedIds = signal<Set<string>>(new Set());
+  // Bulk selection is a secondary mode; the primary row control marks the item bought.
+  readonly selectMode = signal(false);
 
   // Sort state
-  readonly sortBy = signal<'name' | 'category' | 'store' | 'quantity' | 'price'>('name');
+  readonly sortBy = signal<ShoppingSortColumn>('name');
   readonly sortDirection = signal<'asc' | 'desc'>('asc');
+  readonly sortColumns: { key: ShoppingSortColumn; label: string }[] = [
+    { key: 'name', label: 'shoppingList.table.item' },
+    { key: 'category', label: 'shoppingList.table.category' },
+    { key: 'store', label: 'shoppingList.table.store' },
+    { key: 'quantity', label: 'shoppingList.table.quantity' },
+    { key: 'price', label: 'shoppingList.table.price' },
+  ];
 
-  toggleSort(column: 'name' | 'category' | 'store' | 'quantity' | 'price'): void {
+  ariaSort(column: ShoppingSortColumn): 'ascending' | 'descending' | 'none' {
+    if (this.sortBy() !== column) return 'none';
+    return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
+  }
+
+  toggleSort(column: ShoppingSortColumn): void {
     if (this.sortBy() === column) {
       this.sortDirection.update((dir) => (dir === 'asc' ? 'desc' : 'asc'));
     } else {
@@ -53,6 +97,7 @@ export class ShoppingListComponent {
 
   startEditingQuantity(id: string): void {
     this.editingQuantityId.set(id);
+    this.focusAfterRender('[data-inline-input]');
   }
 
   stopEditingQuantity(): void {
@@ -61,10 +106,42 @@ export class ShoppingListComponent {
 
   startEditingPrice(id: string): void {
     this.editingPriceId.set(id);
+    this.focusAfterRender('[data-inline-input]');
   }
 
   stopEditingPrice(): void {
     this.editingPriceId.set(null);
+  }
+
+  /** Saves the quantity edit; Enter (restoreFocus) returns focus to the trigger button. */
+  commitQuantity(item: ShoppingItem, quantity: number, restoreFocus = false): void {
+    if (this.editingQuantityId() !== item.id) return;
+    this.updateInlineQuantity(item, quantity);
+    this.stopEditingQuantity();
+    if (restoreFocus) this.focusAfterRender(`[data-edit-trigger="qty-${item.id}"]`);
+  }
+
+  cancelQuantity(item: ShoppingItem): void {
+    this.stopEditingQuantity();
+    this.focusAfterRender(`[data-edit-trigger="qty-${item.id}"]`);
+  }
+
+  commitPrice(item: ShoppingItem, price: number, restoreFocus = false): void {
+    if (this.editingPriceId() !== item.id) return;
+    this.updateInlinePrice(item, price);
+    this.stopEditingPrice();
+    if (restoreFocus) this.focusAfterRender(`[data-edit-trigger="price-${item.id}"]`);
+  }
+
+  cancelPrice(item: ShoppingItem): void {
+    this.stopEditingPrice();
+    this.focusAfterRender(`[data-edit-trigger="price-${item.id}"]`);
+  }
+
+  private focusAfterRender(selector: string): void {
+    afterNextRender(() => this.document.querySelector<HTMLElement>(selector)?.focus(), {
+      injector: this.injector,
+    });
   }
 
   // Filtered & sorted items signal
@@ -211,6 +288,11 @@ export class ShoppingListComponent {
     this.selectedIds.set(next);
   }
 
+  toggleSelectMode(): void {
+    this.selectMode.update((on) => !on);
+    if (!this.selectMode()) this.clearSelection();
+  }
+
   clearSelection(): void {
     this.selectedIds.set(new Set<string>());
   }
@@ -224,9 +306,21 @@ export class ShoppingListComponent {
     });
   }
 
-  deleteSelected(): void {
+  async deleteSelected(): Promise<void> {
     const ids = [...this.selectedIds()];
-    if (!ids.length || !window.confirm(`Delete ${ids.length} selected item(s)?`)) return;
+    if (!ids.length) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.transloco.translate('shoppingList.confirmDelete.title'),
+      message:
+        ids.length === 1
+          ? this.transloco.translate('shoppingList.confirmDelete.messageOne')
+          : this.transloco.translate('shoppingList.confirmDelete.messageOther', {
+              count: ids.length,
+            }),
+      acceptLabel: this.transloco.translate('shoppingList.actions.delete'),
+      destructive: true,
+    });
+    if (!confirmed) return;
     this.shoppingListService.deleteItems(ids).subscribe(() => {
       this.shoppingListService.loadItemsFromBackend();
       this.selectedIds.set(new Set());
@@ -258,6 +352,10 @@ export class ShoppingListComponent {
   setFilter(filter: 'all' | 'unchecked' | 'checked'): void {
     this.activeFilter.set(filter);
     this.selectedIds.set(new Set());
+  }
+
+  onFilterChange(value: string | undefined): void {
+    if (value === 'all' || value === 'unchecked' || value === 'checked') this.setFilter(value);
   }
 
   setSearch(query: string): void {

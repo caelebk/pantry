@@ -45,4 +45,21 @@ describe('SpinnerComponent', () => {
     expect(svg.classList.contains('h-8')).toBe(true);
     expect(svg.classList.contains('text-white')).toBe(true);
   });
+
+  it('should announce loading state by default', () => {
+    const wrapper = fixture.nativeElement.querySelector('[role="status"]');
+    expect(wrapper).toBeTruthy();
+    expect(wrapper.getAttribute('aria-live')).toBe('polite');
+    expect(fixture.nativeElement.querySelector('.sr-only')).toBeTruthy();
+  });
+
+  it('should drop live region and screen-reader text when announce is false', () => {
+    fixture.componentRef.setInput('announce', false);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[role="status"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[aria-live]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.sr-only')).toBeNull();
+    expect(fixture.nativeElement.querySelector('svg').getAttribute('aria-hidden')).toBe('true');
+  });
 });

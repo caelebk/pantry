@@ -1,18 +1,17 @@
-<div class="glass-card rounded-2xl p-6 transition-all duration-300 hover:shadow-lg">
+<pantry-card>
   <div class="flex items-center justify-between mb-5">
     <div>
       <h3 class="type-section-title text-surface-900 dark:text-white flex items-center gap-2">
-        <i class="pi pi-building text-surface-500 dark:text-surface-400"></i>
+        <i class="pi pi-building text-surface-500 dark:text-surface-400" aria-hidden="true"></i>
         {{ 'home.locations.title' | transloco }}
       </h3>
     </div>
-    <span
-      class="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300">
+    <pantry-badge variant="neutral" size="sm">
       {{
         (items().length === 1 ? 'home.locations.items_one' : 'home.locations.items')
           | transloco: { count: items().length }
       }}
-    </span>
+    </pantry-badge>
   </div>
 
   <div class="space-y-4">
@@ -20,33 +19,39 @@
       <div>
         <div class="flex items-center justify-between type-meta mb-1.5">
           <div class="flex items-center gap-2 text-surface-800 dark:text-surface-200">
-            <i [class]="stat.icon" class="text-surface-500 dark:text-surface-400"></i>
+            <i
+              [class]="stat.icon"
+              class="text-surface-500 dark:text-surface-400"
+              aria-hidden="true"></i>
             <span>{{ stat.location.name }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-surface-900 dark:text-white font-medium tabular-nums">{{
+            <span class="type-label tabular-nums text-surface-900 dark:text-white">{{
               (stat.count === 1 ? 'home.locations.items_one' : 'home.locations.items')
                 | transloco: { count: stat.count }
             }}</span>
-            <span class="text-surface-400 dark:text-surface-500 text-[11px]"
+            <span class="type-meta text-surface-500 dark:text-surface-400"
               >({{ stat.percentage }}%)</span
             >
           </div>
         </div>
         <!-- Progress bar -->
-        <div class="progress-track h-2">
+        <div
+          class="progress-track h-2"
+          role="progressbar"
+          [attr.aria-label]="stat.location.name"
+          [attr.aria-valuenow]="stat.percentage"
+          aria-valuemin="0"
+          aria-valuemax="100">
           <div
-            class="h-full rounded-full transition-all duration-500"
-            [ngClass]="stat.colorClass"
+            class="h-full rounded-full bg-surface-400 dark:bg-surface-500 transition-all duration-500"
             [style.width.%]="stat.percentage"></div>
         </div>
       </div>
     }
 
     @if (locationStats().length === 0) {
-      <div class="text-center py-4 text-xs text-surface-400 dark:text-surface-500">
-        No location distribution available
-      </div>
+      <pantry-empty-state variant="plain" [title]="'home.locations.noDistribution' | transloco" />
     }
   </div>
-</div>
+</pantry-card>

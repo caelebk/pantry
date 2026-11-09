@@ -1,26 +1,22 @@
 <ng-container *transloco="let t">
-  <div class="flex">
-    <button
-      type="button"
-      class="btn-ghost hover:!bg-transparent"
-      (click)="onCancel()"
-      [disabled]="isSubmitting()"
-      [attr.aria-label]="t('itemEditor.back')">
-      <i class="pi pi-arrow-left" aria-hidden="true"></i>
-      <span>{{ t('nav.back') }}</span>
-    </button>
-  </div>
-  <div class="page-layout max-w-4xl mx-auto px-4 py-6">
+  <div class="page-layout page-layout--form">
     <header class="page-header">
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="min-w-0">
-          <h1 class="type-page-title text-surface-900 dark:text-white">
-            {{ t('itemEditor.addTitle') }}
-          </h1>
-          <p class="text-sm text-surface-600 dark:text-surface-300 mt-2">
-            {{ t('itemEditor.subtitle') }}
-          </p>
-        </div>
+      <div class="min-w-0">
+        <button
+          type="button"
+          class="btn-ghost hover:!bg-transparent mb-2"
+          (click)="onCancel()"
+          [disabled]="isSubmitting()"
+          [attr.aria-label]="t('itemEditor.back')">
+          <i class="pi pi-arrow-left" aria-hidden="true"></i>
+          <span>{{ t('nav.back') }}</span>
+        </button>
+        <h1 class="type-page-title text-surface-900 dark:text-white">
+          {{ t('itemEditor.addTitle') }}
+        </h1>
+        <p class="text-sm text-surface-600 dark:text-surface-300 mt-2">
+          {{ t('itemEditor.subtitle') }}
+        </p>
       </div>
     </header>
     <pantry-item-editor
@@ -63,15 +59,17 @@
           [ngModel]="newIngredientName()"
           (ngModelChange)="newIngredientName.set($event)"
           [placeholder]="t('itemEditor.ingredientNamePlaceholder')"
-          class="w-full h-[42px] rounded-xl" />
+          class="w-full" />
       </pantry-form-field>
       <pantry-form-field
+        #unitField
         forId="new-ingredient-unit"
         [label]="t('itemEditor.defaultUnit')"
         [required]="true">
         <p-select
           [disabled]="isCreatingIngredient()"
           inputId="new-ingredient-unit"
+          [ariaLabelledBy]="unitField.labelId()"
           [options]="units()"
           [ngModel]="newIngredientDefaultUnit()"
           (ngModelChange)="newIngredientDefaultUnit.set($event)"
@@ -81,10 +79,11 @@
           class="w-full"
           appendTo="body" />
       </pantry-form-field>
-      <pantry-form-field forId="new-ingredient-group" [label]="t('itemEditor.group')">
+      <pantry-form-field #groupField forId="new-ingredient-group" [label]="t('itemEditor.group')">
         <p-select
           [disabled]="isCreatingIngredient()"
           inputId="new-ingredient-group"
+          [ariaLabelledBy]="groupField.labelId()"
           [options]="ingredientGroups()"
           [ngModel]="newIngredientGroup()"
           (ngModelChange)="newIngredientGroup.set($event)"
@@ -97,9 +96,7 @@
       </pantry-form-field>
     </fieldset>
     @if (quickCreateError()) {
-      <p role="alert" class="text-sm text-rose-600 dark:text-rose-300 mt-4">
-        {{ quickCreateError() }}
-      </p>
+      <pantry-alert variant="danger" class="block mt-4">{{ quickCreateError() }}</pantry-alert>
     }
     <ng-template pTemplate="footer">
       <button
@@ -117,7 +114,7 @@
         "
         (click)="submitQuickCreateIngredient()">
         @if (isCreatingIngredient()) {
-          <pantry-spinner size="sm" color="white" />
+          <pantry-spinner [announce]="false" size="sm" color="white" />
         }
         {{ t(isCreatingIngredient() ? 'itemEditor.creating' : 'itemEditor.create') }}
       </button>

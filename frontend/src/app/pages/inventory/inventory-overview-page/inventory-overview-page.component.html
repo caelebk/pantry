@@ -30,7 +30,7 @@
     <details class="group mt-4">
       <summary
         class="inventory-guide-toggle min-h-[42px] inline-flex items-center gap-1.5 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden type-label text-surface-800 dark:text-surface-300 hover:text-surface-900 dark:hover:text-white focus-visible:text-surface-900 dark:focus-visible:text-white rounded-lg px-1 focus-visible:outline-2 focus-visible:outline-primary-500">
-        <span class="inventory-guide-toggle__label">{{ t('explainTerms') }}</span>
+        <span>{{ t('explainTerms') }}</span>
         <i class="inventory-guide-toggle__caret pi pi-angle-down shrink-0" aria-hidden="true"></i>
       </summary>
       <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
@@ -55,17 +55,19 @@
   </section>
 
   @if (isLoading()) {
-    <pantry-spinner [label]="t('loading')" />
+    <div role="status" [attr.aria-label]="t('loading')">
+      <pantry-skeleton variant="card" height="200px" />
+    </div>
   }
   @if (sectionStates().items === 'error') {
-    <div
-      role="alert"
-      class="glass-card rounded-2xl p-5 flex flex-wrap items-center justify-between gap-3">
-      <p class="type-body text-surface-700 dark:text-surface-200">{{ t('stockFailure') }}</p>
-      <button class="btn-secondary" type="button" (click)="fetchInventoryData()">
-        {{ t('retry') }}
-      </button>
-    </div>
+    <pantry-alert variant="danger">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p>{{ t('stockFailure') }}</p>
+        <button class="btn-secondary" type="button" (click)="fetchInventoryData()">
+          {{ t('retry') }}
+        </button>
+      </div>
+    </pantry-alert>
   }
   @if (ready('items')) {
     @if (itemsCount() === 0) {
@@ -186,14 +188,12 @@
                 }
               </ul>
             } @else if (sectionStates().locations === 'error') {
-              <div role="alert">
-                <p class="type-meta text-surface-600 dark:text-surface-300">
-                  {{ t('locationFailure') }}
-                </p>
+              <pantry-alert variant="danger">
+                <p>{{ t('locationFailure') }}</p>
                 <button class="btn-secondary mt-3" type="button" (click)="fetchInventoryData()">
                   {{ t('retry') }}
                 </button>
-              </div>
+              </pantry-alert>
             } @else {
               <p class="type-meta text-surface-600 dark:text-surface-300 py-3">
                 {{ t('loadingSummary') }}
@@ -210,12 +210,14 @@
     sectionStates().groups === 'error' ||
     sectionStates().ingredients === 'error'
   ) {
-    <div role="alert" class="flex flex-wrap items-center justify-between gap-3">
-      <p class="type-body text-surface-700 dark:text-surface-200">{{ t('catalogFailure') }}</p>
-      <button class="btn-secondary" type="button" (click)="fetchInventoryData()">
-        {{ t('retry') }}
-      </button>
-    </div>
+    <pantry-alert variant="danger">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p>{{ t('catalogFailure') }}</p>
+        <button class="btn-secondary" type="button" (click)="fetchInventoryData()">
+          {{ t('retry') }}
+        </button>
+      </div>
+    </pantry-alert>
   }
 
   <section aria-labelledby="inventory-explore">

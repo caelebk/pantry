@@ -7,6 +7,7 @@ import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
+import { buildAvailableBaseMap, recipeAvailability } from '@utility/recipe-stock';
 import { SelectModule } from 'primeng/select';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
@@ -14,7 +15,6 @@ import { IngredientService } from '../../services/inventory/ingredient.service';
 import { ItemService } from '../../services/inventory/item.service';
 import { UnitService } from '../../services/inventory/unit.service';
 import { RecipeService } from '../../services/recipe.service';
-import { ToastService } from '../../services/toast.service';
 import { RecipeCardComponent } from './recipe-components/recipe-card/recipe-card.component';
 
 export type RecipeSortOption =
@@ -31,7 +31,12 @@ export type DifficultyFilterOption = 'all' | 'easy' | 'medium' | 'hard';
 
 import { ChangeDetectionStrategy } from '@angular/core';
 
-import { EmptyStateComponent, SearchInputComponent, SkeletonComponent } from '@ui';
+import {
+  EmptyStateComponent,
+  SearchInputComponent,
+  SegmentedControlComponent,
+  SkeletonComponent,
+} from '@ui';
 
 @Component({
   selector: 'pantry-recipes',
@@ -44,6 +49,7 @@ import { EmptyStateComponent, SearchInputComponent, SkeletonComponent } from '@u
     SelectModule,
     SkeletonComponent,
     SearchInputComponent,
+    SegmentedControlComponent,
     EmptyStateComponent,
   ],
   templateUrl: './recipes.component.html',
@@ -61,7 +67,6 @@ export class RecipesComponent {
   private readonly itemService = inject(ItemService);
   private readonly unitService = inject(UnitService);
   private readonly ingredientService = inject(IngredientService);
-  private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -96,6 +101,12 @@ export class RecipesComponent {
   availabilityFilter: AvailabilityFilterOption = 'all';
   difficultyFilter: DifficultyFilterOption = 'all';
   maxTimeFilter = 0; // 0 means any time
+
+  availabilityOptions: { label: string; value: AvailabilityFilterOption }[] = [
+    { label: 'recipes.browse.all', value: 'all' },
+    { label: 'recipes.browse.readyFilter', value: 'makeable' },
+    { label: 'recipes.browse.missingFilter', value: 'partial' },
+  ];
 
   sortOptions: { label: string; value: RecipeSortOption }[] = [
     { label: 'recipes.browse.mostAvailable', value: 'availability' },
@@ -147,25 +158,12 @@ export class RecipesComponent {
         console.error('Failed to load recipe data', err);
         this.isLoading = false;
         this.cdr.markForCheck();
-        this.toastService.showError('Unable to load recipe data.', 'Network Error');
       },
     });
   }
 
   private buildAvailableBaseMap(): void {
-    const map = new Map<string, number>();
-    const now = new Date();
-    for (const item of this.pantryItems) {
-      if (item.ingredientId) {
-        if (item.expirationDate && new Date(item.expirationDate) < now) {
-          continue; // skip expired items
-        }
-        const factor = item.unit?.toBaseFactor || 1;
-        const baseQty = item.quantity * factor;
-        map.set(item.ingredientId, (map.get(item.ingredientId) || 0) + baseQty);
-      }
-    }
-    this.availableBaseMap = map;
+    this.availableBaseMap = buildAvailableBaseMap(this.pantryItems);
   }
 
   getRecipeAvailability(recipe: Recipe): {
@@ -174,27 +172,7 @@ export class RecipesComponent {
     percentage: number;
     isFullyMakeable: boolean;
   } {
-    if (!recipe.ingredients || recipe.ingredients.length === 0) {
-      return { availableCount: 0, totalCount: 0, percentage: 100, isFullyMakeable: true };
-    }
-    let availableCount = 0;
-    for (const ing of recipe.ingredients) {
-      const unit = ing.unitId ? this.unitMap.get(ing.unitId) : null;
-      const factor = unit?.toBaseFactor || 1;
-      const requiredBase = ing.quantity * factor;
-      const availableBase = this.availableBaseMap.get(ing.ingredientId) || 0;
-      if (availableBase >= requiredBase - 1e-6) {
-        availableCount++;
-      }
-    }
-    const totalCount = recipe.ingredients.length;
-    const percentage = Math.round((availableCount / totalCount) * 100);
-    return {
-      availableCount,
-      totalCount,
-      percentage,
-      isFullyMakeable: availableCount === totalCount,
-    };
+    return recipeAvailability(recipe.ingredients || [], this.unitMap, this.availableBaseMap);
   }
 
   getRecipePriorityScore(recipe: Recipe): {

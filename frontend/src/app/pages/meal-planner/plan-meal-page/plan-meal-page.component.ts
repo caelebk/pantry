@@ -1,17 +1,42 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { DayOfWeek, MealType } from '@models/meal-planner.model';
 import { Recipe } from '@models/recipe.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
+import {
+  AlertComponent,
+  CardComponent,
+  EmptyStateComponent,
+  SearchInputComponent,
+  SegmentedControlComponent,
+  SegmentedOption,
+  SkeletonComponent,
+} from '@ui';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectModule } from 'primeng/select';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'pantry-plan-meal-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslocoModule,
+    InputNumberModule,
+    SelectModule,
+    AlertComponent,
+    CardComponent,
+    EmptyStateComponent,
+    SearchInputComponent,
+    SegmentedControlComponent,
+    SkeletonComponent,
+  ],
   templateUrl: './plan-meal-page.component.html',
   styleUrl: './plan-meal-page.component.scss',
 })
@@ -33,14 +58,39 @@ export class PlanMealPageComponent implements OnInit {
   ];
   readonly mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
 
+  private readonly transloco = inject(TranslocoService);
+  // Re-emits once the active language's translations are loaded, so computed labels refresh.
+  private readonly translationsReady = toSignal(
+    this.transloco.langChanges$.pipe(switchMap((lang) => this.transloco.load(lang))),
+  );
+
+  readonly dayOptions = computed(() => {
+    this.translationsReady();
+    return this.days.map((day) => ({
+      value: day,
+      label: this.transloco.translate(`mealPlanner.days.${day.toLowerCase()}`),
+    }));
+  });
+
+  readonly mealTypeOptions = computed<SegmentedOption<MealType>[]>(() => {
+    this.translationsReady();
+    return this.mealTypes.map((t) => ({
+      value: t,
+      label: this.transloco.translate(`mealPlanner.mealTypes.${t.toLowerCase()}`),
+    }));
+  });
+
   selectedDay = signal<DayOfWeek>('Monday');
   selectedMealType = signal<MealType>('Dinner');
   selectedRecipe = signal<Recipe | null>(null);
   searchQuery = signal<string>('');
-  servings = signal<number>(2);
+  servings = signal<number | null>(2);
 
   availableRecipes = signal<Recipe[]>([]);
   isLoading = signal<boolean>(false);
+  loadFailed = signal<boolean>(false);
+  isSaving = signal<boolean>(false);
+  saveFailed = signal<boolean>(false);
 
   ngOnInit(): void {
     // Read query params if provided (e.g. ?day=Tuesday&type=Lunch)
@@ -58,54 +108,16 @@ export class PlanMealPageComponent implements OnInit {
 
   loadRecipes(): void {
     this.isLoading.set(true);
+    this.loadFailed.set(false);
     this.recipeService.getRecipes().subscribe({
       next: (recipes) => {
         this.availableRecipes.set(recipes);
-        if (recipes.length > 0) {
-          this.selectedRecipe.set(recipes[0]);
-        }
         this.isLoading.set(false);
       },
       error: () => {
-        const mockRecipes: Recipe[] = [
-          {
-            id: 'rec-1',
-            name: 'Simple Tomato Basil Pasta',
-            description: 'Classic Italian pasta with fresh basil and tomatoes.',
-            prepTime: 20,
-            servings: 2,
-            ingredients: [
-              { ingredientId: 'ing-1', quantity: 200, unitId: 1 },
-              { ingredientId: 'ing-2', quantity: 1, unitId: 2 },
-            ],
-          },
-          {
-            id: 'rec-2',
-            name: 'Classic Egg Omelette',
-            description: 'Fluffy 3-egg omelette with butter and herbs.',
-            prepTime: 10,
-            servings: 1,
-            ingredients: [{ ingredientId: 'ing-3', quantity: 3, unitId: 3 }],
-          },
-          {
-            id: 'rec-3',
-            name: 'Grilled Chicken Salad',
-            description: 'Healthy chicken salad with light dressing.',
-            prepTime: 25,
-            servings: 3,
-            ingredients: [{ ingredientId: 'ing-5', quantity: 400, unitId: 1 }],
-          },
-          {
-            id: 'rec-4',
-            name: 'Honey Garlic Salmon',
-            description: 'Pan-seared salmon glaze with garlic honey sauce.',
-            prepTime: 25,
-            servings: 2,
-            ingredients: [{ ingredientId: 'ing-7', quantity: 300, unitId: 1 }],
-          },
-        ];
-        this.availableRecipes.set(mockRecipes);
-        this.selectedRecipe.set(mockRecipes[0]);
+        this.availableRecipes.set([]);
+        this.selectedRecipe.set(null);
+        this.loadFailed.set(true);
         this.isLoading.set(false);
       },
     });
@@ -125,39 +137,37 @@ export class PlanMealPageComponent implements OnInit {
     this.selectedDay.set(day);
   }
 
-  selectMealType(type: MealType): void {
-    this.selectedMealType.set(type);
+  selectMealType(type: MealType | undefined): void {
+    if (type) this.selectedMealType.set(type);
   }
 
   selectRecipe(recipe: Recipe): void {
     this.selectedRecipe.set(recipe);
-    if (recipe.servings) {
-      this.servings.set(recipe.servings);
-    }
-  }
-
-  incrementServings(): void {
-    this.servings.update((s) => s + 1);
-  }
-
-  decrementServings(): void {
-    if (this.servings() > 1) {
-      this.servings.update((s) => s - 1);
-    }
+    this.servings.set(recipe.servings && recipe.servings > 0 ? recipe.servings : 2);
   }
 
   saveMealPlan(): void {
     const recipe = this.selectedRecipe();
-    if (!recipe) return;
+    if (!recipe || this.loadFailed() || this.isSaving()) return;
 
     // Create recipe copy with updated servings if modified
     const recipeToSave: Recipe = {
       ...recipe,
-      servings: this.servings(),
+      servings: Math.max(1, this.servings() ?? 1),
     };
 
-    this.mealPlannerService.addMealPlan(this.selectedDay(), this.selectedMealType(), recipeToSave);
-    this.goBack();
+    this.isSaving.set(true);
+    this.saveFailed.set(false);
+    this.mealPlannerService.addMealPlan(this.selectedDay(), this.selectedMealType(), recipeToSave, {
+      onSuccess: () => {
+        this.isSaving.set(false);
+        this.goBack();
+      },
+      onError: () => {
+        this.isSaving.set(false);
+        this.saveFailed.set(true);
+      },
+    });
   }
 
   goBack(): void {
