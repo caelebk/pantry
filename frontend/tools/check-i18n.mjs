@@ -4,7 +4,8 @@
  *
  * RULE-04 §3: user-facing strings MUST be defined in `public/i18n/*.json` and
  * rendered via Transloco. This check enforces that every page/component
- * template uses Transloco — OR appears in I18N_DEBT below.
+ * template uses Transloco — OR appears in I18N_DEBT below. Inline templates
+ * (`template: \`...\`` in non-spec `.ts` files) are scanned like `.html` files.
  *
  * The debt list is a ratchet: it may only shrink. Adding a new template
  * without Transloco fails this check; removing one should remove its entry.
@@ -29,6 +30,14 @@ const REPORT = process.argv.includes('--report');
 
 const ROOTS = ['src/app/pages', 'src/app/components'];
 const EXCLUDED_DIRS = new Set(['ui']); // primitives render projected content
+// Developer-only page, deliberately English (not user-facing copy).
+const EXCLUDED_PATHS = ['src/app/pages/design-system'];
+
+/** file -> literal strings that are not translatable copy in that file. */
+const ALLOWED_LITERALS = {
+  // Brand wordmark; a brand name, never translated.
+  'src/app/components/skillet-icon/skillet-icon.component.ts': ['skillet'],
+};
 
 /**
  * file -> reason (known i18n debt; do NOT add new entries without a migration plan)
@@ -40,11 +49,40 @@ function* walk(dir) {
     const full = join(dir, entry);
     const st = statSync(full);
     if (st.isDirectory()) {
-      if (!EXCLUDED_DIRS.has(entry)) yield* walk(full);
-    } else if (/\.html$/.test(entry)) {
+      const rel = full.split('\\').join('/');
+      if (!EXCLUDED_DIRS.has(entry) && !EXCLUDED_PATHS.includes(rel)) yield* walk(full);
+    } else if (/\.html$/.test(entry) || (/\.ts$/.test(entry) && !/\.spec\.ts$/.test(entry))) {
       yield full;
     }
   }
+}
+
+// Body allows escaped characters (e.g. \`) inside the backtick template.
+const INLINE_TEMPLATE_RE = /template:\s*`((?:\\[\s\S]|[^`\\])*)`/g;
+const INLINE_TEMPLATE_START_RE = /template:\s*['"`]/g;
+const QUOTED_TEMPLATE_RE = /template:\s*['"]/;
+
+/**
+ * Returns [{html, startLine}] template sources for a file: the whole file for
+ * `.html`, every inline `template: \`...\`` for `.ts` (none if absent).
+ */
+function templatesOf(file, content) {
+  if (file.endsWith('.html')) return [{ html: content, startLine: 1 }];
+  return [...content.matchAll(INLINE_TEMPLATE_RE)].map((m) => ({
+    // Blank `${...}` interpolations so they are not read as text.
+    html: m[1].replace(/\$\{[^}]*\}/g, blank),
+    startLine: content.slice(0, m.index + m[0].indexOf('`') + 1).split('\n').length,
+  }));
+}
+
+/** Literals in a file (real file line numbers), minus allowlisted strings. */
+function findFileLiterals(file, content) {
+  const allowedLiterals = ALLOWED_LITERALS[relative('.', file).split('\\').join('/')] ?? [];
+  return templatesOf(file, content).flatMap(({ html, startLine }) =>
+    findLiterals(html)
+      .filter((f) => !allowedLiterals.includes(f.text))
+      .map((f) => ({ ...f, line: f.line + startLine - 1 })),
+  );
 }
 
 const blank = (m) => m.replace(/[^\n]/g, ' ');
@@ -90,7 +128,7 @@ const literalCounts = {};
 for (const root of ROOTS) {
   for (const file of walk(root)) {
     const rel = relative('.', file).split('\\').join('/');
-    const found = findLiterals(readFileSync(file, 'utf8'));
+    const found = findFileLiterals(file, readFileSync(file, 'utf8'));
     if (found.length) literalCounts[rel] = found;
   }
 }
@@ -122,6 +160,22 @@ try {
 }
 
 const violations = [];
+for (const root of ROOTS) {
+  for (const file of walk(root)) {
+    if (!file.endsWith('.ts')) continue;
+    const content = readFileSync(file, 'utf8');
+    const starts = [...content.matchAll(INLINE_TEMPLATE_START_RE)].length;
+    if (
+      starts > 0 &&
+      (QUOTED_TEMPLATE_RE.test(content) || templatesOf(file, content).length < starts)
+    ) {
+      const rel = relative('.', file).split('\\').join('/');
+      violations.push(
+        `${rel} — unsupported inline template form, use a backtick template or templateUrl.`,
+      );
+    }
+  }
+}
 for (const [rel, found] of Object.entries(literalCounts)) {
   const allowed = ratchet[rel] ?? 0;
   if (found.length > allowed) {
@@ -138,7 +192,13 @@ for (const root of ROOTS) {
   for (const file of walk(root)) {
     const rel = relative('.', file).split('\\').join('/');
     const content = readFileSync(file, 'utf8');
-    if (!content.includes('transloco') && !I18N_DEBT[rel]) {
+    // A .ts file only needs Transloco when its inline template shows text.
+    const hasText =
+      file.endsWith('.html') ||
+      templatesOf(file, content).some(
+        ({ html }) => /\{\{/.test(html) || findFileLiterals(file, content).length > 0,
+      );
+    if (hasText && !content.includes('transloco') && !I18N_DEBT[rel]) {
       violations.push(
         `${rel} — no Transloco usage found. Add translation keys from public/i18n/en.json.`,
       );

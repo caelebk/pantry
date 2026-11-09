@@ -1,7 +1,9 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { ShoppingItem } from '@models/shopping-list.model';
+import translations from '../../../public/i18n/en.json';
 import { AuthService } from '../core/services/auth.service';
 import { ShoppingListService } from './shopping-list.service';
 import { ToastService } from './toast.service';
@@ -36,6 +38,13 @@ describe('ShoppingListService', () => {
     mockAuthService.activeKitchen.and.returnValue('kitchen-1');
 
     TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          preloadLangs: true,
+          translocoConfig: { defaultLang: 'en', availableLangs: ['en'] },
+        }),
+      ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -72,7 +81,10 @@ describe('ShoppingListService', () => {
     req.flush({ status: 'success', data: { ...mockShoppingItem, id: 'sl-2', name: 'Eggs' } });
 
     expect(service.items().length).toBe(2);
-    expect(mockToastService.showSuccess).toHaveBeenCalled();
+    expect(mockToastService.showSuccess).toHaveBeenCalledWith(
+      'Added "Eggs" to shopping list',
+      translations.shoppingList.toast.title,
+    );
   });
 
   it('should toggle item checked state', () => {

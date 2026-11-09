@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { beforeEach, describe, expect, it } from 'vitest';
+import translations from '../../../../../public/i18n/en.json';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 import { ConfirmDialogService } from './confirm-dialog.service';
 
@@ -15,7 +17,14 @@ describe('ConfirmDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ConfirmDialogComponent],
+      imports: [
+        ConfirmDialogComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          preloadLangs: true,
+          translocoConfig: { defaultLang: 'en', availableLangs: ['en'] },
+        }),
+      ],
       providers: [provideNoopAnimations()],
     }).compileComponents();
     fixture = TestBed.createComponent(ConfirmDialogComponent);

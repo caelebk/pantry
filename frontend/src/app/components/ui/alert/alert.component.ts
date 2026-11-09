@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 export type AlertVariant = 'info' | 'success' | 'warning' | 'danger';
 
@@ -6,6 +7,7 @@ export type AlertVariant = 'info' | 'success' | 'warning' | 'danger';
 @Component({
   selector: 'pantry-alert',
   standalone: true,
+  imports: [TranslocoModule],
   template: `
     <div [class]="classes()" [attr.role]="role()">
       <i [class]="iconClass() + ' mt-0.5 shrink-0'" aria-hidden="true"></i>
@@ -19,7 +21,7 @@ export type AlertVariant = 'info' | 'success' | 'warning' | 'danger';
         <button
           type="button"
           (click)="dismissed.emit()"
-          [attr.aria-label]="dismissLabel()"
+          [attr.aria-label]="dismissLabel() || ('common.dismiss' | transloco)"
           class="shrink-0 -m-1 p-1 rounded-md cursor-pointer opacity-80 hover:opacity-100 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
           <i class="pi pi-times text-xs" aria-hidden="true"></i>
         </button>
@@ -32,7 +34,7 @@ export class AlertComponent {
   variant = input<AlertVariant>('info');
   title = input<string>();
   dismissible = input<boolean>(false);
-  dismissLabel = input<string>('Dismiss');
+  dismissLabel = input<string>();
 
   dismissed = output<void>();
 

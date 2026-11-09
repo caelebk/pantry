@@ -73,7 +73,13 @@ describe('UnitReconciliationPageComponent', () => {
       imports: [
         UnitReconciliationPageComponent,
         TranslocoTestingModule.forRoot({
-          langs: { en: {} },
+          langs: {
+            en: {
+              inventory: {
+                reconciliation: { newQtyFor: 'New quantity for {{label}} ({{unit}})' },
+              },
+            },
+          },
           translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
         }),
       ],
@@ -173,5 +179,21 @@ describe('UnitReconciliationPageComponent', () => {
     expect(mockIngredientService.reconcileIngredientUnit).toHaveBeenCalledWith('ing-1', 2, [
       { id: 'item-1', quantity: 0 },
     ]);
+  });
+
+  it('renders one phone card per row with its quantity input', () => {
+    const cards = fixture.nativeElement.querySelectorAll('[data-testid="reconcile-card"]');
+    expect(cards.length).toBe(component.itemRows().length);
+    expect(cards[0].textContent).toContain('Jasmine Rice');
+    expect(cards[0].querySelector('p-inputNumber, p-inputnumber')).not.toBeNull();
+  });
+
+  it('labels each quantity input with its row label', () => {
+    const labels = Array.from(
+      fixture.nativeElement.querySelectorAll('[data-testid="reconcile-card"] input'),
+    ).map((input) => (input as HTMLInputElement).getAttribute('aria-label'));
+    expect(labels.length).toBe(component.itemRows().length);
+    expect(labels[0]).toContain('Jasmine Rice');
+    expect(new Set(labels).size).toBe(labels.length);
   });
 });

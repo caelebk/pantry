@@ -212,7 +212,7 @@
                     <div class="flex flex-wrap items-center justify-between gap-3">
                       <button
                         type="button"
-                        (click)="onIngredientClick($event, ing)"
+                        (click)="onIngredientClick(ing)"
                         class="text-left font-medium text-surface-900 dark:text-surface-100 hover:underline hover:text-primary-700 dark:hover:text-primary-400 cursor-pointer min-w-0 break-words">
                         {{ getIngredientDisplay(ing) }}
                       </button>
@@ -323,8 +323,7 @@
             <button
               type="button"
               (click)="
-                closeSubstitutionModal();
-                onIngredientClick($event, { ingredientId: sub.ingredient.id })
+                closeSubstitutionModal(); onIngredientClick({ ingredientId: sub.ingredient.id })
               "
               class="w-full text-left p-3.5 rounded-xl border border-surface-200/80 dark:border-surface-800/80 hover:border-surface-300 dark:hover:border-surface-600 bg-white/80 dark:bg-surface-800/60 transition-colors cursor-pointer flex items-center justify-between gap-3 group">
               <div class="space-y-1">

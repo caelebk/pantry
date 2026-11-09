@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -15,6 +16,7 @@ export interface Toast {
   providedIn: 'root',
 })
 export class ToastService {
+  private readonly transloco = inject(TranslocoService);
   private readonly toasts$ = new BehaviorSubject<Toast[]>([]);
 
   getToasts(): Observable<Toast[]> {
@@ -38,20 +40,24 @@ export class ToastService {
     }
   }
 
-  showSuccess(message: string, title = 'Success'): void {
-    this.show({ type: 'success', title, message });
+  private t(key: 'success' | 'error' | 'warning' | 'info'): string {
+    return this.transloco.translate(`common.${key}`);
   }
 
-  showError(message: string, title = 'Error'): void {
-    this.show({ type: 'error', title, message, duration: 0 });
+  showSuccess(message: string, title?: string): void {
+    this.show({ type: 'success', title: title ?? this.t('success'), message });
   }
 
-  showWarning(message: string, title = 'Warning'): void {
-    this.show({ type: 'warning', title, message });
+  showError(message: string, title?: string): void {
+    this.show({ type: 'error', title: title ?? this.t('error'), message, duration: 0 });
   }
 
-  showInfo(message: string, title = 'Info'): void {
-    this.show({ type: 'info', title, message });
+  showWarning(message: string, title?: string): void {
+    this.show({ type: 'warning', title: title ?? this.t('warning'), message });
+  }
+
+  showInfo(message: string, title?: string): void {
+    this.show({ type: 'info', title: title ?? this.t('info'), message });
   }
 
   remove(id: string): void {

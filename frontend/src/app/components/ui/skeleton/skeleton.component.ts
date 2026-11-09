@@ -1,14 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 export type SkeletonVariant = 'card' | 'row' | 'text' | 'circle' | 'custom';
 
 @Component({
   selector: 'pantry-skeleton',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoModule],
   template: `
-    <div class="space-y-3 w-full" aria-busy="true" aria-label="Loading content">
+    <div
+      class="space-y-3 w-full"
+      aria-busy="true"
+      [attr.aria-label]="'common.loadingContent' | transloco">
       @for (item of items(); track item) {
         @switch (variant()) {
           @case ('card') {

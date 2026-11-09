@@ -2,12 +2,14 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { IngredientItem } from '@models/items.model';
 import { PlannedMeal } from '@models/meal-planner.model';
 import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
 import { of, throwError } from 'rxjs';
+import translations from '../../../public/i18n/en.json';
 import { AuthService } from '../core/services/auth.service';
 import { IngredientService } from './inventory/ingredient.service';
 import { ItemService } from './inventory/item.service';
@@ -81,6 +83,13 @@ describe('MealPlannerService', () => {
     ]);
 
     TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          preloadLangs: true,
+          translocoConfig: { defaultLang: 'en', availableLangs: ['en'] },
+        }),
+      ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -280,6 +289,9 @@ describe('MealPlannerService', () => {
       .expectOne('/api/v1/meal-plans')
       .flush({ message: 'boom' }, { status: 500, statusText: 'Server Error' });
     expect(onError).toHaveBeenCalled();
+    expect(mockToastService.showError).toHaveBeenCalledWith(
+      translations.mealPlanner.toast.saveFailed,
+    );
     expect(onSuccess).not.toHaveBeenCalled();
     expect(service.meals().length).toBe(1);
   });

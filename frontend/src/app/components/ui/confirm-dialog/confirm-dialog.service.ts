@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
 import { ConfirmationService } from 'primeng/api';
 import { filter } from 'rxjs';
 
@@ -26,6 +27,7 @@ export class ConfirmDialogService {
   /** Resolver of the open confirmation, cleared once it settles so a promise never resolves twice. */
   private pendingResolve: ((value: boolean) => void) | null = null;
 
+  private readonly transloco = inject(TranslocoService);
   // Optional so specs that do not provide the router still work.
   private readonly router = inject(Router, { optional: true });
   private watchingNavigation = false;
@@ -60,8 +62,8 @@ export class ConfirmDialogService {
         key: 'pantry-confirm',
         header: options.title,
         message: options.message,
-        acceptLabel: options.acceptLabel ?? 'Confirm',
-        rejectLabel: options.rejectLabel ?? 'Cancel',
+        acceptLabel: options.acceptLabel ?? this.transloco.translate('common.confirm'),
+        rejectLabel: options.rejectLabel ?? this.transloco.translate('common.cancel'),
         icon:
           options.icon ??
           (options.destructive ? 'pi pi-exclamation-triangle' : 'pi pi-info-circle'),

@@ -9,11 +9,12 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'pantry-search-input',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
   template: `
     <div class="relative w-full" [class.opacity-60]="disabled()">
       <i
@@ -23,9 +24,9 @@ import { FormsModule } from '@angular/forms';
         #inputElement
         type="text"
         [value]="value()"
-        [placeholder]="placeholder()"
+        [placeholder]="placeholder() || ('common.searchPlaceholder' | transloco)"
         [disabled]="disabled()"
-        [attr.aria-label]="ariaLabel()"
+        [attr.aria-label]="ariaLabel() || ('common.search' | transloco)"
         (input)="onInput($event)"
         (keydown.escape)="clear()"
         class="w-full pl-10 pr-10 h-[42px] bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all placeholder:text-surface-400 shadow-xs disabled:cursor-not-allowed" />
@@ -33,7 +34,7 @@ import { FormsModule } from '@angular/forms';
         <button
           type="button"
           (click)="clear()"
-          [attr.aria-label]="clearAriaLabel()"
+          [attr.aria-label]="clearAriaLabel() || ('common.clearSearch' | transloco)"
           class="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 cursor-pointer p-1 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500">
           <i class="pi pi-times text-xs" aria-hidden="true"></i>
         </button>
@@ -44,10 +45,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class SearchInputComponent {
   value = model<string>('');
-  placeholder = input<string>('Search...');
+  placeholder = input<string>();
   disabled = input<boolean>(false);
-  ariaLabel = input<string>('Search');
-  clearAriaLabel = input<string>('Clear search');
+  ariaLabel = input<string>();
+  clearAriaLabel = input<string>();
 
   searchChange = output<string>();
 

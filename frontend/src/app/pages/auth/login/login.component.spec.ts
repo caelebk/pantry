@@ -7,7 +7,6 @@ import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../services/toast.service';
-import { TranslocoHttpLoader } from '../../../transloco-loader';
 import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
@@ -33,7 +32,10 @@ describe('LoginComponent', () => {
         provideRouter([]),
         provideTransloco({
           config: { availableLangs: ['en'], defaultLang: 'en' },
-          loader: TranslocoHttpLoader,
+          loader: class {
+            getTranslation = () =>
+              of({ auth: { identifierRequired: 'Please enter your email or username.' } });
+          },
         }),
         { provide: AuthService, useValue: mockAuthService },
         { provide: ToastService, useValue: mockToastService },
@@ -96,5 +98,17 @@ describe('LoginComponent', () => {
     expect(buttons.some((button) => button.textContent?.includes('auth.forgotPassword'))).toBe(
       false,
     );
+  });
+
+  it('should focus the first invalid input when submitting an invalid form', async () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.onSubmit();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.loginForm.touched).toBe(true);
+    expect(document.activeElement?.id).toBe('identifier');
+    expect(document.activeElement?.getAttribute('aria-invalid')).toBe('true');
   });
 });

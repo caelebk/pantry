@@ -1,5 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  inject,
+  Injector,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -220,6 +228,13 @@ export class LoginComponent implements OnInit {
   private toastService = inject(ToastService);
   private themeService = inject(ThemeService);
   private transloco = inject(TranslocoService);
+  private document = inject(DOCUMENT);
+  private injector = inject(Injector);
+
+  private readonly focusOrder: [string, string][] = [
+    ['identifier', 'identifier'],
+    ['password', 'password'],
+  ];
 
   readonly showPassword = signal(false);
   readonly isSubmitting = signal(false);
@@ -243,9 +258,18 @@ export class LoginComponent implements OnInit {
     this.showPassword.update((val) => !val);
   }
 
+  private focusFirstInvalid() {
+    const target = this.focusOrder.find(([name]) => this.loginForm.get(name)?.invalid);
+    if (!target) return;
+    afterNextRender(() => this.document.getElementById(target[1])?.focus(), {
+      injector: this.injector,
+    });
+  }
+
   onSubmit() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      this.focusFirstInvalid();
       return;
     }
 

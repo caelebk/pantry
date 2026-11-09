@@ -7,7 +7,6 @@ import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../services/toast.service';
-import { TranslocoHttpLoader } from '../../../transloco-loader';
 import { SignupComponent } from './signup.component';
 
 describe('SignupComponent', () => {
@@ -33,7 +32,9 @@ describe('SignupComponent', () => {
         provideRouter([]),
         provideTransloco({
           config: { availableLangs: ['en'], defaultLang: 'en' },
-          loader: TranslocoHttpLoader,
+          loader: class {
+            getTranslation = () => of({ auth: { fullNameRequired: 'Full name is required.' } });
+          },
         }),
         { provide: AuthService, useValue: mockAuthService },
         { provide: ToastService, useValue: mockToastService },
@@ -112,5 +113,27 @@ describe('SignupComponent', () => {
     expect(component.showPassword()).toBe(false);
     component.togglePasswordVisibility();
     expect(component.showPassword()).toBe(true);
+  });
+
+  it('should keep the submit button enabled when the form is invalid', () => {
+    const fixture = TestBed.createComponent(SignupComponent);
+    fixture.detectChanges();
+    const submit = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+      'button[type="submit"]',
+    );
+    expect(fixture.componentInstance.signupForm.invalid).toBe(true);
+    expect(submit?.disabled).toBe(false);
+  });
+
+  it('should mark fields touched and focus the first invalid input on invalid submit', async () => {
+    const fixture = TestBed.createComponent(SignupComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.onSubmit();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.signupForm.touched).toBe(true);
+    expect(document.activeElement?.id).toBe('fullName');
+    expect(document.activeElement?.getAttribute('aria-invalid')).toBe('true');
   });
 });

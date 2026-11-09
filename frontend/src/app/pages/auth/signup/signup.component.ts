@@ -1,5 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  inject,
+  Injector,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -314,10 +322,7 @@ import { ToastService } from '../../../services/toast.service';
               </pantry-form-field>
 
               <!-- Submit Button -->
-              <button
-                type="submit"
-                [disabled]="isSubmitting() || signupForm.invalid"
-                class="btn-primary w-full mt-2">
+              <button type="submit" [disabled]="isSubmitting()" class="btn-primary w-full mt-2">
                 @if (isSubmitting()) {
                   <pantry-spinner [announce]="false" size="xs" color="white" />
                   <span>{{ 'auth.creatingAccount' | transloco }}</span>
@@ -349,6 +354,15 @@ export class SignupComponent implements OnInit {
   private toastService = inject(ToastService);
   private themeService = inject(ThemeService);
   private transloco = inject(TranslocoService);
+  private document = inject(DOCUMENT);
+  private injector = inject(Injector);
+
+  private readonly focusOrder: [string, string][] = [
+    ['fullName', 'fullName'],
+    ['username', 'username'],
+    ['email', 'email'],
+    ['password', 'password'],
+  ];
 
   readonly showPassword = signal(false);
   readonly isSubmitting = signal(false);
@@ -424,9 +438,18 @@ export class SignupComponent implements OnInit {
     this.showPassword.update((val) => !val);
   }
 
+  private focusFirstInvalid() {
+    const target = this.focusOrder.find(([name]) => this.signupForm.get(name)?.invalid);
+    if (!target) return;
+    afterNextRender(() => this.document.getElementById(target[1])?.focus(), {
+      injector: this.injector,
+    });
+  }
+
   onSubmit() {
     if (this.signupForm.invalid) {
       this.signupForm.markAllAsTouched();
+      this.focusFirstInvalid();
       return;
     }
 
