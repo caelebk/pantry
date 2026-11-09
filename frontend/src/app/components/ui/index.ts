@@ -1,5 +1,6 @@
 export * from './alert/alert.component';
 export * from './badge/badge.component';
+export * from './card/card-surface.directive';
 export * from './card/card.component';
 export * from './confirm-dialog/confirm-dialog.component';
 export * from './confirm-dialog/confirm-dialog.service';

@@ -1,25 +1,22 @@
 <div class="page-layout">
   <header class="page-header">
     <div>
-      <button (click)="goBack()" type="button" class="btn-ghost hover:!bg-transparent mb-2">
+      <button (click)="goBack()" type="button" class="btn-ghost mb-2">
         <i class="pi pi-arrow-left" aria-hidden="true"></i>
         <span>{{ 'nav.back' | transloco }}</span>
       </button>
-      <h1 class="type-page-title text-surface-900 dark:text-white">Restock Review</h1>
+      <h1 class="type-page-title text-surface-900 dark:text-white">
+        {{ 'restockReview.heading' | transloco }}
+      </h1>
     </div>
 
     @if (draftItems().length > 0) {
       <div class="page-header__actions">
-        <button
-          (click)="toggleAll(true)"
-          class="text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors cursor-pointer">
-          Select All
+        <button type="button" (click)="toggleAll(true)" class="btn-ghost">
+          {{ 'restockReview.selectAllItems' | transloco }}
         </button>
-        <span class="text-surface-300 dark:text-surface-700">•</span>
-        <button
-          (click)="toggleAll(false)"
-          class="text-xs font-semibold text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors cursor-pointer">
-          Deselect All
+        <button type="button" (click)="toggleAll(false)" class="btn-ghost">
+          {{ 'restockReview.deselectAllItems' | transloco }}
         </button>
       </div>
     }
@@ -27,322 +24,292 @@
 
   <!-- Summary Banner -->
   @if (draftItems().length > 0) {
-    <div
-      class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-xs">
-      <div
-        class="flex items-center gap-2 text-xs font-semibold text-surface-700 dark:text-surface-300">
-        <span class="w-2 h-2 rounded-full bg-primary-500"></span>
-        <span>Restock Summary:</span>
+    <pantry-card padding="sm">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <span class="type-label text-surface-700 dark:text-surface-300">{{
+          'restockReview.summaryLabel' | transloco
+        }}</span>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <pantry-badge variant="neutral">
+            {{ 'restockReview.selectedCount' | transloco: { count: selectedCount } }}
+          </pantry-badge>
+
+          <pantry-badge variant="neutral">
+            {{ 'restockReview.updatingCount' | transloco: { count: updatingCount } }}
+          </pantry-badge>
+
+          <pantry-badge variant="outline">
+            {{ 'restockReview.newEntriesCount' | transloco: { count: creatingCount } }}
+          </pantry-badge>
+        </div>
       </div>
-
-      <div class="flex flex-wrap items-center gap-2 text-xs font-bold">
-        <pantry-badge variant="neutral"> {{ selectedCount }} Selected </pantry-badge>
-
-        <pantry-badge variant="fresh" [dot]="true">
-          {{ updatingCount }} Updating Stock
-        </pantry-badge>
-
-        <pantry-badge variant="primary" [dot]="true">
-          {{ creatingCount }} New Entries
-        </pantry-badge>
-      </div>
-    </div>
+    </pantry-card>
   }
 
   <!-- Items Review List -->
-  <div class="space-y-4">
+  <div class="flex flex-col gap-4">
     @if (draftItems().length === 0) {
-      <div
-        class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-12 text-center space-y-3">
-        <p class="font-bold text-surface-900 dark:text-white text-sm">No items ready to restock</p>
-        <p class="text-xs text-surface-500">
-          Check off items in your shopping list as "Bought" to restock them into your pantry.
-        </p>
-        <button (click)="goBack()" class="btn-primary">Return to Shopping List</button>
-      </div>
+      <pantry-empty-state
+        icon="pi pi-shopping-cart"
+        [title]="'restockReview.emptyTitle' | transloco"
+        [description]="'restockReview.emptyDescription' | transloco">
+        <div actions>
+          <button type="button" (click)="goBack()" class="btn-primary">
+            {{ 'restockReview.returnToList' | transloco }}
+          </button>
+        </div>
+      </pantry-empty-state>
     } @else {
       @for (item of draftItems(); track item.shoppingId) {
-        <div
-          [class.opacity-50]="!item.included"
-          class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-5 shadow-xs transition-all space-y-4">
-          <!-- Header: Title, Group & Match Status Badge -->
-          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-            <div class="flex items-start gap-3 flex-1 min-w-0">
-              <input
-                type="checkbox"
-                [(ngModel)]="item.included"
-                class="w-5 h-5 rounded text-primary-600 focus:ring-primary-500 cursor-pointer accent-primary-600 shrink-0 mt-1" />
+        <pantry-card class="block" [class.opacity-50]="!item.included">
+          <div class="flex flex-col gap-4">
+            <!-- Header: Title, Group & Match Status Badge -->
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+              <div class="flex items-start gap-1 flex-1 min-w-0">
+                <span
+                  class="inline-flex items-center justify-center w-[42px] h-[42px] shrink-0 -ml-2.5">
+                  <p-checkbox
+                    [binary]="true"
+                    [(ngModel)]="item.included"
+                    [ariaLabel]="'restockReview.includeItem' | transloco: { name: item.name }" />
+                </span>
 
-              <div class="flex flex-col gap-1.5 min-w-0 flex-1">
-                <div class="relative flex items-center group/edit">
-                  <i
-                    class="pi pi-pencil absolute left-3 text-surface-400 dark:text-surface-500 text-xs pointer-events-none group-focus-within/edit:text-primary-500 transition-colors"></i>
-                  <input
-                    type="text"
-                    [(ngModel)]="item.name"
-                    (ngModelChange)="onNameChange(item)"
-                    placeholder="Ingredient Name..."
-                    aria-label="Edit ingredient name"
-                    class="font-bold text-base sm:text-lg text-surface-900 dark:text-white bg-surface-100/70 hover:bg-surface-100 dark:bg-surface-800/60 dark:hover:bg-surface-800 border border-surface-200/90 dark:border-surface-700/80 hover:border-surface-300 dark:hover:border-surface-600 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-primary-500/20 focus:outline-none pl-8 pr-3 py-1.5 rounded-xl w-full transition-all shadow-2xs" />
-                </div>
+                <div class="flex flex-col gap-1.5 min-w-0 flex-1">
+                  <pantry-form-field
+                    [label]="'restockReview.ingredientName' | transloco"
+                    [forId]="'name-' + item.shoppingId">
+                    <input
+                      pInputText
+                      type="text"
+                      [id]="'name-' + item.shoppingId"
+                      [(ngModel)]="item.name"
+                      (ngModelChange)="onNameChange(item)"
+                      [placeholder]="'restockReview.ingredientNamePlaceholder' | transloco"
+                      class="w-full" />
+                  </pantry-form-field>
 
-                <div class="flex flex-wrap items-center gap-2">
-                  <pantry-badge variant="outline" size="sm">
-                    Group: {{ item.category }}
-                  </pantry-badge>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <pantry-badge variant="outline" size="sm">
+                      {{ 'restockReview.group' | transloco: { name: item.category } }}
+                    </pantry-badge>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Similarity Status Badge -->
-            <div class="shrink-0 flex items-center gap-2">
-              @if (item.matchTier === 'exact' && item.matchedItemId) {
-                <pantry-badge variant="fresh" [dot]="true"> Exact Pantry Match </pantry-badge>
-              } @else if (item.matchCandidates.length > 0 && item.bestMatch) {
-                <pantry-badge variant="expiring" [dot]="true">
-                  Similar Stock: {{ item.bestMatch.item.name }}
-                </pantry-badge>
-              } @else {
-                <pantry-badge variant="primary" [dot]="true"> New Pantry Entry </pantry-badge>
-              }
-            </div>
-          </div>
-
-          <!-- Action Mode Selector Segmented Controls -->
-          <div
-            class="flex items-center gap-2 p-1 bg-surface-100/80 dark:bg-surface-800/80 rounded-xl border border-surface-200/60 dark:border-surface-700/60">
-            <button
-              type="button"
-              (click)="setActionMode(item, 'update')"
-              [disabled]="item.matchCandidates.length === 0"
-              [class.bg-white]="item.actionMode === 'update' && item.matchCandidates.length > 0"
-              [class.dark:bg-surface-900]="
-                item.actionMode === 'update' && item.matchCandidates.length > 0
-              "
-              [class.text-surface-900]="item.actionMode === 'update' && item.matchTier === 'exact'"
-              [class.dark:text-white]="item.actionMode === 'update' && item.matchTier === 'exact'"
-              [class.text-surface-900]="
-                item.actionMode === 'update' && item.matchTier === 'similar'
-              "
-              [class.dark:text-white]="item.actionMode === 'update' && item.matchTier === 'similar'"
-              [class.shadow-xs]="item.actionMode === 'update' && item.matchCandidates.length > 0"
-              [class.opacity-40]="item.matchCandidates.length === 0"
-              class="flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:cursor-not-allowed text-surface-600 dark:text-surface-400">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                class="w-3.5 h-3.5">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-              </svg>
-              Update Existing Stock
-            </button>
-
-            <button
-              type="button"
-              (click)="setActionMode(item, 'create')"
-              [class.bg-white]="item.actionMode === 'create'"
-              [class.dark:bg-surface-900]="item.actionMode === 'create'"
-              [class.text-surface-900]="item.actionMode === 'create'"
-              [class.dark:text-white]="item.actionMode === 'create'"
-              [class.shadow-xs]="item.actionMode === 'create'"
-              class="flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-surface-600 dark:text-surface-400">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                class="w-3.5 h-3.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              Create New Entry
-            </button>
-          </div>
-
-          <!-- Update Mode Quantity Merging Preview Card -->
-          @if (item.actionMode === 'update' && item.matchedItemId) {
-            <div
-              class="bg-surface-100/70 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700 rounded-xl p-3.5 space-y-2">
-              @let matched = getMatchedItem(item);
-              @let candidate = getCurrentCandidate(item);
-
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                <div
-                  class="flex items-center gap-2 text-surface-800 dark:text-surface-200 font-bold">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="w-4 h-4 shrink-0">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>Matching Pantry Item:</span>
-
-                  @if (matched && item.matchCandidates.length <= 1) {
-                    <span class="text-xs font-extrabold text-surface-900 dark:text-white">
-                      {{ matched.name }}
-                    </span>
-                    @if (candidate) {
-                      <pantry-badge variant="fresh" size="sm">
-                        {{ Math.round(candidate.score * 100) }}% match
-                      </pantry-badge>
-                    }
-                  }
-                </div>
-
-                <!-- Multiple matched items dropdown -->
-                @if (item.matchCandidates.length > 1) {
-                  <div class="flex items-center gap-1">
-                    <label
-                      [for]="'select-match-' + item.shoppingId"
-                      class="type-label text-surface-600 dark:text-surface-300"
-                      >Select Match:</label
-                    >
-                    <p-select
-                      [inputId]="'select-match-' + item.shoppingId"
-                      [options]="matchOptions(item)"
-                      optionLabel="label"
-                      optionValue="value"
-                      [(ngModel)]="item.matchedItemId"
-                      (ngModelChange)="onMatchedItemChange(item)"
-                      appendTo="body"
-                      styleClass="w-72" />
-                  </div>
+              <!-- Similarity Status Badge -->
+              <div class="shrink-0 flex items-center gap-2">
+                @if (item.matchTier === 'exact' && item.matchedItemId) {
+                  <pantry-badge variant="neutral">
+                    {{ 'restockReview.exactMatch' | transloco }}
+                  </pantry-badge>
+                } @else if (item.matchCandidates.length > 0 && item.bestMatch) {
+                  <pantry-badge variant="outline">
+                    {{
+                      'restockReview.similarStock' | transloco: { name: item.bestMatch.item.name }
+                    }}
+                  </pantry-badge>
+                } @else {
+                  <pantry-badge variant="outline">
+                    {{ 'restockReview.newPantryEntry' | transloco }}
+                  </pantry-badge>
                 }
               </div>
-
-              <!-- Merged quantity display pill -->
-              @if (matched) {
-                <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
-                  <div class="text-surface-600 dark:text-surface-300">
-                    Current:
-                    <span class="font-bold"
-                      >{{ matched.quantity }}
-                      {{ matched.unit.shortName || matched.unit.name }}</span
-                    >
-                    (in {{ matched.location.name }}) + Restocking:
-                    <span class="font-bold">{{ item.quantity }} {{ item.unit }}</span>
-                  </div>
-
-                  <div
-                    class="px-3 py-1 bg-primary-600 text-white font-extrabold rounded-lg text-xs">
-                    New Total: {{ getMergedQuantity(item) }} {{ getMergedUnitLabel(item) }}
-                  </div>
-                </div>
-              }
             </div>
-          }
 
-          <!-- Form Fields Grid -->
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-surface-100 dark:border-surface-800/60">
-            <!-- Quantity & Unit -->
-            <div class="grid grid-cols-2 gap-4 sm:col-span-2">
-              <div class="space-y-1.5">
-                <label
-                  [for]="'qty-' + item.shoppingId"
-                  class="type-label block text-surface-500 dark:text-surface-400">
-                  Restock Quantity
-                </label>
-                <p-inputnumber
-                  [inputId]="'qty-' + item.shoppingId"
-                  [(ngModel)]="item.quantity"
-                  styleClass="w-full !h-[42px]"
-                  inputStyleClass="w-full !h-[42px] !rounded-xl !bg-white dark:!bg-surface-900 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white !font-extrabold !shadow-xs"
-                  [min]="0"
-                  [maxFractionDigits]="2"
-                  [showButtons]="true"></p-inputnumber>
-              </div>
-              <div class="space-y-1.5">
-                <label
-                  [for]="'unit-' + item.shoppingId"
-                  class="type-label block text-surface-500 dark:text-surface-400">
-                  Unit
-                  @if (item.isUnitLocked) {
-                    <span
-                      class="text-[10px] text-surface-400 dark:text-surface-500 font-normal normal-case ml-1">
-                      (Locked to ingredient unit)
-                    </span>
+            <!-- Action Mode Selector -->
+            <pantry-segmented-control
+              [ariaLabel]="'restockReview.actionLabel' | transloco"
+              [options]="[
+                {
+                  value: 'update',
+                  label: ('restockReview.updateExistingStock' | transloco),
+                  icon: 'pi pi-refresh',
+                },
+                {
+                  value: 'create',
+                  label: ('restockReview.createNewEntry' | transloco),
+                  icon: 'pi pi-plus',
+                },
+              ]"
+              [value]="item.actionMode"
+              (valueChange)="onActionModeChange(item, $event)"
+              [disabled]="item.matchCandidates.length === 0" />
+
+            <!-- Update Mode Quantity Merging Preview Card -->
+            @if (item.actionMode === 'update' && item.matchedItemId) {
+              <pantry-card variant="sub" padding="sm">
+                @let matched = getMatchedItem(item);
+                @let candidate = getCurrentCandidate(item);
+
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 type-meta">
+                    <div
+                      class="flex items-center gap-2 text-surface-800 dark:text-surface-200 font-medium">
+                      <i class="pi pi-check-circle shrink-0" aria-hidden="true"></i>
+                      <span>{{ 'restockReview.matchingItem' | transloco }}</span>
+
+                      @if (matched && item.matchCandidates.length <= 1) {
+                        <span class="font-semibold text-surface-900 dark:text-white">
+                          {{ matched.name }}
+                        </span>
+                        @if (candidate) {
+                          <pantry-badge variant="neutral" size="sm">
+                            {{
+                              'restockReview.matchPercent'
+                                | transloco: { percent: Math.round(candidate.score * 100) }
+                            }}
+                          </pantry-badge>
+                        }
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Multiple matched items dropdown -->
+                  @if (item.matchCandidates.length > 1) {
+                    <pantry-form-field
+                      #matchField
+                      [label]="'restockReview.selectMatch' | transloco"
+                      [forId]="'select-match-' + item.shoppingId">
+                      <p-select
+                        [inputId]="'select-match-' + item.shoppingId"
+                        [ariaLabelledBy]="matchField.labelId()"
+                        [options]="matchOptions(item)"
+                        optionLabel="label"
+                        optionValue="value"
+                        [(ngModel)]="item.matchedItemId"
+                        (ngModelChange)="onMatchedItemChange(item)"
+                        appendTo="body"
+                        styleClass="w-full sm:w-72" />
+                    </pantry-form-field>
                   }
-                </label>
+
+                  <!-- Merged quantity display -->
+                  @if (matched) {
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-1 type-meta">
+                      <div class="text-surface-600 dark:text-surface-300">
+                        {{ 'restockReview.current' | transloco }}
+                        <span class="font-semibold"
+                          >{{ matched.quantity }}
+                          {{ matched.unit.shortName || matched.unit.name }}</span
+                        >
+                        {{
+                          'restockReview.inLocation'
+                            | transloco: { location: matched.location.name }
+                        }}
+                        +
+                        {{ 'restockReview.restocking' | transloco }}
+                        <span class="font-semibold">{{ item.quantity }} {{ item.unit }}</span>
+                      </div>
+
+                      <pantry-badge variant="neutral">
+                        {{
+                          'restockReview.newTotal'
+                            | transloco
+                              : {
+                                  quantity: getMergedQuantity(item),
+                                  unit: getMergedUnitLabel(item),
+                                }
+                        }}
+                      </pantry-badge>
+                    </div>
+                  }
+                </div>
+              </pantry-card>
+            }
+
+            <!-- Form Fields Grid -->
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-surface-100 dark:border-surface-800/60">
+              <!-- Quantity & Unit -->
+              <div class="grid grid-cols-2 gap-4 sm:col-span-2">
+                <pantry-form-field
+                  [label]="'restockReview.restockQuantity' | transloco"
+                  [forId]="'qty-' + item.shoppingId">
+                  <p-inputnumber
+                    [inputId]="'qty-' + item.shoppingId"
+                    [(ngModel)]="item.quantity"
+                    styleClass="w-full"
+                    inputStyleClass="w-full"
+                    [min]="0"
+                    [maxFractionDigits]="2"
+                    [showButtons]="true"></p-inputnumber>
+                </pantry-form-field>
+                <pantry-form-field
+                  #unitField
+                  [label]="'restockReview.unit' | transloco"
+                  [forId]="'unit-' + item.shoppingId"
+                  [hint]="item.isUnitLocked ? ('restockReview.unitLocked' | transloco) : undefined">
+                  <p-select
+                    [inputId]="'unit-' + item.shoppingId"
+                    [ariaLabelledBy]="unitField.labelId()"
+                    [options]="unitsOptions()"
+                    [(ngModel)]="item.unit"
+                    [disabled]="!!item.isUnitLocked"
+                    styleClass="w-full"
+                    appendTo="body" />
+                </pantry-form-field>
+              </div>
+
+              <!-- Storage Location -->
+              <pantry-form-field
+                #locField
+                [label]="'restockReview.storageLocation' | transloco"
+                [forId]="'loc-' + item.shoppingId">
                 <p-select
-                  [inputId]="'unit-' + item.shoppingId"
-                  [options]="unitsOptions()"
-                  [(ngModel)]="item.unit"
-                  [disabled]="!!item.isUnitLocked"
+                  [inputId]="'loc-' + item.shoppingId"
+                  [ariaLabelledBy]="locField.labelId()"
+                  [options]="locationsOptions()"
+                  [(ngModel)]="item.location"
                   styleClass="w-full"
                   appendTo="body" />
-              </div>
-            </div>
+              </pantry-form-field>
 
-            <!-- Storage Location -->
-            <div class="space-y-1.5">
-              <label
-                [for]="'loc-' + item.shoppingId"
-                class="type-label text-surface-500 dark:text-surface-400"
-                >Storage Location</label
-              >
-              <p-select
-                [inputId]="'loc-' + item.shoppingId"
-                [options]="locationsOptions()"
-                [(ngModel)]="item.location"
-                styleClass="w-full"
-                appendTo="body" />
-            </div>
-
-            <!-- Expiration Date & Presets -->
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between">
-                <label
-                  [for]="'exp-' + item.shoppingId"
-                  class="type-label text-surface-500 dark:text-surface-400"
-                  >Expiration Date</label
-                >
-                <div class="flex items-center gap-1">
+              <!-- Expiration Date & Presets -->
+              <div class="flex flex-col gap-2">
+                <pantry-form-field
+                  #expField
+                  [label]="'restockReview.expirationDate' | transloco"
+                  [forId]="'exp-' + item.shoppingId">
+                  <p-datePicker
+                    [inputId]="'exp-' + item.shoppingId"
+                    [ariaLabelledBy]="expField.labelId()"
+                    [(ngModel)]="item.expirationDate"
+                    dateFormat="yy-mm-dd"
+                    [showIcon]="true"
+                    iconDisplay="input"
+                    styleClass="w-full"
+                    inputStyleClass="w-full"
+                    appendTo="body" />
+                </pantry-form-field>
+                <div class="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     (click)="setExpirationPreset(item, 7)"
-                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer shadow-xs">
-                    +7d
+                    class="btn-secondary"
+                    [attr.aria-label]="'restockReview.presetLabel' | transloco: { count: 7 }">
+                    {{ 'restockReview.presetShort' | transloco: { count: 7 } }}
                   </button>
                   <button
                     type="button"
                     (click)="setExpirationPreset(item, 14)"
-                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer shadow-xs">
-                    +14d
+                    class="btn-secondary"
+                    [attr.aria-label]="'restockReview.presetLabel' | transloco: { count: 14 }">
+                    {{ 'restockReview.presetShort' | transloco: { count: 14 } }}
                   </button>
                   <button
                     type="button"
                     (click)="setExpirationPreset(item, 30)"
-                    class="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-white dark:bg-surface-900/60 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 transition-colors cursor-pointer shadow-xs">
-                    +30d
+                    class="btn-secondary"
+                    [attr.aria-label]="'restockReview.presetLabel' | transloco: { count: 30 }">
+                    {{ 'restockReview.presetShort' | transloco: { count: 30 } }}
                   </button>
                 </div>
               </div>
-
-              <p-datePicker
-                [inputId]="'exp-' + item.shoppingId"
-                [(ngModel)]="item.expirationDate"
-                dateFormat="yy-mm-dd"
-                [showIcon]="true"
-                iconDisplay="input"
-                styleClass="w-full !h-[42px]"
-                inputStyleClass="w-full !h-[42px] !rounded-xl !bg-white dark:!bg-surface-900/60 !border-surface-200 dark:!border-surface-700 !text-xs !font-semibold text-surface-900 dark:text-white !shadow-xs"
-                appendTo="body" />
             </div>
           </div>
-        </div>
+        </pantry-card>
       }
     }
   </div>
@@ -351,17 +318,23 @@
     <!-- Bottom Action Bar -->
     <div
       class="flex items-center justify-between gap-4 pt-4 border-t border-surface-200/80 dark:border-surface-800/80">
-      <button type="button" (click)="goBack()" class="btn-secondary">Cancel</button>
+      <button type="button" (click)="goBack()" class="btn-secondary">
+        {{ 'restockReview.cancelBtn' | transloco }}
+      </button>
 
       <button
         type="button"
         (click)="confirmRestock()"
         [disabled]="selectedCount === 0 || isSubmitting()"
         class="btn-primary">
+        @if (isSubmitting()) {
+          <pantry-spinner [announce]="false" size="xs" color="white" />
+        }
         {{
           isSubmitting()
-            ? 'Restocking...'
-            : 'Confirm Restock (' + updatingCount + ' Updated, ' + creatingCount + ' New)'
+            ? ('restockReview.restockingBtn' | transloco)
+            : ('restockReview.confirm'
+              | transloco: { updated: updatingCount, created: creatingCount })
         }}
       </button>
     </div>

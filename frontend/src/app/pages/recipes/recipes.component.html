@@ -27,57 +27,11 @@
 
     <!-- Controls Group -->
     <div class="flex flex-wrap items-center gap-3">
-      <!-- Availability Segmented Pills -->
-      <div
-        class="flex items-center h-[42px] bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-sm border border-surface-200 dark:border-surface-700 shadow-xs shrink-0">
-        <button
-          type="button"
-          (click)="setAvailabilityFilter('all')"
-          [attr.aria-pressed]="availabilityFilter === 'all'"
-          [class.bg-white]="availabilityFilter === 'all'"
-          [class.dark:bg-surface-700]="availabilityFilter === 'all'"
-          [class.shadow-xs]="availabilityFilter === 'all'"
-          [class.text-surface-900]="availabilityFilter === 'all'"
-          [class.dark:text-white]="availabilityFilter === 'all'"
-          [class.font-bold]="availabilityFilter === 'all'"
-          [class.text-surface-600]="availabilityFilter !== 'all'"
-          [class.dark:text-surface-400]="availabilityFilter !== 'all'"
-          class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center justify-center">
-          <span>{{ 'recipes.browse.all' | transloco }}</span>
-        </button>
-        <button
-          type="button"
-          (click)="setAvailabilityFilter('makeable')"
-          [attr.aria-pressed]="availabilityFilter === 'makeable'"
-          [class.bg-white]="availabilityFilter === 'makeable'"
-          [class.dark:bg-surface-700]="availabilityFilter === 'makeable'"
-          [class.shadow-xs]="availabilityFilter === 'makeable'"
-          [class.text-surface-900]="availabilityFilter === 'makeable'"
-          [class.dark:text-white]="availabilityFilter === 'makeable'"
-          [class.font-bold]="availabilityFilter === 'makeable'"
-          [class.text-surface-600]="availabilityFilter !== 'makeable'"
-          [class.dark:text-surface-400]="availabilityFilter !== 'makeable'"
-          class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1.5 justify-center">
-          <span>{{ 'recipes.browse.readyFilter' | transloco }}</span>
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-        </button>
-        <button
-          type="button"
-          (click)="setAvailabilityFilter('partial')"
-          [attr.aria-pressed]="availabilityFilter === 'partial'"
-          [class.bg-white]="availabilityFilter === 'partial'"
-          [class.dark:bg-surface-700]="availabilityFilter === 'partial'"
-          [class.shadow-xs]="availabilityFilter === 'partial'"
-          [class.text-surface-900]="availabilityFilter === 'partial'"
-          [class.dark:text-white]="availabilityFilter === 'partial'"
-          [class.font-bold]="availabilityFilter === 'partial'"
-          [class.text-surface-600]="availabilityFilter !== 'partial'"
-          [class.dark:text-surface-400]="availabilityFilter !== 'partial'"
-          class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1.5 justify-center">
-          <span>{{ 'recipes.browse.missingFilter' | transloco }}</span>
-          <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-        </button>
-      </div>
+      <!-- Availability Segmented Control -->
+      <pantry-segmented-control
+        [options]="localizedOptions(availabilityOptions)"
+        [(value)]="availabilityFilter"
+        [ariaLabel]="'recipes.yourRecipes' | transloco" />
 
       <!-- PrimeNG Sort Select -->
       <p-select
@@ -92,7 +46,7 @@
           @if (selected) {
             <div
               class="flex items-center gap-1.5 text-sm font-medium text-surface-600 dark:text-surface-400">
-              <span class="text-surface-400 dark:text-surface-500 font-normal"
+              <span class="text-surface-500 dark:text-surface-400 font-normal"
                 >{{ 'recipes.browse.sort' | transloco }}:</span
               >
               <span>{{ selected.label }}</span>
@@ -119,7 +73,7 @@
           @if (selected) {
             <div
               class="flex items-center gap-1.5 text-sm font-medium text-surface-600 dark:text-surface-400">
-              <span class="text-surface-400 dark:text-surface-500 font-normal"
+              <span class="text-surface-500 dark:text-surface-400 font-normal"
                 >{{ 'recipes.browse.difficulty' | transloco }}:</span
               >
               <span>{{ selected.label }}</span>
@@ -146,7 +100,7 @@
           @if (selected) {
             <div
               class="flex items-center gap-1.5 text-sm font-medium text-surface-600 dark:text-surface-400">
-              <span class="text-surface-400 dark:text-surface-500 font-normal"
+              <span class="text-surface-500 dark:text-surface-400 font-normal"
                 >{{ 'recipes.browse.time' | transloco }}:</span
               >
               <span>{{ selected.label }}</span>
@@ -184,7 +138,7 @@
           ) | transloco
         }}
       </h2>
-      <p role="status" class="text-sm text-surface-600 dark:text-surface-300">
+      <p role="status" class="type-label tabular-nums text-surface-600 dark:text-surface-300">
         {{
           'recipes.browse.count'
             | transloco: { count: filteredRecipes.length, total: recipes.length }

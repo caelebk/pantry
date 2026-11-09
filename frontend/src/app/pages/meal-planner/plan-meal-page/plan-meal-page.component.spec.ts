@@ -52,6 +52,14 @@ describe('PlanMealPageComponent', () => {
     expect(component.servings()).toBe(1);
   });
 
+  it('saves a cleared servings field as 1', () => {
+    const component = create(() => of(recipes));
+    component.selectRecipe(recipes[0]);
+    component.servings.set(null);
+    component.saveMealPlan();
+    expect(addMealPlan.mock.calls[0][2].servings).toBe(1);
+  });
+
   it('shows an error state without mock recipes when loading fails and blocks saving', () => {
     const component = create(() => throwError(() => new Error('offline')));
     expect(component.loadFailed()).toBe(true);

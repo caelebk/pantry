@@ -25,6 +25,7 @@ import { join, relative } from 'node:path';
 
 const RATCHET_FILE = 'tools/i18n-literals-ratchet.json';
 const UPDATE = process.argv.includes('--update');
+const REPORT = process.argv.includes('--report');
 
 const ROOTS = ['src/app/pages', 'src/app/components'];
 const EXCLUDED_DIRS = new Set(['ui']); // primitives render projected content
@@ -32,50 +33,7 @@ const EXCLUDED_DIRS = new Set(['ui']); // primitives render projected content
 /**
  * file -> reason (known i18n debt; do NOT add new entries without a migration plan)
  */
-const I18N_DEBT = {
-  'src/app/pages/inventory/add-ingredient-group-page/add-ingredient-group-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/add-ingredient-page/add-ingredient-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/add-item-page/add-item-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/edit-ingredient-group-page/edit-ingredient-group-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/edit-ingredient-page/edit-ingredient-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/edit-item-page/edit-item-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/ingredient-categories-page/ingredient-categories-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/ingredients-page/ingredients-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/inventory-components/ingredient-category/ingredient-category.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/inventory-components/ingredient-group-container/ingredient-group-container.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/inventory-components/ingredient-group/ingredient-group.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/inventory-components/ingredient-row/ingredient-row.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/inventory-components/item-card/item-card.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/inventory/inventory-overview-page/inventory-overview-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/meal-planner/daily-focus/daily-focus.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/meal-planner/meal-planner.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/meal-planner/plan-meal-page/plan-meal-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/meal-planner/weekly-view/weekly-view.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/recipes/recipe-components/recipe-card/recipe-card.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/pages/shopping-list/restock-review-page/restock-review-page.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-  'src/app/components/stat-card/stat-card.component.html':
-    'Pre-existing hardcoded English; pending i18n migration.',
-};
+const I18N_DEBT = {};
 
 function* walk(dir) {
   for (const entry of readdirSync(dir)) {
@@ -135,6 +93,17 @@ for (const root of ROOTS) {
     const found = findLiterals(readFileSync(file, 'utf8'));
     if (found.length) literalCounts[rel] = found;
   }
+}
+
+if (REPORT) {
+  // Read-only: list every literal still present, optionally filtered by a path substring.
+  const filter = process.argv[process.argv.indexOf('--report') + 1];
+  for (const [rel, found] of Object.entries(literalCounts)) {
+    if (filter && !filter.startsWith('--') && !rel.includes(filter)) continue;
+    console.log(`${rel} (${found.length})`);
+    for (const f of found) console.log(`  L${f.line} ${f.text}`);
+  }
+  process.exit(0);
 }
 
 if (UPDATE) {

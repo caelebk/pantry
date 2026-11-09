@@ -4,7 +4,7 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { Location } from '@models/location.model';
 import { Unit } from '@models/unit.model';
-import { CardComponent, FormFieldComponent, SpinnerComponent } from '@ui';
+import { AlertComponent, CardComponent, FormFieldComponent, SpinnerComponent } from '@ui';
 import { ItemFormControls } from '@utility/itemUtility/ItemFormUtility';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -18,6 +18,7 @@ import { TextareaModule } from 'primeng/textarea';
   imports: [
     ReactiveFormsModule,
     TranslocoModule,
+    AlertComponent,
     CardComponent,
     FormFieldComponent,
     SpinnerComponent,

@@ -39,7 +39,7 @@ describe('BadgeComponent', () => {
     fixture.componentRef.setInput('variant', 'primary');
     fixture.detectChanges();
     const span = fixture.nativeElement.querySelector('span');
-    expect(span.className).toContain('text-primary-700');
+    expect(span.className).toContain('text-primary-800');
   });
 
   it('should render outline tone badge', () => {

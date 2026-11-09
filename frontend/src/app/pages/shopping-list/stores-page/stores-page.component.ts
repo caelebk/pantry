@@ -14,13 +14,22 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Store } from '@models/store.model';
 import { StoreService } from '@services/store.service';
 import { ToastService } from '@services/toast.service';
-import { BadgeComponent } from '@ui';
+import { BadgeComponent, CardComponent, EmptyStateComponent, FormFieldComponent } from '@ui';
 import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'pantry-stores-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, TranslocoPipe, BadgeComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    InputTextModule,
+    TranslocoPipe,
+    BadgeComponent,
+    CardComponent,
+    EmptyStateComponent,
+    FormFieldComponent,
+  ],
   templateUrl: './stores-page.component.html',
 })
 export class StoresPageComponent implements OnInit {

@@ -5,7 +5,10 @@ import { TranslocoTestingModule } from '@jsverse/transloco';
 import { ShoppingItem } from '@models/shopping-list.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { ShoppingListService } from '@services/shopping-list.service';
+import { ConfirmDialogService } from '@ui';
+import { of } from 'rxjs';
 import { vi } from 'vitest';
+import translations from '../../../../public/i18n/en.json';
 import { ShoppingListComponent } from './shopping-list.component';
 
 describe('ShoppingListComponent', () => {
@@ -43,6 +46,13 @@ describe('ShoppingListComponent', () => {
     mockRouter = { navigate: vi.fn() };
 
     TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+          preloadLangs: true,
+        }),
+      ],
       providers: [
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: MealPlannerService, useValue: mockMealPlannerService },
@@ -118,6 +128,54 @@ describe('ShoppingListComponent', () => {
     expect(component.sortBy()).toBe('price');
     expect(component.sortDirection()).toBe('desc');
     expect(component.filteredItems()[0].estimatedPrice).toBe(3.5);
+  });
+
+  describe('deleteSelected', () => {
+    let confirm: ReturnType<typeof vi.fn>;
+    let deleteItems: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+      confirm = vi.fn();
+      deleteItems = vi.fn().mockReturnValue(of(undefined));
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [
+          TranslocoTestingModule.forRoot({
+            langs: { en: translations },
+            translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+            preloadLangs: true,
+          }),
+        ],
+        providers: [
+          {
+            provide: ShoppingListService,
+            useValue: {
+              items: signal([mockItem]),
+              deleteItems,
+              loadItemsFromBackend: vi.fn(),
+            },
+          },
+          { provide: MealPlannerService, useValue: mockMealPlannerService },
+          { provide: Router, useValue: mockRouter },
+          { provide: ConfirmDialogService, useValue: { confirm } },
+        ],
+      });
+      component = TestBed.runInInjectionContext(() => new ShoppingListComponent());
+      component.selectedIds.set(new Set(['sl-1']));
+    });
+
+    it('deletes after a destructive confirmation', async () => {
+      confirm.mockResolvedValue(true);
+      await component.deleteSelected();
+      expect(confirm).toHaveBeenCalledWith(expect.objectContaining({ destructive: true }));
+      expect(deleteItems).toHaveBeenCalledWith(['sl-1']);
+    });
+
+    it('keeps the items when the confirmation is cancelled', async () => {
+      confirm.mockResolvedValue(false);
+      await component.deleteSelected();
+      expect(deleteItems).not.toHaveBeenCalled();
+    });
   });
 
   describe('rendered template', () => {

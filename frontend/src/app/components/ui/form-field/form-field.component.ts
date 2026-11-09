@@ -26,7 +26,7 @@ let nextFieldId = 0;
 @Component({
   selector: 'pantry-form-field',
   standalone: true,
-  host: { class: 'block' },
+  host: { class: 'block', '[class.pantry-field--icon]': '!!icon()' },
   imports: [CommonModule],
   template: `
     <div class="space-y-1.5 w-full">
@@ -53,7 +53,15 @@ let nextFieldId = 0;
         </div>
       }
 
-      <div class="w-full">
+      <div class="w-full relative">
+        @if (icon()) {
+          <i
+            [class]="
+              icon() +
+              ' absolute left-3.5 top-[21px] -translate-y-1/2 text-sm pointer-events-none text-surface-500 dark:text-surface-400'
+            "
+            aria-hidden="true"></i>
+        }
         <ng-content></ng-content>
       </div>
 
@@ -71,6 +79,12 @@ let nextFieldId = 0;
         </p>
       }
     </div>
+  `,
+  // Global form control padding uses !important, so the icon offset needs higher specificity.
+  styles: `
+    :host(.pantry-field--icon) ::ng-deep input {
+      padding-left: 2.5rem !important;
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -139,4 +153,6 @@ export class FormFieldComponent {
   hint = input<string>();
   error = input<string>();
   badge = input<string>();
+  /** PrimeIcons class for a leading icon, for example `pi pi-envelope`. */
+  icon = input<string>();
 }

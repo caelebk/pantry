@@ -9,14 +9,21 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
-import { Item, ItemsContainerTheme, ItemTimeStatus } from '@models/items.model';
-import { BadgeComponent, EmptyStateComponent } from '@ui';
+import { Item, ItemTimeStatus } from '@models/items.model';
+import { BadgeComponent, CardComponent, EmptyStateComponent } from '@ui';
 import { getItemTimeStatus, sortItemsByExpirationDate } from '@utility/itemUtility/ItemUtility';
 
 @Component({
   selector: 'pantry-items-container',
   standalone: true,
-  imports: [CommonModule, TranslocoModule, BadgeComponent, EmptyStateComponent, RouterLink],
+  imports: [
+    CommonModule,
+    TranslocoModule,
+    BadgeComponent,
+    CardComponent,
+    EmptyStateComponent,
+    RouterLink,
+  ],
   templateUrl: './items-container.component.html',
   styleUrls: ['./items-container.component.scss'],
   host: { class: 'block' },
@@ -27,7 +34,6 @@ export class ItemsContainerComponent {
 
   items = input.required<Item[]>();
   titleKey = input.required<string>();
-  theme = input<ItemsContainerTheme>(ItemsContainerTheme.Gray);
   footerMessageKey = input.required<string>();
 
   @Output() removeItem = new EventEmitter<Item>();

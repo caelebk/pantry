@@ -20,6 +20,7 @@ import { Tab } from './core/models/tab.model';
 import { AuthService } from './core/services/auth.service';
 import { ThemeService } from './core/services/theme.service';
 
+import { ConfirmDialogComponent } from '@ui';
 import { routeTransition } from '@utility/animationUtility/animations';
 
 @Component({
@@ -32,6 +33,7 @@ import { routeTransition } from '@utility/animationUtility/animations';
     RouterOutlet,
     ToastContainerComponent,
     BreadcrumbsComponent,
+    ConfirmDialogComponent,
   ],
   animations: [routeTransition],
   templateUrl: './app.component.html',

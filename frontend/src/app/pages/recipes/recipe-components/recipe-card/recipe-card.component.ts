@@ -6,6 +6,7 @@ import { Ingredient } from '@models/ingredient.model';
 import { Item } from '@models/items.model';
 import { Recipe, RecipeIngredientDTO } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
+import { BadgeComponent, CardSurfaceDirective } from '@ui';
 import {
   isIngredientAvailable,
   RecipeAvailability,
@@ -17,7 +18,7 @@ import {
 @Component({
   selector: 'pantry-recipe-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslocoModule],
+  imports: [CommonModule, RouterLink, TranslocoModule, BadgeComponent, CardSurfaceDirective],
   templateUrl: './recipe-card.component.html',
   styleUrl: './recipe-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

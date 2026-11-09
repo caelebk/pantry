@@ -8,6 +8,8 @@
     <meta
       name="description"
       content="Pantry — Smart kitchen inventory management. Track your food, reduce waste, and plan meals effortlessly." />
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="favico.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -37,6 +39,13 @@
           if (stored === 'dark' || stored === 'light') dark = stored === 'dark';
         } catch (e) {}
         document.documentElement.classList.toggle('dark', dark);
+        // The stored theme can differ from the OS, so replace the media-based tags with one.
+        var metas = document.querySelectorAll('meta[name="theme-color"]');
+        for (var i = 1; i < metas.length; i++) metas[i].remove();
+        if (metas[0]) {
+          metas[0].removeAttribute('media');
+          metas[0].setAttribute('content', dark ? '#0f172a' : '#f8fafc');
+        }
       })();
     </script>
     <pantry-root></pantry-root>

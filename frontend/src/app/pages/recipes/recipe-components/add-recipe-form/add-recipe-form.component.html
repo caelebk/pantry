@@ -1,12 +1,12 @@
-<div class="page-layout pb-16">
+<div class="page-layout">
   <header class="page-header">
     <div>
       <button type="button" (click)="goBack()" class="btn-ghost hover:!bg-transparent mb-2">
         <i class="pi pi-arrow-left" aria-hidden="true"></i>
-        <span>Back</span>
+        <span>{{ 'addRecipeForm.back' | transloco }}</span>
       </button>
       <h1 class="type-page-title text-surface-900 dark:text-white">
-        {{ isEditMode ? 'Edit Recipe' : 'Create New Recipe' }}
+        {{ (isEditMode ? 'addRecipeForm.editTitle' : 'addRecipeForm.createTitle') | transloco }}
       </h1>
     </div>
 
@@ -21,7 +21,7 @@
         [disabled]="isSubmitting || isLoadingRecipe()"
         class="btn-primary">
         @if (isSubmitting) {
-          <span>Saving...</span>
+          <span>{{ 'addRecipeForm.saving' | transloco }}</span>
         } @else {
           <i class="pi pi-check text-sm"></i>
           <span>{{
@@ -42,76 +42,32 @@
       tabindex="-1"
       role="region"
       aria-labelledby="recipe-validation-title"
-      class="rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 p-4 shadow-sm">
-      <div class="flex items-start gap-3">
-        <div
-          class="p-1 bg-rose-100 dark:bg-rose-900/50 rounded-lg text-rose-600 dark:text-rose-400 shrink-0">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-5 h-5">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-          </svg>
-        </div>
-        <div class="space-y-1">
-          <h4
-            id="recipe-validation-title"
-            class="text-sm font-bold text-rose-900 dark:text-rose-200">
-            Please resolve the following issues before submitting:
-          </h4>
-          <ul class="list-disc list-inside text-xs text-rose-700 dark:text-rose-300 space-y-0.5">
-            @for (err of validationErrors; track $index; let i = $index) {
-              <li>
-                <button
-                  type="button"
-                  class="text-left underline rounded focus-visible:outline-2 focus-visible:outline-offset-2"
-                  (click)="focusValidationField(i)">
-                  {{ err }}
-                </button>
-              </li>
-            }
-          </ul>
-        </div>
-      </div>
+      class="rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2">
+      <pantry-alert variant="danger">
+        <h4 id="recipe-validation-title" class="font-semibold">
+          {{ 'addRecipeForm.validationSummary' | transloco }}
+        </h4>
+        <ul class="list-disc list-inside type-meta space-y-0.5 mt-1">
+          @for (err of validationErrors; track $index; let i = $index) {
+            <li>
+              <button
+                type="button"
+                class="text-left underline rounded focus-visible:outline-2 focus-visible:outline-offset-2"
+                (click)="focusValidationField(i)">
+                {{ err }}
+              </button>
+            </li>
+          }
+        </ul>
+      </pantry-alert>
     </div>
   }
 
   <!-- Server / Network Error Callout Banner -->
   @if (serverErrorBanner) {
-    <div
-      class="rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 p-4 shadow-sm">
-      <div class="flex items-start gap-3">
-        <div
-          class="p-1 bg-amber-100 dark:bg-amber-900/50 rounded-lg text-amber-600 dark:text-amber-400 shrink-0">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-5 h-5">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.008v.008H12v-.008z" />
-          </svg>
-        </div>
-        <div>
-          <h4 class="text-sm font-bold text-amber-900 dark:text-amber-200">
-            Server / Network Error
-          </h4>
-          <p class="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
-            {{ serverErrorBanner }}
-          </p>
-        </div>
-      </div>
-    </div>
+    <pantry-alert variant="danger" [title]="'addRecipeForm.serverErrorTitle' | transloco">
+      {{ serverErrorBanner }}
+    </pantry-alert>
   }
 
   @if (isLoadingRecipe()) {
@@ -120,402 +76,384 @@
     </div>
   } @else {
     <form novalidate (submit)="$event.preventDefault(); submitForm()">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Left Column: Basic Details -->
         <div class="lg:col-span-5 space-y-6">
-          <div
-            class="glass-card rounded-2xl p-6 border border-surface-200/80 dark:border-surface-800/80 shadow-sm space-y-5">
-            <h3 class="type-section-title text-surface-900 dark:text-white flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-surface-400 dark:text-surface-500"></span>
-              Basic Information
-            </h3>
+          <pantry-card>
+            <div class="space-y-5">
+              <h3 class="type-section-title text-surface-900 dark:text-white">
+                {{ 'addRecipeForm.basicInfo' | transloco }}
+              </h3>
 
-            <!-- Recipe Name -->
-            <pantry-form-field
-              [label]="'Recipe Name'"
-              forId="recipe-name"
-              [required]="true"
-              [error]="fieldError('recipe-name')">
-              <input
-                pInputText
-                type="text"
-                id="recipe-name"
-                [(ngModel)]="name"
-                name="name"
-                required
-                placeholder="e.g., Creamy Tuscan Chicken"
-                class="w-full" />
-            </pantry-form-field>
+              <!-- Recipe Name -->
+              <pantry-form-field
+                [label]="'addRecipeForm.recipeNameLabel' | transloco"
+                forId="recipe-name"
+                [required]="true"
+                [error]="fieldError('recipe-name')">
+                <input
+                  pInputText
+                  type="text"
+                  id="recipe-name"
+                  [(ngModel)]="name"
+                  name="name"
+                  required
+                  [placeholder]="'addRecipeForm.recipeNameExample' | transloco"
+                  class="w-full" />
+              </pantry-form-field>
 
-            <!-- Description -->
-            <pantry-form-field [label]="'Description'" forId="recipe-description">
-              <textarea
-                pTextarea
-                id="recipe-description"
-                rows="3"
-                [(ngModel)]="description"
-                name="description"
-                placeholder="Describe what makes this dish special..."
-                class="w-full"></textarea>
-            </pantry-form-field>
+              <!-- Description -->
+              <pantry-form-field
+                [label]="'addRecipeForm.descriptionLabel' | transloco"
+                forId="recipe-description">
+                <textarea
+                  pTextarea
+                  id="recipe-description"
+                  rows="3"
+                  [(ngModel)]="description"
+                  name="description"
+                  [placeholder]="'addRecipeForm.descriptionExample' | transloco"
+                  class="w-full"></textarea>
+              </pantry-form-field>
 
-            <!-- Difficulty Selector -->
-            <div>
-              <div class="flex items-center justify-between h-6 mb-1.5">
-                <span
-                  class="text-xs font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wider">
-                  Difficulty
-                </span>
+              <!-- Difficulty Selector -->
+              <pantry-form-field
+                #difficultyField
+                [label]="'addRecipeForm.difficultyLabel' | transloco"
+                forId="recipe-difficulty">
+                <pantry-segmented-control
+                  [options]="localizedDifficultyOptions()"
+                  [(value)]="difficultyId"
+                  [ariaLabelledBy]="difficultyField.labelId()" />
+              </pantry-form-field>
+
+              <!-- Servings, Prep Time, Cook Time -->
+              <div class="grid grid-cols-3 gap-3">
+                <pantry-form-field
+                  [label]="'addRecipeForm.servingsLabel' | transloco"
+                  forId="recipe-servings"
+                  [error]="fieldError('recipe-servings')">
+                  <p-inputnumber
+                    inputId="recipe-servings"
+                    [(ngModel)]="servings"
+                    name="servings"
+                    [min]="1"
+                    class="w-full"
+                    inputStyleClass="w-full">
+                  </p-inputnumber>
+                </pantry-form-field>
+
+                <pantry-form-field
+                  [label]="'addRecipeForm.prepLabel' | transloco"
+                  forId="recipe-prep-time"
+                  [error]="fieldError('recipe-prep-time')">
+                  <p-inputnumber
+                    inputId="recipe-prep-time"
+                    [(ngModel)]="prepTime"
+                    name="prepTime"
+                    [min]="0"
+                    class="w-full"
+                    inputStyleClass="w-full">
+                  </p-inputnumber>
+                </pantry-form-field>
+
+                <pantry-form-field
+                  [label]="'addRecipeForm.cookLabel' | transloco"
+                  forId="recipe-cook-time"
+                  [error]="fieldError('recipe-cook-time')">
+                  <p-inputnumber
+                    inputId="recipe-cook-time"
+                    [(ngModel)]="cookTime"
+                    name="cookTime"
+                    [min]="0"
+                    class="w-full"
+                    inputStyleClass="w-full">
+                  </p-inputnumber>
+                </pantry-form-field>
               </div>
-              <div class="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  (click)="difficultyId = 1"
-                  [class]="
-                    difficultyId === 1
-                      ? 'h-[42px] px-3 text-xs font-bold rounded-xl border-2 border-surface-300 dark:border-surface-600 bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-white transition-all cursor-pointer'
-                      : 'h-[42px] px-3 text-xs font-medium rounded-xl border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300 transition-all cursor-pointer'
-                  ">
-                  Easy
-                </button>
-                <button
-                  type="button"
-                  (click)="difficultyId = 2"
-                  [class]="
-                    difficultyId === 2
-                      ? 'h-[42px] px-3 text-xs font-bold rounded-xl border-2 border-surface-300 dark:border-surface-600 bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-white transition-all cursor-pointer'
-                      : 'h-[42px] px-3 text-xs font-medium rounded-xl border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300 transition-all cursor-pointer'
-                  ">
-                  Medium
-                </button>
-                <button
-                  type="button"
-                  (click)="difficultyId = 3"
-                  [class]="
-                    difficultyId === 3
-                      ? 'h-[42px] px-3 text-xs font-bold rounded-xl border-2 border-surface-300 dark:border-surface-600 bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-white transition-all cursor-pointer'
-                      : 'h-[42px] px-3 text-xs font-medium rounded-xl border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300 transition-all cursor-pointer'
-                  ">
-                  Hard
-                </button>
-              </div>
+
+              <!-- Total Time Badge -->
+              <pantry-card variant="sub" padding="sm">
+                <div class="flex justify-between items-center gap-3">
+                  <span class="type-label text-surface-600 dark:text-surface-300">{{
+                    'addRecipeForm.estimatedTotal' | transloco
+                  }}</span>
+                  <span class="type-value text-surface-900 dark:text-white">{{
+                    'addRecipeForm.totalMinutes' | transloco: { count: totalTime }
+                  }}</span>
+                </div>
+              </pantry-card>
             </div>
-
-            <!-- Servings, Prep Time, Cook Time -->
-            <div class="grid grid-cols-3 gap-3">
-              <pantry-form-field
-                [label]="'Servings'"
-                forId="recipe-servings"
-                [error]="fieldError('recipe-servings')">
-                <p-inputnumber
-                  inputId="recipe-servings"
-                  [(ngModel)]="servings"
-                  name="servings"
-                  [min]="1"
-                  class="w-full"
-                  inputStyleClass="w-full !h-[42px] px-3 !rounded-xl !bg-white/80 dark:!bg-surface-800/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-center text-sm">
-                </p-inputnumber>
-              </pantry-form-field>
-
-              <pantry-form-field
-                [label]="'Prep (min)'"
-                forId="recipe-prep-time"
-                [error]="fieldError('recipe-prep-time')">
-                <p-inputnumber
-                  inputId="recipe-prep-time"
-                  [(ngModel)]="prepTime"
-                  name="prepTime"
-                  [min]="0"
-                  class="w-full"
-                  inputStyleClass="w-full !h-[42px] px-3 !rounded-xl !bg-white/80 dark:!bg-surface-800/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-center text-sm">
-                </p-inputnumber>
-              </pantry-form-field>
-
-              <pantry-form-field
-                [label]="'Cook (min)'"
-                forId="recipe-cook-time"
-                [error]="fieldError('recipe-cook-time')">
-                <p-inputnumber
-                  inputId="recipe-cook-time"
-                  [(ngModel)]="cookTime"
-                  name="cookTime"
-                  [min]="0"
-                  class="w-full"
-                  inputStyleClass="w-full !h-[42px] px-3 !rounded-xl !bg-white/80 dark:!bg-surface-800/80 !border-surface-200 dark:!border-surface-700 !text-surface-900 dark:!text-white text-center text-sm">
-                </p-inputnumber>
-              </pantry-form-field>
-            </div>
-
-            <!-- Total Time Badge -->
-            <div class="sub-card rounded-xl p-3.5 flex justify-between items-center text-xs">
-              <span class="card-label font-bold text-surface-700 dark:text-surface-300"
-                >Estimated Total Time:</span
-              >
-              <span class="font-extrabold text-surface-900 dark:text-white text-sm"
-                >{{ totalTime }} mins</span
-              >
-            </div>
-          </div>
+          </pantry-card>
         </div>
 
         <!-- Right Column: Ingredients & Instructions -->
         <div class="lg:col-span-7 space-y-6">
           <!-- Ingredients Card -->
-          <div
-            class="glass-card rounded-2xl p-6 border border-surface-200/80 dark:border-surface-800/80 shadow-sm space-y-4 relative z-20">
-            <div
-              class="flex justify-between items-center pb-2 border-b border-surface-200/80 dark:border-surface-800/80">
-              <div>
-                <h3
-                  class="type-section-title text-surface-900 dark:text-white flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-surface-400 dark:text-surface-500"></span>
-                  Ingredients
-                </h3>
-                <p class="text-xs text-surface-500 dark:text-surface-400">
-                  Search and pick ingredients required for this recipe.
-                </p>
+          <pantry-card class="block relative z-20">
+            <div class="space-y-4">
+              <div
+                class="flex justify-between items-center pb-2 border-b border-surface-200/80 dark:border-surface-800/80">
+                <div>
+                  <h3 class="type-section-title text-surface-900 dark:text-white">
+                    {{ 'addRecipeForm.ingredientsHeading' | transloco }}
+                  </h3>
+                  <p class="type-meta text-surface-500 dark:text-surface-400">
+                    {{ 'addRecipeForm.ingredientsHint' | transloco }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    (click)="openQuickCreateIngredient()"
+                    class="btn-secondary whitespace-nowrap">
+                    <i class="pi pi-plus-circle text-xs text-surface-500 dark:text-surface-400"></i>
+                    <span>{{ 'addRecipeForm.createIngredient' | transloco }}</span>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="addIngredientRow()"
+                    class="btn-secondary whitespace-nowrap">
+                    <i class="pi pi-plus text-xs"></i>
+                    <span>{{ 'addRecipeForm.addIngredient' | transloco }}</span>
+                  </button>
+                </div>
               </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  (click)="openQuickCreateIngredient()"
-                  class="btn-secondary whitespace-nowrap">
-                  <i class="pi pi-plus-circle text-xs text-surface-500 dark:text-surface-400"></i>
-                  <span>Create New Ingredient</span>
-                </button>
-                <button
-                  type="button"
-                  (click)="addIngredientRow()"
-                  class="btn-secondary whitespace-nowrap">
-                  <i class="pi pi-plus text-xs"></i>
-                  <span>Add Ingredient</span>
-                </button>
-              </div>
-            </div>
 
-            <div class="space-y-3">
-              @for (row of recipeIngredients; track row.id; let i = $index) {
-                <div
-                  draggable="true"
-                  (dragstart)="onIngredientDragStart($event, i)"
-                  (dragover)="onIngredientDragOver($event, i)"
-                  (drop)="onIngredientDrop($event)"
-                  (dragend)="onIngredientDragEnd()"
-                  class="flex flex-wrap sm:flex-nowrap gap-2.5 items-center relative sub-card p-3 rounded-xl transition-all duration-200 ingredient-row-card cursor-grab active:cursor-grabbing"
-                  [class.opacity-50]="draggedIngredientIndex === i"
-                  [class.scale-[0.98]]="draggedIngredientIndex === i"
-                  [class.border-2]="draggedIngredientIndex === i"
-                  [class.border-dashed]="draggedIngredientIndex === i"
-                  [class.border-primary-500/60]="draggedIngredientIndex === i"
-                  [class.bg-primary-500/10]="draggedIngredientIndex === i"
-                  [class.dark:bg-primary-950/30]="draggedIngredientIndex === i"
-                  [class.shadow-inner]="draggedIngredientIndex === i">
-                  <!-- Left Drag Handle Marker -->
+              <div class="space-y-3">
+                @for (row of recipeIngredients; track row.id; let i = $index) {
                   <div
-                    class="p-1.5 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors shrink-0 flex items-center justify-center pointer-events-none"
-                    title="Drag row to reorder">
-                    <i class="pi pi-bars text-xs"></i>
-                  </div>
-
-                  <!-- Ingredient Select (type-to-filter over master ingredients) -->
-                  <pantry-form-field
-                    class="flex-1 min-w-0"
-                    [forId]="'ing-select-' + row.id"
-                    [error]="fieldError('ing-select-' + row.id)">
-                    <p-select
-                      [options]="availableIngredients"
-                      optionLabel="name"
-                      optionValue="id"
-                      [(ngModel)]="row.ingredientId"
-                      [name]="'ingSelect_' + row.id"
-                      (ngModelChange)="onIngredientChange(row, $event)"
-                      [filter]="true"
-                      filterPlaceholder="Search ingredient..."
-                      placeholder="Search ingredient..."
-                      ariaLabel="Select ingredient"
-                      inputId="ing-select-{{ row.id }}"
-                      class="w-full"
-                      appendTo="body">
-                    </p-select>
-                  </pantry-form-field>
-
-                  <!-- Quantity, unit and remove: second line below sm, inline from sm -->
-                  <div class="flex basis-full sm:contents items-center gap-2.5">
-                    <pantry-form-field
-                      class="w-24 shrink-0"
-                      [forId]="'ing-quantity-' + row.id"
-                      [error]="fieldError('ing-quantity-' + row.id)">
-                      <p-inputnumber
-                        [inputId]="'ing-quantity-' + row.id"
-                        [(ngModel)]="row.quantity"
-                        [name]="'ingQty_' + row.id"
-                        [min]="0.1"
-                        [step]="0.1"
-                        placeholder="Qty"
-                        class="w-full"
-                        inputStyleClass="w-full text-center font-semibold">
-                      </p-inputnumber>
-                    </pantry-form-field>
-
-                    <!-- Locked Unit Indicator (Orange outline, lock icon, non-dropdown) -->
-                    <div class="flex-1 sm:flex-none sm:w-28 min-w-0">
-                      @if (row.unitId) {
-                        <div
-                          class="h-[42px] px-2.5 rounded-xl border border-surface-300 dark:border-surface-600 bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 flex items-center justify-center gap-1.5 cursor-not-allowed"
-                          title="Unit is locked to the selected ingredient's default unit">
-                          <i
-                            class="pi pi-lock text-surface-400 dark:text-surface-500 text-xs shrink-0"></i>
-                          <span class="font-bold text-xs truncate">{{
-                            getUnitShortName(row.unitId)
-                          }}</span>
-                        </div>
-                      } @else {
-                        <div
-                          class="h-[42px] px-2 rounded-xl border border-dashed border-surface-300 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-900/50 text-surface-400 dark:text-surface-500 flex items-center justify-center gap-1 text-xs italic cursor-not-allowed"
-                          title="Select an ingredient to lock default unit">
-                          <i class="pi pi-lock text-[10px]"></i>
-                          <span class="text-[11px]">Auto</span>
-                        </div>
-                      }
+                    draggable="true"
+                    (dragstart)="onIngredientDragStart($event, i)"
+                    (dragover)="onIngredientDragOver($event, i)"
+                    (drop)="onIngredientDrop($event)"
+                    (dragend)="onIngredientDragEnd()"
+                    class="flex flex-wrap sm:flex-nowrap gap-2.5 items-center relative sub-card p-3 rounded-xl transition-all duration-200 ingredient-row-card cursor-grab active:cursor-grabbing"
+                    [class.opacity-50]="draggedIngredientIndex === i"
+                    [class.scale-[0.98]]="draggedIngredientIndex === i"
+                    [class.border-2]="draggedIngredientIndex === i"
+                    [class.border-dashed]="draggedIngredientIndex === i"
+                    [class.border-primary-500/60]="draggedIngredientIndex === i"
+                    [class.bg-primary-500/10]="draggedIngredientIndex === i"
+                    [class.dark:bg-primary-950/30]="draggedIngredientIndex === i"
+                    [class.shadow-inner]="draggedIngredientIndex === i">
+                    <!-- Left Drag Handle Marker -->
+                    <div
+                      class="p-1.5 rounded-lg text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors shrink-0 flex items-center justify-center pointer-events-none"
+                      [title]="'addRecipeForm.dragRow' | transloco">
+                      <i class="pi pi-bars text-xs"></i>
                     </div>
 
-                    <!-- Remove Row Button -->
-                    @if (recipeIngredients.length > 1) {
+                    <!-- Ingredient Select (type-to-filter over master ingredients) -->
+                    <pantry-form-field
+                      class="flex-1 min-w-0"
+                      [forId]="'ing-select-' + row.id"
+                      [error]="fieldError('ing-select-' + row.id)">
+                      <p-select
+                        [options]="availableIngredients"
+                        optionLabel="name"
+                        optionValue="id"
+                        [(ngModel)]="row.ingredientId"
+                        [name]="'ingSelect_' + row.id"
+                        (ngModelChange)="onIngredientChange(row, $event)"
+                        [filter]="true"
+                        [filterPlaceholder]="'addRecipeForm.searchIngredient' | transloco"
+                        [placeholder]="'addRecipeForm.searchIngredient' | transloco"
+                        [ariaLabel]="'addRecipeForm.selectIngredient' | transloco"
+                        inputId="ing-select-{{ row.id }}"
+                        class="w-full"
+                        appendTo="body">
+                      </p-select>
+                    </pantry-form-field>
+
+                    <!-- Quantity, unit and remove: second line below sm, inline from sm -->
+                    <div class="flex basis-full sm:contents items-center gap-2.5">
+                      <pantry-form-field
+                        class="w-24 shrink-0"
+                        [forId]="'ing-quantity-' + row.id"
+                        [error]="fieldError('ing-quantity-' + row.id)">
+                        <p-inputnumber
+                          [inputId]="'ing-quantity-' + row.id"
+                          [(ngModel)]="row.quantity"
+                          [name]="'ingQty_' + row.id"
+                          [min]="0.1"
+                          [step]="0.1"
+                          [placeholder]="'addRecipeForm.quantityPlaceholder' | transloco"
+                          class="w-full"
+                          inputStyleClass="w-full text-center font-semibold">
+                        </p-inputnumber>
+                      </pantry-form-field>
+
+                      <!-- Locked Unit Indicator (Orange outline, lock icon, non-dropdown) -->
+                      <div class="flex-1 sm:flex-none sm:w-28 min-w-0">
+                        @if (row.unitId) {
+                          <div
+                            class="h-[42px] px-2.5 rounded-xl border border-surface-300 dark:border-surface-600 bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 flex items-center justify-center gap-1.5 cursor-not-allowed"
+                            [title]="'addRecipeForm.unitLocked' | transloco">
+                            <i
+                              class="pi pi-lock text-surface-500 dark:text-surface-400 text-xs shrink-0"></i>
+                            <span class="font-semibold type-meta truncate">{{
+                              getUnitShortName(row.unitId)
+                            }}</span>
+                          </div>
+                        } @else {
+                          <div
+                            class="h-[42px] px-2 rounded-xl border border-dashed border-surface-300 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-900/50 text-surface-500 dark:text-surface-400 flex items-center justify-center gap-1 type-meta italic cursor-not-allowed"
+                            [title]="'addRecipeForm.unitSelectFirst' | transloco">
+                            <i class="pi pi-lock text-xs"></i>
+                            <span class="type-meta">{{
+                              'addRecipeForm.unitAuto' | transloco
+                            }}</span>
+                          </div>
+                        }
+                      </div>
+
+                      <!-- Remove Row Button -->
+                      @if (recipeIngredients.length > 1) {
+                        <button
+                          type="button"
+                          [id]="'ing-move-up-' + row.id"
+                          (click)="moveIngredientUp(i)"
+                          [disabled]="i === 0"
+                          class="btn-icon-sm"
+                          [attr.aria-label]="
+                            'addRecipeForm.moveIngredientUp'
+                              | transloco: { name: ingredientRowLabel(row, i) }
+                          ">
+                          <i class="pi pi-arrow-up" aria-hidden="true"></i>
+                        </button>
+                        <button
+                          type="button"
+                          [id]="'ing-move-down-' + row.id"
+                          (click)="moveIngredientDown(i)"
+                          [disabled]="i === recipeIngredients.length - 1"
+                          class="btn-icon-sm"
+                          [attr.aria-label]="
+                            'addRecipeForm.moveIngredientDown'
+                              | transloco: { name: ingredientRowLabel(row, i) }
+                          ">
+                          <i class="pi pi-arrow-down" aria-hidden="true"></i>
+                        </button>
+                        <button
+                          type="button"
+                          (click)="removeIngredientRow(i)"
+                          class="btn-icon"
+                          [attr.aria-label]="'addRecipeForm.removeIngredient' | transloco">
+                          <i class="pi pi-times" aria-hidden="true"></i>
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </pantry-card>
+
+          <!-- Instructions Card -->
+          <pantry-card>
+            <div class="space-y-4">
+              <div
+                class="flex justify-between items-center pb-2 border-b border-surface-200/80 dark:border-surface-800/80">
+                <div>
+                  <h3 class="type-section-title text-surface-900 dark:text-white">
+                    {{ 'addRecipeForm.instructionsHeading' | transloco }}
+                  </h3>
+                  <p class="type-meta text-surface-500 dark:text-surface-400">
+                    {{ 'addRecipeForm.instructionsHint' | transloco }}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  (click)="addStepRow()"
+                  class="btn-secondary whitespace-nowrap">
+                  {{ 'addRecipeForm.addStep' | transloco }}
+                </button>
+              </div>
+
+              <div class="space-y-3">
+                @for (step of recipeSteps; track step.id; let i = $index) {
+                  <div
+                    draggable="true"
+                    (dragstart)="onStepDragStart($event, i)"
+                    (dragover)="onStepDragOver($event, i)"
+                    (drop)="onStepDrop($event)"
+                    (dragend)="onStepDragEnd()"
+                    class="flex gap-2.5 items-start sub-card p-4 rounded-xl transition-all duration-200 step-row-card cursor-grab active:cursor-grabbing"
+                    [class.opacity-50]="draggedStepIndex === i"
+                    [class.scale-[0.98]]="draggedStepIndex === i"
+                    [class.border-2]="draggedStepIndex === i"
+                    [class.border-dashed]="draggedStepIndex === i"
+                    [class.border-primary-500/60]="draggedStepIndex === i"
+                    [class.bg-primary-500/10]="draggedStepIndex === i"
+                    [class.dark:bg-primary-950/30]="draggedStepIndex === i"
+                    [class.shadow-inner]="draggedStepIndex === i">
+                    <!-- Left Drag Handle Marker -->
+                    <div
+                      class="p-1.5 mt-0.5 rounded-lg text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors shrink-0 flex items-center justify-center pointer-events-none"
+                      [title]="'addRecipeForm.dragStep' | transloco">
+                      <i class="pi pi-bars text-xs"></i>
+                    </div>
+
+                    <span
+                      class="w-7 h-7 rounded-full bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-200 type-meta font-semibold flex items-center justify-center shrink-0 mt-0.5">
+                      {{ i + 1 }}
+                    </span>
+
+                    <pantry-form-field
+                      class="flex-1 min-w-0 space-y-2"
+                      [forId]="'recipe-step-' + step.id"
+                      [error]="fieldError('recipe-step-' + step.id)">
+                      <textarea
+                        [id]="'recipe-step-' + step.id"
+                        pTextarea
+                        [autoResize]="true"
+                        rows="2"
+                        [(ngModel)]="step.instructionText"
+                        [name]="'step_' + step.id"
+                        [style.height.px]="step.textareaHeight || null"
+                        (mouseup)="onTextareaResize($event, step)"
+                        (pointerup)="onTextareaResize($event, step)"
+                        (input)="onTextareaResize($event, step)"
+                        [placeholder]="'addRecipeForm.stepPlaceholder' | transloco"
+                        class="w-full resize-y rounded-xl transition-all duration-150 focus:ring-2 focus:ring-primary-500/30"></textarea>
+                    </pantry-form-field>
+
+                    @if (recipeSteps.length > 1) {
                       <button
                         type="button"
-                        (click)="removeIngredientRow(i)"
-                        class="p-1.5 text-surface-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer shrink-0"
-                        title="Remove ingredient">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="2"
-                          stroke="currentColor"
-                          class="w-4 h-4">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        [id]="'step-move-up-' + step.id"
+                        (click)="moveStepUp(i)"
+                        [disabled]="i === 0"
+                        class="btn-icon-sm"
+                        [attr.aria-label]="
+                          'addRecipeForm.moveStepUp' | transloco: { position: i + 1 }
+                        ">
+                        <i class="pi pi-arrow-up" aria-hidden="true"></i>
+                      </button>
+                      <button
+                        type="button"
+                        [id]="'step-move-down-' + step.id"
+                        (click)="moveStepDown(i)"
+                        [disabled]="i === recipeSteps.length - 1"
+                        class="btn-icon-sm"
+                        [attr.aria-label]="
+                          'addRecipeForm.moveStepDown' | transloco: { position: i + 1 }
+                        ">
+                        <i class="pi pi-arrow-down" aria-hidden="true"></i>
+                      </button>
+                      <button
+                        type="button"
+                        (click)="removeStepRow(i)"
+                        class="btn-icon"
+                        [attr.aria-label]="'addRecipeForm.removeStep' | transloco">
+                        <i class="pi pi-times" aria-hidden="true"></i>
                       </button>
                     }
                   </div>
-                </div>
-              }
-            </div>
-          </div>
-
-          <!-- Instructions Card -->
-          <div
-            class="glass-card rounded-2xl p-6 border border-surface-200/80 dark:border-surface-800/80 shadow-sm space-y-4">
-            <div
-              class="flex justify-between items-center pb-2 border-b border-surface-200/80 dark:border-surface-800/80">
-              <div>
-                <h3
-                  class="type-section-title text-surface-900 dark:text-white flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-surface-400 dark:text-surface-500"></span>
-                  Instructions & Steps
-                </h3>
-                <p class="text-xs text-surface-500 dark:text-surface-400">
-                  Outline step-by-step preparation and cooking instructions.
-                </p>
+                }
               </div>
-              <button type="button" (click)="addStepRow()" class="btn-secondary whitespace-nowrap">
-                + Add Step
-              </button>
             </div>
-
-            <div class="space-y-3">
-              @for (step of recipeSteps; track step.id; let i = $index) {
-                <div
-                  draggable="true"
-                  (dragstart)="onStepDragStart($event, i)"
-                  (dragover)="onStepDragOver($event, i)"
-                  (drop)="onStepDrop($event)"
-                  (dragend)="onStepDragEnd()"
-                  class="flex gap-2.5 items-start sub-card p-4 rounded-xl transition-all duration-200 step-row-card cursor-grab active:cursor-grabbing"
-                  [class.opacity-50]="draggedStepIndex === i"
-                  [class.scale-[0.98]]="draggedStepIndex === i"
-                  [class.border-2]="draggedStepIndex === i"
-                  [class.border-dashed]="draggedStepIndex === i"
-                  [class.border-primary-500/60]="draggedStepIndex === i"
-                  [class.bg-primary-500/10]="draggedStepIndex === i"
-                  [class.dark:bg-primary-950/30]="draggedStepIndex === i"
-                  [class.shadow-inner]="draggedStepIndex === i">
-                  <!-- Left Drag Handle Marker -->
-                  <div
-                    class="p-1.5 mt-0.5 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors shrink-0 flex items-center justify-center pointer-events-none"
-                    title="Drag step to reorder">
-                    <i class="pi pi-bars text-xs"></i>
-                  </div>
-
-                  <span
-                    class="w-7 h-7 rounded-full bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-200 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                    {{ i + 1 }}
-                  </span>
-
-                  <pantry-form-field
-                    class="flex-1 min-w-0 space-y-2"
-                    [forId]="'recipe-step-' + step.id"
-                    [error]="fieldError('recipe-step-' + step.id)">
-                    <textarea
-                      [id]="'recipe-step-' + step.id"
-                      pTextarea
-                      [autoResize]="true"
-                      rows="2"
-                      [(ngModel)]="step.instructionText"
-                      [name]="'step_' + step.id"
-                      [style.height.px]="step.textareaHeight || null"
-                      (mouseup)="onTextareaResize($event, step)"
-                      (pointerup)="onTextareaResize($event, step)"
-                      (input)="onTextareaResize($event, step)"
-                      placeholder="Describe this step..."
-                      class="w-full resize-y rounded-xl transition-all duration-150 focus:ring-2 focus:ring-primary-500/30"></textarea>
-                  </pantry-form-field>
-
-                  @if (recipeSteps.length > 1) {
-                    <button
-                      type="button"
-                      (click)="removeStepRow(i)"
-                      class="p-1.5 mt-0.5 text-surface-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer shrink-0"
-                      title="Remove step">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                        class="w-4 h-4">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  }
-                </div>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Sticky Action Bar -->
-      <div
-        class="fixed bottom-0 left-0 right-0 glass-header border-t border-surface-200/80 dark:border-surface-800/80 py-3 px-6 z-40">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-          <span class="text-xs text-surface-500 dark:text-surface-400"> * Required fields </span>
-          <div class="flex items-center gap-3">
-            <button type="button" (click)="goBack()" class="btn-secondary">Cancel</button>
-            <button type="submit" [disabled]="isSubmitting" class="btn-primary whitespace-nowrap">
-              @if (isSubmitting) {
-                <span>Saving...</span>
-              } @else {
-                <span>{{ isEditMode ? 'Update Recipe' : 'Save Recipe' }}</span>
-              }
-            </button>
-          </div>
+          </pantry-card>
         </div>
       </div>
     </form>
@@ -524,53 +462,59 @@
 
 <!-- Quick Create Ingredient Dialog -->
 <p-dialog
-  header="Create New Ingredient"
+  [header]="'addRecipeForm.createIngredient' | transloco"
+  appendTo="body"
   [visible]="displayQuickCreateDialog()"
   (visibleChange)="displayQuickCreateDialog.set($event)"
   [modal]="true"
   [style]="{ width: '90vw', maxWidth: '480px' }"
   [dismissableMask]="true">
   <div class="space-y-4 py-2">
-    <pantry-form-field [label]="'Ingredient Name'" forId="quick-create-ing-name" [required]="true">
+    <pantry-form-field
+      [label]="'addRecipeForm.ingredientNameLabel' | transloco"
+      forId="quick-create-ing-name"
+      [required]="true">
       <input
         pInputText
         id="quick-create-ing-name"
         [ngModel]="newIngredientName()"
         (ngModelChange)="newIngredientName.set($event)"
-        placeholder="e.g. Linguine, Organic Eggs, Greek Yogurt..."
+        [placeholder]="'addRecipeForm.ingredientNameExample' | transloco"
         class="w-full" />
     </pantry-form-field>
 
-    <div>
-      <div class="flex items-center justify-between h-6 mb-1.5">
-        <label
-          for="quick-create-ing-group"
-          class="type-label text-surface-700 dark:text-surface-300">
-          Ingredient Group
-        </label>
-        <span class="text-[10px] text-surface-400 font-normal">Optional</span>
-      </div>
+    <pantry-form-field
+      #groupField
+      [label]="'addRecipeForm.ingredientGroupLabel' | transloco"
+      forId="quick-create-ing-group"
+      [badge]="'addRecipeForm.optional' | transloco">
       <p-select
         inputId="quick-create-ing-group"
+        [ariaLabelledBy]="groupField.labelId()"
         [options]="ingredientGroups()"
         [ngModel]="newIngredientGroup()"
         (ngModelChange)="newIngredientGroup.set($event)"
         optionLabel="name"
-        placeholder="Select Ingredient Group"
+        [placeholder]="'addRecipeForm.selectGroup' | transloco"
         [showClear]="true"
         class="w-full"
         appendTo="body">
       </p-select>
-    </div>
+    </pantry-form-field>
 
-    <pantry-form-field [label]="'Default Unit'" forId="quick-create-ing-unit" [required]="true">
+    <pantry-form-field
+      #unitField
+      [label]="'addRecipeForm.defaultUnitLabel' | transloco"
+      forId="quick-create-ing-unit"
+      [required]="true">
       <p-select
         inputId="quick-create-ing-unit"
+        [ariaLabelledBy]="unitField.labelId()"
         [options]="availableUnits"
         [ngModel]="newIngredientDefaultUnit()"
         (ngModelChange)="newIngredientDefaultUnit.set($event)"
         optionLabel="name"
-        placeholder="Select Default Unit"
+        [placeholder]="'addRecipeForm.selectUnit' | transloco"
         [showClear]="true"
         class="w-full"
         appendTo="body">
@@ -581,7 +525,7 @@
   <ng-template pTemplate="footer">
     <div class="flex items-center justify-end gap-2 pt-2">
       <button type="button" (click)="displayQuickCreateDialog.set(false)" class="btn-ghost">
-        Cancel
+        {{ 'addRecipeForm.cancelButton' | transloco }}
       </button>
       <button
         type="button"
@@ -589,11 +533,11 @@
         [disabled]="isCreatingIngredient() || !newIngredientName().trim()"
         class="btn-primary">
         @if (isCreatingIngredient()) {
-          <i class="pi pi-spin pi-spinner text-xs"></i>
-          <span>Creating...</span>
+          <pantry-spinner [announce]="false" size="xs" color="white" />
+          <span>{{ 'addRecipeForm.creating' | transloco }}</span>
         } @else {
-          <i class="pi pi-check text-xs"></i>
-          <span>Create Ingredient</span>
+          <i class="pi pi-check text-xs" aria-hidden="true"></i>
+          <span>{{ 'addRecipeForm.createIngredientSubmit' | transloco }}</span>
         }
       </button>
     </div>

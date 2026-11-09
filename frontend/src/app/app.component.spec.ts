@@ -75,7 +75,9 @@ describe('AppComponent', () => {
     const element = fixture.nativeElement as HTMLElement;
     expect(element.querySelector('canvas')).toBeNull();
     expect(element.querySelector('.ambient-wave')).toBeNull();
-    expect(element.querySelector('.dot-grid-pattern-overlay')).not.toBeNull();
+    expect(element.querySelector('.shell-atmosphere')).not.toBeNull();
+    expect(element.querySelector('.spotlight-glow')).toBeNull();
+    expect(element.querySelector('.dot-grid-pattern-overlay')).toBeNull();
   });
 
   it('puts a skip link before the navigation that focuses the main region', () => {

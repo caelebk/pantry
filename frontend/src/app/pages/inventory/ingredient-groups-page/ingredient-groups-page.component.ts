@@ -14,7 +14,13 @@ import { Ingredient } from '@models/ingredient.model';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
-import { BadgeComponent, EmptyStateComponent, SearchInputComponent, SpinnerComponent } from '@ui';
+import {
+  BadgeComponent,
+  CardComponent,
+  EmptyStateComponent,
+  SearchInputComponent,
+  SkeletonComponent,
+} from '@ui';
 import { PrimeIcons } from 'primeng/api';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
@@ -26,9 +32,10 @@ import { AuthService } from '../../../core/services/auth.service';
     RouterLink,
     TranslocoModule,
     BadgeComponent,
+    CardComponent,
     EmptyStateComponent,
     SearchInputComponent,
-    SpinnerComponent,
+    SkeletonComponent,
   ],
   templateUrl: './ingredient-groups-page.component.html',
   styleUrl: './ingredient-groups-page.component.scss',

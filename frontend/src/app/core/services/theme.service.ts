@@ -1,9 +1,14 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { Meta } from '@angular/platform-browser';
 
 export type ThemePreference = 'dark' | 'light' | 'system';
 
 /** localStorage key shared with the pre-boot script in `index.html`. */
 export const THEME_STORAGE_KEY = 'pantry.theme';
+
+/** Mirror Slate 50 / Slate 900 and the `theme-color` meta set in `index.html`. */
+const THEME_COLOR_LIGHT = '#f8fafc';
+const THEME_COLOR_DARK = '#0f172a';
 
 /** Stored explicit choice if there is one, otherwise the OS colour scheme. */
 function readStoredTheme(): 'dark' | 'light' | null {
@@ -46,6 +51,7 @@ function persistTheme(value: 'dark' | 'light' | null): void {
 export class ThemeService {
   /** Reactive current mode. `true` = dark, `false` = light. */
   readonly darkMode = signal(resolveInitialDarkMode());
+  private meta = inject(Meta);
 
   /** Re-syncs the signal from whatever class state is already applied. */
   initializeFromDocument(): void {
@@ -59,6 +65,10 @@ export class ThemeService {
     this.darkMode.set(isDark);
     if (typeof document === 'undefined') return;
     document.documentElement.classList.toggle('dark', isDark);
+    this.meta.updateTag({
+      name: 'theme-color',
+      content: isDark ? THEME_COLOR_DARK : THEME_COLOR_LIGHT,
+    });
   }
 
   /** Flips the current mode. Returns the resulting mode. */

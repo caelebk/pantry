@@ -1,16 +1,9 @@
 <div
   [@.disabled]="reducedMotion()"
-  class="relative h-screen font-sans text-surface-900 dark:text-surface-100 transition-colors duration-300 overflow-hidden animated-gradient-bg">
-  <!-- Static shell atmosphere: haze, soft glows and a dot grid. Nothing moves. -->
-  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
-    <div class="spotlight-glow spotlight-top"></div>
-    <div class="spotlight-glow spotlight-bottom-right"></div>
-    <div class="dot-grid-pattern-overlay"></div>
-  </div>
-
+  class="relative h-dvh font-sans text-surface-900 dark:text-surface-100 overflow-hidden shell-atmosphere">
   <!-- Auth Layout Split: Full-screen Auth Pages vs Main App Shell -->
   @if (isAuthRoute()) {
-    <div class="relative z-10 h-full w-full">
+    <div class="relative z-10 h-full w-full overflow-y-auto">
       <router-outlet></router-outlet>
       <pantry-toast-container></pantry-toast-container>
     </div>
@@ -46,6 +39,7 @@
       </div>
 
       <pantry-toast-container></pantry-toast-container>
+      <pantry-confirm-dialog />
     </div>
   }
 </div>

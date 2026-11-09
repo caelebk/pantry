@@ -16,14 +16,20 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
 import { Ingredient } from '@models/ingredient.model';
 import { IngredientCategoryService } from '@services/inventory/ingredient-category.service';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ToastService } from '@services/toast.service';
-import { BadgeComponent, FormFieldComponent, SpinnerComponent } from '@ui';
+import {
+  AlertComponent,
+  BadgeComponent,
+  CardComponent,
+  FormFieldComponent,
+  SpinnerComponent,
+} from '@ui';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { forkJoin, of } from 'rxjs';
@@ -49,6 +55,8 @@ export interface IngredientItemSelection {
     FormFieldComponent,
     SpinnerComponent,
     BadgeComponent,
+    AlertComponent,
+    CardComponent,
   ],
   templateUrl: './add-ingredient-group-page.component.html',
 })
@@ -60,6 +68,7 @@ export class AddIngredientGroupPageComponent implements OnInit {
   private readonly ingredientCategoryService = inject(IngredientCategoryService);
   private readonly ingredientService = inject(IngredientService);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
 
   public groupForm!: FormGroup;
   public ingredientCategories = signal<IngredientCategory[]>([]);
@@ -129,7 +138,9 @@ export class AddIngredientGroupPageComponent implements OnInit {
     if (!name) return;
 
     if (this.initialIngredients().some((i) => i.name.toLowerCase() === name.toLowerCase())) {
-      this.toastService.showError(`"${name}" is already in the ingredients list.`);
+      this.toastService.showError(
+        this.transloco.translate('groupForm.duplicateIngredient', { name }),
+      );
       return;
     }
 
@@ -163,7 +174,7 @@ export class AddIngredientGroupPageComponent implements OnInit {
     this.submitError.set(null);
     if (this.groupForm.invalid) {
       this.groupForm.markAllAsTouched();
-      this.submitError.set('Please fill in all required fields.');
+      this.submitError.set(this.transloco.translate('groupForm.requiredFields'));
       return;
     }
 
@@ -203,15 +214,17 @@ export class AddIngredientGroupPageComponent implements OnInit {
       .subscribe({
         next: ({ count }) => {
           this.isSubmitting.set(false);
-          const ingMsg = count > 0 ? ` with ${count} ingredient(s)` : '';
           this.toastService.showSuccess(
-            `Ingredient Group "${val.name}" added successfully${ingMsg}.`,
+            this.transloco.translate(
+              count > 0 ? 'groupForm.createdWithIngredients' : 'groupForm.created',
+              { name: val.name, count },
+            ),
           );
           this.router.navigate(['/inventory/groups']);
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          const msg = err?.message || 'Failed to create ingredient group.';
+          const msg = err?.message || this.transloco.translate('groupForm.createFailed');
           this.submitError.set(msg);
           this.toastService.showError(msg);
         },

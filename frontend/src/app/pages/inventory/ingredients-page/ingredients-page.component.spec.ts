@@ -9,7 +9,9 @@ import { IngredientGroupService } from '@services/inventory/ingredient-group.ser
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { ToastService } from '@services/toast.service';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { ConfirmDialogService } from '@ui';
+import { ConfirmationService } from 'primeng/api';
+import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { AuthService } from '../../../core/services/auth.service';
 import { IngredientCatalogStateService } from './ingredient-catalog-state.service';
@@ -23,6 +25,7 @@ describe('IngredientsPageComponent', () => {
   let mockItemService: jasmine.SpyObj<ItemService>;
   let mockToastService: jasmine.SpyObj<ToastService>;
   let mockAuthService: jasmine.SpyObj<AuthService>;
+  let mockConfirmDialog: { confirm: jasmine.Spy; confirmationService: ConfirmationService };
 
   let queryParams: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
   const kitchen = signal({ id: 'kitchen-1', name: 'Home' });
@@ -47,6 +50,10 @@ describe('IngredientsPageComponent', () => {
     mockItemService = jasmine.createSpyObj('ItemService', ['getItems', 'removeItem']);
     mockToastService = jasmine.createSpyObj('ToastService', ['showSuccess', 'showError']);
     mockAuthService = jasmine.createSpyObj('AuthService', ['activeKitchen']);
+    mockConfirmDialog = {
+      confirm: jasmine.createSpy('confirm').and.returnValue(Promise.resolve(true)),
+      confirmationService: new ConfirmationService(),
+    };
 
     mockIngredientService.getIngredients.and.returnValue(of([mockIngredient]));
     mockIngredientGroupService.getIngredientGroups.and.returnValue(of([]));
@@ -69,6 +76,7 @@ describe('IngredientsPageComponent', () => {
         { provide: ItemService, useValue: mockItemService },
         { provide: ToastService, useValue: mockToastService },
         { provide: AuthService, useValue: mockAuthService },
+        { provide: ConfirmDialogService, useValue: mockConfirmDialog },
         provideRouter([]),
         { provide: ActivatedRoute, useValue: { queryParamMap: queryParams } },
         provideZonelessChangeDetection(),
@@ -246,5 +254,32 @@ describe('IngredientsPageComponent', () => {
     expect(component.searchQuery()).toBe('Flour');
     expect(component.selectedStatusFilter()).toBe('out-of-stock');
     expect(component.fromGroups()).toBe(true);
+  });
+
+  it('keeps the ingredient when the delete confirmation is cancelled', async () => {
+    mockConfirmDialog.confirm.and.returnValue(Promise.resolve(false));
+    await component.onDeleteIngredient(mockIngredient);
+    expect(mockConfirmDialog.confirm).toHaveBeenCalledWith(
+      jasmine.objectContaining({ destructive: true }),
+    );
+    expect(mockIngredientService.deleteIngredient).not.toHaveBeenCalled();
+  });
+
+  it('deletes the ingredient after the destructive confirmation is accepted', async () => {
+    mockIngredientService.deleteIngredient.and.returnValue(of(undefined as never));
+    await component.onDeleteIngredient(mockIngredient);
+    expect(mockIngredientService.deleteIngredient).toHaveBeenCalledWith('ing-101');
+  });
+
+  it('shows an error state with retry when the catalog fails to load', () => {
+    mockIngredientService.getIngredients.and.returnValue(throwError(() => new Error('fail')));
+    component.loadData();
+    fixture.detectChanges();
+    expect(component.loadFailed()).toBe(true);
+    expect(fixture.nativeElement.querySelector('pantry-empty-state button')).toBeTruthy();
+    mockIngredientService.getIngredients.and.returnValue(of([mockIngredient]));
+    fixture.nativeElement.querySelector('pantry-empty-state button').click();
+    fixture.detectChanges();
+    expect(component.loadFailed()).toBe(false);
   });
 });

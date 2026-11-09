@@ -1,8 +1,13 @@
 <div class="page-layout" *transloco="let t">
-  <a routerLink="/inventory/ingredients" class="btn-ghost self-start">
-    <i class="pi pi-arrow-left" aria-hidden="true"></i>
-    <span>{{ t('ingredientDetail.back') }}</span>
-  </a>
+  <ng-template #backLink>
+    <a routerLink="/inventory/ingredients" class="btn-ghost mb-2">
+      <i class="pi pi-arrow-left" aria-hidden="true"></i>
+      <span>{{ t('ingredientDetail.back') }}</span>
+    </a>
+  </ng-template>
+  @if (state() !== 'ready' || !ingredient()) {
+    <div><ng-container *ngTemplateOutlet="backLink" /></div>
+  }
 
   @switch (state()) {
     @case ('loading') {
@@ -37,15 +42,21 @@
     @case ('ready') {
       @if (ingredient(); as ingredient) {
         <header class="page-header">
-          <div class="min-w-0 space-y-3">
+          <div class="min-w-0">
+            <ng-container *ngTemplateOutlet="backLink" />
             <h1 class="type-page-title break-words text-surface-900 dark:text-white">
               {{ ingredient.name }}
             </h1>
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
               @if (ingredient.ingredientGroup; as group) {
-                <pantry-badge variant="primary">{{ group.name }}</pantry-badge>
+                <a
+                  routerLink="/inventory/ingredients"
+                  [queryParams]="{ groupId: group.id }"
+                  class="inline-flex min-h-[42px] items-center rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-primary-500">
+                  <pantry-badge variant="primary">{{ group.name }}</pantry-badge>
+                </a>
               } @else {
-                <span class="type-meta text-surface-500 dark:text-surface-400">{{
+                <span class="type-meta italic text-surface-500 dark:text-surface-400">{{
                   t('ingredientDetail.unassignedGroup')
                 }}</span>
               }
@@ -66,33 +77,35 @@
           </div>
         </header>
 
-        <dl class="flex flex-wrap gap-x-12 gap-y-5">
-          <div>
-            <dt class="type-label text-surface-600 dark:text-surface-400 mb-2">
-              {{ t('ingredientDetail.itemCount') }}
-            </dt>
-            <dd class="type-value text-surface-900 dark:text-white">
-              {{ items().length | number }}
-            </dd>
-          </div>
-          <div class="min-w-0 flex-1">
-            <dt class="type-label text-surface-600 dark:text-surface-400 mb-2">
-              {{ t('ingredientDetail.totalStock') }}
-            </dt>
-            <dd class="flex flex-wrap gap-x-5 gap-y-2">
-              @for (total of stock(); track $index) {
-                <span class="type-value text-surface-900 dark:text-white"
-                  >{{ total.quantity | number: '1.0-3' }}
-                  <span class="type-label text-surface-500 dark:text-surface-400">{{
-                    total.unit
-                  }}</span></span
-                >
-              } @empty {
-                <span class="type-value text-surface-900 dark:text-white">{{ 0 | number }}</span>
-              }
-            </dd>
-          </div>
-        </dl>
+        <pantry-card>
+          <dl class="flex flex-wrap gap-x-12 gap-y-5">
+            <div>
+              <dt class="type-label text-surface-600 dark:text-surface-400 mb-2">
+                {{ t('ingredientDetail.itemCount') }}
+              </dt>
+              <dd class="type-value text-surface-900 dark:text-white">
+                {{ items().length | number }}
+              </dd>
+            </div>
+            <div class="min-w-0 flex-1">
+              <dt class="type-label text-surface-600 dark:text-surface-400 mb-2">
+                {{ t('ingredientDetail.totalStock') }}
+              </dt>
+              <dd class="flex flex-wrap gap-x-5 gap-y-2">
+                @for (total of stock(); track $index) {
+                  <span class="type-value text-surface-900 dark:text-white"
+                    >{{ total.quantity | number: '1.0-3' }}
+                    <span class="type-label text-surface-500 dark:text-surface-400">{{
+                      total.unit
+                    }}</span></span
+                  >
+                } @empty {
+                  <span class="type-value text-surface-900 dark:text-white">{{ 0 | number }}</span>
+                }
+              </dd>
+            </div>
+          </dl>
+        </pantry-card>
 
         <section aria-labelledby="ingredient-items-heading" class="space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
@@ -109,9 +122,7 @@
             </div>
           </div>
           @if (deleteError()) {
-            <p role="alert" class="text-sm text-rose-600 dark:text-rose-400">
-              {{ t('ingredientDetail.deleteError') }}
-            </p>
+            <pantry-alert variant="danger">{{ t('ingredientDetail.deleteError') }}</pantry-alert>
           }
           @if (items().length === 0) {
             <pantry-empty-state

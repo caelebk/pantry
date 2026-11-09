@@ -141,14 +141,14 @@ components:
 
 Pantry is a quiet, trustworthy record of a household's food. The interface behaves like a well-kept ledger. Content sits on clean, nearly opaque surfaces with even rhythm and predictable controls, so you can trust a glance on a phone in the kitchen as much as a planning session at a desk. The system shows information plainly and does not perform.
 
-The atmosphere stays in the background. The app shell carries a static pale Morning Haze sky behind every page. The sky has soft radial glows and a faint 28px dot grid. The sky has no particles, utensils, or waves. Content never competes with it. Cards are 92–96% opaque, so the haze only reads at the margins. Ember Orange is the one warm note in a cool, slate-and-sky world. It marks where you act and where you are. It does nothing else. Status colors (emerald, amber, rose) carry the food's condition. They never decorate.
+The atmosphere stays in the background. The app shell carries a static pale Morning Haze sky behind every page. The sky has soft radial glows. The sky has no particles, utensils, waves, or pattern. Content never competes with it. Cards are 92–96% opaque, so the haze only reads at the margins. Ember Orange is the one warm note in a cool, slate-and-sky world. It marks where you act and where you are. It does nothing else. Status colors (emerald, amber, rose) carry the food's condition. They never decorate.
 
 Density is moderate and intentional. Body text starts at 14px. Every single-line control is 42px tall. Pages keep useful information visible. They do not hide it behind extra framing. Minimalism here means fewer decisions and clearer relationships. It does not mean less information. Light and dark themes are first-class peers. Neither theme is the fallback. The theme follows the stored choice. If no stored choice exists, the theme follows the operating system.
 
 **Key Characteristics:**
 
 - Cool slate neutrals over a pale sky-blue haze; Ember Orange reserved for actions and the current location.
-- Nearly opaque frosted cards, quietly layered on borders and tone rather than shadow.
+- Nearly opaque cards, quietly layered on borders and tone rather than shadow.
 - One 42px control height and soft 12px corners across buttons, inputs, selects, and date pickers.
 - Native system sans with five named type roles; natural case, no tracked uppercase labels.
 - Emerald / amber / rose status language for fresh / expiring / expired stock.
@@ -215,14 +215,14 @@ Error text is the exception. Error text and the `btn-danger` text use `rose-600`
 
 **The Minimum Size Rule.** Do not use text smaller than `text-xs` (12px). Do not use arbitrary 9–11px sizes. Do not use `font-extrabold`.
 
-**The Role, Not Size Rule.** Use the named role classes (`type-page-title`, `type-section-title`, `type-label`, `type-meta`, `type-value`) instead of ad hoc size and weight utilities. Keep each role's color token; a quieter weight must not make help text unreadable.
+**The Role, Not Size Rule.** Use the named role classes (`type-page-title`, `type-section-title`, `type-body`, `type-label`, `type-meta`, `type-value`) instead of ad hoc size and weight utilities. Keep each role's color token; a quieter weight must not make help text unreadable.
 
 ## Layout
 
 The app shell owns the outer gutters inside a 1280px workspace: 16px on phones, 24px from 640px, 32px from 1024px. Pages must not add another outer horizontal or vertical padding wrapper. The breadcrumb, page heading, and content share the shell edge.
 
 - **Page layout:** full workspace width, 24px gaps between sections. The root element of a page template must not set `max-w-*` with `mx-auto`. Use `page-layout` and `page-header`.
-- **Auth pages:** the login and sign-up forms sit inside a `pantry-card`, not directly on the haze.
+- **Auth pages:** the login and sign-up halves sit on the same continuous shell surface. Neither half has decorative floating drawings, a tinted or blurred side panel, or a divider. The theme toggle is opaque. The form sits inside a `pantry-card`, not directly on the surface.
 - **Form layout:** left-aligned, 640px maximum measure, for compact forms only. Never narrow tables or long editors.
 - **Page header:** title and context first, then actions. It stacks on phones and goes horizontal from 640px. The action group wraps with 12px gaps.
 - **Compact header:** If a page has a back link, put the back link above the title, inside the header. Align the back link flush with the left edge of the title. Do not put the back action on the same row as the title.
@@ -285,6 +285,7 @@ Buttons are global CSS classes in `frontend/src/styles.scss`, applied as `<butto
 - **Background:** white at 94% (dark: Slate 800 at 92%). Sub-panels are solid white (dark: Slate 800 at 45%).
 - **Shadow Strategy:** card ambient and sub-panel inset (see Elevation & Depth).
 - **Border:** 1px Slate 200 at 80–90% (dark: white at 8%).
+- **Card surface directive (`[pantryCard]`):** applies the same surface classes to an existing element, with the same `variant`, `padding`, and `hover` inputs. Use it instead of `<pantry-card>` when the element itself must be the card, for example an `<article>` that is a subgrid item with a stretched link.
 - **Hover (interactive sub-panels and clickable cards):** border steps up to Slate 300. In dark mode, it raises the fill to 65%. Do not lift or scale the card. Do not use a shadow on hover.
 
 ### Inputs / Fields
@@ -293,6 +294,7 @@ Buttons are global CSS classes in `frontend/src/styles.scss`, applied as `<butto
 - **Hover:** border steps up one tone.
 - **Focus:** Ember Orange Bright border plus a 2px orange ring at 25% (35% in dark). There is no browser outline.
 - **Form fields (`pantry-form-field`):** owns the label, required asterisk, hint, error, and optional badge. Inside it, inputs, selects, number inputs, textareas, and date-picker containers share one surface: white at 80% (dark: Slate 900 at 80%) with the same border. Date-picker inner inputs stay transparent so the container supplies one continuous surface. `forId` must match the native focus target or the PrimeNG `inputId`. Labels wrap. Error text uses `rose-600` (dark: `rose-400`) with an icon. Long forms may focus an actionable validation summary after an invalid submit. Each error button focuses its field.
+- **Leading icon:** set `icon` on `pantry-form-field` to a PrimeIcons class (for example `pi pi-envelope`). The icon is decorative and sits at the left of the control. The projected text input gets extra left padding.
 - **Form-field accessibility contract:**
   - The field exposes `labelId()`, `hintId()`, and `errorId()`. Each ID derives from `forId`, or from a generated ID when `forId` is empty.
   - The field sets `aria-describedby` on projected `NgControl` targets and on elements marked `#fieldControl`. It points to the error ID when an error shows, and to the hint ID otherwise. It keeps external `aria-describedby` tokens.
@@ -326,7 +328,7 @@ Use it for an inline message inside a page or form: info, success, warning, or d
 ### Sizing
 
 - **Touch targets:** keep 42px as the standard target. Do not use a target smaller than 42px on phones. Pantry does not adopt the 44px platform guideline.
-- **`btn-icon-sm` (32px):** use it only at `sm` (640px) and wider, in dense desktop tables and card headers. On phones, switch to `btn-icon` (42px).
+- **`btn-icon-sm` (32px):** use it in dense desktop tables and card headers. Below `sm` (640px), the class grows to 42px automatically, so phones always get a full touch target.
 - **Forced heights:** do not use `!h-[...]`. Use the primitive size variants or a token.
 
 ### Selects / Dropdowns
@@ -339,7 +341,7 @@ Use it for an inline message inside a page or form: info, success, warning, or d
 
 ### Feedback & Loading
 
-- **Spinner (`pantry-spinner`):** sizes `xs`–`lg`; colors `primary`, `white`, `surface`; `inline` or `stacked`. It announces itself (`role="status"`, polite). Never copy an `animate-spin` SVG or border spinner into a page.
+- **Spinner (`pantry-spinner`):** sizes `xs`–`lg`; colors `primary`, `white`, `surface`; `inline` or `stacked`. It announces itself (`role="status"`, polite). Set `[announce]="false"` when it sits in a button or beside visible loading text, so screen readers do not hear it twice. Never copy an `animate-spin` SVG or border spinner into a page.
 - **Skeleton (`pantry-skeleton`):** `card`, `row`, `text`, `circle`, `custom`, with `count`. Never use raw `animate-pulse` placeholder divs.
 - **Loading:** show a `pantry-skeleton` for page and list content. Show a `pantry-spinner` (`inline`) inside a button or beside a short action. Do not use `pi-spin`. Give a loading region an accessible name (for example, "Loading recipe"). A load failure shows an error state with a retry action, not an endless spinner.
 - **Empty state (`pantry-empty-state`):** title, optional description, icon, and one action; `glass` or `plain`.
@@ -364,7 +366,7 @@ One quiet range status and a plain page indicator with `aria-current="page"`; ev
 
 ### Navigation
 
-- **Sidebar:** a near-transparent glass rail (4px blur) with a hairline right border. Items use 500-weight Slate 600 text (dark: Slate 300). All navigation labels use sentence case.
+- **Sidebar:** `.glass-sidebar` has a faint tint and a hairline right border. It has no backdrop blur, so it reads as the same surface as the page. Items use 500-weight Slate 600 text (dark: Slate 300). All navigation labels use sentence case.
 - **Order:** the sub-navigation items follow the taxonomy tier order (Categories and groups, Ingredients, Ingredient items). The shopping sub-pages (stores, restock review) are not in the navigation. Reach them from the shopping list.
 - **Tablet rail:** from 768px to 1023px the sidebar shows as a collapsed icon rail. Below 768px it is the mobile drawer. From 1024px it is the full sidebar.
 - **Icons:** navigation icons are PrimeIcons (`pi pi-*`). The brand mark is the Material Symbols `skillet` glyph. `index.html` loads the Material Symbols font, subset to this one glyph. Use the `pantry-skillet-icon` component to show it. Do not use Material Symbols for other icons.
@@ -374,17 +376,24 @@ One quiet range status and a plain page indicator with `aria-current="page"`; ev
 - **Sub-navigation:** text-only. Slate 500 at rest, darker on hover, semibold orange when active, with no fill.
 - **Semantics:** destinations are native `RouterLink` anchors; disclosure and action controls stay buttons. Navigation targets keep a 42px minimum height.
 - **Breadcrumbs:** quiet text in a semantic ordered list, with only the final item marked current. Deep paths show parent / current on phones and the full path on desktop.
-- **Mobile drawer:** a modal drawer, almost opaque so it stays readable over the atmosphere. Closed content is inert; opening focuses its close button; Tab stays inside; Escape, the backdrop, and choosing a destination close it, and focus returns to the menu trigger. Desktop collapse is a separate preference and never hides mobile sub-navigation.
+- **Mobile drawer:** a modal drawer, almost opaque so it stays readable over the shell surface. Closed content is inert; opening focuses its close button; Tab stays inside; Escape, the backdrop, and choosing a destination close it, and focus returns to the menu trigger. Desktop collapse is a separate preference and never hides mobile sub-navigation.
 - **Motion:** 240ms `cubic-bezier(0.22, 1, 0.36, 1)` on background, border, and shadow. Under `prefers-reduced-motion`, the app disables Angular animations. It reads the media query into a signal and binds `[@.disabled]`. Use Tailwind `motion-reduce:` utilities for CSS transitions and animations.
 - **Header:** white at 96% (dark: Slate 900 at 96%) with a hairline bottom border.
 
-### Shell Atmosphere (signature)
+### Shell Surface: Morning Haze (signature)
 
-The fixed background behind every page combines a Slate 50 base (dark: Slate 900) with a Morning Haze radial wash at the top. It also has two faint blue corner glows and a 28px dot grid at 12% opacity (8% in dark). It is static. It has no particles, utensils, waves, or other ambient motion. Do not add any. Any other animation stops under `prefers-reduced-motion`.
+The app shell paints one static surface behind every page. It is painted once, on the app root `.shell-atmosphere`. The surface has four layers:
+
+1. **Base:** Slate 50 in light mode. Slate 900 in dark mode.
+2. **Haze:** a sky-blue radial haze from the top-left.
+3. **Glows:** a soft blue glow at the top-left and one at the bottom-right. Dark mode uses deep-blue glows.
+4. **Matte grain:** a barely visible 256px SVG noise tile on top (`grain-light.svg`, `grain-dark.svg`).
+
+The surface is static. It has no motion and no transition. It has no dot grid. The glows have no hard edges, and no glow is a separate element. Do not add patterns, illustrations, or decorative drawings. Print is white.
 
 ### Theme
 
-The theme is the stored choice (`localStorage` key `pantry.theme`) when it exists. Otherwise it follows `prefers-color-scheme`. A script in `index.html` sets the `.dark` class before the first paint, so the page does not flash the wrong theme. `ThemeService` keeps the class in sync afterward. The page is never "always dark" before boot.
+The theme is the stored choice (`localStorage` key `pantry.theme`) when it exists. Otherwise it follows `prefers-color-scheme`. A script in `index.html` sets the `.dark` class before the first paint, so the page does not flash the wrong theme. `ThemeService` keeps the class in sync afterward. `color-scheme` on `html` follows the `.dark` class, so native scrollbars and form controls match the theme. The `theme-color` meta follows the theme: `#f8fafc` (Slate 50) in light mode and `#0f172a` (Slate 900) in dark mode. A script in `index.html` and `ThemeService` both set it. The page is never "always dark" before boot.
 
 ## Do's and Don'ts
 
@@ -410,6 +419,11 @@ The theme is the stored choice (`localStorage` key `pantry.theme`) when it exist
 - **Don't** nest a card inside a sub-panel, or add competing headings and badge clusters around a task.
 - **Don't** add outer horizontal or vertical padding wrappers to pages.
 - **Don't** put content directly on the haze background; it belongs on a card.
+- **Don't** add patterns, illustrations, or decorative drawings to the background.
+- **Don't** animate the background.
+- **Don't** add a second background layer or a per-page background.
+- **Don't** put backdrop blur on panels over the surface.
+- **Don't** use translucent fills for status surfaces. Alerts and status call-outs stay opaque, so the shell surface does not show through them.
 - **Don't** shrink desktop tables or controls to fit phones; restructure instead.
 - **Don't** hand-roll search inputs, spinners, skeletons, empty states, badge pills, segmented controls, alerts, confirm dialogs, native selects, or popup menus. Use the `@ui` primitive or PrimeNG control.
 - **Don't** write long inline Tailwind button strings; use the `btn-*` classes.
@@ -424,31 +438,28 @@ This file is the single source of truth for Pantry's visual design. If another d
 
 ### Where to change things
 
-| To change                                                                                                 | Location                                                                                    | Notes                                                                                                                                                                                                                                                          |
-| :-------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Color, font, and type-role tokens                                                                         | `frontend/src/styles.scss` (`@theme`, `type-*` classes)                                     | Update the frontmatter here in the same change.                                                                                                                                                                                                                |
-| Brand primary palette                                                                                     | `frontend/src/app/app.config.ts` (`MyPreset`) + `@theme` `--color-primary-*`                | Change both together.                                                                                                                                                                                                                                          |
-| Navy popovers                                                                                             | `@theme` `--color-navy-900`                                                                 | Consume via `bg-navy-900`.                                                                                                                                                                                                                                     |
-| All buttons                                                                                               | `frontend/src/styles.scss` button contract classes                                          | Every `btn-*` consumer inherits.                                                                                                                                                                                                                               |
-| All inputs, selects, overlays, date pickers                                                               | `frontend/src/styles.scss` PrimeNG override block                                           | Every PrimeNG control inherits.                                                                                                                                                                                                                                |
-| Card surfaces and atmosphere                                                                              | `frontend/src/styles.scss` (`.glass-card`, `.sub-card`, shell background) and `pantry-card` |                                                                                                                                                                                                                                                                |
-| Search, spinner, skeleton, empty state, badge, form field, card, alert, segmented control, confirm dialog | `frontend/src/app/components/ui/<name>/`                                                    | Edit the primitive. Add a typed variant prop for page-specific needs. Use a scoped override only when no prop genuinely fits. Record it under Documented Exceptions.                                                                                           |
-| Dark mode                                                                                                 | `frontend/src/app/core/services/theme.service.ts`                                           | `ThemeService` is the only writer of the `.dark` class on `<html>`. It syncs with the user's `themePreference`. `index.html` applies the stored or system theme before boot to prevent a flash. Never touch `documentElement.classList` for theming elsewhere. |
+| To change                                                                                                 | Location                                                                                       | Notes                                                                                                                                                                                                                                                          |
+| :-------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Color, font, and type-role tokens                                                                         | `frontend/src/styles.scss` (`@theme`, `type-*` classes)                                        | Update the frontmatter here in the same change.                                                                                                                                                                                                                |
+| Brand primary palette                                                                                     | `frontend/src/app/app.config.ts` (`MyPreset`) + `@theme` `--color-primary-*`                   | Change both together.                                                                                                                                                                                                                                          |
+| Navy popovers                                                                                             | `@theme` `--color-navy-900`                                                                    | Consume via `bg-navy-900`.                                                                                                                                                                                                                                     |
+| All buttons                                                                                               | `frontend/src/styles.scss` button contract classes                                             | Every `btn-*` consumer inherits.                                                                                                                                                                                                                               |
+| All inputs, selects, overlays, date pickers                                                               | `frontend/src/styles.scss` PrimeNG override block                                              | Every PrimeNG control inherits.                                                                                                                                                                                                                                |
+| Card surfaces and shell surface                                                                           | `frontend/src/styles.scss` (`.glass-card`, `.sub-card`, `.shell-atmosphere`) and `pantry-card` |                                                                                                                                                                                                                                                                |
+| Search, spinner, skeleton, empty state, badge, form field, card, alert, segmented control, confirm dialog | `frontend/src/app/components/ui/<name>/`                                                       | Edit the primitive. Add a typed variant prop for page-specific needs. Use a scoped override only when no prop genuinely fits. Record it under Documented Exceptions.                                                                                           |
+| Dark mode                                                                                                 | `frontend/src/app/core/services/theme.service.ts`                                              | `ThemeService` is the only writer of the `.dark` class on `<html>`. It syncs with the user's `themePreference`. `index.html` applies the stored or system theme before boot to prevent a flash. Never touch `documentElement.classList` for theming elsewhere. |
 
 ### Documented Exceptions
 
 These are the only sanctioned deviations. Each is allowlisted in `frontend/tools/check-design-system.mjs` and must keep its reason here.
 
-| Location                                        | Pattern                                                    | Why it remains                                                                                                                                       |
-| :---------------------------------------------- | :--------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ingredient-category.component.html`            | Raw hex fallback `#ea580c` for data-driven category colors | Colors come from backend data; hex concatenation builds tints dynamically.                                                                           |
-| `ingredient-categories-page.component.html`     | Raw hex fallback `#8b5cf6` for data-driven group colors    | Same data-driven tinting; violet-500 is the fallback for missing group color data.                                                                   |
-| `daily-focus.component.html` (status tile)      | Emerald / rose pill ternary inside a 40px icon tile        | A composite status tile (icon + text), not a badge.                                                                                                  |
-| `signup.component.ts` (password strength meter) | Rose / amber / emerald meter segments                      | The meter shows password strength, not food status. It always shows a text verdict next to the color. Color is never the only signal.                |
-| `sidebar.component.html` (mobile logo tile)     | Orange fill on the logo tile                               | The tile is a brand mark and a link to Home. It is clickable, so it follows The One Warm Note Rule.                                                  |
-| Ingredient category and group colors            | A clamped data-driven palette                              | Users pick category and group colors. The palette excludes the status hues (emerald, amber, rose), so a category color is never read as food status. |
-
-The `ingredient-categories-page` component is not routed. Delete it or route it in a separate task. Its hex fallback stays listed until then.
+| Location                                          | Pattern                                                  | Why it remains                                                                                                                                       |
+| :------------------------------------------------ | :------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `daily-focus.component.html` (status tile)        | Emerald / rose pill ternary inside a 40px icon tile      | A composite status tile (icon + text), not a badge.                                                                                                  |
+| `toast-container.component.ts` (status icon tile) | Emerald / rose / amber tinted tile behind the toast icon | A status icon tile, not a badge. The toast also shows a text title.                                                                                  |
+| `signup.component.ts` (password strength meter)   | Rose / amber / emerald meter segments                    | The meter shows password strength, not food status. It always shows a text verdict next to the color. Color is never the only signal.                |
+| `sidebar.component.html` (mobile logo tile)       | Orange fill on the logo tile                             | The tile is a brand mark and a link to Home. It is clickable, so it follows The One Warm Note Rule.                                                  |
+| Ingredient category and group colors              | A clamped data-driven palette                            | Users pick category and group colors. The palette excludes the status hues (emerald, amber, rose), so a category color is never read as food status. |
 
 Anything else that trips the guardrails is a regression; fix it with the canonical pattern. To request a new exception, add an entry to `ALLOWLIST` in `frontend/tools/check-design-system.mjs` **and** a row above. Unexplained allowlist entries are rejected in review.
 

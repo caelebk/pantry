@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { provideTransloco } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { IngredientItem, IngredientItemDTO } from '@models/items.model';
 import { Location } from '@models/location.model';
@@ -15,6 +15,7 @@ import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
 import { of } from 'rxjs';
+import translations from '../../../../../public/i18n/en.json';
 import { RestockReviewPageComponent } from './restock-review-page.component';
 
 describe('RestockReviewPageComponent', () => {
@@ -167,9 +168,15 @@ describe('RestockReviewPageComponent', () => {
     ]);
 
     await TestBed.configureTestingModule({
-      imports: [RestockReviewPageComponent],
+      imports: [
+        RestockReviewPageComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+          preloadLangs: true,
+        }),
+      ],
       providers: [
-        provideTransloco({ config: { availableLangs: ['en'], defaultLang: 'en' } }),
         { provide: Router, useValue: mockRouter },
         { provide: ShoppingListService, useValue: mockShoppingListService },
         { provide: ItemService, useValue: mockItemService },
@@ -399,9 +406,15 @@ describe('RestockReviewPageComponent', () => {
     ]);
     TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
-      imports: [RestockReviewPageComponent],
+      imports: [
+        RestockReviewPageComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+          preloadLangs: true,
+        }),
+      ],
       providers: [
-        provideTransloco({ config: { availableLangs: ['en'], defaultLang: 'en' } }),
         { provide: Router, useValue: mockRouter },
         {
           provide: ActivatedRoute,

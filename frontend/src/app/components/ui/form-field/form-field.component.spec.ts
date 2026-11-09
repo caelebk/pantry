@@ -54,6 +54,23 @@ describe('FormFieldComponent', () => {
     expect(fixture.nativeElement.querySelector('label').id).toBe('name-label');
     expect(fixture.nativeElement.querySelector('#name-hint').textContent).toContain('Hint');
   });
+
+  it('should not render a leading icon by default', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('i.pi')).toBeNull();
+    expect(fixture.nativeElement.classList.contains('pantry-field--icon')).toBe(false);
+  });
+
+  it('should render a decorative leading icon and mark the host', () => {
+    fixture.componentRef.setInput('icon', 'pi pi-envelope');
+    fixture.detectChanges();
+
+    const icon = fixture.nativeElement.querySelector('i.pi-envelope');
+    expect(icon).toBeTruthy();
+    expect(icon.getAttribute('aria-hidden')).toBe('true');
+    expect(icon.classList.contains('text-surface-500')).toBe(true);
+    expect(fixture.nativeElement.classList.contains('pantry-field--icon')).toBe(true);
+  });
 });
 
 @Component({

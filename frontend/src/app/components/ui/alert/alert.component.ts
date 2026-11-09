@@ -51,9 +51,12 @@ export class AlertComponent {
   classes = computed(() => {
     const map: Record<AlertVariant, string> = {
       info: 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border-surface-200 dark:border-surface-700',
-      success: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20',
-      warning: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20',
-      danger: 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/20',
+      success:
+        'bg-emerald-50 dark:bg-[color-mix(in_srgb,var(--color-emerald-500)_10%,var(--color-surface-900))] text-emerald-700 dark:text-emerald-300 border-emerald-500/20',
+      warning:
+        'bg-amber-50 dark:bg-[color-mix(in_srgb,var(--color-amber-500)_10%,var(--color-surface-900))] text-amber-700 dark:text-amber-300 border-amber-500/20',
+      danger:
+        'bg-rose-50 dark:bg-[color-mix(in_srgb,var(--color-rose-500)_10%,var(--color-surface-900))] text-rose-700 dark:text-rose-300 border-rose-500/20',
     };
     return `flex items-start gap-3 p-3 rounded-xl border text-sm ${map[this.variant()]}`;
   });

@@ -42,21 +42,24 @@
 
         <div class="grid grid-cols-1 min-[380px]:grid-cols-2 gap-4">
           <pantry-form-field
+            #quantityField
             forId="quantity"
             [label]="t('itemEditor.quantity')"
             [required]="true"
             [error]="fieldError('quantity', 'quantityError')">
             <p-inputnumber
               inputId="quantity"
+              [ariaLabelledBy]="quantityField.labelId()"
               formControlName="quantity"
               [min]="0"
               [maxFractionDigits]="3"
               [showButtons]="true"
               class="w-full"
-              styleClass="w-full !h-[42px]"
-              inputStyleClass="w-full !h-[42px] !rounded-xl"></p-inputnumber>
+              styleClass="w-full"
+              inputStyleClass="w-full"></p-inputnumber>
           </pantry-form-field>
           <pantry-form-field
+            #unitField
             forId="unit"
             [label]="t('itemEditor.unit')"
             [required]="!form().controls.unit.disabled"
@@ -73,11 +76,12 @@
                   form().controls.unit.value?.shortName +
                   ')'
                 "
-                class="w-full h-[42px] rounded-xl" />
+                class="w-full" />
             } @else {
               <p-select
                 [readonly]="submitting()"
                 inputId="unit"
+                [ariaLabelledBy]="unitField.labelId()"
                 formControlName="unit"
                 [options]="units()"
                 optionLabel="name"
@@ -152,15 +156,17 @@
               id="name"
               formControlName="name"
               [placeholder]="t('itemEditor.namePlaceholder')"
-              class="w-full h-[42px] rounded-xl" />
+              class="w-full" />
           </pantry-form-field>
           <pantry-form-field
+            #purchaseDateField
             forId="purchaseDate"
             [label]="t('itemEditor.purchase')"
             [required]="true"
             [error]="fieldError('purchaseDate', 'purchaseError')">
             <p-datepicker
               inputId="purchaseDate"
+              [ariaLabelledBy]="purchaseDateField.labelId()"
               formControlName="purchaseDate"
               [showIcon]="true"
               appendTo="body"
@@ -200,20 +206,17 @@
                 formControlName="notes"
                 rows="3"
                 [placeholder]="t('itemEditor.notesPlaceholder')"
-                class="w-full rounded-xl"></textarea>
+                class="w-full"></textarea>
             </pantry-form-field>
           </div>
         </div>
       </fieldset>
 
       @if (error()) {
-        <div
-          role="alert"
-          class="rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3 text-sm text-rose-700 dark:text-rose-300">
-          {{ error() }}
-        </div>
+        <pantry-alert variant="danger">{{ error() }}</pantry-alert>
       }
-      <div class="flex flex-wrap items-center justify-end gap-3 pt-4">
+      <div
+        class="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-surface-200/40 dark:border-surface-800/40">
         <button
           type="button"
           class="btn-secondary"
@@ -223,7 +226,7 @@
         </button>
         <button type="submit" class="btn-primary" [disabled]="submitting()">
           @if (submitting()) {
-            <pantry-spinner size="sm" color="white" />
+            <pantry-spinner [announce]="false" size="sm" color="white" />
           }
           {{
             t(

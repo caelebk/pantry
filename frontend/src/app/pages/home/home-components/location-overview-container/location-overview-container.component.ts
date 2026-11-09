@@ -3,19 +3,19 @@ import { Component, computed, input } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Item } from '@models/items.model';
 import { Location } from '@models/location.model';
+import { BadgeComponent, CardComponent, EmptyStateComponent } from '@ui';
 
 export interface LocationStat {
   location: Location;
   count: number;
   percentage: number;
   icon: string;
-  colorClass: string;
 }
 
 @Component({
   selector: 'pantry-location-overview-container',
   standalone: true,
-  imports: [CommonModule, TranslocoModule],
+  imports: [CommonModule, TranslocoModule, BadgeComponent, CardComponent, EmptyStateComponent],
   templateUrl: './location-overview-container.component.html',
   host: { class: 'block' },
 })
@@ -43,13 +43,11 @@ export class LocationOverviewContainerComponent {
     locMap.forEach((val) => {
       const percentage = Math.round((val.count / totalCount) * 100);
       const icon = this.getLocationIcon(val.location.name);
-      const colorClass = this.getLocationColor();
       stats.push({
         location: val.location,
         count: val.count,
         percentage,
         icon,
-        colorClass,
       });
     });
 
@@ -63,9 +61,5 @@ export class LocationOverviewContainerComponent {
     if (lower.includes('pantry') || lower.includes('cabinet')) return 'pi pi-box';
     if (lower.includes('spice') || lower.includes('rack')) return 'pi pi-tags';
     return 'pi pi-building';
-  }
-
-  private getLocationColor(): string {
-    return 'bg-primary-500';
   }
 }

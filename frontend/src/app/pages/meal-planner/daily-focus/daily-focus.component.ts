@@ -9,15 +9,28 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { DayOfWeek, PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
-import { BadgeComponent } from '@ui';
+import { BadgeComponent, CardComponent, EmptyStateComponent } from '@ui';
 import { sumKnownMetadata } from '@utility/recipe-metadata';
+import { SelectModule } from 'primeng/select';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'pantry-daily-focus',
   standalone: true,
-  imports: [CommonModule, BadgeComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslocoModule,
+    SelectModule,
+    BadgeComponent,
+    CardComponent,
+    EmptyStateComponent,
+  ],
   templateUrl: './daily-focus.component.html',
   styleUrl: './daily-focus.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,7 +55,20 @@ export class DailyFocusComponent {
     mealType: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snacks';
   }>();
 
+  private readonly transloco = inject(TranslocoService);
+  // Re-emits once the active language's translations are loaded, so computed labels refresh.
+  private readonly translationsReady = toSignal(
+    this.transloco.langChanges$.pipe(switchMap((lang) => this.transloco.load(lang))),
+  );
+
   readonly days = this.mealPlannerService.days;
+  readonly dayOptions = computed(() => {
+    this.translationsReady();
+    return this.days.map((day) => ({
+      value: day,
+      label: this.transloco.translate(`mealPlanner.days.${day.toLowerCase()}`),
+    }));
+  });
   readonly selectedDay = signal<DayOfWeek>('Monday');
 
   readonly dayMeals = computed(() => {

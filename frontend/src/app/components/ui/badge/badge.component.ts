@@ -50,7 +50,7 @@ export class BadgeComponent {
       expiring: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20',
       expired: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20',
       primary:
-        'bg-primary-500/10 text-primary-700 dark:text-primary-400 border border-primary-500/20',
+        'bg-primary-500/10 text-primary-800 dark:text-primary-400 border border-primary-500/20',
       neutral:
         'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200/80 dark:border-surface-700',
       location:

@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
+import translations from '../../../../public/i18n/en.json';
 import { DailyFocusComponent } from './daily-focus/daily-focus.component';
 import { PlanMealPageComponent } from './plan-meal-page/plan-meal-page.component';
 import { WeeklyViewComponent } from './weekly-view/weekly-view.component';
@@ -23,6 +25,12 @@ const meal: PlannedMeal = {
 describe('Planner metadata honesty', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+        }),
+      ],
       providers: [
         {
           provide: MealPlannerService,
@@ -66,13 +74,13 @@ describe('Planner metadata honesty', () => {
     const fixture = TestBed.createComponent(DailyFocusComponent);
     fixture.componentInstance.meals = [meal];
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).not.toContain('Total Planned Calories');
-    expect(fixture.nativeElement.textContent).not.toContain('Estimated Kitchen Time');
+    expect(fixture.nativeElement.textContent).not.toContain('Total planned calories');
+    expect(fixture.nativeElement.textContent).not.toContain('Estimated kitchen time');
     expect(fixture.nativeElement.textContent).not.toContain('15 mins');
     expect(fixture.nativeElement.textContent).not.toContain('400 kcal');
     fixture.componentInstance.meals = [{ ...meal, calories: 0, prepTimeMinutes: 0 }];
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Total Planned Calories');
+    expect(fixture.nativeElement.textContent).toContain('Total planned calories');
     expect(fixture.nativeElement.textContent).toContain('0 mins');
     expect(fixture.nativeElement.textContent).toContain('0 kcal');
   });

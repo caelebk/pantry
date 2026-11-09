@@ -14,8 +14,8 @@ export type SpinnerLayout = 'inline' | 'stacked';
       class="inline-flex items-center justify-center"
       [class.flex-col]="layout() === 'stacked'"
       [class.gap-2]="layout() === 'stacked' || (label() && layout() === 'inline')"
-      role="status"
-      aria-live="polite">
+      [attr.role]="announce() ? 'status' : null"
+      [attr.aria-live]="announce() ? 'polite' : null">
       <svg
         [class]="spinnerClasses()"
         xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +37,9 @@ export type SpinnerLayout = 'inline' | 'stacked';
       @if (label()) {
         <span [class]="labelClasses()">{{ label() }}</span>
       }
-      <span class="sr-only">{{ label() || 'Loading...' }}</span>
+      @if (announce()) {
+        <span class="sr-only">{{ label() || 'Loading...' }}</span>
+      }
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,6 +49,8 @@ export class SpinnerComponent {
   color = input<SpinnerColor>('primary');
   layout = input<SpinnerLayout>('inline');
   label = input<string>();
+  /** Set to false when visible text next to the spinner already says what is loading. */
+  announce = input<boolean>(true);
 
   spinnerClasses = computed(() => {
     const sizeMap: Record<SpinnerSize, string> = {

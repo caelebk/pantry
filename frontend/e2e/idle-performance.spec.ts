@@ -17,9 +17,7 @@ for (const { route, width } of [
   { route: '/home', width: 1440 },
   { route: '/home', width: 390 },
 ]) {
-  test(`background motion caps canvas work and respects reduced motion: ${route} at ${width}px`, async ({
-    page,
-  }, testInfo) => {
+  test(`shell background is static: ${route} at ${width}px`, async ({ page }, testInfo) => {
     await installDesignBaseline(page, 'light');
     if (route === '/auth/login') {
       await page.route('**/api/v1/auth/refresh', (request) =>
@@ -30,43 +28,24 @@ for (const { route, width } of [
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
-    await page.addInitScript(() => {
-      const original = CanvasRenderingContext2D.prototype.clearRect;
-      (window as unknown as { backgroundDraws: number }).backgroundDraws = 0;
-      CanvasRenderingContext2D.prototype.clearRect = function (...args) {
-        if (this.canvas === document.querySelector('pantry-root canvas')) {
-          (window as unknown as { backgroundDraws: number }).backgroundDraws++;
-        }
-        return original.apply(this, args);
-      };
-    });
     await page.goto(`${process.env['IDLE_BASE_URL'] ?? ''}${route}`);
     await expect(page).toHaveURL(new RegExp(`${route}$`));
     await page.waitForTimeout(2000);
-    const waves = page.locator('.ambient-waves');
-    const layers = waves.locator('.ambient-wave');
-    await expect(layers).toHaveCount(3);
-    const animationNames = await layers.evaluateAll((elements) =>
-      elements.map((element) => getComputedStyle(element).animationName),
-    );
-    expect(new Set(animationNames).size).toBe(3);
-    animationNames.forEach((name, index) => {
-      expect(name).toMatch(new RegExp(`(?:^|_)waveFlow${index + 1}$`));
-    });
+    await expect(page.locator('.shell-atmosphere')).toHaveCount(1);
     expect(
-      await layers.evaluateAll((elements) =>
-        elements.map((element) => getComputedStyle(element).animationDuration),
+      await page.evaluate(
+        () =>
+          document
+            .getAnimations()
+            .filter(
+              (a) =>
+                a.playState === 'running' && a.effect?.getComputedTiming().iterations === Infinity,
+            ).length,
       ),
-    ).toEqual(['18s', '22s', '26s']);
+    ).toBe(0);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true);
-    const initialTransform = await layers.first().evaluate((el) => getComputedStyle(el).transform);
-    await expect
-      .poll(() => layers.first().evaluate((el) => getComputedStyle(el).transform))
-      .not.toBe(initialTransform);
-    const readDrawCount = () =>
-      page.evaluate(() => (window as unknown as { backgroundDraws: number }).backgroundDraws);
     const client = await page.context().newCDPSession(page);
     await client.send('Performance.enable');
     const before = await client.send('Performance.getMetrics');
@@ -77,9 +56,7 @@ for (const { route, width } of [
         'toplevel,devtools.timeline,v8,disabled-by-default-devtools.timeline,disabled-by-default-v8.cpu_profiler',
       options: 'sampling-frequency=1000',
     });
-    const drawsBefore = await readDrawCount();
     await page.waitForTimeout(10_000);
-    const canvasDraws = (await readDrawCount()) - drawsBefore;
     const finished = new Promise<void>((resolve) =>
       client.once('Tracing.tracingComplete', () => resolve()),
     );
@@ -102,7 +79,6 @@ for (const { route, width } of [
     );
     const summary = {
       url: page.url(),
-      canvasDraws,
       counts,
       metrics,
       longTasks: tasks
@@ -122,17 +98,19 @@ for (const { route, width } of [
     console.log(JSON.stringify(summary));
     await page.screenshot({ path: testInfo.outputPath('idle.png') });
     expect(errors).toEqual([]);
-    expect(canvasDraws).toBeGreaterThan(0);
-    expect(canvasDraws).toBeLessThanOrEqual(310);
 
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await expect(waves).toHaveClass(/is-paused/);
-    for (const layer of await layers.all()) {
-      await expect(layer).toHaveCSS('animation-name', 'none');
-    }
-    const reducedDraws = await readDrawCount();
-    await page.waitForTimeout(1000);
-    expect(await readDrawCount()).toBe(reducedDraws);
+    expect(
+      await page.evaluate(
+        () =>
+          document
+            .getAnimations()
+            .filter(
+              (a) =>
+                a.playState === 'running' && a.effect?.getComputedTiming().iterations === Infinity,
+            ).length,
+      ),
+    ).toBe(0);
     await page.screenshot({ path: testInfo.outputPath('reduced-motion.png') });
   });
 }

@@ -7,12 +7,19 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { DayOfWeek, MealType } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
-import { EmptyStateComponent, SkeletonComponent } from '@ui';
+import {
+  EmptyStateComponent,
+  SegmentedControlComponent,
+  SegmentedOption,
+  SkeletonComponent,
+} from '@ui';
+import { switchMap } from 'rxjs';
 import { DailyFocusComponent } from './daily-focus/daily-focus.component';
 import { WeeklyViewComponent } from './weekly-view/weekly-view.component';
 
@@ -29,6 +36,7 @@ export type PlannerSubTab = 'calendar' | 'daily';
     DailyFocusComponent,
     SkeletonComponent,
     EmptyStateComponent,
+    SegmentedControlComponent,
   ],
   templateUrl: './meal-planner.component.html',
   styleUrl: './meal-planner.component.scss',
@@ -40,6 +48,20 @@ export class MealPlannerComponent implements OnInit {
 
   readonly days = this.mealPlannerService.days;
   readonly mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+
+  private readonly transloco = inject(TranslocoService);
+  // Re-emits once the active language's translations are loaded, so computed labels refresh.
+  private readonly translationsReady = toSignal(
+    this.transloco.langChanges$.pipe(switchMap((lang) => this.transloco.load(lang))),
+  );
+
+  readonly subTabOptions = computed<SegmentedOption<PlannerSubTab>[]>(() => {
+    this.translationsReady();
+    return [
+      { value: 'calendar', label: this.transloco.translate('mealPlanner.tabs.calendar') },
+      { value: 'daily', label: this.transloco.translate('mealPlanner.tabs.daily') },
+    ];
+  });
 
   // Active Sub-Page View Tab
   activeSubTab = signal<PlannerSubTab>('calendar');
@@ -61,8 +83,8 @@ export class MealPlannerComponent implements OnInit {
     this.mealPlannerService.loadStock();
   }
 
-  setSubTab(tab: PlannerSubTab): void {
-    this.activeSubTab.set(tab);
+  setSubTab(tab: PlannerSubTab | undefined): void {
+    if (tab) this.activeSubTab.set(tab);
   }
 
   openAddModal(eventPayload?: { day: DayOfWeek; mealType: MealType }): void {

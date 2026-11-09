@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { IngredientCategory } from '@models/ingredient-category.model';
 import { IngredientGroup as IngredientGroupModel } from '@models/ingredient-group.model';
 import { Ingredient } from '@models/ingredient.model';
@@ -41,10 +41,10 @@ import {
 } from '@utility/itemUtility/ItemUtility';
 import { AuthService } from '../../core/services/auth.service';
 
-import { ConfirmationService } from 'primeng/api';
 import { CheckboxModule } from 'primeng/checkbox';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
 import { AddItemFormComponent } from './inventory-components/add-item-form/add-item-form.component';
@@ -54,13 +54,17 @@ import { ActivatedRoute, Router } from '@angular/router';
 export type StatusFilter = 'all' | 'expiring' | 'expired' | 'fresh' | 'out_of_stock';
 export type SortOption = 'expiration' | 'name' | 'quantity' | 'purchase' | 'status';
 
-import { SkeletonModule } from 'primeng/skeleton';
-
 import {
+  AlertComponent,
   BadgeComponent,
+  ConfirmDialogService,
   DataTablePaginationComponent,
+  EmptyStateComponent,
   FormFieldComponent,
   SearchInputComponent,
+  SegmentedControlComponent,
+  SkeletonComponent,
+  SpinnerComponent,
 } from '@ui';
 
 @Component({
@@ -71,18 +75,22 @@ import {
     CheckboxModule,
     TranslocoModule,
     AddItemFormComponent,
-    ConfirmDialogModule,
     ToastModule,
     FormsModule,
     SelectModule,
     DialogModule,
-    SkeletonModule,
+    DatePickerModule,
+    InputTextModule,
     SearchInputComponent,
+    SegmentedControlComponent,
     BadgeComponent,
+    AlertComponent,
+    SkeletonComponent,
+    SpinnerComponent,
+    EmptyStateComponent,
     FormFieldComponent,
     DataTablePaginationComponent,
   ],
-  providers: [ConfirmationService],
   templateUrl: './inventory.component.html',
   animations: [fadeInOut, staggeredFadeIn],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -92,8 +100,9 @@ export class InventoryComponent implements OnInit {
   private readonly ingredientService = inject(IngredientService);
   private readonly ingredientGroupService = inject(IngredientGroupService);
   private readonly ingredientCategoryService = inject(IngredientCategoryService);
-  private readonly confirmationService = inject(ConfirmationService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly shoppingListService = inject(ShoppingListService);
@@ -112,8 +121,6 @@ export class InventoryComponent implements OnInit {
   }
 
   readonly staggerDelayPerItemMs = STAGGER_DELAY_PER_ITEM_MS;
-
-  public readonly dismissableMask = true;
 
   public totalItemsCount = 0;
   public expiringSoonItemsCount = 0;
@@ -139,6 +146,7 @@ export class InventoryComponent implements OnInit {
 
   public selectedCategory: IngredientGroupModel | null = null;
   public isLoading = signal(true);
+  public loadFailed = signal(false);
 
   // Quick Restock Modal Dialog State
   public displayRestockModal = signal(false);
@@ -146,7 +154,8 @@ export class InventoryComponent implements OnInit {
   public restockItems = signal<Item[]>([]);
   public restockAmount = signal<number>(1);
   public restockLocationId = signal<number | null>(null);
-  public restockExpirationDate = signal<string>('');
+  // Holds the exact Date the picker emitted so NgModel never sees a recomputed object mid-typing.
+  public restockExpirationDate = signal<Date | null>(null);
   public isRestocking = signal(false);
 
   public sortDirection: 'asc' | 'desc' = 'asc';
@@ -163,6 +172,11 @@ export class InventoryComponent implements OnInit {
     if (!ingredientId) return null;
     const ing = this.ingredients.find((i) => i.id === ingredientId);
     return ing ? ing.name : null;
+  }
+
+  public ariaSort(field: SortOption): 'ascending' | 'descending' | 'none' {
+    if (this.sortBy !== field) return 'none';
+    return this.sortDirection === 'asc' ? 'ascending' : 'descending';
   }
 
   public toggleSort(field: SortOption): void {
@@ -283,7 +297,7 @@ export class InventoryComponent implements OnInit {
 
   public get locationSelectOptions(): { id: number | null; name: string }[] {
     return [
-      { id: null, name: 'All Locations' },
+      { id: null, name: this.transloco.translate('inventoryTable.allLocations') },
       ...this.locations.map((loc) => ({
         id: loc.id,
         name: loc.name,
@@ -297,8 +311,11 @@ export class InventoryComponent implements OnInit {
 
   public get bulkRestockLocationOptions(): { id: number; name: string }[] {
     return [
-      { id: 0, name: "Keep each item's current location" },
-      ...this.locations.map((loc) => ({ id: loc.id, name: `Move all to ${loc.name}` })),
+      { id: 0, name: this.transloco.translate('inventoryTable.keepLocation') },
+      ...this.locations.map((loc) => ({
+        id: loc.id,
+        name: this.transloco.translate('inventoryTable.moveAllTo', { name: loc.name }),
+      })),
     ];
   }
 
@@ -424,10 +441,10 @@ export class InventoryComponent implements OnInit {
       result.push({
         category: {
           id: -1,
-          name: 'Unclassified',
+          name: this.transloco.translate('inventory.taxonomy.unclassified'),
           icon: '📦',
           color: '#94a3b8',
-          description: 'Categories without an assigned ingredient category',
+          description: this.transloco.translate('inventory.taxonomy.unclassifiedDescription'),
         },
         ingredientGroups: uncategorizedCatGroups,
         categoryGroups: uncategorizedCatGroups,
@@ -478,8 +495,13 @@ export class InventoryComponent implements OnInit {
     });
   }
 
+  public retryLoad(): void {
+    this.initParameters();
+  }
+
   private initParameters(): void {
     this.isLoading.set(true);
+    this.loadFailed.set(false);
     this.inventoryService.getItems().subscribe({
       next: (items) => {
         this.items = sortItemsByExpirationDate(items);
@@ -500,8 +522,12 @@ export class InventoryComponent implements OnInit {
       },
       error: () => {
         this.isLoading.set(false);
+        this.loadFailed.set(true);
         this.cdr.markForCheck();
-        this.toastService.showError('Unable to load inventory items.', 'Network Error');
+        this.toastService.showError(
+          this.transloco.translate('inventory.messages.loadError'),
+          this.transloco.translate('inventory.messages.loadErrorTitle'),
+        );
       },
     });
 
@@ -542,33 +568,46 @@ export class InventoryComponent implements OnInit {
     this.inventoryService.addItem(item).subscribe({
       next: () => {
         this.displayAddModal = false;
-        this.toastService.showSuccess(`"${item.name}" added to inventory!`, 'Item Added');
+        this.toastService.showSuccess(
+          this.transloco.translate('inventory.messages.itemAdded', { name: item.name }),
+          this.transloco.translate('inventory.messages.itemAddedTitle'),
+        );
         this.initParameters();
       },
       error: (err) => {
-        this.toastService.showError(err?.message || 'Failed to add item.', 'Error');
+        this.toastService.showError(
+          err?.message || this.transloco.translate('inventory.messages.addFailed'),
+          this.transloco.translate('inventory.messages.errorTitle'),
+        );
       },
     });
   }
 
-  public onDeleteItem(item: Item, event?: Event): void {
+  public async onDeleteItem(item: Item, event?: Event): Promise<void> {
     if (event) {
       event.stopPropagation();
     }
-    this.confirmationService.confirm({
-      header: 'Remove Item',
-      message: `Are you sure you want to permanently delete "${item.name}" from inventory?`,
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.inventoryService.removeItem(item).subscribe({
-          next: () => {
-            this.toastService.showSuccess(`"${item.name}" removed from inventory.`, 'Item Removed');
-            this.initParameters();
-          },
-          error: () => {
-            this.toastService.showError(`Failed to remove "${item.name}".`, 'Error');
-          },
-        });
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.transloco.translate('inventory.messages.removeTitle'),
+      message: this.transloco.translate('inventory.messages.removeConfirm', { name: item.name }),
+      acceptLabel: this.transloco.translate('inventory.messages.removeTitle'),
+      destructive: true,
+    });
+    if (!confirmed) return;
+
+    this.inventoryService.removeItem(item).subscribe({
+      next: () => {
+        this.toastService.showSuccess(
+          this.transloco.translate('inventory.messages.removed', { name: item.name }),
+          this.transloco.translate('inventory.messages.removedTitle'),
+        );
+        this.initParameters();
+      },
+      error: () => {
+        this.toastService.showError(
+          this.transloco.translate('inventory.messages.removeFailed', { name: item.name }),
+          this.transloco.translate('inventory.messages.errorTitle'),
+        );
       },
     });
   }
@@ -592,11 +631,17 @@ export class InventoryComponent implements OnInit {
   public onUpdateItem(updatedItem: Item): void {
     this.inventoryService.updateItem(updatedItem).subscribe({
       next: () => {
-        this.toastService.showSuccess(`Updated "${updatedItem.name}".`, 'Item Updated');
+        this.toastService.showSuccess(
+          this.transloco.translate('inventory.messages.updated', { name: updatedItem.name }),
+          this.transloco.translate('inventory.messages.updatedTitle'),
+        );
         this.initParameters();
       },
       error: () => {
-        this.toastService.showError(`Failed to update "${updatedItem.name}".`, 'Error');
+        this.toastService.showError(
+          this.transloco.translate('inventory.messages.updateFailed', { name: updatedItem.name }),
+          this.transloco.translate('inventory.messages.errorTitle'),
+        );
       },
     });
   }
@@ -646,26 +691,33 @@ export class InventoryComponent implements OnInit {
   }
 
   // Stock Action Handlers
-  public onClearStockItem(item: Item, event?: Event): void {
+  public async onClearStockItem(item: Item, event?: Event): Promise<void> {
     if (event) {
       event.stopPropagation();
     }
-    this.confirmationService.confirm({
-      header: 'Clear Stock',
-      message: `Clear stock for "${item.name}"? This will set quantity to 0 so you can restock it later.`,
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.transloco.translate('inventory.messages.clearTitle'),
+      message: this.transloco.translate('inventory.messages.clearConfirm', { name: item.name }),
+      acceptLabel: this.transloco.translate('inventory.messages.clearTitle'),
       icon: 'pi pi-box',
-      accept: () => {
-        const updatedItem = { ...item, quantity: 0, expirationDate: undefined };
+    });
+    if (!confirmed) return;
 
-        this.inventoryService.updateItem(updatedItem).subscribe({
-          next: () => {
-            this.toastService.showSuccess(`Cleared stock for "${item.name}".`, 'Stock Cleared');
-            this.initParameters();
-          },
-          error: () => {
-            this.toastService.showError(`Failed to clear stock for "${item.name}".`, 'Error');
-          },
-        });
+    const updatedItem = { ...item, quantity: 0, expirationDate: undefined };
+
+    this.inventoryService.updateItem(updatedItem).subscribe({
+      next: () => {
+        this.toastService.showSuccess(
+          this.transloco.translate('inventory.messages.cleared', { name: item.name }),
+          this.transloco.translate('inventory.messages.clearedTitle'),
+        );
+        this.initParameters();
+      },
+      error: () => {
+        this.toastService.showError(
+          this.transloco.translate('inventory.messages.clearFailed', { name: item.name }),
+          this.transloco.translate('inventory.messages.errorTitle'),
+        );
       },
     });
   }
@@ -678,9 +730,7 @@ export class InventoryComponent implements OnInit {
     this.restockItems.set([item]);
     this.restockAmount.set(1);
     this.restockLocationId.set(item.location.id);
-    this.restockExpirationDate.set(
-      item.expirationDate ? new Date(item.expirationDate).toISOString().substring(0, 10) : '',
-    );
+    this.restockExpirationDate.set(this.toLocalDate(item.expirationDate));
     this.displayRestockModal.set(true);
   }
 
@@ -689,13 +739,37 @@ export class InventoryComponent implements OnInit {
   }
 
   public setRestockExpiryDays(days: number): void {
-    const d = new Date();
-    d.setDate(d.getDate() + days);
-    this.restockExpirationDate.set(d.toISOString().substring(0, 10));
+    const today = new Date();
+    this.restockExpirationDate.set(
+      new Date(today.getFullYear(), today.getMonth(), today.getDate() + days),
+    );
   }
 
   public clearRestockExpiry(): void {
-    this.restockExpirationDate.set('');
+    this.restockExpirationDate.set(null);
+  }
+
+  public onRestockExpirationChange(date: Date | null): void {
+    this.restockExpirationDate.set(date);
+  }
+
+  // Local-midnight calendar date. Never goes through UTC (toISOString) so it cannot shift a day.
+  private toLocalDate(value: Date | string | null | undefined): Date | null {
+    if (!value) return null;
+    if (typeof value === 'string') {
+      const calendar = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+      if (calendar) {
+        return new Date(Number(calendar[1]), Number(calendar[2]) - 1, Number(calendar[3]));
+      }
+      value = new Date(value);
+    }
+    return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+  }
+
+  private toLocalIsoDate(date: Date): string {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day}`;
   }
 
   public onConfirmRestock(): void {
@@ -711,8 +785,8 @@ export class InventoryComponent implements OnInit {
     const amount = Number(this.restockAmount());
     if (isNaN(amount) || amount <= 0) {
       this.toastService.showError(
-        'Please enter a valid restock quantity greater than 0.',
-        'Validation Error',
+        this.transloco.translate('inventory.messages.invalidQuantity'),
+        this.transloco.translate('inventory.messages.validationTitle'),
       );
       return;
     }
@@ -721,9 +795,9 @@ export class InventoryComponent implements OnInit {
     const selectedLocation = locId > 0 ? this.locations.find((l) => l.id === locId) : undefined;
 
     let expDate: Date | undefined = undefined;
-    const hasExpDateInput = !!this.restockExpirationDate();
-    if (hasExpDateInput) {
-      expDate = new Date(this.restockExpirationDate() + 'T00:00:00');
+    const pickedDate = this.restockExpirationDate();
+    if (pickedDate) {
+      expDate = new Date(this.toLocalIsoDate(pickedDate) + 'T00:00:00');
     }
 
     this.isRestocking.set(true);
@@ -737,7 +811,7 @@ export class InventoryComponent implements OnInit {
         quantity: currentQty + amount,
         purchaseDate: new Date(), // Always update purchase date on restock!
         location: selectedLocation || item.location,
-        expirationDate: hasExpDateInput ? expDate : item.expirationDate,
+        expirationDate: expDate ? expDate : item.expirationDate,
       };
 
       this.inventoryService.updateItem(updatedItem).subscribe({
@@ -765,20 +839,27 @@ export class InventoryComponent implements OnInit {
     if (completed > 0) {
       if (items.length === 1) {
         this.toastService.showSuccess(
-          `Restocked "${items[0].name}" (+${amount} ${items[0].unit.shortName || items[0].unit.name}). Purchase date updated.`,
-          'Item Restocked',
+          this.transloco.translate('inventory.messages.restockedOne', {
+            name: items[0].name,
+            amount,
+            unit: items[0].unit.shortName || items[0].unit.name,
+          }),
+          this.transloco.translate('inventory.messages.restockedOneTitle'),
         );
       } else {
         this.toastService.showSuccess(
-          `Restocked ${completed} item(s). Purchase date updated.`,
-          'Bulk Action Complete',
+          this.transloco.translate('inventory.messages.restockedMany', { count: completed }),
+          this.transloco.translate('inventory.messages.bulkCompleteTitle'),
         );
       }
       this.clearSelection();
       this.initParameters();
     }
     if (failed > 0) {
-      this.toastService.showError(`Failed to restock ${failed} item(s).`, 'Error');
+      this.toastService.showError(
+        this.transloco.translate('inventory.messages.restockFailed', { count: failed }),
+        this.transloco.translate('inventory.messages.errorTitle'),
+      );
     }
   }
 
@@ -797,28 +878,36 @@ export class InventoryComponent implements OnInit {
   }
 
   // Bulk Action Handlers
-  public onBulkClearStock(): void {
+  public async onBulkClearStock(): Promise<void> {
     const ids = Array.from(this.selectedItemIds());
     if (ids.length === 0) return;
 
-    this.confirmationService.confirm({
-      header: 'Bulk Clear Stock',
-      message: `Are you sure you want to clear stock (set quantity to 0) for ${ids.length} selected item(s)?`,
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.transloco.translate('inventory.messages.bulkClearTitle'),
+      message: this.transloco.translate('inventory.messages.bulkClearConfirm', {
+        count: ids.length,
+      }),
+      acceptLabel: this.transloco.translate('inventory.messages.clearTitle'),
       icon: 'pi pi-box',
-      accept: () => {
-        this.inventoryService.bulkClearStock(ids).subscribe({
-          next: (res) => {
-            this.toastService.showSuccess(
-              `Cleared stock for ${res.clearedCount} item(s).`,
-              'Bulk Action Complete',
-            );
-            this.clearSelection();
-            this.initParameters();
-          },
-          error: () => {
-            this.toastService.showError('Failed to bulk clear stock.', 'Error');
-          },
-        });
+    });
+    if (!confirmed) return;
+
+    this.inventoryService.bulkClearStock(ids).subscribe({
+      next: (res) => {
+        this.toastService.showSuccess(
+          this.transloco.translate('inventory.messages.bulkCleared', {
+            count: res.clearedCount,
+          }),
+          this.transloco.translate('inventory.messages.bulkCompleteTitle'),
+        );
+        this.clearSelection();
+        this.initParameters();
+      },
+      error: () => {
+        this.toastService.showError(
+          this.transloco.translate('inventory.messages.bulkClearFailed'),
+          this.transloco.translate('inventory.messages.errorTitle'),
+        );
       },
     });
   }
@@ -848,17 +937,13 @@ export class InventoryComponent implements OnInit {
     const selectedItems = this.items.filter((item) => ids.includes(item.id));
     this.restockItems.set(selectedItems);
     this.restockAmount.set(1);
-    this.restockExpirationDate.set('');
+    this.restockExpirationDate.set(null);
 
     if (selectedItems.length === 1) {
       const singleItem = selectedItems[0];
       this.restockItem.set(singleItem);
       this.restockLocationId.set(singleItem.location.id);
-      this.restockExpirationDate.set(
-        singleItem.expirationDate
-          ? new Date(singleItem.expirationDate).toISOString().substring(0, 10)
-          : '',
-      );
+      this.restockExpirationDate.set(this.toLocalDate(singleItem.expirationDate));
     } else {
       this.restockItem.set(null);
       this.restockLocationId.set(0);
@@ -867,28 +952,36 @@ export class InventoryComponent implements OnInit {
     this.displayRestockModal.set(true);
   }
 
-  public onBulkDelete(): void {
+  public async onBulkDelete(): Promise<void> {
     const ids = Array.from(this.selectedItemIds());
     if (ids.length === 0) return;
 
-    this.confirmationService.confirm({
-      header: 'Bulk Delete Items',
-      message: `Are you sure you want to permanently delete ${ids.length} selected item(s)?`,
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.inventoryService.bulkDeleteItems(ids).subscribe({
-          next: (res) => {
-            this.toastService.showSuccess(
-              `Permanently deleted ${res.deletedCount} item(s).`,
-              'Items Deleted',
-            );
-            this.clearSelection();
-            this.initParameters();
-          },
-          error: () => {
-            this.toastService.showError('Failed to bulk delete items.', 'Error');
-          },
-        });
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.transloco.translate('inventory.messages.bulkDeleteTitle'),
+      message: this.transloco.translate('inventory.messages.bulkDeleteConfirm', {
+        count: ids.length,
+      }),
+      acceptLabel: 'Delete',
+      destructive: true,
+    });
+    if (!confirmed) return;
+
+    this.inventoryService.bulkDeleteItems(ids).subscribe({
+      next: (res) => {
+        this.toastService.showSuccess(
+          this.transloco.translate('inventory.messages.bulkDeleted', {
+            count: res.deletedCount,
+          }),
+          this.transloco.translate('inventory.messages.itemsDeletedTitle'),
+        );
+        this.clearSelection();
+        this.initParameters();
+      },
+      error: () => {
+        this.toastService.showError(
+          this.transloco.translate('inventory.messages.bulkDeleteFailed'),
+          this.transloco.translate('inventory.messages.errorTitle'),
+        );
       },
     });
   }

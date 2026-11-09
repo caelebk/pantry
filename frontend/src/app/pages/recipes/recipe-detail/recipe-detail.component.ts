@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { Recipe } from '@models/recipe.model';
 import { Unit } from '@models/unit.model';
@@ -11,13 +11,21 @@ import { IngredientService } from '../../../services/inventory/ingredient.servic
 import { ItemService } from '../../../services/inventory/item.service';
 import { UnitService } from '../../../services/inventory/unit.service';
 import { RecipeService } from '../../../services/recipe.service';
+import { ToastService } from '../../../services/toast.service';
 
 import { SubstitutionSuggestion } from '@models/inventory.models';
 import { Item } from '@models/items.model';
 import { buildAvailableBaseMap, isIngredientAvailable } from '@utility/recipe-stock';
 
 import { ChangeDetectionStrategy } from '@angular/core';
-import { BadgeComponent, BadgeVariant, EmptyStateComponent, SpinnerComponent } from '@ui';
+import {
+  BadgeComponent,
+  CardComponent,
+  ConfirmDialogService,
+  EmptyStateComponent,
+  SkeletonComponent,
+  SpinnerComponent,
+} from '@ui';
 import { DialogModule } from 'primeng/dialog';
 
 @Component({
@@ -30,6 +38,8 @@ import { DialogModule } from 'primeng/dialog';
     SpinnerComponent,
     EmptyStateComponent,
     BadgeComponent,
+    CardComponent,
+    SkeletonComponent,
   ],
   templateUrl: './recipe-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +51,9 @@ export class RecipeDetailComponent implements OnInit {
   private readonly ingredientService = inject(IngredientService);
   private readonly unitService = inject(UnitService);
   private readonly itemService = inject(ItemService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
 
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -60,7 +73,8 @@ export class RecipeDetailComponent implements OnInit {
   openSubstitutionModal(event: Event, ing: { ingredientId: string }): void {
     event.stopPropagation();
     const ingredientObj = this.ingredientMap.get(ing.ingredientId);
-    const name = ingredientObj?.name || 'Ingredient';
+    const name: string =
+      ingredientObj?.name || this.transloco.translate<string>('recipeDetail.ingredientFallback');
     this.activeSubstitutionIngredient = { ingredientId: ing.ingredientId, name };
     this.isLoadingSubstitutions = true;
     this.activeSubstitutionSuggestions = [];
@@ -138,29 +152,25 @@ export class RecipeDetailComponent implements OnInit {
     this.router.navigate(['/inventory/ingredients', ing.ingredientId]);
   }
 
-  get difficultyText(): string | null {
+  get difficultyKey(): string | null {
     if (!this.recipe) return null;
-    if (this.recipe.difficulty) return this.recipe.difficulty;
+    const labelKeys: Record<string, string> = {
+      easy: 'recipes.browse.difficultyEasy',
+      medium: 'recipes.browse.difficultyMedium',
+      hard: 'recipes.browse.difficultyHard',
+    };
+    const knownLabel = labelKeys[this.recipe.difficulty?.trim().toLowerCase() || ''];
+    if (knownLabel) return knownLabel;
+    if (this.recipe.difficulty) return null;
     switch (this.recipe.difficultyId) {
       case 1:
-        return 'Easy';
+        return labelKeys['easy'];
       case 2:
-        return 'Medium';
+        return labelKeys['medium'];
       case 3:
-        return 'Hard';
+        return labelKeys['hard'];
       default:
         return null;
-    }
-  }
-
-  get difficultyVariant(): BadgeVariant {
-    const text = (this.difficultyText ?? '').toLowerCase();
-    if (text.includes('easy')) {
-      return 'fresh';
-    } else if (text.includes('medium')) {
-      return 'expiring';
-    } else {
-      return 'expired';
     }
   }
 
@@ -212,12 +222,24 @@ export class RecipeDetailComponent implements OnInit {
     }
   }
 
-  deleteRecipe(): void {
-    if (this.recipe && confirm(`Are you sure you want to delete "${this.recipe.name}"?`)) {
-      this.recipeService.deleteRecipe(this.recipe.id).subscribe({
-        next: () => this.router.navigate(['/recipes']),
-        error: (err) => console.error('Failed to delete recipe', err),
-      });
-    }
+  async deleteRecipe(): Promise<void> {
+    const recipe = this.recipe;
+    if (!recipe) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.transloco.translate('recipeDetail.deleteConfirmTitle'),
+      message: this.transloco.translate('recipeDetail.deleteConfirmMessage', {
+        name: recipe.name,
+      }),
+      acceptLabel: this.transloco.translate('recipeDetail.deleteRecipe'),
+      destructive: true,
+    });
+    if (!confirmed) return;
+    this.recipeService.deleteRecipe(recipe.id).subscribe({
+      next: () => this.router.navigate(['/recipes']),
+      error: (err) => {
+        console.error('Failed to delete recipe', err);
+        this.toastService.showError(this.transloco.translate('recipeDetail.deleteFailed'));
+      },
+    });
   }
 }

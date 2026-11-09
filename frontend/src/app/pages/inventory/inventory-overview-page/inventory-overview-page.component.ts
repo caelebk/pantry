@@ -20,7 +20,7 @@ import { IngredientGroupService } from '@services/inventory/ingredient-group.ser
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
-import { BadgeComponent, EmptyStateComponent, SpinnerComponent } from '@ui';
+import { AlertComponent, BadgeComponent, EmptyStateComponent, SkeletonComponent } from '@ui';
 import { Observable, Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { expiryBucket } from './inventory-overview-stock';
@@ -35,9 +35,10 @@ type LoadState = 'loading' | 'ready' | 'error' | 'idle';
     CommonModule,
     TranslocoModule,
     RouterLink,
+    AlertComponent,
     BadgeComponent,
     EmptyStateComponent,
-    SpinnerComponent,
+    SkeletonComponent,
   ],
   templateUrl: './inventory-overview-page.component.html',
   styleUrl: './inventory-overview-page.component.scss',

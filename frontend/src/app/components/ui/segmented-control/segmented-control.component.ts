@@ -104,7 +104,7 @@ export class SegmentedControlComponent<T = string> {
     const base =
       'inline-flex items-center justify-center gap-2 min-h-[42px] px-4 rounded-lg text-sm font-medium cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60';
     return selected
-      ? `${base} bg-primary-500/10 dark:bg-primary-500/20 text-primary-700 dark:text-primary-400 border border-primary-500/20`
+      ? `${base} bg-primary-500/10 dark:bg-primary-500/20 text-primary-800 dark:text-primary-400 border border-primary-500/20`
       : `${base} border border-transparent text-surface-600 dark:text-surface-300 hover:bg-surface-200/50 dark:hover:bg-white/10`;
   }
 }

@@ -18,33 +18,37 @@
       </button>
 
       <button type="button" (click)="goToAddItemPage()" class="btn-primary">
-        <i class="pi pi-plus text-sm font-bold"></i>
+        <i class="pi pi-plus text-sm"></i>
         <span>{{ 'shoppingList.actions.addItem' | transloco }}</span>
       </button>
     </div>
   </header>
 
   @if (shoppingListService.isLoading()) {
-    <div class="space-y-4" aria-busy="true" aria-label="Loading shopping list">
+    <div
+      class="space-y-4"
+      aria-busy="true"
+      [attr.aria-label]="'shoppingList.aria.loading' | transloco">
       <pantry-skeleton variant="card" height="128px"></pantry-skeleton>
       <pantry-skeleton variant="card" height="56px"></pantry-skeleton>
       <pantry-skeleton variant="card" height="288px"></pantry-skeleton>
     </div>
   } @else {
     <!-- Combined Progress & Budget Overview Card -->
-    <div
-      class="glass-card rounded-2xl p-5 sm:p-6 border border-surface-200/80 dark:border-surface-800/80 shadow-xs panel-reveal panel-delay-1"
-      aria-label="Shopping list summary">
+    <pantry-card
+      padding="md"
+      class="block panel-reveal panel-delay-1"
+      [attr.aria-label]="'shoppingList.aria.summary' | transloco">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
         <!-- Left: Items Progress -->
         <div class="flex-1 min-w-0 space-y-2">
           <div class="flex items-center justify-between">
             <span
-              class="text-xs font-bold uppercase tracking-wider text-surface-500 dark:text-surface-400 flex items-center gap-1.5">
+              class="type-label text-surface-500 dark:text-surface-400 flex items-center gap-1.5">
               <i class="pi pi-shopping-bag text-surface-500 dark:text-surface-400"></i>
               <span>{{ 'shoppingList.stats.combinedTitle' | transloco }}</span>
             </span>
-            <span class="text-xs font-bold text-surface-900 dark:text-white">
+            <span class="type-label text-surface-900 dark:text-white">
               {{ checkedCount() }} / {{ totalCount() }}
               {{ 'shoppingList.stats.itemsSummary' | transloco }} ({{ boughtProgress() }}%)
             </span>
@@ -58,19 +62,19 @@
           </div>
 
           <div
-            class="flex items-center justify-between text-xs text-surface-500 dark:text-surface-400 pt-0.5">
+            class="type-meta flex items-center justify-between text-surface-500 dark:text-surface-400 pt-0.5">
             <span>
-              <strong class="text-surface-900 dark:text-white font-bold">{{
+              <strong class="text-surface-900 dark:text-white font-semibold">{{
                 uncheckedCount()
               }}</strong>
               {{ 'shoppingList.stats.itemsRemaining' | transloco }}
             </span>
             <span>
-              <strong class="text-surface-900 dark:text-white font-bold"
+              <strong class="text-surface-900 dark:text-white font-semibold"
                 >${{ inCartCost() | number: '1.2-2' }}</strong
               >
               {{ 'shoppingList.stats.costSummary' | transloco }}
-              <strong class="text-surface-900 dark:text-white font-bold"
+              <strong class="text-surface-900 dark:text-white font-semibold"
                 >${{ totalEstimatedCost() | number: '1.2-2' }}</strong
               >
             </span>
@@ -82,85 +86,53 @@
         <!-- Right: Budget Highlight Pill -->
         <div class="shrink-0 flex items-center gap-4">
           <div>
-            <p
-              class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+            <p class="type-label text-surface-500 dark:text-surface-400">
               {{ 'shoppingList.stats.remainingSpend' | transloco }}
             </p>
-            <p class="text-2xl font-extrabold text-surface-900 dark:text-white">
+            <p class="type-value text-surface-900 dark:text-white">
               ${{ remainingCost() | number: '1.2-2' }}
             </p>
           </div>
         </div>
       </div>
-    </div>
+    </pantry-card>
 
     <!-- Action & Filter Toolbar -->
     <div
       class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 relative z-20 panel-reveal panel-delay-2"
-      aria-label="Shopping list filters">
+      [attr.aria-label]="'shoppingList.aria.filters' | transloco">
       <!-- Search Input -->
       <div class="flex-1 min-w-[240px]">
         <pantry-search-input
           [value]="searchQuery()"
           (searchChange)="setSearch($event)"
           [placeholder]="'shoppingList.filters.searchPlaceholder' | transloco"
-          ariaLabel="Search shopping list items"
-          clearAriaLabel="Clear search"></pantry-search-input>
+          [ariaLabel]="'shoppingList.aria.search' | transloco"
+          [clearAriaLabel]="'shoppingList.aria.clearSearch' | transloco"></pantry-search-input>
       </div>
 
       <!-- Controls Group -->
       <div class="flex flex-wrap items-center gap-2.5">
-        <!-- Status Segmented Filter Pills -->
-        <div
-          class="flex items-center h-[42px] bg-surface-100 dark:bg-surface-800 p-1 rounded-xl gap-1 text-sm border border-surface-200 dark:border-surface-700 shadow-xs shrink-0">
-          <button
-            type="button"
-            (click)="setFilter('all')"
-            [class.bg-white]="activeFilter() === 'all'"
-            [class.dark:bg-surface-700]="activeFilter() === 'all'"
-            [class.shadow-xs]="activeFilter() === 'all'"
-            [class.text-surface-900]="activeFilter() === 'all'"
-            [class.dark:text-white]="activeFilter() === 'all'"
-            [class.font-bold]="activeFilter() === 'all'"
-            [class.text-surface-600]="activeFilter() !== 'all'"
-            [class.dark:text-surface-400]="activeFilter() !== 'all'"
-            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center justify-center">
-            <span>{{ 'shoppingList.filters.all' | transloco }}</span>
-            <span class="ml-1.5 opacity-75">({{ totalCount() }})</span>
-          </button>
-          <button
-            type="button"
-            (click)="setFilter('unchecked')"
-            [class.bg-white]="activeFilter() === 'unchecked'"
-            [class.dark:bg-surface-700]="activeFilter() === 'unchecked'"
-            [class.shadow-xs]="activeFilter() === 'unchecked'"
-            [class.text-surface-900]="activeFilter() === 'unchecked'"
-            [class.dark:text-white]="activeFilter() === 'unchecked'"
-            [class.font-bold]="activeFilter() === 'unchecked'"
-            [class.text-surface-600]="activeFilter() !== 'unchecked'"
-            [class.dark:text-surface-400]="activeFilter() !== 'unchecked'"
-            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1.5 justify-center">
-            <span>{{ 'shoppingList.filters.unchecked' | transloco }}</span>
-            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-            <span class="opacity-75">({{ uncheckedCount() }})</span>
-          </button>
-          <button
-            type="button"
-            (click)="setFilter('checked')"
-            [class.bg-white]="activeFilter() === 'checked'"
-            [class.dark:bg-surface-700]="activeFilter() === 'checked'"
-            [class.shadow-xs]="activeFilter() === 'checked'"
-            [class.text-surface-900]="activeFilter() === 'checked'"
-            [class.dark:text-white]="activeFilter() === 'checked'"
-            [class.font-bold]="activeFilter() === 'checked'"
-            [class.text-surface-600]="activeFilter() !== 'checked'"
-            [class.dark:text-surface-400]="activeFilter() !== 'checked'"
-            class="px-3 h-full rounded-lg transition-all cursor-pointer flex items-center gap-1.5 justify-center">
-            <span>{{ 'shoppingList.filters.checked' | transloco }}</span>
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span class="opacity-75">({{ checkedCount() }})</span>
-          </button>
-        </div>
+        <!-- Status Segmented Filter -->
+        <pantry-segmented-control
+          class="shrink-0"
+          [ariaLabel]="'shoppingList.aria.statusFilter' | transloco"
+          [options]="[
+            {
+              value: 'all',
+              label: ('shoppingList.filters.all' | transloco) + ' (' + totalCount() + ')',
+            },
+            {
+              value: 'unchecked',
+              label: ('shoppingList.filters.unchecked' | transloco) + ' (' + uncheckedCount() + ')',
+            },
+            {
+              value: 'checked',
+              label: ('shoppingList.filters.checked' | transloco) + ' (' + checkedCount() + ')',
+            },
+          ]"
+          [value]="activeFilter()"
+          (valueChange)="onFilterChange($event)" />
 
         <button
           type="button"
@@ -186,370 +158,364 @@
     </div>
 
     <!-- Data Table Container (Matching Ingredient Items Table Styling) -->
-    <div
-      class="glass-card rounded-2xl overflow-hidden border border-surface-200/70 dark:border-surface-800/80 shadow-xs panel-reveal panel-delay-3"
-      aria-label="Shopping list items">
-      @if (filteredItems().length === 0) {
-        <div class="flex min-h-72 flex-col items-center justify-center px-6 py-12 text-center">
-          <span
-            class="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-100 text-surface-400 dark:bg-surface-800 dark:text-surface-500 shadow-inner">
-            <i class="pi pi-shopping-bag text-2xl"></i>
-          </span>
-          <h2 class="type-section-title mt-4 text-surface-900 dark:text-white">
-            {{
+    <pantry-card
+      padding="none"
+      class="block panel-reveal panel-delay-3"
+      [attr.aria-label]="'shoppingList.aria.items' | transloco">
+      <div class="overflow-hidden rounded-2xl">
+        @if (filteredItems().length === 0) {
+          <pantry-empty-state
+            variant="plain"
+            class="block min-h-72 py-4"
+            icon="pi pi-shopping-bag"
+            [title]="
               (hasActiveFilters() ? 'shoppingList.empty.noMatches' : 'shoppingList.empty.title')
                 | transloco
-            }}
-          </h2>
-          <p class="mt-1.5 max-w-sm text-sm text-surface-500 dark:text-surface-400">
-            {{
+            "
+            [description]="
               (hasActiveFilters()
                 ? 'shoppingList.empty.noMatchesDesc'
                 : 'shoppingList.empty.description'
               ) | transloco
-            }}
-          </p>
-          <div class="mt-6 flex gap-2.5">
-            @if (hasActiveFilters()) {
-              <button type="button" (click)="clearFilters()" class="btn-secondary">
-                <i class="pi pi-filter-slash text-sm"></i>
-                <span>{{ 'shoppingList.actions.clearFilters' | transloco }}</span>
-              </button>
-            } @else {
-              <button type="button" (click)="goToAddItemPage()" class="btn-primary">
-                <i class="pi pi-plus text-sm font-bold"></i>
-                <span>{{ 'shoppingList.actions.addItem' | transloco }}</span>
-              </button>
+            "
+            [actionText]="
+              (hasActiveFilters()
+                ? 'shoppingList.actions.clearFilters'
+                : 'shoppingList.actions.addItem'
+              ) | transloco
+            "
+            [actionIcon]="hasActiveFilters() ? 'pi pi-filter-slash text-sm' : 'pi pi-plus text-sm'"
+            (actionClick)="hasActiveFilters() ? clearFilters() : goToAddItemPage()" />
+        } @else {
+          <!-- Phone: stacked item rows (no sideways scrolling) -->
+          <div class="md:hidden">
+            @if (selectMode()) {
+              <label
+                class="flex min-h-[42px] items-center gap-3 px-4 border-b border-surface-200/60 dark:border-surface-800/60 type-label text-surface-700 dark:text-surface-300 cursor-pointer">
+                <p-checkbox
+                  [binary]="true"
+                  [ngModel]="allVisibleSelected()"
+                  [indeterminate]="someVisibleSelected()"
+                  (onChange)="toggleSelectAll()"
+                  [ariaLabel]="'shoppingList.table.selectAll' | transloco" />
+                <span>{{ 'shoppingList.table.selectAll' | transloco }}</span>
+              </label>
             }
-          </div>
-        </div>
-      } @else {
-        <!-- Phone: stacked item rows (no sideways scrolling) -->
-        <div class="md:hidden">
-          @if (selectMode()) {
-            <label
-              class="flex min-h-[42px] items-center gap-3 px-4 border-b border-surface-200/60 dark:border-surface-800/60 text-sm font-semibold text-surface-700 dark:text-surface-300 cursor-pointer">
-              <input
-                type="checkbox"
-                [checked]="allVisibleSelected()"
-                [indeterminate]="someVisibleSelected()"
-                (change)="toggleSelectAll()"
-                class="w-5 h-5 rounded border-surface-300 dark:border-surface-600 cursor-pointer accent-primary-600" />
-              <span>{{ 'shoppingList.table.selectAll' | transloco }}</span>
-            </label>
-          }
-          <ul class="divide-y divide-surface-200/60 dark:divide-surface-800/60">
-            @for (item of filteredItems(); track item.id) {
-              <li
-                [class.bg-emerald-500/5]="item.checked"
-                [class.dark:bg-emerald-950/15]="item.checked"
-                [class.bg-primary-50/30]="selectedIds().has(item.id)"
-                class="flex items-center gap-1 pl-1 pr-3 py-1">
-                <label
-                  class="flex h-[42px] w-[42px] shrink-0 items-center justify-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    [checked]="item.checked"
-                    (change)="toggleItem(item.id)"
-                    [attr.aria-label]="
-                      'shoppingList.table.markItemBought' | transloco: { name: item.name }
-                    "
-                    class="w-6 h-6 rounded border-surface-300 dark:border-surface-600 cursor-pointer accent-emerald-600" />
-                </label>
-                <a
-                  [routerLink]="['/shopping-list', item.id, 'edit']"
-                  class="flex min-h-[42px] min-w-0 flex-1 flex-col justify-center py-1 text-surface-900 dark:text-white">
-                  <span
-                    [class.line-through]="item.checked"
-                    [class.text-surface-400]="item.checked"
-                    [class.dark:text-surface-500]="item.checked"
-                    class="truncate text-sm font-bold">
-                    {{ item.name }}
-                  </span>
-                  <span class="truncate text-xs text-surface-500 dark:text-surface-400">
-                    {{ item.quantity }} {{ item.unit }}
-                    @if (item.estimatedPrice) {
-                      <span>• ${{ item.estimatedPrice | number: '1.2-2' }}</span>
-                    }
-                    @if (item.storeName) {
-                      <span>• {{ item.storeName }}</span>
-                    }
-                  </span>
-                </a>
-                @if (selectMode()) {
-                  <label class="flex h-[42px] w-[42px] shrink-0 items-center justify-center">
-                    <input
-                      type="checkbox"
-                      [checked]="selectedIds().has(item.id)"
-                      (change)="toggleSelection(item.id)"
-                      [attr.aria-label]="
-                        'shoppingList.table.selectItem' | transloco: { name: item.name }
-                      "
-                      class="w-5 h-5 rounded border-surface-300 dark:border-surface-600 cursor-pointer accent-primary-600" />
-                  </label>
-                }
-              </li>
-            }
-          </ul>
-        </div>
-
-        <!-- Tablet and desktop: sortable table -->
-        <div class="hidden md:block overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr
-                class="bg-surface-200/60 dark:bg-surface-800/80 border-b border-surface-300/60 dark:border-surface-700/60 text-[11px] font-extrabold uppercase tracking-wider text-surface-600 dark:text-surface-400 select-none">
-                <!-- Bought Header -->
-                <th class="type-label py-3 px-3 w-10 text-center">
-                  <span class="sr-only">{{ 'shoppingList.stats.bought' | transloco }}</span>
-                </th>
-
-                @if (selectMode()) {
-                  <th class="type-label py-3 px-3 w-10 text-center select-none">
-                    <input
-                      type="checkbox"
-                      [checked]="allVisibleSelected()"
-                      [indeterminate]="someVisibleSelected()"
-                      (change)="toggleSelectAll()"
-                      [attr.aria-label]="'shoppingList.table.selectAll' | transloco"
-                      class="w-4 h-4 text-primary-600 rounded border-surface-300 dark:border-surface-600 focus:ring-primary-500 cursor-pointer accent-primary-600" />
-                  </th>
-                }
-
-                <!-- Sortable Column Headers -->
-                @for (column of sortColumns; track column.key) {
-                  <th class="type-label py-1 px-2" [attr.aria-sort]="ariaSort(column.key)">
-                    <button
-                      type="button"
-                      (click)="toggleSort(column.key)"
-                      class="flex min-h-[42px] items-center gap-1.5 px-2 rounded-lg uppercase font-extrabold tracking-wider cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                      <span>{{ column.label | transloco }}</span>
-                      @if (sortBy() === column.key) {
-                        <i
-                          class="pi text-[10px]"
-                          [class.pi-sort-up-fill]="sortDirection() === 'asc'"
-                          [class.pi-sort-down-fill]="sortDirection() === 'desc'"></i>
-                      } @else {
-                        <i class="pi pi-sort-alt text-[10px] opacity-40"></i>
-                      }
-                    </button>
-                  </th>
-                }
-              </tr>
-            </thead>
-            <tbody
-              class="divide-y divide-surface-200/60 dark:divide-surface-800/60 text-xs font-medium">
+            <ul class="divide-y divide-surface-200/60 dark:divide-surface-800/60">
               @for (item of filteredItems(); track item.id) {
-                <tr
-                  (click)="openItem(item.id)"
-                  [class.bg-emerald-500/5]="item.checked"
-                  [class.dark:bg-emerald-950/15]="item.checked"
-                  [class.bg-primary-50/30]="selectedIds().has(item.id)"
-                  [class.odd:bg-surface-50/50]="!item.checked && !selectedIds().has(item.id)"
-                  [class.dark:odd:bg-surface-800/20]="!item.checked && !selectedIds().has(item.id)"
-                  class="hover:bg-primary-50/40 dark:hover:bg-surface-800/50 transition-colors group cursor-pointer">
-                  <!-- Bought Column -->
-                  <td class="py-2.5 px-3 text-center" (click)="$event.stopPropagation()">
-                    <label
-                      class="flex h-[42px] w-[42px] items-center justify-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        [checked]="item.checked"
-                        (change)="toggleItem(item.id)"
-                        [attr.aria-label]="
-                          'shoppingList.table.markItemBought' | transloco: { name: item.name }
-                        "
-                        class="w-5 h-5 rounded border-surface-300 dark:border-surface-600 cursor-pointer accent-emerald-600" />
+                <li
+                  [class.bg-surface-100/60]="item.checked"
+                  [class.dark:bg-surface-800/40]="item.checked"
+                  [class.bg-surface-100]="selectedIds().has(item.id)"
+                  [class.dark:bg-surface-800]="selectedIds().has(item.id)"
+                  class="flex items-center gap-1 pl-1 pr-3 py-1">
+                  <label
+                    class="flex h-[42px] w-[42px] shrink-0 items-center justify-center cursor-pointer">
+                    <p-checkbox
+                      [binary]="true"
+                      [ngModel]="item.checked"
+                      (onChange)="toggleItem(item.id)"
+                      [ariaLabel]="
+                        'shoppingList.table.markItemBought' | transloco: { name: item.name }
+                      " />
+                  </label>
+                  <a
+                    [routerLink]="['/shopping-list', item.id, 'edit']"
+                    class="flex min-h-[42px] min-w-0 flex-1 flex-col justify-center py-1 text-surface-900 dark:text-white">
+                    <span
+                      [class.line-through]="item.checked"
+                      [class.text-surface-500]="item.checked"
+                      [class.dark:text-surface-400]="item.checked"
+                      class="type-label truncate font-semibold">
+                      {{ item.name }}
+                    </span>
+                    <span class="type-meta truncate text-surface-500 dark:text-surface-400">
+                      {{ item.quantity }} {{ item.unit }}
+                      @if (item.estimatedPrice) {
+                        <span>• ${{ item.estimatedPrice | number: '1.2-2' }}</span>
+                      }
+                      @if (item.storeName) {
+                        <span>• {{ item.storeName }}</span>
+                      }
+                    </span>
+                  </a>
+                  @if (selectMode()) {
+                    <label class="flex h-[42px] w-[42px] shrink-0 items-center justify-center">
+                      <p-checkbox
+                        [binary]="true"
+                        [ngModel]="selectedIds().has(item.id)"
+                        (onChange)="toggleSelection(item.id)"
+                        [ariaLabel]="
+                          'shoppingList.table.selectItem' | transloco: { name: item.name }
+                        " />
                     </label>
-                  </td>
+                  }
+                </li>
+              }
+            </ul>
+          </div>
+
+          <!-- Tablet and desktop: sortable table -->
+          <div class="hidden md:block overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  class="bg-surface-200/60 dark:bg-surface-800/80 border-b border-surface-300/60 dark:border-surface-700/60 text-surface-600 dark:text-surface-400 select-none">
+                  <!-- Bought Header -->
+                  <th class="type-label py-3 px-3 w-10 text-center">
+                    <span class="sr-only">{{ 'shoppingList.stats.bought' | transloco }}</span>
+                  </th>
 
                   @if (selectMode()) {
-                    <td class="py-2.5 px-3 text-center" (click)="$event.stopPropagation()">
-                      <input
-                        type="checkbox"
-                        [checked]="selectedIds().has(item.id)"
-                        (change)="toggleSelection(item.id)"
-                        [attr.aria-label]="
-                          'shoppingList.table.selectItem' | transloco: { name: item.name }
-                        "
-                        class="w-4 h-4 text-primary-600 rounded border-surface-300 dark:border-surface-600 focus:ring-primary-500 cursor-pointer accent-primary-600" />
-                    </td>
+                    <th class="type-label py-3 px-3 w-10 text-center select-none">
+                      <label
+                        class="flex h-[42px] w-[42px] items-center justify-center cursor-pointer">
+                        <p-checkbox
+                          [binary]="true"
+                          [ngModel]="allVisibleSelected()"
+                          [indeterminate]="someVisibleSelected()"
+                          (onChange)="toggleSelectAll()"
+                          [ariaLabel]="'shoppingList.table.selectAll' | transloco" />
+                      </label>
+                    </th>
                   }
 
-                  <!-- Item Name Column -->
-                  <td class="py-2.5 px-4 font-bold text-surface-900 dark:text-white">
-                    <div class="space-y-0.5">
-                      <div class="flex items-center gap-2">
-                        <a
-                          [routerLink]="['/shopping-list', item.id, 'edit']"
-                          (click)="$event.stopPropagation()"
-                          [class.line-through]="item.checked"
-                          [class.text-surface-400]="item.checked"
-                          [class.dark:text-surface-500]="item.checked"
-                          class="truncate max-w-[180px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                          {{ item.name }}
-                        </a>
-                      </div>
-                      @if (item.createdBy?.username || item.createdBy?.fullName) {
-                        <div
-                          class="text-[10px] font-normal text-surface-400 dark:text-surface-500 flex items-center gap-1">
-                          <i class="pi pi-user text-[9px]"></i>
-                          <span
-                            >Added by
-                            {{
-                              item.createdBy?.username
-                                ? '@' + item.createdBy?.username
-                                : item.createdBy?.fullName
-                            }}</span
-                          >
-                          @if (item.createdAt) {
-                            <span>•</span>
-                            <span>{{ item.createdAt | date: 'shortDate' }}</span>
-                          }
+                  <!-- Sortable Column Headers -->
+                  @for (column of sortColumns; track column.key) {
+                    <th class="type-label py-1 px-2" [attr.aria-sort]="ariaSort(column.key)">
+                      <button
+                        type="button"
+                        (click)="toggleSort(column.key)"
+                        class="flex min-h-[42px] items-center gap-1.5 px-2 rounded-lg cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                        <span>{{ column.label | transloco }}</span>
+                        @if (sortBy() === column.key) {
+                          <i
+                            class="pi text-xs"
+                            [class.pi-sort-up-fill]="sortDirection() === 'asc'"
+                            [class.pi-sort-down-fill]="sortDirection() === 'desc'"></i>
+                        } @else {
+                          <i class="pi pi-sort-alt text-xs opacity-40"></i>
+                        }
+                      </button>
+                    </th>
+                  }
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-200/60 dark:divide-surface-800/60 type-label">
+                @for (item of filteredItems(); track item.id) {
+                  <tr
+                    (click)="openItem(item.id)"
+                    [class.bg-surface-100/60]="item.checked"
+                    [class.dark:bg-surface-800/40]="item.checked"
+                    [class.bg-surface-100]="selectedIds().has(item.id)"
+                    [class.dark:bg-surface-800]="selectedIds().has(item.id)"
+                    [class.odd:bg-surface-50/50]="!item.checked && !selectedIds().has(item.id)"
+                    [class.dark:odd:bg-surface-800/20]="
+                      !item.checked && !selectedIds().has(item.id)
+                    "
+                    class="hover:bg-primary-50/40 dark:hover:bg-surface-800/50 transition-colors group cursor-pointer">
+                    <!-- Bought Column -->
+                    <td class="py-2.5 px-3 text-center" (click)="$event.stopPropagation()">
+                      <label
+                        class="flex h-[42px] w-[42px] items-center justify-center cursor-pointer">
+                        <p-checkbox
+                          [binary]="true"
+                          [ngModel]="item.checked"
+                          (onChange)="toggleItem(item.id)"
+                          [ariaLabel]="
+                            'shoppingList.table.markItemBought' | transloco: { name: item.name }
+                          " />
+                      </label>
+                    </td>
+
+                    @if (selectMode()) {
+                      <td class="py-2.5 px-3 text-center" (click)="$event.stopPropagation()">
+                        <label
+                          class="flex h-[42px] w-[42px] items-center justify-center cursor-pointer">
+                          <p-checkbox
+                            [binary]="true"
+                            [ngModel]="selectedIds().has(item.id)"
+                            (onChange)="toggleSelection(item.id)"
+                            [ariaLabel]="
+                              'shoppingList.table.selectItem' | transloco: { name: item.name }
+                            " />
+                        </label>
+                      </td>
+                    }
+
+                    <!-- Item Name Column -->
+                    <td class="py-2.5 px-4 font-semibold text-surface-900 dark:text-white">
+                      <div class="space-y-0.5">
+                        <div class="flex items-center gap-2">
+                          <a
+                            [routerLink]="['/shopping-list', item.id, 'edit']"
+                            (click)="$event.stopPropagation()"
+                            [class.line-through]="item.checked"
+                            [class.text-surface-500]="item.checked"
+                            [class.dark:text-surface-400]="item.checked"
+                            class="truncate max-w-[180px] sm:max-w-xs group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                            {{ item.name }}
+                          </a>
                         </div>
+                        @if (item.createdBy?.username || item.createdBy?.fullName) {
+                          <div
+                            class="type-meta text-surface-500 dark:text-surface-400 flex items-center gap-1">
+                            <i class="pi pi-user text-xs"></i>
+                            <span>{{
+                              'shoppingList.table.addedBy'
+                                | transloco
+                                  : {
+                                      name: item.createdBy?.username
+                                        ? '@' + item.createdBy?.username
+                                        : item.createdBy?.fullName,
+                                    }
+                            }}</span>
+                            @if (item.createdAt) {
+                              <span>•</span>
+                              <span>{{ item.createdAt | date: 'shortDate' }}</span>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </td>
+
+                    <!-- Category Column -->
+                    <td class="py-2.5 px-4 text-surface-600 dark:text-surface-300">
+                      @if (item.category) {
+                        <pantry-badge variant="neutral" size="sm">
+                          {{ item.category }}
+                        </pantry-badge>
+                      } @else {
+                        <span class="type-meta italic text-surface-500 dark:text-surface-400">
+                          {{ 'shoppingList.table.uncategorized' | transloco }}
+                        </span>
                       }
-                    </div>
-                  </td>
+                    </td>
 
-                  <!-- Category Column -->
-                  <td class="py-2.5 px-4 text-surface-600 dark:text-surface-300">
-                    @if (item.category) {
-                      <pantry-badge variant="neutral" size="sm">
-                        {{ item.category }}
-                      </pantry-badge>
-                    } @else {
-                      <span class="text-surface-400 dark:text-surface-500 italic text-[11px]">
-                        {{ 'shoppingList.table.uncategorized' | transloco }}
-                      </span>
-                    }
-                  </td>
-
-                  <!-- Store Column -->
-                  <td class="py-2.5 px-4 text-surface-600 dark:text-surface-300">
-                    @if (item.storeName) {
-                      <span
-                        class="inline-flex items-center gap-1.5 text-xs text-surface-700 dark:text-surface-300 font-medium">
-                        <i
-                          class="pi pi-map-marker text-[11px] text-surface-400 dark:text-surface-500"></i>
-                        <span class="truncate max-w-[140px]">{{ item.storeName }}</span>
-                      </span>
-                    } @else {
-                      <span class="text-surface-400 dark:text-surface-500 italic text-[11px]">
-                        {{ 'shoppingList.table.noStore' | transloco }}
-                      </span>
-                    }
-                  </td>
-                  <!-- Quantity Column (Click-to-Edit transformation) -->
-                  <td class="py-2.5 px-4" (click)="$event.stopPropagation()">
-                    @if (editingQuantityId() === item.id) {
-                      <div class="flex items-center gap-1.5">
-                        <input
-                          #qtyInput
-                          data-inline-input
-                          type="number"
-                          min="1"
-                          [value]="item.quantity"
+                    <!-- Store Column -->
+                    <td class="py-2.5 px-4 text-surface-600 dark:text-surface-300">
+                      @if (item.storeName) {
+                        <span class="type-label text-surface-700 dark:text-surface-300">
+                          {{ item.storeName }}
+                        </span>
+                      } @else {
+                        <span class="type-meta italic text-surface-500 dark:text-surface-400">
+                          {{ 'shoppingList.table.noStore' | transloco }}
+                        </span>
+                      }
+                    </td>
+                    <!-- Quantity Column (Click-to-Edit transformation) -->
+                    <td class="py-2.5 px-4" (click)="$event.stopPropagation()">
+                      @if (editingQuantityId() === item.id) {
+                        <div class="flex items-center gap-1.5">
+                          <input
+                            #qtyInput
+                            data-inline-input
+                            type="number"
+                            min="1"
+                            [value]="item.quantity"
+                            [attr.aria-label]="
+                              'shoppingList.table.editQuantity' | transloco: { name: item.name }
+                            "
+                            (blur)="commitQuantity(item, +qtyInput.value)"
+                            (keydown.enter)="commitQuantity(item, +qtyInput.value, true)"
+                            (keydown.escape)="cancelQuantity(item)"
+                            pInputText
+                            class="w-20 text-center" />
+                          <span class="type-meta text-surface-500 dark:text-surface-400">{{
+                            item.unit
+                          }}</span>
+                        </div>
+                      } @else {
+                        <button
+                          type="button"
+                          (click)="startEditingQuantity(item.id)"
+                          [attr.data-edit-trigger]="'qty-' + item.id"
                           [attr.aria-label]="
                             'shoppingList.table.editQuantity' | transloco: { name: item.name }
                           "
-                          (blur)="commitQuantity(item, +qtyInput.value)"
-                          (keydown.enter)="commitQuantity(item, +qtyInput.value, true)"
-                          (keydown.escape)="cancelQuantity(item)"
-                          class="w-16 h-8 px-2 text-xs font-bold text-center bg-white dark:bg-surface-900 border border-primary-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500" />
-                        <span class="text-xs text-surface-500 font-medium">{{ item.unit }}</span>
-                      </div>
-                    } @else {
-                      <button
-                        type="button"
-                        (click)="startEditingQuantity(item.id)"
-                        [attr.data-edit-trigger]="'qty-' + item.id"
-                        [attr.aria-label]="
-                          'shoppingList.table.editQuantity' | transloco: { name: item.name }
-                        "
-                        class="inline-flex min-h-[42px] items-center gap-1 px-2 -mx-2 rounded-lg hover:bg-surface-200/60 dark:hover:bg-surface-700/60 transition-colors cursor-pointer group/qty">
-                        <span class="font-extrabold text-surface-900 dark:text-white">
-                          {{ item.quantity }}
-                        </span>
-                        <span class="text-xs text-surface-500 dark:text-surface-400 font-medium">
-                          {{ item.unit }}
-                        </span>
-                        <i
-                          class="pi pi-pencil text-[9px] text-surface-400 opacity-0 group-hover/qty:opacity-100 group-focus-visible/qty:opacity-100 transition-opacity ml-0.5"></i>
-                      </button>
-                    }
-                  </td>
+                          class="inline-flex min-h-[42px] items-center gap-1 px-2 -mx-2 rounded-lg hover:bg-surface-200/60 dark:hover:bg-surface-700/60 transition-colors cursor-pointer group/qty">
+                          <span class="type-label text-surface-900 dark:text-white">
+                            {{ item.quantity }}
+                          </span>
+                          <span class="type-meta text-surface-500 dark:text-surface-400">
+                            {{ item.unit }}
+                          </span>
+                          <i
+                            class="pi pi-pencil text-xs text-surface-500 dark:text-surface-400 opacity-0 group-hover/qty:opacity-100 group-focus-visible/qty:opacity-100 transition-opacity ml-0.5"></i>
+                        </button>
+                      }
+                    </td>
 
-                  <!-- Estimated Price Column (Click-to-Edit transformation) -->
-                  <td class="py-2.5 px-4" (click)="$event.stopPropagation()">
-                    @if (editingPriceId() === item.id) {
-                      <div class="flex items-center gap-1">
-                        <span class="text-xs text-surface-400 font-bold">$</span>
-                        <input
-                          #priceInput
-                          data-inline-input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          [value]="item.estimatedPrice || 0"
+                    <!-- Estimated Price Column (Click-to-Edit transformation) -->
+                    <td class="py-2.5 px-4" (click)="$event.stopPropagation()">
+                      @if (editingPriceId() === item.id) {
+                        <div class="flex items-center gap-1">
+                          <span class="type-meta text-surface-500 dark:text-surface-400">$</span>
+                          <input
+                            #priceInput
+                            data-inline-input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            [value]="item.estimatedPrice || 0"
+                            [attr.aria-label]="
+                              'shoppingList.table.editPrice' | transloco: { name: item.name }
+                            "
+                            (blur)="commitPrice(item, +priceInput.value)"
+                            (keydown.enter)="commitPrice(item, +priceInput.value, true)"
+                            (keydown.escape)="cancelPrice(item)"
+                            pInputText
+                            class="w-24" />
+                        </div>
+                      } @else {
+                        <button
+                          type="button"
+                          (click)="startEditingPrice(item.id)"
+                          [attr.data-edit-trigger]="'price-' + item.id"
                           [attr.aria-label]="
                             'shoppingList.table.editPrice' | transloco: { name: item.name }
                           "
-                          (blur)="commitPrice(item, +priceInput.value)"
-                          (keydown.enter)="commitPrice(item, +priceInput.value, true)"
-                          (keydown.escape)="cancelPrice(item)"
-                          class="w-20 h-8 px-2 text-xs font-semibold bg-white dark:bg-surface-900 border border-primary-500 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500" />
-                      </div>
-                    } @else {
-                      <button
-                        type="button"
-                        (click)="startEditingPrice(item.id)"
-                        [attr.data-edit-trigger]="'price-' + item.id"
-                        [attr.aria-label]="
-                          'shoppingList.table.editPrice' | transloco: { name: item.name }
-                        "
-                        class="inline-flex min-h-[42px] items-center gap-1 px-2 -mx-2 rounded-lg hover:bg-surface-200/60 dark:hover:bg-surface-700/60 transition-colors cursor-pointer group/price">
-                        @if (item.estimatedPrice) {
-                          <span class="font-bold text-surface-900 dark:text-white">
-                            ${{ item.estimatedPrice | number: '1.2-2' }}
-                          </span>
-                        } @else {
-                          <span class="text-surface-400 italic text-[11px]"> $0.00 </span>
-                        }
-                        <i
-                          class="pi pi-pencil text-[9px] text-surface-400 opacity-0 group-hover/price:opacity-100 group-focus-visible/price:opacity-100 transition-opacity ml-0.5"></i>
-                      </button>
-                    }
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
-    </div>
+                          class="inline-flex min-h-[42px] items-center gap-1 px-2 -mx-2 rounded-lg hover:bg-surface-200/60 dark:hover:bg-surface-700/60 transition-colors cursor-pointer group/price">
+                          @if (item.estimatedPrice) {
+                            <span class="type-label text-surface-900 dark:text-white">
+                              ${{ item.estimatedPrice | number: '1.2-2' }}
+                            </span>
+                          } @else {
+                            <span class="type-meta italic text-surface-500 dark:text-surface-400">
+                              $0.00
+                            </span>
+                          }
+                          <i
+                            class="pi pi-pencil text-xs text-surface-500 dark:text-surface-400 opacity-0 group-hover/price:opacity-100 group-focus-visible/price:opacity-100 transition-opacity ml-0.5"></i>
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </pantry-card>
   }
 
-  <!-- Floating Glassmorphism Bulk Action Dock -->
+  <!-- Floating Bulk Action Dock -->
   @if (selectedCount() > 0) {
     <div
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 glass-card bg-surface-900/95 dark:bg-surface-800/95 text-white py-2 px-3 sm:px-4 rounded-2xl shadow-2xl backdrop-blur-xl flex flex-wrap items-center gap-2 sm:gap-3 border border-surface-700/80 dark:border-surface-600/80 panel-reveal"
+      class="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40 bg-surface-900 dark:bg-surface-800 text-white py-2 px-3 sm:px-4 rounded-xl shadow-xl flex flex-wrap items-center gap-2 sm:gap-3 border border-surface-700 dark:border-surface-600 panel-reveal"
       role="toolbar"
-      aria-label="Selected shopping items actions">
-      <div class="flex items-center gap-2 text-xs font-bold text-surface-200 pr-1">
-        <span
-          class="flex h-6 min-w-6 items-center justify-center rounded-lg bg-primary-600 px-1.5 text-xs font-bold text-white shadow-xs">
-          {{ selectedCount() }}
-        </span>
+      [attr.aria-label]="'shoppingList.aria.selectedActions' | transloco">
+      <div class="type-label flex items-center gap-2 text-surface-200 pr-1">
+        <pantry-badge variant="neutral" size="sm">{{ selectedCount() }}</pantry-badge>
         <span class="hidden sm:inline">{{ 'shoppingList.selectedBar.selected' | transloco }}</span>
       </div>
 
       <div class="h-4 w-px bg-surface-700 dark:bg-surface-600 hidden sm:block"></div>
 
       <div class="flex items-center gap-1.5 sm:gap-2">
-        <button
-          type="button"
-          (click)="markSelectedBought()"
-          class="inline-flex h-[34px] items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-3 text-xs font-bold text-white shadow-xs hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+        <button type="button" (click)="markSelectedBought()" class="btn-secondary">
           <i class="pi pi-check text-xs"></i>
           <span>{{ 'shoppingList.actions.markBought' | transloco }}</span>
         </button>
@@ -567,7 +533,7 @@
         <button
           type="button"
           (click)="clearSelection()"
-          class="btn-icon-sm"
+          class="btn-icon"
           [attr.aria-label]="'shoppingList.actions.clearSelection' | transloco">
           <i class="pi pi-times text-xs"></i>
         </button>

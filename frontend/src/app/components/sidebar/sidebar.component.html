@@ -10,8 +10,7 @@
       <pantry-skillet-icon [size]="20" />
     </a>
     <div class="min-w-0">
-      <p
-        class="type-label font-semibold tracking-tight text-surface-900 dark:text-surface-100 leading-tight truncate">
+      <p class="type-label text-surface-900 dark:text-surface-100 leading-tight truncate">
         {{ authService.activeKitchen()?.name || ('app.name' | transloco) }}
       </p>
       <span class="type-meta text-surface-500 dark:text-surface-400 leading-none">
@@ -130,7 +129,7 @@
             <span class="block min-w-0 flex-1 overflow-hidden transition-all duration-300">
               <!-- Kitchen Title (Combined with App Title) -->
               <span
-                class="block type-label font-semibold tracking-tight text-surface-900 dark:text-surface-100 truncate leading-tight">
+                class="block type-label text-surface-900 dark:text-surface-100 truncate leading-tight">
                 {{ authService.activeKitchen()?.name || ('app.name' | transloco) }}
               </span>
               <span class="flex items-center gap-1.5 mt-0.5">
@@ -153,7 +152,7 @@
           <i
             [class.rotate-180]="kitchenMenuOpen()"
             aria-hidden="true"
-            class="pi pi-chevron-down type-meta text-surface-400 group-hover/switcher:text-surface-600 dark:group-hover/switcher:text-surface-300 transition-transform duration-200 shrink-0 ml-1.5"></i>
+            class="pi pi-chevron-down type-meta text-surface-500 dark:text-surface-400 group-hover/switcher:text-surface-600 dark:group-hover/switcher:text-surface-300 transition-transform duration-200 shrink-0 ml-1.5"></i>
         }
       </button>
       <button
@@ -193,10 +192,10 @@
                 <span
                   [class.font-semibold]="authService.activeKitchen()?.id === k.id"
                   [class.font-normal]="authService.activeKitchen()?.id !== k.id"
-                  class="block type-label text-slate-200 group-hover/item:text-white break-words min-w-0">
+                  class="block type-label text-surface-200 group-hover/item:text-white break-words min-w-0">
                   {{ k.name }}
                 </span>
-                <span class="block type-meta text-slate-400 truncate">
+                <span class="block type-meta text-surface-400 truncate">
                   {{ 'sidebar.roles.' + k.role | transloco }} ·
                   {{ k.memberCount ?? 1 }}
                   {{
@@ -217,9 +216,9 @@
         <button
           type="button"
           (click)="openAddKitchenDialog($event)"
-          class="min-h-[42px] w-full text-left px-2.5 py-1.5 rounded-xl flex items-center gap-2.5 type-label text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer group/add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:bg-white/10">
+          class="min-h-[42px] w-full text-left px-2.5 py-1.5 rounded-xl flex items-center gap-2.5 type-label text-surface-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer group/add focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:bg-white/10">
           <i
-            class="pi pi-plus type-meta text-slate-400 group-hover/add:text-white shrink-0 ml-0.5"
+            class="pi pi-plus type-meta text-surface-400 group-hover/add:text-white shrink-0 ml-0.5"
             aria-hidden="true"></i>
           <span class="font-normal break-words">{{ 'kitchenCreate.title' | transloco }}</span>
         </button>
@@ -305,7 +304,7 @@
                 ? ('sidebar.collapseInventory' | transloco)
                 : ('sidebar.expandInventory' | transloco)
             "
-            class="h-[42px] w-[42px] flex items-center justify-center text-surface-400 hover:text-surface-900 dark:hover:text-primary-300 rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 shrink-0">
+            class="h-[42px] w-[42px] flex items-center justify-center text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-primary-300 rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 shrink-0">
             <svg
               [class.rotate-90]="inventoryExpanded()"
               xmlns="http://www.w3.org/2000/svg"
@@ -328,7 +327,7 @@
             routerLink="/inventory/groups"
             (click)="onNavigationClick($event)"
             [class.sidebar-subnav-active]="isIngredientGroupsActive()"
-            class="sidebar-subnav-item min-h-[42px] w-full flex justify-start text-left items-center gap-2 px-3 py-1.5 rounded-lg type-label cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            class="sidebar-subnav-item min-h-[42px] w-full flex justify-start text-left items-center gap-2 px-3 py-1.5 rounded-xl type-label cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             [attr.aria-current]="isCurrentPage('/inventory/groups') ? 'page' : null">
             <span>{{ 'sidebar.ingredientCategoriesAndGroups' | transloco }}</span>
           </a>
@@ -338,7 +337,7 @@
             routerLink="/inventory/ingredients"
             (click)="onNavigationClick($event)"
             [class.sidebar-subnav-active]="isIngredientsActive()"
-            class="sidebar-subnav-item min-h-[42px] w-full flex items-center gap-2 px-3 py-1.5 rounded-lg type-label cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            class="sidebar-subnav-item min-h-[42px] w-full flex items-center gap-2 px-3 py-1.5 rounded-xl type-label cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             [attr.aria-current]="isCurrentPage('/inventory/ingredients') ? 'page' : null">
             <span>{{ 'sidebar.ingredients' | transloco }}</span>
           </a>
@@ -348,7 +347,7 @@
             routerLink="/inventory/items"
             (click)="onNavigationClick($event)"
             [class.sidebar-subnav-active]="isInventoryItemsActive()"
-            class="sidebar-subnav-item min-h-[42px] w-full flex items-center gap-2 px-3 py-1.5 rounded-lg type-label cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            class="sidebar-subnav-item min-h-[42px] w-full flex items-center gap-2 px-3 py-1.5 rounded-xl type-label cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             [attr.aria-current]="isCurrentPage('/inventory/items') ? 'page' : null">
             <span>{{ 'sidebar.ingredientItems' | transloco }}</span>
           </a>
@@ -456,7 +455,7 @@
     [attr.aria-expanded]="!desktopCollapsed()"
     class="hidden md:flex absolute top-1/2 -right-[21px] -translate-y-1/2 z-50 w-[42px] h-[42px] items-center justify-center cursor-pointer shrink-0 group/collapse rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
     <span
-      class="w-7 h-7 rounded-full bg-white/90 dark:bg-surface-800/90 backdrop-blur-md border border-surface-200 dark:border-white/20 shadow-md flex items-center justify-center text-surface-600 dark:text-surface-300 group-hover/collapse:text-primary-600 dark:group-hover/collapse:text-primary-300 transition-all">
+      class="w-7 h-7 rounded-full bg-white dark:bg-surface-800 border border-surface-200 dark:border-white/20 shadow-md flex items-center justify-center text-surface-600 dark:text-surface-300 group-hover/collapse:text-primary-600 dark:group-hover/collapse:text-primary-300 transition-all">
       @if (desktopCollapsed()) {
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -1,19 +1,42 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { DayOfWeek, MealType } from '@models/meal-planner.model';
 import { Recipe } from '@models/recipe.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
-import { EmptyStateComponent } from '@ui';
+import {
+  AlertComponent,
+  CardComponent,
+  EmptyStateComponent,
+  SearchInputComponent,
+  SegmentedControlComponent,
+  SegmentedOption,
+  SkeletonComponent,
+} from '@ui';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectModule } from 'primeng/select';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'pantry-plan-meal-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule, EmptyStateComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslocoModule,
+    InputNumberModule,
+    SelectModule,
+    AlertComponent,
+    CardComponent,
+    EmptyStateComponent,
+    SearchInputComponent,
+    SegmentedControlComponent,
+    SkeletonComponent,
+  ],
   templateUrl: './plan-meal-page.component.html',
   styleUrl: './plan-meal-page.component.scss',
 })
@@ -35,11 +58,33 @@ export class PlanMealPageComponent implements OnInit {
   ];
   readonly mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
 
+  private readonly transloco = inject(TranslocoService);
+  // Re-emits once the active language's translations are loaded, so computed labels refresh.
+  private readonly translationsReady = toSignal(
+    this.transloco.langChanges$.pipe(switchMap((lang) => this.transloco.load(lang))),
+  );
+
+  readonly dayOptions = computed(() => {
+    this.translationsReady();
+    return this.days.map((day) => ({
+      value: day,
+      label: this.transloco.translate(`mealPlanner.days.${day.toLowerCase()}`),
+    }));
+  });
+
+  readonly mealTypeOptions = computed<SegmentedOption<MealType>[]>(() => {
+    this.translationsReady();
+    return this.mealTypes.map((t) => ({
+      value: t,
+      label: this.transloco.translate(`mealPlanner.mealTypes.${t.toLowerCase()}`),
+    }));
+  });
+
   selectedDay = signal<DayOfWeek>('Monday');
   selectedMealType = signal<MealType>('Dinner');
   selectedRecipe = signal<Recipe | null>(null);
   searchQuery = signal<string>('');
-  servings = signal<number>(2);
+  servings = signal<number | null>(2);
 
   availableRecipes = signal<Recipe[]>([]);
   isLoading = signal<boolean>(false);
@@ -92,23 +137,13 @@ export class PlanMealPageComponent implements OnInit {
     this.selectedDay.set(day);
   }
 
-  selectMealType(type: MealType): void {
-    this.selectedMealType.set(type);
+  selectMealType(type: MealType | undefined): void {
+    if (type) this.selectedMealType.set(type);
   }
 
   selectRecipe(recipe: Recipe): void {
     this.selectedRecipe.set(recipe);
     this.servings.set(recipe.servings && recipe.servings > 0 ? recipe.servings : 2);
-  }
-
-  incrementServings(): void {
-    this.servings.update((s) => s + 1);
-  }
-
-  decrementServings(): void {
-    if (this.servings() > 1) {
-      this.servings.update((s) => s - 1);
-    }
   }
 
   saveMealPlan(): void {
@@ -118,7 +153,7 @@ export class PlanMealPageComponent implements OnInit {
     // Create recipe copy with updated servings if modified
     const recipeToSave: Recipe = {
       ...recipe,
-      servings: this.servings(),
+      servings: Math.max(1, this.servings() ?? 1),
     };
 
     this.isSaving.set(true);

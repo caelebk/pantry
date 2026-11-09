@@ -149,25 +149,12 @@ const FILE_RULES = [
 
 /** file -> ruleId -> reason (must be mirrored in DESIGN.md → Documented Exceptions) */
 const ALLOWLIST = {
-  'src/app/pages/inventory/inventory-components/ingredient-category/ingredient-category.component.html':
-    {
-      'no-hardcoded-brand-hex':
-        'Data-driven category colors; #ea580c is the fallback for missing data values. See docs "Documented exceptions".',
-    },
-  'src/app/pages/inventory/ingredient-categories-page/ingredient-categories-page.component.html': {
-    'no-hardcoded-brand-hex':
-      'Data-driven group colors; #8b5cf6 is the fallback for missing data values. See docs "Documented exceptions".',
-  },
-  'src/app/pages/inventory/inventory.component.html': {
-    'no-hand-rolled-skeleton':
-      'Live-status indicator dot (2px pulse dot next to pagination summary), not a loading skeleton.',
-  },
-  'src/app/pages/inventory/ingredients-page/ingredients-page.component.html': {
-    'no-hand-rolled-skeleton':
-      'Live-status indicator dot (2px pulse dot next to pagination summary), not a loading skeleton.',
-  },
   'src/app/pages/meal-planner/daily-focus/daily-focus.component.html': {
     'no-inline-badge-pill': 'Status icon tile ternary (40px tile, not a badge pill).',
+  },
+  'src/app/components/toast-container/toast-container.component.ts': {
+    'no-inline-badge-pill':
+      'Status icon tile inside a toast, not a badge; the toast also shows a text title.',
   },
 };
 

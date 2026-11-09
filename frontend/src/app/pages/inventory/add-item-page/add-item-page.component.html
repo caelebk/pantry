@@ -59,15 +59,17 @@
           [ngModel]="newIngredientName()"
           (ngModelChange)="newIngredientName.set($event)"
           [placeholder]="t('itemEditor.ingredientNamePlaceholder')"
-          class="w-full h-[42px] rounded-xl" />
+          class="w-full" />
       </pantry-form-field>
       <pantry-form-field
+        #unitField
         forId="new-ingredient-unit"
         [label]="t('itemEditor.defaultUnit')"
         [required]="true">
         <p-select
           [disabled]="isCreatingIngredient()"
           inputId="new-ingredient-unit"
+          [ariaLabelledBy]="unitField.labelId()"
           [options]="units()"
           [ngModel]="newIngredientDefaultUnit()"
           (ngModelChange)="newIngredientDefaultUnit.set($event)"
@@ -77,10 +79,11 @@
           class="w-full"
           appendTo="body" />
       </pantry-form-field>
-      <pantry-form-field forId="new-ingredient-group" [label]="t('itemEditor.group')">
+      <pantry-form-field #groupField forId="new-ingredient-group" [label]="t('itemEditor.group')">
         <p-select
           [disabled]="isCreatingIngredient()"
           inputId="new-ingredient-group"
+          [ariaLabelledBy]="groupField.labelId()"
           [options]="ingredientGroups()"
           [ngModel]="newIngredientGroup()"
           (ngModelChange)="newIngredientGroup.set($event)"
@@ -93,9 +96,7 @@
       </pantry-form-field>
     </fieldset>
     @if (quickCreateError()) {
-      <p role="alert" class="text-sm text-rose-600 dark:text-rose-300 mt-4">
-        {{ quickCreateError() }}
-      </p>
+      <pantry-alert variant="danger" class="block mt-4">{{ quickCreateError() }}</pantry-alert>
     }
     <ng-template pTemplate="footer">
       <button
@@ -113,7 +114,7 @@
         "
         (click)="submitQuickCreateIngredient()">
         @if (isCreatingIngredient()) {
-          <pantry-spinner size="sm" color="white" />
+          <pantry-spinner [announce]="false" size="sm" color="white" />
         }
         {{ t(isCreatingIngredient() ? 'itemEditor.creating' : 'itemEditor.create') }}
       </button>

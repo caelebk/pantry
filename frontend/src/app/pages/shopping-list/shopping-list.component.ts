@@ -10,12 +10,22 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ShoppingItem } from '@models/shopping-list.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { ShoppingListService } from '@services/shopping-list.service';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
 
-import { BadgeComponent, SearchInputComponent, SkeletonComponent } from '@ui';
+import {
+  BadgeComponent,
+  CardComponent,
+  ConfirmDialogService,
+  EmptyStateComponent,
+  SearchInputComponent,
+  SegmentedControlComponent,
+  SkeletonComponent,
+} from '@ui';
 
 type ShoppingSortColumn = 'name' | 'category' | 'store' | 'quantity' | 'price';
 
@@ -27,9 +37,14 @@ type ShoppingSortColumn = 'name' | 'category' | 'store' | 'quantity' | 'price';
     FormsModule,
     RouterLink,
     TranslocoModule,
+    CheckboxModule,
+    InputTextModule,
     SearchInputComponent,
     SkeletonComponent,
     BadgeComponent,
+    CardComponent,
+    EmptyStateComponent,
+    SegmentedControlComponent,
   ],
   templateUrl: './shopping-list.component.html',
   styleUrl: './shopping-list.component.scss',
@@ -41,6 +56,8 @@ export class ShoppingListComponent {
   readonly mealPlannerService = inject(MealPlannerService);
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(Injector);
+  private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly transloco = inject(TranslocoService);
 
   // Filter state
   activeFilter = signal<'all' | 'unchecked' | 'checked'>('all');
@@ -289,9 +306,21 @@ export class ShoppingListComponent {
     });
   }
 
-  deleteSelected(): void {
+  async deleteSelected(): Promise<void> {
     const ids = [...this.selectedIds()];
-    if (!ids.length || !window.confirm(`Delete ${ids.length} selected item(s)?`)) return;
+    if (!ids.length) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.transloco.translate('shoppingList.confirmDelete.title'),
+      message:
+        ids.length === 1
+          ? this.transloco.translate('shoppingList.confirmDelete.messageOne')
+          : this.transloco.translate('shoppingList.confirmDelete.messageOther', {
+              count: ids.length,
+            }),
+      acceptLabel: this.transloco.translate('shoppingList.actions.delete'),
+      destructive: true,
+    });
+    if (!confirmed) return;
     this.shoppingListService.deleteItems(ids).subscribe(() => {
       this.shoppingListService.loadItemsFromBackend();
       this.selectedIds.set(new Set());
@@ -323,6 +352,10 @@ export class ShoppingListComponent {
   setFilter(filter: 'all' | 'unchecked' | 'checked'): void {
     this.activeFilter.set(filter);
     this.selectedIds.set(new Set());
+  }
+
+  onFilterChange(value: string | undefined): void {
+    if (value === 'all' || value === 'unchecked' || value === 'checked') this.setFilter(value);
   }
 
   setSearch(query: string): void {

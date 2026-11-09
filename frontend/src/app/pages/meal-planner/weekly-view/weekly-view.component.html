@@ -1,299 +1,272 @@
-<div class="space-y-5">
+<div class="space-y-6">
   <!-- Layout Control Bar -->
-  <div
-    class="flex items-center justify-between glass-card p-3 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 shadow-xs">
-    <div class="flex items-center gap-2">
-      <span class="text-xs font-bold text-surface-700 dark:text-surface-300">View Layout:</span>
-      <div
-        class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800/60 p-1 rounded-xl border border-surface-200/80 dark:border-surface-800/80">
-        <button
-          (click)="setLayoutMode('grid')"
-          [class]="
-            layoutMode() === 'grid'
-              ? 'px-3 py-1 font-bold rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-white shadow-xs transition-all text-xs flex items-center gap-1.5 cursor-pointer'
-              : 'px-3 py-1 font-medium rounded-lg text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all text-xs flex items-center gap-1.5 cursor-pointer'
-          ">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-3.5 h-3.5">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-          </svg>
-          Cards
-        </button>
-
-        <button
-          (click)="setLayoutMode('timeline')"
-          [class]="
-            layoutMode() === 'timeline'
-              ? 'px-3 py-1 font-bold rounded-lg bg-white dark:bg-surface-700 text-surface-900 dark:text-white shadow-xs transition-all text-xs flex items-center gap-1.5 cursor-pointer'
-              : 'px-3 py-1 font-medium rounded-lg text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-all text-xs flex items-center gap-1.5 cursor-pointer'
-          ">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-3.5 h-3.5">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          </svg>
-          Day Rows
-        </button>
+  <pantry-card padding="sm">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="type-label text-surface-700 dark:text-surface-300">{{
+          'mealPlanner.weekly.viewLayout' | transloco
+        }}</span>
+        <pantry-segmented-control
+          [ariaLabel]="'mealPlanner.weekly.viewLayoutAria' | transloco"
+          [options]="layoutOptions()"
+          [value]="layoutMode()"
+          (valueChange)="setLayoutMode($event)" />
       </div>
-    </div>
 
-    <span class="text-xs text-surface-500 dark:text-surface-400 font-medium hidden sm:inline">
-      7-Day Overview
-    </span>
-  </div>
+      <span class="type-meta text-surface-500 dark:text-surface-400 hidden sm:inline">
+        {{ 'mealPlanner.weekly.overview' | transloco }}
+      </span>
+    </div>
+  </pantry-card>
 
   <!-- MODE 1: Spacious Cards Layout (3 columns on XL, 2 on MD) -->
   @if (layoutMode() === 'grid') {
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       @for (day of days; track day) {
-        <div
-          class="rounded-2xl glass-card border border-surface-200/80 dark:border-surface-800/80 shadow-xs p-4 flex flex-col justify-between gap-4">
-          <!-- Day Header -->
-          <div
-            class="flex items-center justify-between border-b border-surface-200/80 dark:border-surface-800/80 pb-3">
-            <div>
-              <div class="flex items-center gap-2">
-                <span
-                  class="font-extrabold text-base text-surface-900 dark:text-white tracking-tight">
-                  {{ day }}
-                </span>
-                <pantry-badge variant="neutral">
-                  {{ getMealsForDay(day).length }} meal{{
-                    getMealsForDay(day).length === 1 ? '' : 's'
-                  }}
-                </pantry-badge>
-              </div>
-              @if (getDayCalories(day) !== null && getDayCalories(day) !== undefined) {
-                <div class="text-xs font-semibold text-surface-400 dark:text-surface-500 mt-0.5">
-                  {{ getDayCalories(day) }} kcal total
+        <pantry-card padding="sm" class="block">
+          <div class="flex flex-col gap-4">
+            <!-- Day Header -->
+            <div
+              class="flex items-center justify-between gap-2 border-b border-surface-200/80 dark:border-surface-800/80 pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="type-section-title text-surface-900 dark:text-white">
+                    {{ 'mealPlanner.days.' + day.toLowerCase() | transloco }}
+                  </span>
+                  <pantry-badge variant="neutral">
+                    {{
+                      (getMealsForDay(day).length === 1
+                        ? 'mealPlanner.weekly.mealCountOne'
+                        : 'mealPlanner.weekly.mealCountOther'
+                      ) | transloco: { count: getMealsForDay(day).length }
+                    }}
+                  </pantry-badge>
                 </div>
-              }
-            </div>
-
-            <button (click)="onRequestAdd(day, 'Dinner')" class="btn-secondary">+ Plan Meal</button>
-          </div>
-
-          <!-- Day Meals List -->
-          <div class="space-y-3 flex-1">
-            @for (meal of getMealsForDay(day); track meal.id) {
-              <div
-                [class.opacity-60]="meal.cooked"
-                [class.bg-surface-100]="meal.cooked"
-                [class.dark:bg-surface-800/60]="meal.cooked"
-                [class.border-surface-200]="meal.cooked"
-                [class.dark:border-surface-700/60]="meal.cooked"
-                class="p-3.5 rounded-xl sub-card sub-card-hover shadow-xs space-y-2.5 group">
-                <!-- Meal Slot Badge + Title + Delete -->
-                <div class="flex items-start justify-between gap-2">
-                  <div class="space-y-1 flex-1 min-w-0">
-                    <div class="flex items-center gap-2">
-                      <span
-                        class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100 uppercase tracking-wider">
-                        {{ meal.mealType }}
-                      </span>
-                      <span class="text-xs text-surface-600 dark:text-surface-300 font-bold">
-                        @if (meal.prepTimeMinutes !== null && meal.prepTimeMinutes !== undefined) {
-                          {{ meal.prepTimeMinutes }}m
-                        }
-                        @if (
-                          meal.prepTimeMinutes !== null &&
-                          meal.prepTimeMinutes !== undefined &&
-                          meal.calories !== null &&
-                          meal.calories !== undefined
-                        ) {
-                          •
-                        }
-                        @if (meal.calories !== null && meal.calories !== undefined) {
-                          {{ meal.calories }} kcal
-                        }
-                      </span>
-                    </div>
-
-                    <h4
-                      class="font-extrabold text-sm text-surface-900 dark:text-white leading-snug">
-                      {{ meal.recipeName }}
-                    </h4>
-                  </div>
-
-                  <button
-                    (click)="removeMeal(meal.id)"
-                    aria-label="Remove from plan"
-                    title="Remove from plan"
-                    class="btn-icon-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
-                      class="w-4 h-4">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-
-                <!-- Missing Ingredients Notice & Action Buttons (Side-by-Side!) -->
-                @let missing = missingFor(meal);
-                @if (missing && missing.length > 0 && !meal.cooked) {
-                  <div
-                    class="p-2 rounded-lg bg-rose-500/10 dark:bg-rose-500/10 border border-rose-500/20 dark:border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                    <span class="text-rose-700 dark:text-rose-400 font-semibold truncate">
-                      Missing: {{ missing.join(', ') }}
-                    </span>
-                    <button
-                      (click)="addMissingToShoppingList(meal)"
-                      class="btn-danger shrink-0 text-center">
-                      Add to Cart
-                    </button>
+                @if (getDayCalories(day) !== null && getDayCalories(day) !== undefined) {
+                  <div class="type-meta text-surface-500 dark:text-surface-400 mt-0.5">
+                    {{ 'mealPlanner.weekly.kcalTotal' | transloco: { count: getDayCalories(day) } }}
                   </div>
                 }
+              </div>
 
-                <!-- Bottom Cook Action -->
-                <div class="pt-1 flex items-center justify-between gap-2">
-                  @if (missing && missing.length === 0) {
-                    <span
-                      class="text-xs text-surface-600 dark:text-surface-300 font-bold flex items-center gap-1">
-                      In Stock
-                    </span>
-                  }
-                  <button
-                    (click)="toggleCooked(meal.id)"
-                    [class]="
-                      meal.cooked
-                        ? 'px-3 py-1.5 bg-surface-800 dark:bg-surface-200 text-white dark:text-surface-900 font-bold rounded-xl text-xs transition-all cursor-pointer ml-auto'
-                        : 'px-3 py-1.5 bg-surface-200 dark:bg-surface-700 hover:bg-surface-300 dark:hover:bg-surface-600 text-surface-900 dark:text-white font-bold rounded-xl text-xs transition-all cursor-pointer ml-auto'
-                    ">
-                    {{ meal.cooked ? 'Cooked' : 'Mark as Cooked' }}
+              <button (click)="onRequestAdd(day, 'Dinner')" class="btn-ghost">
+                {{ 'mealPlanner.weekly.planMealAction' | transloco }}
+              </button>
+            </div>
+
+            <!-- Day Meals List -->
+            <div class="space-y-3 flex-1">
+              @for (meal of getMealsForDay(day); track meal.id) {
+                <pantry-card
+                  variant="sub"
+                  padding="sm"
+                  class="block"
+                  [class.opacity-60]="meal.cooked">
+                  <div class="space-y-3">
+                    <!-- Meal Slot Badge + Title + Delete -->
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="space-y-1 flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                          <pantry-badge variant="neutral" size="sm">{{
+                            'mealPlanner.mealTypes.' + meal.mealType.toLowerCase() | transloco
+                          }}</pantry-badge>
+                          <span class="type-meta text-surface-600 dark:text-surface-300">
+                            @if (
+                              meal.prepTimeMinutes !== null && meal.prepTimeMinutes !== undefined
+                            ) {
+                              {{
+                                'mealPlanner.units.minsShort'
+                                  | transloco: { count: meal.prepTimeMinutes }
+                              }}
+                            }
+                            @if (
+                              meal.prepTimeMinutes !== null &&
+                              meal.prepTimeMinutes !== undefined &&
+                              meal.calories !== null &&
+                              meal.calories !== undefined
+                            ) {
+                              •
+                            }
+                            @if (meal.calories !== null && meal.calories !== undefined) {
+                              {{ 'mealPlanner.units.kcal' | transloco: { count: meal.calories } }}
+                            }
+                          </span>
+                        </div>
+
+                        <h4
+                          class="font-semibold text-sm text-surface-900 dark:text-white leading-snug">
+                          {{ meal.recipeName }}
+                        </h4>
+                      </div>
+
+                      <button
+                        (click)="removeMeal(meal.id)"
+                        [attr.aria-label]="'mealPlanner.removeFromPlan' | transloco"
+                        [attr.title]="'mealPlanner.removeFromPlan' | transloco"
+                        class="btn-icon">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="2"
+                          stroke="currentColor"
+                          class="w-4 h-4"
+                          aria-hidden="true">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Missing Ingredients Notice & Action Buttons -->
+                    @let missing = missingFor(meal);
+                    @if (missing && missing.length > 0 && !meal.cooked) {
+                      <pantry-alert variant="danger">
+                        <div
+                          class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <span class="type-meta break-words min-w-0">
+                            {{
+                              'mealPlanner.weekly.missingList'
+                                | transloco: { items: missing.join(', ') }
+                            }}
+                          </span>
+                          <button
+                            (click)="addMissingToShoppingList(meal)"
+                            class="btn-secondary shrink-0 text-center">
+                            {{ 'mealPlanner.weekly.addToCart' | transloco }}
+                          </button>
+                        </div>
+                      </pantry-alert>
+                    }
+
+                    <!-- Bottom Cook Action -->
+                    <div class="flex items-center justify-between gap-2">
+                      @if (missing && missing.length === 0) {
+                        <span class="type-meta text-surface-600 dark:text-surface-300">
+                          {{ 'mealPlanner.weekly.inStock' | transloco }}
+                        </span>
+                      }
+                      <button (click)="toggleCooked(meal.id)" class="btn-secondary ml-auto">
+                        {{
+                          (meal.cooked ? 'mealPlanner.cooked' : 'mealPlanner.markAsCooked')
+                            | transloco
+                        }}
+                      </button>
+                    </div>
+                  </div>
+                </pantry-card>
+              } @empty {
+                <pantry-empty-state
+                  variant="plain"
+                  icon="pi pi-calendar"
+                  [title]="'mealPlanner.weekly.noMeals' | transloco">
+                  <button actions (click)="onRequestAdd(day, 'Dinner')" class="btn-secondary">
+                    {{ 'mealPlanner.weekly.addFirstMeal' | transloco }}
                   </button>
-                </div>
-              </div>
-            } @empty {
-              <div
-                (click)="onRequestAdd(day, 'Dinner')"
-                (keyup.enter)="onRequestAdd(day, 'Dinner')"
-                (keyup.space)="onRequestAdd(day, 'Dinner')"
-                tabindex="0"
-                role="button"
-                class="p-6 rounded-xl border border-dashed border-surface-200/80 dark:border-surface-800/80 text-center space-y-2 hover:border-surface-400 hover:bg-surface-100/40 dark:hover:bg-surface-800/40 cursor-pointer transition-all">
-                <div class="text-surface-400 text-sm font-medium">No meals scheduled</div>
-                <div class="text-xs text-surface-600 dark:text-surface-300 font-semibold">
-                  + Add First Meal
-                </div>
-              </div>
-            }
+                </pantry-empty-state>
+              }
+            </div>
           </div>
-        </div>
+        </pantry-card>
       }
     </div>
   }
 
   <!-- MODE 2: Horizontal Day Rows Layout -->
   @else {
-    <div class="space-y-4">
+    <div class="space-y-6">
       @for (day of days; track day) {
-        <div
-          class="glass-card border border-surface-200/80 dark:border-surface-800/80 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row gap-5 items-start md:items-center justify-between">
-          <!-- Day Title Block -->
-          <div
-            class="w-full md:w-48 shrink-0 space-y-1 border-b md:border-b-0 md:border-r border-surface-200/80 dark:border-surface-800/80 pb-3 md:pb-0 md:pr-4">
-            <div class="flex items-center gap-2">
-              <h3 class="type-section-title text-surface-900 dark:text-white">{{ day }}</h3>
-              <pantry-badge variant="neutral">{{ getMealsForDay(day).length }}</pantry-badge>
+        <pantry-card padding="sm" class="block">
+          <div class="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
+            <!-- Day Title Block -->
+            <div
+              class="w-full md:w-48 shrink-0 space-y-1 border-b md:border-b-0 md:border-r border-surface-200/80 dark:border-surface-800/80 pb-3 md:pb-0 md:pr-4">
+              <div class="flex items-center gap-2">
+                <h3 class="type-section-title text-surface-900 dark:text-white">
+                  {{ 'mealPlanner.days.' + day.toLowerCase() | transloco }}
+                </h3>
+                <pantry-badge variant="neutral">{{ getMealsForDay(day).length }}</pantry-badge>
+              </div>
+              @if (getDayCalories(day) !== null && getDayCalories(day) !== undefined) {
+                <div class="type-meta text-surface-500 dark:text-surface-400">
+                  {{ 'mealPlanner.units.kcal' | transloco: { count: getDayCalories(day) } }}
+                </div>
+              }
+              <button (click)="onRequestAdd(day, 'Dinner')" class="btn-ghost mt-2">
+                {{ 'mealPlanner.weekly.planMealAction' | transloco }}
+              </button>
             </div>
-            @if (getDayCalories(day) !== null && getDayCalories(day) !== undefined) {
-              <div class="text-xs font-semibold text-surface-400">
-                {{ getDayCalories(day) }} kcal
-              </div>
-            }
-            <button
-              (click)="onRequestAdd(day, 'Dinner')"
-              class="mt-2 text-xs font-semibold text-surface-600 dark:text-surface-300 hover:underline cursor-pointer">
-              + Plan Meal
-            </button>
-          </div>
 
-          <!-- Meals List -->
-          <div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            @for (meal of getMealsForDay(day); track meal.id) {
-              <div
-                [class.opacity-60]="meal.cooked"
-                [class.bg-surface-100]="meal.cooked"
-                [class.dark:bg-surface-800/90]="meal.cooked"
-                class="p-3 rounded-xl bg-surface-100 dark:bg-surface-800/90 border border-surface-200 dark:border-surface-700/80 space-y-2">
-                <div class="flex items-center justify-between gap-1">
-                  <span
-                    class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100">
-                    {{ meal.mealType }}
-                  </span>
-                  <button
-                    (click)="removeMeal(meal.id)"
-                    aria-label="Remove from plan"
-                    class="btn-icon-sm">
-                    &times;
-                  </button>
+            <!-- Meals List -->
+            <div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              @for (meal of getMealsForDay(day); track meal.id) {
+                <pantry-card
+                  variant="sub"
+                  padding="sm"
+                  class="block"
+                  [class.opacity-60]="meal.cooked">
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between gap-1">
+                      <pantry-badge variant="neutral" size="sm">{{
+                        'mealPlanner.mealTypes.' + meal.mealType.toLowerCase() | transloco
+                      }}</pantry-badge>
+                      <button
+                        (click)="removeMeal(meal.id)"
+                        [attr.aria-label]="'mealPlanner.removeFromPlan' | transloco"
+                        class="btn-icon">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                    <h4 class="font-semibold text-sm text-surface-900 dark:text-white truncate">
+                      {{ meal.recipeName }}
+                    </h4>
+                    <div class="type-meta text-surface-600 dark:text-surface-300">
+                      @if (meal.prepTimeMinutes !== null && meal.prepTimeMinutes !== undefined) {
+                        {{
+                          'mealPlanner.units.minsShort' | transloco: { count: meal.prepTimeMinutes }
+                        }}
+                      }
+                      @if (
+                        meal.prepTimeMinutes !== null &&
+                        meal.prepTimeMinutes !== undefined &&
+                        meal.calories !== null &&
+                        meal.calories !== undefined
+                      ) {
+                        •
+                      }
+                      @if (meal.calories !== null && meal.calories !== undefined) {
+                        {{ 'mealPlanner.units.kcal' | transloco: { count: meal.calories } }}
+                      }
+                    </div>
+
+                    @let missingCompact = missingFor(meal);
+                    @if (missingCompact && missingCompact.length > 0 && !meal.cooked) {
+                      <button (click)="addMissingToShoppingList(meal)" class="btn-secondary w-full">
+                        {{ 'mealPlanner.addMissing' | transloco }}
+                      </button>
+                    }
+
+                    <button (click)="toggleCooked(meal.id)" class="btn-secondary w-full">
+                      {{
+                        (meal.cooked ? 'mealPlanner.cooked' : 'mealPlanner.markCooked') | transloco
+                      }}
+                    </button>
+                  </div>
+                </pantry-card>
+              } @empty {
+                <div
+                  class="col-span-full py-4 type-meta text-surface-500 dark:text-surface-400 text-center">
+                  {{
+                    'mealPlanner.weekly.noMealsForDay'
+                      | transloco: { day: ('mealPlanner.days.' + day.toLowerCase() | transloco) }
+                  }}
                 </div>
-                <h4 class="font-bold text-xs text-surface-900 dark:text-white truncate">
-                  {{ meal.recipeName }}
-                </h4>
-                <div class="text-[10px] text-surface-600 dark:text-surface-300 font-semibold">
-                  @if (meal.prepTimeMinutes !== null && meal.prepTimeMinutes !== undefined) {
-                    {{ meal.prepTimeMinutes }}m
-                  }
-                  @if (
-                    meal.prepTimeMinutes !== null &&
-                    meal.prepTimeMinutes !== undefined &&
-                    meal.calories !== null &&
-                    meal.calories !== undefined
-                  ) {
-                    •
-                  }
-                  @if (meal.calories !== null && meal.calories !== undefined) {
-                    {{ meal.calories }} kcal
-                  }
-                </div>
-
-                @let missingCompact = missingFor(meal);
-                @if (missingCompact && missingCompact.length > 0 && !meal.cooked) {
-                  <button (click)="addMissingToShoppingList(meal)" class="btn-danger w-full">
-                    Add Missing
-                  </button>
-                }
-
-                <button
-                  (click)="toggleCooked(meal.id)"
-                  [class.bg-surface-800]="meal.cooked"
-                  [class.dark:bg-surface-200]="meal.cooked"
-                  [class.text-white]="meal.cooked"
-                  [class.dark:text-surface-900]="meal.cooked"
-                  class="w-full py-1 text-[10px] bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-white font-bold rounded">
-                  {{ meal.cooked ? 'Cooked' : 'Mark Cooked' }}
-                </button>
-              </div>
-            } @empty {
-              <div class="col-span-full py-4 text-xs text-surface-400 font-medium text-center">
-                No meals scheduled for {{ day }}.
-              </div>
-            }
+              }
+            </div>
           </div>
-        </div>
+        </pantry-card>
       }
     </div>
   }

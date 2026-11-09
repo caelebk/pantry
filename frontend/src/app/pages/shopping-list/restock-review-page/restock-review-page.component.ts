@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, effect, inject, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { IngredientItem, Item } from '@models/items.model';
 import { Location } from '@models/location.model';
@@ -14,10 +14,19 @@ import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ShoppingListService } from '@services/shopping-list.service';
 import { ToastService } from '@services/toast.service';
-import { BadgeComponent } from '@ui';
+import {
+  BadgeComponent,
+  CardComponent,
+  EmptyStateComponent,
+  FormFieldComponent,
+  SegmentedControlComponent,
+  SpinnerComponent,
+} from '@ui';
 import { convertQuantity } from '@utility/itemUtility/UnitConversion';
+import { CheckboxModule } from 'primeng/checkbox';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -57,11 +66,17 @@ export interface RestockDraftItem {
     SelectModule,
     DatePickerModule,
     InputNumberModule,
+    InputTextModule,
+    CheckboxModule,
     BadgeComponent,
+    CardComponent,
+    EmptyStateComponent,
+    FormFieldComponent,
+    SegmentedControlComponent,
+    SpinnerComponent,
     TranslocoPipe,
   ],
   templateUrl: './restock-review-page.component.html',
-  styleUrl: './restock-review-page.component.scss',
 })
 export class RestockReviewPageComponent implements OnInit {
   private readonly router = inject(Router);
@@ -72,6 +87,7 @@ export class RestockReviewPageComponent implements OnInit {
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
 
   readonly Math = Math;
 
@@ -303,6 +319,10 @@ export class RestockReviewPageComponent implements OnInit {
     }
   }
 
+  onActionModeChange(draft: RestockDraftItem, mode: string | undefined): void {
+    if (mode === 'update' || mode === 'create') this.setActionMode(draft, mode);
+  }
+
   setActionMode(draft: RestockDraftItem, mode: 'update' | 'create'): void {
     draft.actionMode = mode;
     if (mode === 'create') {
@@ -316,7 +336,13 @@ export class RestockReviewPageComponent implements OnInit {
   matchOptions(draft: RestockDraftItem): MatchCandidateOption[] {
     return draft.matchCandidates.map((c) => ({
       value: c.item.id,
-      label: `${c.item.name} (${c.item.quantity} ${c.item.unit.name} in ${c.item.location.name}) - ${Math.round(c.score * 100)}% match`,
+      label: this.transloco.translate('restockReview.matchOption', {
+        name: c.item.name,
+        quantity: c.item.quantity,
+        unit: c.item.unit.name,
+        location: c.item.location.name,
+        percent: Math.round(c.score * 100),
+      }),
     }));
   }
 
@@ -402,7 +428,7 @@ export class RestockReviewPageComponent implements OnInit {
   confirmRestock(): void {
     const itemsToRestock = this.draftItems().filter((i) => i.included);
     if (itemsToRestock.length === 0) {
-      this.toastService.showWarning('Please select at least one item to restock');
+      this.toastService.showWarning(this.transloco.translate('restockReview.toasts.selectOne'));
       return;
     }
 
@@ -413,7 +439,9 @@ export class RestockReviewPageComponent implements OnInit {
       location: locsList.find((l) => l.name.toLowerCase() === (draft.location || '').toLowerCase()),
     }));
     if (resolved.some((r) => !r.unit || !r.location)) {
-      this.toastService.showWarning('Please choose a unit and storage location for every item');
+      this.toastService.showWarning(
+        this.transloco.translate('restockReview.toasts.chooseUnitLocation'),
+      );
       return;
     }
 
@@ -488,15 +516,18 @@ export class RestockReviewPageComponent implements OnInit {
 
         this.isSubmitting.set(false);
         this.toastService.showSuccess(
-          `Successfully restocked items into inventory! (${updatedCount} updated, ${createdCount} created)`,
-          'Restock Complete',
+          this.transloco.translate('restockReview.toasts.success', {
+            updated: updatedCount,
+            created: createdCount,
+          }),
+          this.transloco.translate('restockReview.toasts.successTitle'),
         );
 
         this.router.navigate(['/inventory']);
       },
       error: () => {
         this.isSubmitting.set(false);
-        this.toastService.showError('Failed to restock items into inventory.');
+        this.toastService.showError(this.transloco.translate('restockReview.toasts.failure'));
       },
     });
   }

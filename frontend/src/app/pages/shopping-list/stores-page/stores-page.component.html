@@ -1,7 +1,7 @@
 <div class="page-layout page-layout--form">
   <header class="page-header">
     <div>
-      <button type="button" (click)="goBack()" class="btn-ghost hover:!bg-transparent mb-2">
+      <button type="button" (click)="goBack()" class="btn-ghost mb-2">
         <i class="pi pi-arrow-left" aria-hidden="true"></i>
         <span>{{ 'nav.back' | transloco }}</span>
       </button>
@@ -12,33 +12,34 @@
   </header>
 
   <!-- Add New Store Card -->
-  <div
-    class="glass-card rounded-2xl p-5 border border-surface-200/80 dark:border-surface-800/80 shadow-xs space-y-3">
-    <h2 class="text-sm font-bold text-surface-900 dark:text-white flex items-center gap-2">
-      <i class="pi pi-plus-circle text-surface-500 dark:text-surface-400"></i>
-      <span>{{ 'stores.addStore' | transloco }}</span>
-    </h2>
-    <form (ngSubmit)="createStore()" class="flex items-center gap-2.5">
-      <input
-        type="text"
-        [ngModel]="newStoreName()"
-        (ngModelChange)="newStoreName.set($event)"
-        name="newStoreName"
-        [placeholder]="'stores.storeNamePlaceholder' | transloco"
-        class="flex-1 h-[42px] px-3.5 bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 placeholder:text-surface-400 transition-all shadow-xs" />
+  <pantry-card>
+    <form (ngSubmit)="createStore()" class="flex items-end gap-2.5">
+      <pantry-form-field
+        class="flex-1 min-w-0"
+        [label]="'stores.addStore' | transloco"
+        forId="new-store-name">
+        <input
+          id="new-store-name"
+          pInputText
+          type="text"
+          [ngModel]="newStoreName()"
+          (ngModelChange)="newStoreName.set($event)"
+          name="newStoreName"
+          [placeholder]="'stores.storeNamePlaceholder' | transloco"
+          class="w-full" />
+      </pantry-form-field>
       <button type="submit" [disabled]="!newStoreName().trim() || isCreating()" class="btn-primary">
-        <i class="pi pi-plus text-xs"></i>
+        <i class="pi pi-plus text-xs" aria-hidden="true"></i>
         <span>{{ 'stores.addStoreBtn' | transloco }}</span>
       </button>
     </form>
-  </div>
+  </pantry-card>
 
   <!-- Existing Stores List Card -->
-  <div
-    class="glass-card rounded-2xl p-5 border border-surface-200/80 dark:border-surface-800/80 shadow-xs space-y-3">
+  <pantry-card>
     <div class="flex items-center justify-between mb-3.5">
-      <h2 class="text-sm font-bold text-surface-900 dark:text-white flex items-center gap-2">
-        <i class="pi pi-map-marker text-surface-500 dark:text-surface-400"></i>
+      <h2 class="type-section-title text-surface-900 dark:text-white flex items-center gap-2">
+        <i class="pi pi-map-marker text-surface-500 dark:text-surface-400" aria-hidden="true"></i>
         <span>{{ 'stores.yourStores' | transloco }}</span>
       </h2>
       <pantry-badge variant="neutral" size="sm">
@@ -46,95 +47,86 @@
       </pantry-badge>
     </div>
 
-    <div class="space-y-2.5">
+    <div class="flex flex-col gap-2.5">
       @for (store of stores(); track store.id) {
-        <div
-          class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-surface-200/80 dark:border-surface-700/70 bg-surface-50/60 dark:bg-surface-900/40 hover:bg-surface-100/70 dark:hover:bg-surface-800/50 hover:border-surface-300 dark:hover:border-surface-600 transition-all shadow-2xs group">
-          @if (editingStoreId() === store.id) {
-            <!-- Editing Row State -->
-            <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-0">
-              <input
-                data-edit-input
-                type="text"
-                [ngModel]="draftNames()[store.id]"
-                (ngModelChange)="setDraftName(store.id, $event)"
-                (keydown.enter)="save(store)"
-                (keydown.escape)="cancelEditing()"
-                [attr.aria-label]="'Edit name for ' + store.name"
-                class="basis-full sm:basis-0 sm:flex-1 min-w-0 h-[42px] px-3.5 bg-white dark:bg-surface-900 border border-primary-500 dark:border-primary-400 text-surface-900 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 font-medium" />
+        <pantry-card variant="sub" padding="none">
+          <div class="flex items-center justify-between gap-3 px-4 py-3">
+            @if (editingStoreId() === store.id) {
+              <!-- Editing Row State -->
+              <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-0">
+                <input
+                  data-edit-input
+                  pInputText
+                  type="text"
+                  [ngModel]="draftNames()[store.id]"
+                  (ngModelChange)="setDraftName(store.id, $event)"
+                  (keydown.enter)="save(store)"
+                  (keydown.escape)="cancelEditing()"
+                  [attr.aria-label]="'stores.editName' | transloco: { name: store.name }"
+                  class="basis-full sm:basis-0 sm:flex-1 min-w-0" />
+                <button
+                  type="button"
+                  (click)="save(store)"
+                  [disabled]="!draftNames()[store.id]?.trim()"
+                  class="btn-primary shrink-0">
+                  <i class="pi pi-check text-xs" aria-hidden="true"></i>
+                  <span>{{ 'stores.save' | transloco }}</span>
+                </button>
+                <button type="button" (click)="cancelEditing()" class="btn-secondary shrink-0">
+                  {{ 'stores.cancel' | transloco }}
+                </button>
+              </div>
+            } @else {
+              <!-- Static Row State -->
               <button
                 type="button"
-                (click)="save(store)"
-                [disabled]="!draftNames()[store.id]?.trim()"
-                class="btn-primary !h-[42px] !px-4 text-xs font-bold shrink-0">
-                <i class="pi pi-check text-xs"></i>
-                <span>{{ 'stores.save' | transloco }}</span>
-              </button>
-              <button
-                type="button"
-                (click)="cancelEditing()"
-                class="btn-secondary !h-[42px] !px-3 text-xs font-semibold shrink-0">
-                {{ 'stores.cancel' | transloco }}
-              </button>
-            </div>
-          } @else {
-            <!-- Minimal Static Row State -->
-            <div
-              role="button"
-              tabindex="0"
-              [attr.data-rename-id]="store.id"
-              (click)="startEditing(store)"
-              (keydown.enter)="startEditing(store)"
-              class="flex items-center gap-3 flex-1 min-w-0 cursor-pointer py-1 rounded-lg group-hover:text-primary-600 transition-colors">
-              <span
-                class="font-semibold text-sm text-surface-900 dark:text-white truncate"
-                [class.line-through]="store.archived"
-                [class.opacity-50]="store.archived">
-                {{ store.name }}
-              </span>
-              @if (store.archived) {
-                <span class="badge-surface text-[10px] uppercase font-bold tracking-wider shrink-0">
-                  {{ 'stores.archivedBadge' | transloco }}
+                [attr.data-rename-id]="store.id"
+                (click)="startEditing(store)"
+                class="flex items-center gap-3 flex-1 min-w-0 min-h-[42px] text-left cursor-pointer rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+                <span
+                  class="type-body font-semibold text-surface-900 dark:text-white truncate"
+                  [class.line-through]="store.archived"
+                  [class.opacity-50]="store.archived">
+                  {{ store.name }}
                 </span>
-              }
-              <i
-                class="pi pi-pencil text-xs text-surface-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-            </div>
-          }
-
-          <!-- Right Action: Trash / Archive / Restore Icon -->
-          @if (editingStoreId() !== store.id) {
-            <div class="flex items-center gap-1 shrink-0 ml-2">
-              <button
-                type="button"
-                (click)="archive(store)"
-                [attr.aria-label]="
-                  store.archived ? 'Restore ' + store.name : 'Archive ' + store.name
-                "
-                [title]="store.archived ? 'Restore store' : 'Archive store'"
-                class="btn-icon-sm">
+                @if (store.archived) {
+                  <pantry-badge variant="neutral" size="sm" class="shrink-0">
+                    {{ 'stores.archivedBadge' | transloco }}
+                  </pantry-badge>
+                }
                 <i
-                  [class]="
-                    store.archived ? 'pi pi-replay text-surface-500' : 'pi pi-trash text-xs'
-                  "></i>
+                  class="pi pi-pencil text-xs text-surface-500 dark:text-surface-400"
+                  aria-hidden="true"></i>
               </button>
-            </div>
-          }
-        </div>
+
+              <!-- Right Action: Archive / Restore Icon -->
+              <div class="flex items-center gap-1 shrink-0 ml-2">
+                <button
+                  type="button"
+                  (click)="archive(store)"
+                  [attr.aria-label]="
+                    (store.archived ? 'stores.restoreStore' : 'stores.archiveStore')
+                      | transloco: { name: store.name }
+                  "
+                  [title]="
+                    (store.archived ? 'stores.restoreTitle' : 'stores.archiveTitle') | transloco
+                  "
+                  class="btn-icon">
+                  <i
+                    [class]="store.archived ? 'pi pi-replay' : 'pi pi-inbox'"
+                    aria-hidden="true"></i>
+                </button>
+              </div>
+            }
+          </div>
+        </pantry-card>
       } @empty {
-        <div class="text-center py-10">
-          <span
-            class="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-100 text-surface-400 dark:bg-surface-800 dark:text-surface-500 mx-auto">
-            <i class="pi pi-map-marker text-xl"></i>
-          </span>
-          <p class="mt-3 text-sm font-semibold text-surface-900 dark:text-white">
-            {{ 'stores.noStoresTitle' | transloco }}
-          </p>
-          <p class="mt-1 text-xs text-surface-500">
-            {{ 'stores.noStoresDesc' | transloco }}
-          </p>
-        </div>
+        <pantry-empty-state
+          variant="plain"
+          icon="pi pi-map-marker"
+          [title]="'stores.noStoresTitle' | transloco"
+          [description]="'stores.noStoresDesc' | transloco" />
       }
     </div>
-  </div>
+  </pantry-card>
 </div>

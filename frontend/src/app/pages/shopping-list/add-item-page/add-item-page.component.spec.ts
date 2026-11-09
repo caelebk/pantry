@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { provideTransloco } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { IngredientGroupService } from '@services/inventory/ingredient-group.service';
 import { IngredientService } from '@services/inventory/ingredient.service';
 import { UnitService } from '@services/inventory/unit.service';
@@ -8,6 +8,7 @@ import { ShoppingListService } from '@services/shopping-list.service';
 import { StoreService } from '@services/store.service';
 import { of, Subject } from 'rxjs';
 import { vi } from 'vitest';
+import translations from '../../../../../public/i18n/en.json';
 import { AddShoppingItemPageComponent } from './add-item-page.component';
 
 describe('AddShoppingItemPageComponent', () => {
@@ -33,8 +34,14 @@ describe('AddShoppingItemPageComponent', () => {
       getItems: vi.fn().mockReturnValue([]),
     };
     TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+          preloadLangs: true,
+        }),
+      ],
       providers: [
-        provideTransloco({ config: { availableLangs: ['en'], defaultLang: 'en' } }),
         { provide: Router, useValue: { navigate: vi.fn() } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => id } } } },
         { provide: ShoppingListService, useValue: shoppingList },

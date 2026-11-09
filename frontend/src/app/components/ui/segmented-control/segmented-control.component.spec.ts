@@ -37,7 +37,7 @@ describe('SegmentedControlComponent', () => {
 
   it('should keep targets at least 42px and style selection with primary', () => {
     expect(radios()[0].className).toContain('min-h-[42px]');
-    expect(radios()[1].className).toContain('text-primary-700');
+    expect(radios()[1].className).toContain('text-primary-800');
   });
 
   it('should select on click', () => {

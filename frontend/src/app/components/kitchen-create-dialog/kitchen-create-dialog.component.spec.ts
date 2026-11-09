@@ -20,7 +20,18 @@ describe('KitchenCreateDialogComponent', () => {
       ],
     });
     TestBed.inject(TranslocoService).setTranslation(
-      { kitchenCreate: { success: 'Kitchen created', successDetail: 'Ready and selected' } },
+      {
+        kitchenCreate: {
+          success: 'Kitchen created',
+          successDetail: 'Ready and selected',
+          cancel: 'Cancel',
+          create: 'Create kitchen',
+          name: 'Kitchen name',
+          namePlaceholder: 'e.g. Family kitchen',
+          description: 'Description (optional)',
+          descriptionPlaceholder: 'What is this kitchen for?',
+        },
+      },
       'en',
     );
     component = TestBed.createComponent(KitchenCreateDialogComponent).componentInstance;

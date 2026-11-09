@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Ingredient } from '@models/ingredient.model';
 import { IngredientItemDTO } from '@models/items.model';
 import { Location } from '@models/location.model';
@@ -28,7 +28,13 @@ interface ReconcileItemRow {
   needsManualInput: boolean;
 }
 
-import { SpinnerComponent } from '@ui';
+import {
+  AlertComponent,
+  BadgeComponent,
+  CardComponent,
+  SkeletonComponent,
+  SpinnerComponent,
+} from '@ui';
 
 @Component({
   selector: 'pantry-unit-reconciliation-page',
@@ -41,6 +47,10 @@ import { SpinnerComponent } from '@ui';
     ButtonModule,
     TranslocoModule,
     SpinnerComponent,
+    AlertComponent,
+    BadgeComponent,
+    CardComponent,
+    SkeletonComponent,
   ],
   templateUrl: './unit-reconciliation-page.component.html',
 })
@@ -51,6 +61,7 @@ export class UnitReconciliationPageComponent implements OnInit {
   private readonly unitService = inject(UnitService);
   private readonly locationService = inject(LocationService);
   private readonly toastService = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
 
   public ingredientId = signal<string | null>(null);
   public ingredient = signal<Ingredient | null>(null);
@@ -71,7 +82,9 @@ export class UnitReconciliationPageComponent implements OnInit {
     const targetUnitIdStr = this.route.snapshot.queryParamMap.get('targetUnitId');
 
     if (!id || !targetUnitIdStr) {
-      this.toastService.showError('Invalid reconciliation parameters.');
+      this.toastService.showError(
+        this.transloco.translate('inventory.unitReconciliation.invalidParams'),
+      );
       this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
       return;
     }
@@ -113,7 +126,9 @@ export class UnitReconciliationPageComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load reconciliation data:', err);
-        this.toastService.showError('Failed to load details for reconciliation.');
+        this.toastService.showError(
+          this.transloco.translate('inventory.unitReconciliation.loadFailed'),
+        );
         this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
       },
     });
@@ -143,14 +158,18 @@ export class UnitReconciliationPageComponent implements OnInit {
       next: () => {
         this.isSubmitting.set(false);
         this.toastService.showSuccess(
-          `Reconciled ${payloadItems.length} item(s) to unit "${target.name}".`,
-          'Measures Reconciled',
+          this.transloco.translate('inventory.unitReconciliation.reconciledMessage', {
+            count: payloadItems.length,
+            unit: target.name,
+          }),
+          this.transloco.translate('inventory.unitReconciliation.reconciledTitle'),
         );
         this.router.navigate([this.returnTo ?? '/inventory/ingredients']);
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        const msg = err?.message || 'Failed to reconcile item measures.';
+        const msg =
+          err?.message || this.transloco.translate('inventory.unitReconciliation.reconcileFailed');
         this.submitError.set(msg);
         this.toastService.showError(msg);
       },

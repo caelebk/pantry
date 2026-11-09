@@ -13,6 +13,7 @@ describe('ThemeService', () => {
   beforeEach(() => {
     localStorage.removeItem(THEME_STORAGE_KEY);
     document.documentElement.classList.remove('dark');
+    document.head.querySelectorAll('meta[name="theme-color"]').forEach((meta) => meta.remove());
   });
 
   afterEach(() => {
@@ -40,6 +41,20 @@ describe('ThemeService', () => {
     service.toggle();
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
     expect(document.documentElement.classList.contains('dark')).toBe(false);
+  });
+
+  it('keeps the theme-color meta in step with the applied theme', () => {
+    stubSystemDark(false);
+    const service = create();
+    const themeColor = () =>
+      document.querySelector('meta[name="theme-color"]')?.getAttribute('content');
+    service.apply(true);
+    expect(document.querySelectorAll('meta[name="theme-color"]')).toHaveLength(1);
+    expect(themeColor()).toBe('#0f172a');
+    service.toggle();
+    expect(themeColor()).toBe('#f8fafc');
+    service.toggle();
+    expect(themeColor()).toBe('#0f172a');
   });
 
   it('keeps a local explicit choice when the server preference is system', () => {

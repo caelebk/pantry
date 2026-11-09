@@ -1,5 +1,4 @@
-<article
-  class="recipe-card glass-card rounded-2xl border border-surface-200/80 dark:border-surface-800/80">
+<article class="recipe-card" pantryCard variant="glass" padding="none">
   @let stats = ingredientStats;
   @let needed = shortages;
   <div class="recipe-card__header flex items-center justify-between gap-x-3">
@@ -10,16 +9,10 @@
       }}</a>
     </h2>
     @if (stats.totalCount > 0) {
-      <span
-        class="recipe-card__status inline-flex items-center gap-1.5 text-xs font-medium leading-none"
-        [ngClass]="
-          stats.isFullyMakeable
-            ? 'text-emerald-600 dark:text-emerald-400'
-            : 'text-amber-600 dark:text-amber-400'
-        ">
-        <i
-          [class]="stats.isFullyMakeable ? 'pi pi-check' : 'pi pi-shopping-bag'"
-          aria-hidden="true"></i>
+      <pantry-badge
+        class="recipe-card__status shrink-0"
+        [variant]="stats.isFullyMakeable ? 'fresh' : 'expiring'"
+        [icon]="stats.isFullyMakeable ? 'pi pi-check' : 'pi pi-shopping-bag'">
         {{
           (stats.isFullyMakeable
             ? 'recipes.browse.readyToCook'
@@ -28,11 +21,11 @@
               : 'recipes.browse.ingredientsNeeded'
           ) | transloco: { count: needed.length }
         }}
-      </span>
+      </pantry-badge>
     }
   </div>
   <div
-    class="recipe-card__meta flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-surface-600 dark:text-surface-300">
+    class="recipe-card__meta flex flex-wrap items-center gap-x-4 gap-y-2 type-body text-surface-600 dark:text-surface-300">
     <span class="inline-flex items-center gap-1.5">
       <i class="pi pi-clock" aria-hidden="true"></i>
       {{ timeSummary.key | transloco: { count: timeSummary.count } }}
@@ -53,7 +46,7 @@
 
   <div class="recipe-card__description">
     @if (recipe.description) {
-      <p class="text-sm leading-relaxed text-surface-600 dark:text-surface-300 line-clamp-2">
+      <p class="type-body text-surface-600 dark:text-surface-300 line-clamp-2">
         {{ recipe.description }}
       </p>
     }

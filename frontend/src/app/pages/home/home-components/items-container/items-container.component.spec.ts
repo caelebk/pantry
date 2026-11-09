@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { TranslocoTestingModule } from '@jsverse/transloco';
-import { Item, ItemsContainerTheme } from '@models/items.model';
+import { Item } from '@models/items.model';
 import { UnitType } from '@models/unit.model';
 import { describe, expect, it, vi } from 'vitest';
 import { ItemsContainerComponent } from './items-container.component';
@@ -38,7 +38,6 @@ describe('Home stock rows', () => {
     fixture.componentRef.setInput('items', items);
     fixture.componentRef.setInput('titleKey', 'home.stock.title');
     fixture.componentRef.setInput('footerMessageKey', 'home.stock.more');
-    fixture.componentRef.setInput('theme', ItemsContainerTheme.Red);
     fixture.detectChanges();
     return fixture;
   }

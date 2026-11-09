@@ -5,11 +5,12 @@ import { By } from '@angular/platform-browser';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogService } from '@ui';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 import { KitchenCreateDialogComponent } from '../../components/kitchen-create-dialog/kitchen-create-dialog.component';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../services/toast.service';
 import { ProfileComponent } from './profile.component';
 
 describe('Profile kitchen actions', () => {
@@ -56,44 +57,45 @@ describe('Profile kitchen actions', () => {
     expect(buttons[0].querySelector('button')).toBeNull();
   });
   describe('Log Out Other Devices', () => {
-    function setup() {
+    function setup(accept = true) {
       const fixture = TestBed.createComponent(ProfileComponent);
       fixture.detectChanges();
       const component = fixture.componentInstance;
-      const confirmation = fixture.debugElement.injector.get(ConfirmationService);
-      const messages = fixture.debugElement.injector.get(MessageService);
       const confirmSpy = vi
-        .spyOn(confirmation, 'confirm')
-        .mockImplementation((c) => (c.accept?.(), confirmation));
-      const addSpy = vi.spyOn(messages, 'add');
-      return { component, confirmSpy, addSpy };
+        .spyOn(TestBed.inject(ConfirmDialogService), 'confirm')
+        .mockResolvedValue(accept);
+      const errorSpy = vi.spyOn(TestBed.inject(ToastService), 'showError');
+      return { component, confirmSpy, errorSpy };
     }
 
-    it('asks for confirmation and does not revoke until accepted', () => {
-      const { component, confirmSpy } = setup();
+    it('asks for a destructive confirmation and does not revoke until accepted', async () => {
+      const { component, confirmSpy } = setup(false);
       const revoke = vi.spyOn(TestBed.inject(AuthService), 'revokeAllSessions');
-      confirmSpy.mockReset();
       component.onRevokeAllSessions();
-      expect(confirmSpy).toHaveBeenCalled();
+      await Promise.resolve();
+      expect(confirmSpy).toHaveBeenCalledWith(expect.objectContaining({ destructive: true }));
       expect(revoke).not.toHaveBeenCalled();
     });
 
-    it('does not reload sessions on success (auth is cleared)', () => {
+    it('does not reload sessions on success (auth is cleared)', async () => {
       const { component } = setup();
       const auth = TestBed.inject(AuthService);
       vi.spyOn(auth, 'revokeAllSessions').mockReturnValue(of(undefined));
       const load = vi.spyOn(component, 'loadSessions');
       component.onRevokeAllSessions();
+      await Promise.resolve();
       expect(load).not.toHaveBeenCalled();
     });
 
-    it('shows an error toast on failure', () => {
-      const { component, addSpy } = setup();
+    it('shows an error toast on failure', async () => {
+      const { component, errorSpy } = setup();
       vi.spyOn(TestBed.inject(AuthService), 'revokeAllSessions').mockReturnValue(
         throwError(() => ({ error: {} })),
       );
       component.onRevokeAllSessions();
-      expect(addSpy).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(errorSpy).toHaveBeenCalled();
     });
   });
 });

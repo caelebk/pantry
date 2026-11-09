@@ -14,7 +14,7 @@ import { ItemService } from '@services/inventory/item.service';
 import { LocationService } from '@services/inventory/location.service';
 import { UnitService } from '@services/inventory/unit.service';
 import { ToastService } from '@services/toast.service';
-import { FormFieldComponent, SpinnerComponent } from '@ui';
+import { AlertComponent, FormFieldComponent, SpinnerComponent } from '@ui';
 import { ingredientDetailReturnTo } from '@utility/ingredient-detail-return';
 import { createItemForm, ItemFormControls, toItem } from '@utility/itemUtility/ItemFormUtility';
 import { ItemEditorComponent } from '../inventory-components/item-editor/item-editor.component';
@@ -37,6 +37,7 @@ import { SelectModule } from 'primeng/select';
     ItemEditorComponent,
     SpinnerComponent,
     FormFieldComponent,
+    AlertComponent,
   ],
   templateUrl: './add-item-page.component.html',
 })
@@ -156,12 +157,12 @@ export class AddItemPageComponent implements OnInit {
     this.quickCreateError.set(null);
     const name = this.newIngredientName().trim();
     if (!name) {
-      this.toastService.showError('Please enter an ingredient name.');
+      this.toastService.showError(this.transloco.translate('itemEditor.ingredientNameRequired'));
       return;
     }
     const defaultUnit = this.newIngredientDefaultUnit();
     if (!defaultUnit) {
-      this.toastService.showError('Please select a default measurement unit.');
+      this.toastService.showError(this.transloco.translate('itemEditor.defaultUnitRequired'));
       return;
     }
 
@@ -176,7 +177,10 @@ export class AddItemPageComponent implements OnInit {
       next: (createdDto) => {
         this.isCreatingIngredient.set(false);
         this.displayQuickCreateDialog.set(false);
-        this.toastService.showSuccess(`Ingredient "${name}" created!`, 'Ingredient Created');
+        this.toastService.showSuccess(
+          this.transloco.translate('itemEditor.ingredientCreatedMessage', { name }),
+          this.transloco.translate('itemEditor.ingredientCreatedTitle'),
+        );
         this.loadIngredients(createdDto.id);
       },
       error: (err) => {
@@ -204,16 +208,16 @@ export class AddItemPageComponent implements OnInit {
       next: () => {
         this.isSubmitting.set(false);
         this.toastService.showSuccess(
-          `"${newItem.name}" has been added to inventory.`,
-          'Item Added',
+          this.transloco.translate('itemEditor.itemAddedMessage', { name: newItem.name }),
+          this.transloco.translate('itemEditor.itemAddedTitle'),
         );
         this.router.navigate([this.returnTo ?? '/inventory/items']);
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        const msg = err?.message || 'Failed to add item to inventory. Please try again.';
+        const msg = err?.message || this.transloco.translate('itemEditor.addFailed');
         this.submitError.set(msg);
-        this.toastService.showError(msg, 'Error');
+        this.toastService.showError(msg, this.transloco.translate('itemEditor.errorTitle'));
       },
     });
   }

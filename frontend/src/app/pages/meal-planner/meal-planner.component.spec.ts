@@ -2,11 +2,13 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { RecipeService } from '@services/recipe.service';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
+import translations from '../../../../public/i18n/en.json';
 import { MealPlannerComponent } from './meal-planner.component';
 
 describe('MealPlannerComponent', () => {
@@ -52,6 +54,12 @@ describe('MealPlannerComponent', () => {
     mockRouter = { navigate: vi.fn() };
 
     TestBed.configureTestingModule({
+      imports: [
+        TranslocoTestingModule.forRoot({
+          langs: { en: translations },
+          translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
+        }),
+      ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),

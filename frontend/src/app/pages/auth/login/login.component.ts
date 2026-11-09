@@ -2,8 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
-import { BadgeComponent } from '@ui';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import {
+  AlertComponent,
+  BadgeComponent,
+  CardComponent,
+  FormFieldComponent,
+  SpinnerComponent,
+} from '@ui';
+import { InputTextModule } from 'primeng/inputtext';
+import { SkilletIconComponent } from '../../../components/skillet-icon/skillet-icon.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ToastService } from '../../../services/toast.service';
@@ -11,273 +19,197 @@ import { ToastService } from '../../../services/toast.service';
 @Component({
   selector: 'pantry-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslocoModule, BadgeComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    TranslocoModule,
+    InputTextModule,
+    AlertComponent,
+    BadgeComponent,
+    CardComponent,
+    FormFieldComponent,
+    SkilletIconComponent,
+    SpinnerComponent,
+  ],
   template: `
     <div
-      class="relative min-h-screen w-full flex animated-gradient-bg text-surface-900 dark:text-surface-50 font-sans transition-colors duration-300 overflow-hidden">
+      class="relative min-h-full w-full flex text-surface-900 dark:text-surface-50 font-sans transition-colors duration-300 overflow-hidden">
       <!-- Top-Right Floating Theme Toggle -->
       <div class="absolute top-5 right-5 z-30">
         <button
           type="button"
           (click)="toggleTheme()"
-          class="w-10 h-10 rounded-xl bg-white/80 dark:bg-surface-900/80 border border-surface-200/80 dark:border-surface-800 backdrop-blur-xl flex items-center justify-center text-surface-700 dark:text-surface-200 hover:text-primary-500 dark:hover:text-primary-400 shadow-sm transition-all duration-200 active:scale-95 cursor-pointer"
-          [attr.aria-label]="isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+          class="btn-icon bg-white dark:bg-surface-900"
+          [attr.aria-label]="
+            (isDarkMode() ? 'sidebar.switchToLight' : 'sidebar.switchToDark') | transloco
+          ">
           <i
-            [class]="
-              isDarkMode()
-                ? 'pi pi-sun text-surface-600 dark:text-surface-300 text-lg'
-                : 'pi pi-moon text-surface-600 dark:text-surface-300 text-lg'
-            "></i>
+            [class]="isDarkMode() ? 'pi pi-sun text-lg' : 'pi pi-moon text-lg'"
+            aria-hidden="true"></i>
         </button>
       </div>
 
       <!-- Left Hero Showcase Panel (Desktop Split 50%) -->
-      <div
-        class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 bg-surface-100/50 dark:bg-surface-900/40 backdrop-blur-md border-r border-surface-200/80 dark:border-surface-800/80 overflow-hidden">
-        <!-- Floating Kitchen & Food Organization Watermark Vector Shapes Layer -->
-        <div class="absolute inset-0 pointer-events-none z-0" aria-hidden="true">
-          <!-- Pantry Storage Jar Vector -->
-          <svg
-            class="vector-float-slow absolute -top-6 -right-6 w-56 h-56 text-surface-400/10 dark:text-surface-300/10"
-            viewBox="0 0 100 100"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5">
-            <rect x="25" y="30" width="50" height="58" rx="8" />
-            <rect x="30" y="18" width="40" height="12" rx="4" />
-            <path d="M 35,18 L 35,12 C 35,10 65,10 65,12 L 65,18" />
-            <path d="M 30,50 Q 50,46 70,50" stroke-dasharray="3 3" />
-            <path d="M 30,68 Q 50,64 70,68" stroke-dasharray="3 3" />
-          </svg>
-
-          <!-- Skillet & Cooking Pan Vector -->
-          <svg
-            class="vector-float-medium absolute -bottom-10 -left-10 w-64 h-64 text-surface-400/10 dark:text-surface-300/10"
-            viewBox="0 0 100 100"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5">
-            <circle cx="42" cy="50" r="32" />
-            <circle cx="42" cy="50" r="26" stroke-dasharray="4 3" />
-            <path d="M 68,66 L 92,84" stroke-width="3" stroke-linecap="round" />
-            <circle cx="90" cy="82" r="2.5" fill="currentColor" />
-          </svg>
-
-          <!-- Refrigerator Storage Cabinet Vector -->
-          <svg
-            class="vector-float-fast absolute top-1/4 -left-12 w-48 h-48 text-surface-400/10 dark:text-surface-300/10"
-            viewBox="0 0 100 100"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5">
-            <rect x="25" y="15" width="50" height="70" rx="6" />
-            <line x1="25" y1="42" x2="75" y2="42" />
-            <line x1="32" y1="28" x2="32" y2="36" stroke-width="2" stroke-linecap="round" />
-            <line x1="32" y1="48" x2="32" y2="60" stroke-width="2" stroke-linecap="round" />
-          </svg>
-
-          <!-- Crossed Utensils & Spatula Vector -->
-          <svg
-            class="vector-float-slow absolute bottom-1/4 -right-10 w-52 h-52 text-surface-400/10 dark:text-surface-300/10"
-            viewBox="0 0 100 100"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5">
-            <path d="M 25,25 L 75,75" stroke-width="2" stroke-linecap="round" />
-            <rect x="18" y="14" width="14" height="18" rx="2" transform="rotate(-45 25 23)" />
-            <path d="M 75,25 L 25,75" stroke-width="2" stroke-linecap="round" />
-            <circle cx="75" cy="25" r="5" fill="currentColor" fill-opacity="0.2" />
-          </svg>
-
-          <!-- Fresh Produce Apple Vector -->
-          <svg
-            class="vector-float-medium absolute top-12 right-1/3 w-36 h-36 text-surface-400/10 dark:text-surface-300/10"
-            viewBox="0 0 100 100"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5">
-            <path
-              d="M 50,35 C 40,20 20,25 20,48 C 20,72 40,85 50,82 C 60,85 80,72 80,48 C 80,25 60,20 50,35 Z" />
-            <path d="M 50,32 Q 54,20 60,15" stroke-width="2" stroke-linecap="round" />
-            <path
-              d="M 54,22 Q 68,18 64,28 Q 54,28 54,22 Z"
-              fill="currentColor"
-              fill-opacity="0.2" />
-          </svg>
-        </div>
-
+      <div class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden">
         <!-- Brand Emblem Header -->
         <div class="relative z-10 flex items-center gap-3">
           <div
-            class="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold">
-            <span class="material-symbols-outlined text-[20px]">skillet</span>
+            class="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center text-white">
+            <pantry-skillet-icon [size]="20" />
           </div>
-          <span class="text-xl font-bold tracking-tight text-surface-900 dark:text-white">
-            Pantry
-          </span>
+          <span class="type-section-title text-surface-900 dark:text-white">{{
+            'app.name' | transloco
+          }}</span>
         </div>
 
         <!-- Minimal Hero Content -->
         <div class="relative z-10 my-auto max-w-md space-y-6">
           <div>
-            <h1
-              class="text-4xl xl:text-5xl font-extrabold tracking-tight text-surface-900 dark:text-white leading-tight">
-              Master your kitchen.
-            </h1>
+            <p class="type-page-title text-surface-900 dark:text-white">
+              {{ 'auth.loginHero.title' | transloco }}
+            </p>
             <p class="text-sm text-surface-600 dark:text-surface-400 mt-3 leading-relaxed">
-              Track stock, manage expirations, and cook smarter.
+              {{ 'auth.loginHero.subtitle' | transloco }}
             </p>
           </div>
 
-          <!-- Minimalist Clean Stock Preview Pill Card -->
-          <div
-            class="glass-card p-4 rounded-2xl border border-surface-200/80 dark:border-surface-800/80 space-y-2.5 shadow-lg">
+          <!-- Minimalist Clean Stock Preview Card -->
+          <pantry-card variant="sub" padding="sm" class="block space-y-2.5">
             <div
               class="flex items-center justify-between text-xs font-semibold text-surface-700 dark:text-surface-200">
               <span class="flex items-center gap-2">
-                <i class="pi pi-building text-surface-500 dark:text-surface-400 text-sm"></i>
-                Kitchen Inventory
+                <i
+                  class="pi pi-building text-surface-500 dark:text-surface-400 text-sm"
+                  aria-hidden="true"></i>
+                {{ 'auth.loginHero.previewTitle' | transloco }}
               </span>
-              <pantry-badge variant="fresh" size="sm" [dot]="true">Synced</pantry-badge>
+              <pantry-badge variant="neutral" size="sm" [dot]="true">{{
+                'auth.loginHero.previewSynced' | transloco
+              }}</pantry-badge>
             </div>
             <div
               class="flex items-center justify-between p-2.5 rounded-xl bg-white/60 dark:bg-surface-800/60 border border-surface-200/50 dark:border-surface-700/50">
               <span
                 class="text-xs font-semibold text-surface-900 dark:text-surface-100 flex items-center gap-2">
-                Wagyu Ribeye
+                {{ 'auth.loginHero.previewItem' | transloco }}
               </span>
-              <pantry-badge variant="expiring" size="sm">Exp. 2 days</pantry-badge>
+              <pantry-badge variant="expiring" size="sm">{{
+                'auth.loginHero.previewExpiry' | transloco
+              }}</pantry-badge>
             </div>
-          </div>
+          </pantry-card>
         </div>
 
         <!-- Minimal Footer -->
-        <div class="relative z-10 text-xs text-surface-400 dark:text-surface-500 font-medium">
-          Zero food waste, effortless cooking.
+        <div class="relative z-10 text-xs text-surface-600 dark:text-surface-400 font-medium">
+          {{ 'auth.loginHero.footer' | transloco }}
         </div>
       </div>
 
       <!-- Right Form Panel (100% Mobile, 50% Desktop Width) -->
-      <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative z-10">
-        <div class="w-full max-w-md space-y-6">
-          <!-- Mobile Brand Emblem Header -->
-          <div class="lg:hidden flex flex-col items-center text-center space-y-2 mb-6">
-            <div
-              class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center text-white font-bold">
-              <span class="material-symbols-outlined text-[22px]">skillet</span>
-            </div>
-            <span class="text-lg font-bold tracking-tight text-surface-900 dark:text-white">
-              Pantry
-            </span>
-          </div>
-
-          <!-- Form Header -->
-          <div>
-            <h1 class="type-page-title text-surface-900 dark:text-white">
-              {{ 'auth.login' | transloco }}
-            </h1>
-          </div>
-
-          <!-- Inline Error Banner -->
-          @if (errorMessage()) {
-            <div
-              role="alert"
-              class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-medium flex items-center gap-2">
-              <i class="pi pi-exclamation-triangle text-base shrink-0"></i>
-              <span>{{ errorMessage() }}</span>
-            </div>
-          }
-
-          <!-- Login Form -->
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
-            <!-- Identifier Field (Email or Username) -->
-            <div>
-              <div class="flex items-center justify-between h-6 mb-1.5">
-                <label for="identifier" class="type-label text-surface-600 dark:text-surface-300">
-                  {{ 'auth.emailOrUsername' | transloco }}
-                </label>
+      <main class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative z-10">
+        <pantry-card padding="lg" class="block w-full max-w-md">
+          <div class="space-y-6">
+            <!-- Mobile Brand Emblem Header -->
+            <div class="lg:hidden flex flex-col items-center text-center space-y-2 mb-6">
+              <div
+                class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center text-white">
+                <pantry-skillet-icon [size]="22" />
               </div>
-              <div class="relative">
-                <i
-                  class="pi pi-user absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"></i>
+              <span class="type-section-title text-surface-900 dark:text-white">{{
+                'app.name' | transloco
+              }}</span>
+            </div>
+
+            <!-- Form Header -->
+            <div>
+              <h1 class="type-page-title text-surface-900 dark:text-white">
+                {{ 'auth.login' | transloco }}
+              </h1>
+            </div>
+
+            <!-- Inline Error Banner -->
+            @if (errorMessage()) {
+              <pantry-alert variant="danger">{{ errorMessage() }}</pantry-alert>
+            }
+
+            <!-- Login Form -->
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+              <pantry-form-field
+                forId="identifier"
+                icon="pi pi-user"
+                [label]="'auth.emailOrUsername' | transloco"
+                [error]="
+                  loginForm.get('identifier')?.touched && loginForm.get('identifier')?.invalid
+                    ? ('auth.identifierRequired' | transloco)
+                    : undefined
+                ">
                 <input
+                  pInputText
                   id="identifier"
                   type="text"
                   formControlName="identifier"
-                  aria-describedby="identifier-error"
-                  class="w-full h-[42px] pl-10 pr-4 rounded-xl bg-white/80 dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200"
+                  autocomplete="username"
+                  class="w-full"
                   [placeholder]="'auth.emailOrUsernamePlaceholder' | transloco" />
-              </div>
-              @if (loginForm.get('identifier')?.touched && loginForm.get('identifier')?.invalid) {
-                <div
-                  id="identifier-error"
-                  role="alert"
-                  class="text-xs text-rose-600 dark:text-rose-400 mt-1">
-                  Please enter your email or username.
+              </pantry-form-field>
+
+              <pantry-form-field
+                forId="password"
+                icon="pi pi-lock"
+                [label]="'auth.password' | transloco"
+                [error]="
+                  loginForm.get('password')?.touched && loginForm.get('password')?.invalid
+                    ? ('auth.passwordRequired' | transloco)
+                    : undefined
+                ">
+                <div class="flex gap-2">
+                  <input
+                    pInputText
+                    id="password"
+                    [type]="showPassword() ? 'text' : 'password'"
+                    formControlName="password"
+                    autocomplete="current-password"
+                    class="w-full min-w-0"
+                    placeholder="••••••••" />
+                  <button
+                    type="button"
+                    (click)="togglePasswordVisibility()"
+                    [attr.aria-label]="
+                      (showPassword() ? 'auth.hidePassword' : 'auth.showPassword') | transloco
+                    "
+                    class="btn-icon shrink-0">
+                    <i
+                      [class]="showPassword() ? 'pi pi-eye-slash text-base' : 'pi pi-eye text-base'"
+                      aria-hidden="true"></i>
+                  </button>
                 </div>
-              }
+              </pantry-form-field>
+
+              <!-- Submit Button -->
+              <button type="submit" [disabled]="isSubmitting()" class="btn-primary w-full mt-2">
+                @if (isSubmitting()) {
+                  <pantry-spinner [announce]="false" size="xs" color="white" />
+                  <span>{{ 'auth.signingIn' | transloco }}</span>
+                } @else {
+                  <span>{{ 'auth.login' | transloco }}</span>
+                }
+              </button>
+            </form>
+
+            <!-- Footer Link -->
+            <div class="pt-2 text-center text-sm text-surface-600 dark:text-surface-400">
+              <span>{{ 'auth.dontHaveAccount' | transloco }}</span>
+              <a
+                routerLink="/auth/signup"
+                class="ml-1.5 font-bold text-primary-700 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 transition-colors">
+                {{ 'auth.signUpNow' | transloco }}
+              </a>
             </div>
-
-            <!-- Password Field -->
-            <div>
-              <div class="flex items-center justify-between h-6 mb-1.5">
-                <label for="password" class="type-label text-surface-600 dark:text-surface-300">
-                  {{ 'auth.password' | transloco }}
-                </label>
-              </div>
-              <div class="relative">
-                <i
-                  class="pi pi-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"></i>
-                <input
-                  id="password"
-                  [type]="showPassword() ? 'text' : 'password'"
-                  formControlName="password"
-                  aria-describedby="password-error"
-                  class="w-full h-[42px] pl-10 pr-12 rounded-xl bg-white/80 dark:bg-surface-800/80 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-50 text-sm placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200"
-                  placeholder="••••••••" />
-                <button
-                  type="button"
-                  (click)="togglePasswordVisibility()"
-                  [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
-                  class="absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 transition-colors focus:outline-none cursor-pointer">
-                  <i
-                    [class]="
-                      showPassword() ? 'pi pi-eye-slash text-base' : 'pi pi-eye text-base'
-                    "></i>
-                </button>
-              </div>
-              @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
-                <div
-                  id="password-error"
-                  role="alert"
-                  class="text-xs text-rose-600 dark:text-rose-400 mt-1">
-                  Password is required.
-                </div>
-              }
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" [disabled]="isSubmitting()" class="btn-primary w-full mt-2">
-              @if (isSubmitting()) {
-                <i class="pi pi-spin pi-spinner text-sm"></i>
-                <span>Signing in...</span>
-              } @else {
-                <span>{{ 'auth.login' | transloco }}</span>
-              }
-            </button>
-          </form>
-
-          <!-- Footer Link -->
-          <div class="pt-2 text-center text-sm text-surface-500 dark:text-surface-400">
-            <span>{{ 'auth.dontHaveAccount' | transloco }}</span>
-            <a
-              routerLink="/auth/signup"
-              class="ml-1.5 font-bold text-primary-700 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 transition-colors">
-              {{ 'auth.signUpNow' | transloco }}
-            </a>
           </div>
-        </div>
-      </div>
+        </pantry-card>
+      </main>
     </div>
   `,
 })
@@ -287,6 +219,7 @@ export class LoginComponent implements OnInit {
   private router = inject(Router);
   private toastService = inject(ToastService);
   private themeService = inject(ThemeService);
+  private transloco = inject(TranslocoService);
 
   readonly showPassword = signal(false);
   readonly isSubmitting = signal(false);
@@ -322,14 +255,14 @@ export class LoginComponent implements OnInit {
 
     this.authService.login({ identifier: identifier!.trim(), password: password! }).subscribe({
       next: () => {
-        this.toastService.showSuccess('Login successful. Welcome back!');
+        this.toastService.showSuccess(this.transloco.translate('auth.loginSuccess'));
         this.router.navigate(['/']);
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        const errorMsg = err.error?.message || 'Invalid email, username, or password.';
+        const errorMsg = err.error?.message || this.transloco.translate('auth.invalidCredentials');
         this.errorMessage.set(errorMsg);
-        this.toastService.showError(errorMsg, 'Authentication Error');
+        this.toastService.showError(errorMsg, this.transloco.translate('auth.loginErrorTitle'));
       },
     });
   }
