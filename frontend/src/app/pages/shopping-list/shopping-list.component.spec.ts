@@ -5,48 +5,49 @@ import { TranslocoTestingModule } from '@jsverse/transloco';
 import { ShoppingItem } from '@models/shopping-list.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { ShoppingListService } from '@services/shopping-list.service';
-import { ConfirmDialogService } from '@ui';
-import { of } from 'rxjs';
-import { vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
+
 import translations from '../../../../public/i18n/en.json';
 import { ShoppingListComponent } from './shopping-list.component';
 
+const item = (
+  overrides: Partial<ShoppingItem> & Pick<ShoppingItem, 'id' | 'name'>,
+): ShoppingItem => ({
+  category: 'Dairy',
+  quantity: 1,
+  unit: 'pcs',
+  checked: false,
+  source: 'manual',
+  ...overrides,
+});
+
 describe('ShoppingListComponent', () => {
+  let items: ReturnType<typeof signal<ShoppingItem[]>>;
+  let toggleItem: ReturnType<typeof vi.fn>;
+  let navigate: ReturnType<typeof vi.fn>;
+  let fixture: ComponentFixture<ShoppingListComponent>;
   let component: ShoppingListComponent;
-  let mockShoppingListService: unknown;
-  let mockMealPlannerService: unknown;
-  let mockRouter: unknown;
 
-  const mockItem: ShoppingItem = {
-    id: 'sl-1',
-    name: 'Butter',
-    category: 'Dairy',
-    quantity: 2,
-    unit: 'sticks',
-    checked: false,
-    estimatedPrice: 2.5,
-    storeName: 'Market',
-    source: 'manual',
-  };
-
-  beforeEach(() => {
-    mockShoppingListService = {
-      items: signal([mockItem]),
-      addItem: vi.fn(),
-      toggleItem: vi.fn(),
-      removeItem: vi.fn(),
-      clearChecked: vi.fn(),
-      restockCheckedItems: vi.fn(),
-    };
-
-    mockMealPlannerService = {
-      addAllMissingToShoppingList: vi.fn(),
-    };
-
-    mockRouter = { navigate: vi.fn() };
-
+  const setup = (initial: ShoppingItem[], isLoading = false, wide = false) => {
+    items = signal(initial);
+    toggleItem = vi.fn();
+    navigate = vi.fn();
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn((query: string) => ({
+        matches: wide,
+        media: query,
+        onchange: null,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    );
     TestBed.configureTestingModule({
       imports: [
+        ShoppingListComponent,
         TranslocoTestingModule.forRoot({
           langs: { en: translations },
           translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
@@ -54,230 +55,176 @@ describe('ShoppingListComponent', () => {
         }),
       ],
       providers: [
-        { provide: ShoppingListService, useValue: mockShoppingListService },
-        { provide: MealPlannerService, useValue: mockMealPlannerService },
-        { provide: Router, useValue: mockRouter },
+        provideRouter([]),
+        {
+          provide: ShoppingListService,
+          useValue: { items, isLoading: signal(isLoading), toggleItem },
+        },
+        { provide: MealPlannerService, useValue: { addAllMissingToShoppingList: vi.fn() } },
       ],
     });
+    fixture = TestBed.createComponent(ShoppingListComponent);
+    component = fixture.componentInstance;
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockImplementation(navigate);
+    fixture.detectChanges();
+  };
 
-    component = TestBed.runInInjectionContext(() => new ShoppingListComponent());
+  const stocked = [
+    item({ id: '1', name: 'Yogurt', storeName: 'Trader Joes' }),
+    item({ id: '2', name: 'Bananas', storeName: 'Trader Joes', recipeName: 'Banana bread' }),
+    item({ id: '3', name: 'Pasta', storeName: 'Costco', estimatedPrice: 3.5 }),
+    item({ id: '4', name: 'Salt' }),
+    item({ id: '5', name: 'Milk', storeName: 'Costco', checked: true }),
+    item({ id: '6', name: 'Eggs', storeName: 'Trader Joes', checked: true }),
+  ];
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('groups unchecked items by store A-Z with no-store last and items A-Z', () => {
+    setup(stocked);
+    const groups = component.toBuyGroups();
+    expect(groups.map((g) => g.name)).toEqual(['Costco', 'Trader Joes', null]);
+    expect(groups[1].items.map((i) => i.name)).toEqual(['Bananas', 'Yogurt']);
   });
 
-  it('should create shopping list component', () => {
-    expect(component).toBeTruthy();
-    expect(component.totalCount()).toBe(1);
-    expect(component.totalEstimatedCost()).toBe(2.5);
+  it('lists every store, sorted, with no store last', () => {
+    setup(stocked);
+    expect(component.storeOptions().map((o) => o.label)).toEqual([
+      'All stores',
+      'Costco',
+      'Trader Joes',
+      'No store',
+    ]);
   });
 
-  it('should filter items by status', () => {
-    component.activeFilter.set('unchecked');
-    expect(component.filteredItems().length).toBe(1);
-
-    component.activeFilter.set('checked');
-    expect(component.filteredItems().length).toBe(0);
+  it('omits the no-store option when every item has a store', () => {
+    setup([item({ id: '1', name: 'Yogurt', storeName: 'Costco' })]);
+    expect(component.storeOptions().map((o) => o.label)).toEqual(['All stores', 'Costco']);
   });
 
-  it('should sort items by column and toggle direction', () => {
-    const itemA: ShoppingItem = {
-      id: 'sl-1',
-      name: 'Apples',
-      category: 'Produce',
-      quantity: 5,
-      unit: 'pcs',
-      checked: false,
-      estimatedPrice: 1.0,
-      storeName: 'Costco',
-      source: 'manual',
-    };
-    const itemB: ShoppingItem = {
-      id: 'sl-2',
-      name: 'Zucchini',
-      category: 'Produce',
-      quantity: 2,
-      unit: 'pcs',
-      checked: true,
-      estimatedPrice: 3.5,
-      storeName: 'Aldi',
-      source: 'manual',
-    };
-
-    (mockShoppingListService as { items: ReturnType<typeof signal<ShoppingItem[]>> }).items =
-      signal([itemB, itemA]);
-    component = TestBed.runInInjectionContext(() => new ShoppingListComponent());
-
-    // Default sort is 'name' asc -> Apples then Zucchini
-    expect(component.filteredItems()[0].name).toBe('Apples');
-    expect(component.filteredItems()[1].name).toBe('Zucchini');
-
-    // Toggle to name desc -> Zucchini then Apples
-    component.toggleSort('name');
-    expect(component.sortDirection()).toBe('desc');
-    expect(component.filteredItems()[0].name).toBe('Zucchini');
-    expect(component.filteredItems()[1].name).toBe('Apples');
-
-    // Sort by quantity asc -> 2 (Zucchini) then 5 (Apples)
-    component.toggleSort('quantity');
-    expect(component.sortBy()).toBe('quantity');
-    expect(component.sortDirection()).toBe('asc');
-    expect(component.filteredItems()[0].quantity).toBe(2);
-    expect(component.filteredItems()[1].quantity).toBe(5);
-
-    // Sort by price desc -> 3.5 (Zucchini) then 1.0 (Apples)
-    component.toggleSort('price');
-    component.toggleSort('price');
-    expect(component.sortBy()).toBe('price');
-    expect(component.sortDirection()).toBe('desc');
-    expect(component.filteredItems()[0].estimatedPrice).toBe(3.5);
+  it('shows only the selected store group', () => {
+    setup(stocked);
+    component.storeFilter.set('Costco');
+    expect(component.toBuyGroups().map((g) => g.name)).toEqual(['Costco']);
+    expect(component.cartItems().map((i) => i.name)).toEqual(['Milk']);
   });
 
-  describe('deleteSelected', () => {
-    let confirm: ReturnType<typeof vi.fn>;
-    let deleteItems: ReturnType<typeof vi.fn>;
+  it('falls back to all stores when the selected store disappears', () => {
+    setup(stocked);
+    component.storeFilter.set('Costco');
+    items.set(stocked.filter((i) => i.storeName !== 'Costco'));
+    fixture.detectChanges();
+    expect(component.storeFilter()).toBe('all');
+  });
 
-    beforeEach(() => {
-      confirm = vi.fn();
-      deleteItems = vi.fn().mockReturnValue(of(undefined));
-      TestBed.resetTestingModule();
-      TestBed.configureTestingModule({
-        imports: [
-          TranslocoTestingModule.forRoot({
-            langs: { en: translations },
-            translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
-            preloadLangs: true,
-          }),
-        ],
-        providers: [
-          {
-            provide: ShoppingListService,
-            useValue: {
-              items: signal([mockItem]),
-              deleteItems,
-              loadItemsFromBackend: vi.fn(),
-            },
-          },
-          { provide: MealPlannerService, useValue: mockMealPlannerService },
-          { provide: Router, useValue: mockRouter },
-          { provide: ConfirmDialogService, useValue: { confirm } },
-        ],
-      });
-      component = TestBed.runInInjectionContext(() => new ShoppingListComponent());
-      component.selectedIds.set(new Set(['sl-1']));
-    });
+  it('keeps checked items out of the groups and in the cart tray', () => {
+    setup(stocked);
+    const el: HTMLElement = fixture.nativeElement;
+    expect(
+      component
+        .toBuyGroups()
+        .flatMap((g) => g.items)
+        .some((i) => i.checked),
+    ).toBe(false);
+    expect(el.textContent).toContain('2 in cart');
+    expect(el.textContent).toContain('Eggs, Milk');
+    expect(el.querySelectorAll('section[aria-labelledby]').length).toBe(3);
+  });
 
-    it('deletes after a destructive confirmation', async () => {
-      confirm.mockResolvedValue(true);
-      await component.deleteSelected();
-      expect(confirm).toHaveBeenCalledWith(expect.objectContaining({ destructive: true }));
-      expect(deleteItems).toHaveBeenCalledWith(['sl-1']);
-    });
+  it('expands the cart tray to show checked rows that can be unchecked', () => {
+    setup(stocked);
+    const el: HTMLElement = fixture.nativeElement;
+    const toggle = el.querySelector(
+      'button[aria-controls="shopping-cart-items"]',
+    ) as HTMLButtonElement;
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(el.querySelector<HTMLElement>('#shopping-cart-items')?.hidden).toBe(true);
+    toggle.click();
+    fixture.detectChanges();
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    const box = el.querySelector(
+      '#shopping-cart-items input[aria-label="Move Milk back to the list"]',
+    ) as HTMLInputElement;
+    box.click();
+    expect(toggleItem).toHaveBeenCalledWith('5');
+  });
 
-    it('keeps the items when the confirmation is cancelled', async () => {
-      confirm.mockResolvedValue(false);
-      await component.deleteSelected();
-      expect(deleteItems).not.toHaveBeenCalled();
+  it('hides the tray when nothing is in the cart', () => {
+    setup([item({ id: '1', name: 'Yogurt', storeName: 'Costco' })]);
+    expect(fixture.nativeElement.querySelector('button[aria-controls]')).toBeNull();
+  });
+
+  it('moves the cart into a sticky rail beside the list on wide screens', () => {
+    setup(stocked, false, true);
+    const el: HTMLElement = fixture.nativeElement;
+    const rail = el.querySelector('aside.shopping-rail');
+    expect(rail).not.toBeNull();
+    expect(rail?.textContent).toContain('2 in cart');
+    expect(rail?.textContent).toContain('Eggs');
+    expect(rail?.textContent).toContain('Milk');
+    expect(rail?.querySelector('button')?.textContent).toContain('Restock');
+    expect(el.querySelector('button[aria-controls="shopping-cart-items"]')).toBeNull();
+  });
+
+  it('shows a quiet rail before anything is checked on wide screens', () => {
+    setup([item({ id: '1', name: 'Yogurt', storeName: 'Costco' })], false, true);
+    const rail = fixture.nativeElement.querySelector('aside.shopping-rail') as HTMLElement | null;
+    expect(rail?.textContent).toContain('Nothing in the cart yet');
+    expect(rail?.textContent).toContain('Tick items off as you pick them up.');
+    expect(rail?.querySelector('button')).toBeNull();
+  });
+
+  it('restocks everything without ids when all stores are shown', () => {
+    setup(stocked);
+    component.goToRestock();
+    expect(navigate).toHaveBeenCalledWith(['/shopping-list/restock']);
+  });
+
+  it('restocks only the in-cart ids of the selected store', () => {
+    setup(stocked);
+    component.storeFilter.set('Trader Joes');
+    component.goToRestock();
+    expect(navigate).toHaveBeenCalledWith(['/shopping-list/restock'], {
+      queryParams: { ids: '6' },
     });
   });
 
-  describe('rendered template', () => {
-    const langs = {
-      en: {
-        shoppingList: {
-          table: {
-            item: 'Item Name',
-            category: 'Category',
-            store: 'Store',
-            quantity: 'Quantity',
-            price: 'Est. Price',
-            markItemBought: 'Mark {{name}} as bought',
-            selectItem: 'Select {{name}}',
-            selectAll: 'Select all items',
-            editQuantity: 'Edit quantity for {{name}}',
-            editPrice: 'Edit estimated price for {{name}}',
-          },
-        },
-      },
-    };
-    let toggleItem: ReturnType<typeof vi.fn>;
-    let fixture: ComponentFixture<ShoppingListComponent>;
+  it('marks an item bought from the row checkbox', () => {
+    setup(stocked);
+    const box = fixture.nativeElement.querySelector(
+      'input[aria-label="Mark Pasta as bought"]',
+    ) as HTMLInputElement;
+    box.click();
+    expect(toggleItem).toHaveBeenCalledWith('3');
+  });
 
-    beforeEach(async () => {
-      TestBed.resetTestingModule();
-      toggleItem = vi.fn();
-      await TestBed.configureTestingModule({
-        imports: [
-          ShoppingListComponent,
-          TranslocoTestingModule.forRoot({
-            langs,
-            translocoConfig: { availableLangs: ['en'], defaultLang: 'en' },
-          }),
-        ],
-        providers: [
-          provideRouter([]),
-          {
-            provide: ShoppingListService,
-            useValue: {
-              items: signal([mockItem]),
-              isLoading: signal(false),
-              toggleItem,
-              updateItemQuantity: vi.fn(),
-              updateItemPrice: vi.fn(),
-            },
-          },
-          { provide: MealPlannerService, useValue: { addAllMissingToShoppingList: vi.fn() } },
-        ],
-      }).compileComponents();
-      fixture = TestBed.createComponent(ShoppingListComponent);
-      fixture.detectChanges();
-    });
+  it('opens an item through a real link with recipe and price meta', () => {
+    setup(stocked);
+    const el: HTMLElement = fixture.nativeElement;
+    const links = Array.from(el.querySelectorAll<HTMLAnchorElement>('ul a'));
+    expect(links.find((a) => a.textContent?.includes('Pasta'))?.getAttribute('href')).toBe(
+      '/shopping-list/3/edit',
+    );
+    expect(el.textContent).toContain('For Banana bread');
+    expect(el.textContent).toContain('$3.50');
+  });
 
-    it('exposes aria-sort on sortable headers and sorts from the header button', () => {
-      const el: HTMLElement = fixture.nativeElement;
-      const headers = el.querySelectorAll('th[aria-sort]');
-      expect(headers.length).toBe(5);
-      expect(headers[0].getAttribute('aria-sort')).toBe('ascending');
-      expect(headers[1].getAttribute('aria-sort')).toBe('none');
+  it('says everything is in the cart when nothing is left to buy', () => {
+    setup([item({ id: '1', name: 'Milk', storeName: 'Costco', checked: true })]);
+    expect(fixture.nativeElement.textContent).toContain('Everything is in the cart');
+    component.storeFilter.set('Costco');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Everything from Costco is in the cart');
+  });
 
-      (headers[0].querySelector('button') as HTMLButtonElement).click();
-      fixture.detectChanges();
-      expect(el.querySelectorAll('th[aria-sort]')[0].getAttribute('aria-sort')).toBe('descending');
-    });
+  it('shows the empty state when there are no items', () => {
+    setup([]);
+    expect(fixture.nativeElement.querySelector('pantry-empty-state')).not.toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Your shopping list is empty');
+  });
 
-    it('opens an item through a real link', () => {
-      const link = fixture.nativeElement.querySelector('tbody a') as HTMLAnchorElement;
-      expect(link.getAttribute('href')).toBe('/shopping-list/sl-1/edit');
-      const mobileLink = fixture.nativeElement.querySelector('ul a') as HTMLAnchorElement;
-      expect(mobileLink.getAttribute('href')).toBe('/shopping-list/sl-1/edit');
-    });
-
-    it('marks an item bought from the per-row control', () => {
-      const box = fixture.nativeElement.querySelector(
-        'input[aria-label="Mark Butter as bought"]',
-      ) as HTMLInputElement;
-      box.click();
-      expect(toggleItem).toHaveBeenCalledWith('sl-1');
-    });
-
-    it('keeps bulk selection behind select mode', () => {
-      const el: HTMLElement = fixture.nativeElement;
-      expect(el.querySelector('input[aria-label="Select Butter"]')).toBeNull();
-      fixture.componentInstance.toggleSelectMode();
-      fixture.detectChanges();
-      expect(el.querySelector('input[aria-label="Select Butter"]')).not.toBeNull();
-    });
-
-    it('edits quantity through a keyboard-reachable button', () => {
-      const el: HTMLElement = fixture.nativeElement;
-      const trigger = el.querySelector(
-        'button[aria-label="Edit quantity for Butter"]',
-      ) as HTMLButtonElement;
-      trigger.click();
-      fixture.detectChanges();
-      const input = el.querySelector('input[data-inline-input]') as HTMLInputElement;
-      expect(input.getAttribute('aria-label')).toBe('Edit quantity for Butter');
-      input.value = '4';
-      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-      fixture.detectChanges();
-      expect(fixture.componentInstance.editingQuantityId()).toBeNull();
-    });
+  it('shows a busy skeleton while loading', () => {
+    setup(stocked, true);
+    expect(fixture.nativeElement.querySelector('[aria-busy="true"]')).not.toBeNull();
   });
 });

@@ -454,16 +454,9 @@
     "recipesLoadErrorHint": "Check your connection and try again. You can't save a meal until recipes load.",
     "retry": "Retry",
     "saveError": "Couldn't save this meal plan. Your selection is kept. Try again.",
-    "pageTitle": "Weekly meal planner",
-    "syncMissingOne": "Sync {{count}} missing item",
-    "syncMissingOther": "Sync {{count}} missing items",
+    "pageTitle": "Meal planner",
     "planMeal": "Plan a meal",
-    "plannerView": "Planner view",
     "dayOfWeek": "Day of week",
-    "tabs": {
-      "calendar": "Weekly calendar",
-      "daily": "Daily focus"
-    },
     "days": {
       "monday": "Monday",
       "tuesday": "Tuesday",
@@ -479,51 +472,24 @@
       "dinner": "Dinner",
       "snacks": "Snacks"
     },
-    "units": {
-      "kcal": "{{count}} kcal",
-      "mins": "{{count}} mins",
-      "minsShort": "{{count}}m",
-      "servings": "{{count}} servings"
-    },
-    "cooked": "Cooked",
-    "cookedCheck": "✓ Cooked",
-    "markCooked": "Mark cooked",
-    "markAsCooked": "Mark as cooked",
-    "addMissing": "Add missing",
-    "removeMeal": "Remove meal",
-    "removeFromPlan": "Remove from plan",
     "weekly": {
-      "viewLayout": "View layout:",
-      "viewLayoutAria": "View layout",
-      "overview": "7-day overview",
-      "cards": "Cards",
-      "dayRows": "Day rows",
+      "tableCaption": "Meals planned for each day of the week",
+      "day": "Day",
+      "today": "Today",
+      "cooked": "Cooked",
+      "inStock": "In stock",
+      "missingOne": "{{count}} missing",
+      "missingOther": "{{count}} missing",
       "mealCountOne": "{{count}} meal",
       "mealCountOther": "{{count}} meals",
-      "kcalTotal": "{{count}} kcal total",
-      "planMealAction": "+ Plan meal",
-      "missingList": "Missing: {{items}}",
-      "addToCart": "Add to cart",
-      "inStock": "In stock",
-      "noMeals": "No meals scheduled",
-      "addFirstMeal": "+ Add first meal",
-      "noMealsForDay": "No meals scheduled for {{day}}."
-    },
-    "daily": {
-      "totalCalories": "Total planned calories",
-      "kitchenTime": "Estimated kitchen time",
-      "stockReadiness": "Stock readiness",
-      "ready": "100% ready",
-      "missingCount": "{{count}} missing",
-      "schedule": "{{day}} schedule",
-      "ingredientsTitle": "{{day}} ingredients",
-      "noMealsFor": "No meals planned for {{day}}",
-      "noMealsHint": "Click below to add breakfast, lunch, dinner, or snacks.",
-      "planDinner": "+ Plan dinner",
-      "noIngredients": "No ingredients required today.",
-      "ingredientBreakdown": "Ingredient breakdown",
-      "stockUnavailable": "Stock status unavailable",
-      "allInPantry": "All ingredients in pantry"
+      "addMeal": "Add {{mealType}}",
+      "addMealOn": "Add {{mealType}} on {{day}}",
+      "add": "Add",
+      "addMealFor": "Add a meal for {{day}}",
+      "nothingPlanned": "Nothing planned",
+      "markCooked": "Mark {{recipe}} as cooked",
+      "markNotCooked": "Mark {{recipe}} as not cooked",
+      "removeMeal": "Remove {{recipe}} from plan"
     },
     "plan": {
       "back": "Back to meal planner",
@@ -554,6 +520,19 @@
       "allInStock": "All ingredients are in stock for this recipe!",
       "allPlannedStocked": "All planned meals are fully stocked!",
       "alreadyOnList": "All missing ingredients are already on your shopping list."
+    },
+    "units": {
+      "servings": "{{count}} servings"
+    },
+    "weekMetaEmpty": "Nothing planned this week",
+    "weekMetaOne": "{{count}} meal planned",
+    "weekMetaOther": "{{count}} meals planned",
+    "footer": {
+      "ingredientCountOne": "{{count}} ingredient",
+      "ingredientCountOther": "{{count}} ingredients",
+      "missingSummary": "{{ingredients}} missing across {{meals}}",
+      "addToShoppingList": "Add to shopping list",
+      "allInStock": "Everything planned is in stock"
     }
   },
   "addItemForm": {
@@ -1093,60 +1072,24 @@
     "currentKitchen": "Active Kitchen"
   },
   "shoppingList": {
-    "title": "Shopping List",
+    "title": "Shopping list",
     "subtitle": "Track ingredients, organize by store, restock to pantry",
     "actions": {
-      "addItem": "Add Ingredients",
-      "syncMealPlan": "Sync Meal Plan",
-      "manageStores": "Manage Stores",
-      "restockPantry": "Restock to Pantry",
-      "markBought": "Mark Bought",
-      "markToBuy": "Mark as To Buy",
-      "delete": "Delete",
-      "clearSelection": "Clear",
-      "clearFilters": "Clear Filters",
-      "selectMode": "Select",
-      "doneSelecting": "Done"
-    },
-    "stats": {
-      "combinedTitle": "Progress & Budget",
-      "itemsSummary": "items bought",
-      "costSummary": "spent of estimated",
-      "remainingSpend": "remaining to spend",
-      "itemsRemaining": "items to buy",
-      "bought": "Bought"
-    },
-    "filters": {
-      "searchPlaceholder": "Search items, categories, stores...",
-      "all": "All",
-      "unchecked": "To Buy",
-      "checked": "Bought"
-    },
-    "selectedBar": {
-      "selected": "Selected"
+      "addItem": "Add item",
+      "syncMealPlan": "Add from meal plan",
+      "manageStores": "Stores",
+      "more": "More actions",
+      "restock": "Restock",
+      "delete": "Delete"
     },
     "table": {
-      "selectAll": "Select all items",
-      "selectItem": "Select {{name}}",
-      "item": "Item Name",
-      "category": "Category",
-      "store": "Store",
-      "quantity": "Quantity",
-      "price": "Est. Price",
-      "status": "Status",
-      "noStore": "No store assigned",
-      "uncategorized": "Uncategorized",
-      "editItem": "Edit {{name}}",
-      "markItemBought": "Mark {{name}} as bought",
-      "editQuantity": "Edit quantity for {{name}}",
-      "editPrice": "Edit estimated price for {{name}}",
-      "addedBy": "Added by {{name}}"
+      "uncategorized": "Uncategorized"
     },
     "empty": {
       "title": "Your shopping list is empty",
       "description": "Add ingredients or sync your meal plan.",
-      "noMatches": "No matching items",
-      "noMatchesDesc": "Try changing your search or status filter."
+      "allInCart": "Everything is in the cart",
+      "allInCartStore": "Everything from {{store}} is in the cart"
     },
     "form": {
       "addTitle": "Add Shopping Ingredient",
@@ -1194,18 +1137,8 @@
     },
     "aria": {
       "loading": "Loading shopping list",
-      "summary": "Shopping list summary",
-      "filters": "Shopping list filters",
-      "items": "Shopping list items",
-      "selectedActions": "Selected shopping items actions",
-      "search": "Search shopping list items",
-      "statusFilter": "Filter shopping list items by status",
-      "clearSearch": "Clear search"
-    },
-    "confirmDelete": {
-      "title": "Delete selected items",
-      "messageOne": "Delete the selected item?",
-      "messageOther": "Delete {{count}} selected items?"
+      "remaining": "{{count}} left to buy",
+      "cart": "Items in cart"
     },
     "toast": {
       "title": "Shopping list",
@@ -1218,6 +1151,21 @@
       "nothingToRestock": "No checked items to restock",
       "restocked": "Restocked {{count}} item(s) directly into your pantry inventory!",
       "restockedTitle": "Restock complete"
+    },
+    "store": {
+      "label": "Shopping at",
+      "all": "All stores",
+      "none": "No store"
+    },
+    "row": {
+      "markBought": "Mark {{name}} as bought",
+      "markNotBought": "Move {{name}} back to the list",
+      "forRecipe": "For {{name}}"
+    },
+    "cart": {
+      "count": "{{count}} in cart",
+      "emptyTitle": "Nothing in the cart yet",
+      "emptyDescription": "Tick items off as you pick them up."
     }
   },
   "stores": {

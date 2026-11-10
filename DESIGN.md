@@ -221,7 +221,7 @@ Error text is the exception. Error text and the `btn-danger` text use `rose-600`
 
 The app shell owns the outer gutters inside a 1280px workspace: 16px on phones, 24px from 640px, 32px from 1024px. Pages must not add another outer horizontal or vertical padding wrapper. The breadcrumb, page heading, and content share the shell edge.
 
-- **Page layout:** full workspace width, 24px gaps between sections. The root element of a page template must not set `max-w-*` with `mx-auto`. Use `page-layout` and `page-header`.
+- **Page layout:** full workspace width, 24px gaps between sections. The root element of a page template must not set `max-w-*` with `mx-auto`. Use `page-layout` and `page-header`. Exception: the Shopping list is a single checklist column capped at 720px, left-aligned. From 1280px, a sticky in-cart rail occupies the space beside it. Its page header has the same width cap. The header actions end at the list's right edge. Do not add `mx-auto`.
 - **Auth pages:** the login and sign-up halves sit on the same continuous shell surface. Neither half has decorative floating drawings, a tinted or blurred side panel, or a divider. The theme toggle is opaque. The form sits inside a `pantry-card`, not directly on the surface.
 - **Form layout:** left-aligned, 640px maximum measure, for compact forms only. Never narrow tables or long editors.
 - **Page header:** title and context first, then actions. It stacks on phones and goes horizontal from 640px. The action group wraps with 12px gaps.
@@ -316,6 +316,8 @@ Use it for a single choice among two to five short options: view toggles, filter
 
 Use PrimeNG `p-checkbox`. Put it in a hit area of at least 42×42px. Include its label in the hit area. Do not use a native `<input type="checkbox">` or a 16px target on phones.
 
+A checked shopping-list item in the in-cart tray uses Fresh Emerald instead of the orange checked state. Add the class `checkbox-in-cart` to the `p-checkbox` host. The global rule in `frontend/src/styles.scss` sets the emerald fill and border. Use it only for in-cart items.
+
 ### Alert (`pantry-alert`)
 
 Use it for an inline message inside a page or form: info, success, warning, or danger. Do not hand-roll a colored message box.
@@ -379,6 +381,40 @@ One quiet range status and a plain page indicator with `aria-current="page"`; ev
 - **Mobile drawer:** a modal drawer, almost opaque so it stays readable over the shell surface. Closed content is inert; opening focuses its close button; Tab stays inside; Escape, the backdrop, and choosing a destination close it, and focus returns to the menu trigger. Desktop collapse is a separate preference and never hides mobile sub-navigation.
 - **Motion:** 240ms `cubic-bezier(0.22, 1, 0.36, 1)` on background, border, and shadow. Under `prefers-reduced-motion`, the app disables Angular animations. It reads the media query into a signal and binds `[@.disabled]`. Use Tailwind `motion-reduce:` utilities for CSS transitions and animations.
 - **Header:** white at 96% (dark: Slate 900 at 96%) with a hairline bottom border.
+
+### Shopping list and meal planner
+
+The shopping list and the meal planner follow these layout and content rules.
+
+- **Shopping list:** The "Shopping at" store select sits above the list. Its default value is "All stores."
+  - Unchecked items are grouped by store, in A to Z order. "No store" is always last.
+  - Each store has a heading with its remaining count of unchecked items. Each group is one bordered list card.
+  - Each row has a checkbox in a 42px hit area. The row has a link to the item edit page.
+  - The link shows the name above a meta line. The meta line shows "For <recipe>" or the category, and the price when one is set.
+  - The quantity and unit are on the right.
+  - Checked items leave their group. They go to the in-cart tray.
+- **In-cart tray:** checked items collect in the cart.
+  - From 1280px, the cart is a sticky rail beside the checklist. It takes the remaining width up to 400px, sits 24px from the top of the scroll area, and stays pinned while the checklist scrolls.
+  - The rail is always present while the list has items. It shows the checked items expanded, or a quiet empty state before anything is ticked.
+  - Below 1280px, the tray is sticky at the bottom of the list column and lists the checked items behind a disclosure button.
+  - It shows "N in cart" and the item names.
+  - It has the primary Restock action.
+  - With one store selected, Restock sends only that store's checked items in the `ids` query parameter.
+  - On phones, the tray has the floating overlay shadow. On md and wider, it is flat, with its border.
+- **Secondary actions:** Stores and Add from meal plan are in a `p-menu` popup. The popup opens from one `btn-icon` ellipsis button. This button sits before the primary button.
+- **Meal planner:** The planner is one table.
+  - The rows are the days, from Monday to Sunday. The columns are Breakfast, Lunch, Dinner, and Snacks.
+  - Today's day name and its "Today" label are orange. Today's row header has `aria-current="date"`.
+  - A filled cell shows the recipe name and one status. The status is "Cooked", "N missing", or "In stock."
+  - A "N missing" status has a neutral hollow dot. Missing is not a food condition. It never uses a status hue.
+  - The cell actions (cooked toggle and remove) are hidden until the row is hovered or focused. The empty-cell "Add <meal type>" pill follows the same rule.
+  - On devices without hover, these controls are always visible.
+  - One footer line under the table counts the missing ingredients. It offers "Add to shopping list."
+- **Below md:** The table becomes one card with a list of days.
+  - Each day shows only its planned meals.
+  - The actions are 42px and always visible.
+  - Each day has an "Add" button.
+- **Not shown:** These pages do not show budget totals, progress bars, calories, prep time, bulk select, or "added by" metadata. Do not add them back.
 
 ### Shell Surface: Morning Haze (signature)
 
@@ -455,7 +491,6 @@ These are the only sanctioned deviations. Each is allowlisted in `frontend/tools
 
 | Location                                          | Pattern                                                  | Why it remains                                                                                                                                       |
 | :------------------------------------------------ | :------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `daily-focus.component.html` (status tile)        | Emerald / rose pill ternary inside a 40px icon tile      | A composite status tile (icon + text), not a badge.                                                                                                  |
 | `toast-container.component.ts` (status icon tile) | Emerald / rose / amber tinted tile behind the toast icon | A status icon tile, not a badge. The toast also shows a text title.                                                                                  |
 | `signup.component.ts` (password strength meter)   | Rose / amber / emerald meter segments                    | The meter shows password strength, not food status. It always shows a text verdict next to the color. Color is never the only signal.                |
 | `sidebar.component.html` (mobile logo tile)       | Orange fill on the logo tile                             | The tile is a brand mark and a link to Home. It is clickable, so it follows The One Warm Note Rule.                                                  |

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,37 +9,27 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { DayOfWeek, MealType, PlannedMeal } from '@models/meal-planner.model';
 import { MealPlannerService } from '@services/meal-planner.service';
-import {
-  AlertComponent,
-  BadgeComponent,
-  CardComponent,
-  EmptyStateComponent,
-  SegmentedControlComponent,
-  SegmentedOption,
-} from '@ui';
-import { sumKnownMetadata } from '@utility/recipe-metadata';
-import { switchMap } from 'rxjs';
+import { CardComponent } from '@ui';
 
-export type WeeklyLayoutMode = 'grid' | 'timeline';
+const DAYS_BY_JS_INDEX: DayOfWeek[] = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
 
 @Component({
   selector: 'pantry-weekly-view',
   standalone: true,
-  imports: [
-    CommonModule,
-    TranslocoModule,
-    AlertComponent,
-    BadgeComponent,
-    CardComponent,
-    EmptyStateComponent,
-    SegmentedControlComponent,
-  ],
+  imports: [NgTemplateOutlet, RouterLink, TranslocoModule, CardComponent],
   templateUrl: './weekly-view.component.html',
-  styleUrl: './weekly-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeeklyViewComponent {
@@ -54,52 +44,13 @@ export class WeeklyViewComponent {
     return this.mealsInput();
   }
 
-  @Output() addMealRequested = new EventEmitter<{ day: DayOfWeek; mealType: MealType }>();
+  @Output() addMealRequested = new EventEmitter<{ day: DayOfWeek; mealType?: MealType }>();
 
   readonly days = this.mealPlannerService.days;
   readonly mealTypes: MealType[] = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
 
-  private readonly transloco = inject(TranslocoService);
-  // Re-emits once the active language's translations are loaded, so computed labels refresh.
-  private readonly translationsReady = toSignal(
-    this.transloco.langChanges$.pipe(switchMap((lang) => this.transloco.load(lang))),
-  );
-
-  readonly layoutOptions = computed<SegmentedOption<WeeklyLayoutMode>[]>(() => {
-    this.translationsReady();
-    return [
-      {
-        value: 'grid',
-        label: this.transloco.translate('mealPlanner.weekly.cards'),
-        icon: 'pi pi-th-large',
-      },
-      {
-        value: 'timeline',
-        label: this.transloco.translate('mealPlanner.weekly.dayRows'),
-        icon: 'pi pi-list',
-      },
-    ];
-  });
-
-  layoutMode = signal<WeeklyLayoutMode>('grid');
-
-  readonly mealsByDayMap = computed(() => {
-    const map = new Map<DayOfWeek, PlannedMeal[]>();
-    for (const m of this.mealsInput()) {
-      const list = map.get(m.day) || [];
-      list.push(m);
-      map.set(m.day, list);
-    }
-    return map;
-  });
-
-  readonly caloriesByDayMap = computed(() => {
-    const map = new Map<DayOfWeek, number | undefined>();
-    this.mealsByDayMap().forEach((meals, day) => {
-      map.set(day, sumKnownMetadata(meals.map((meal) => meal.calories)));
-    });
-    return map;
-  });
+  /** The current weekday. Set it to override the clock, for example in tests. */
+  readonly today = signal<DayOfWeek>(DAYS_BY_JS_INDEX[new Date().getDay()]);
 
   readonly mealsBySlotMap = computed(() => {
     const map = new Map<string, PlannedMeal[]>();
@@ -112,9 +63,15 @@ export class WeeklyViewComponent {
     return map;
   });
 
-  setLayoutMode(mode: WeeklyLayoutMode | undefined): void {
-    if (mode) this.layoutMode.set(mode);
-  }
+  readonly mealsByDayMap = computed(() => {
+    const map = new Map<DayOfWeek, PlannedMeal[]>();
+    for (const m of this.mealsInput()) {
+      const list = map.get(m.day) || [];
+      list.push(m);
+      map.set(m.day, list);
+    }
+    return map;
+  });
 
   getMealsForDay(day: DayOfWeek): PlannedMeal[] {
     return this.mealsByDayMap().get(day) || [];
@@ -124,12 +81,8 @@ export class WeeklyViewComponent {
     return this.mealsBySlotMap().get(`${day}_${mealType}`) || [];
   }
 
-  getDayCalories(day: DayOfWeek): number | undefined {
-    return this.caloriesByDayMap().get(day);
-  }
-
-  onRequestAdd(day: DayOfWeek, type: MealType = 'Dinner'): void {
-    this.addMealRequested.emit({ day, mealType: type });
+  onRequestAdd(day: DayOfWeek, mealType?: MealType): void {
+    this.addMealRequested.emit({ day, mealType });
   }
 
   toggleCooked(id: string): void {
@@ -142,9 +95,5 @@ export class WeeklyViewComponent {
 
   missingFor(meal: PlannedMeal): string[] | null {
     return this.mealPlannerService.missingFor(meal);
-  }
-
-  addMissingToShoppingList(meal: PlannedMeal): void {
-    this.mealPlannerService.addMissingToShoppingList(meal);
   }
 }

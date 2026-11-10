@@ -172,7 +172,7 @@ export class RestockReviewPageComponent implements OnInit {
   private initDrafts(sourceList: ShoppingItem[]): void {
     this.draftsInitialised = true;
     const scoped = this.selectedRestockIds();
-    // Explicit ids are the user's intent (select mode), so unbought items count too.
+    // Explicit ids are the checked items of one store, so unbought items count too.
     const sourceItems: ShoppingItem[] = scoped
       ? sourceList.filter((item) => scoped.has(item.id))
       : sourceList.filter((i) => i.checked);
