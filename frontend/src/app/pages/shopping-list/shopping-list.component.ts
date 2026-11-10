@@ -1,33 +1,51 @@
-import { CommonModule, DOCUMENT } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  Injector,
-  afterNextRender,
   computed,
+  DestroyRef,
+  effect,
   inject,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ShoppingItem } from '@models/shopping-list.model';
 import { MealPlannerService } from '@services/meal-planner.service';
 import { ShoppingListService } from '@services/shopping-list.service';
+import { MenuItem } from 'primeng/api';
 import { CheckboxModule } from 'primeng/checkbox';
-import { InputTextModule } from 'primeng/inputtext';
+import { MenuModule } from 'primeng/menu';
+import { SelectModule } from 'primeng/select';
 
 import {
-  BadgeComponent,
-  CardComponent,
-  ConfirmDialogService,
+  CardSurfaceDirective,
   EmptyStateComponent,
-  SearchInputComponent,
-  SegmentedControlComponent,
+  FormFieldComponent,
   SkeletonComponent,
 } from '@ui';
 
-type ShoppingSortColumn = 'name' | 'category' | 'store' | 'quantity' | 'price';
+const ALL_STORES = 'all';
+const NO_STORE = '__no_store__';
+/** The checklist keeps 720px; the cart only gets its own column once the shell has room for it. */
+const CART_RAIL_QUERY = '(min-width: 1280px)';
+
+interface StoreOption {
+  value: string;
+  label: string;
+}
+
+interface StoreGroup {
+  key: string;
+  name: string | null;
+  items: ShoppingItem[];
+}
+
+const storeKey = (item: ShoppingItem): string => item.storeName?.trim() || NO_STORE;
+
+const compareByName = (a: ShoppingItem, b: ShoppingItem): number => a.name.localeCompare(b.name);
 
 @Component({
   selector: 'pantry-shopping-list',
@@ -38,13 +56,12 @@ type ShoppingSortColumn = 'name' | 'category' | 'store' | 'quantity' | 'price';
     RouterLink,
     TranslocoModule,
     CheckboxModule,
-    InputTextModule,
-    SearchInputComponent,
-    SkeletonComponent,
-    BadgeComponent,
-    CardComponent,
+    MenuModule,
+    SelectModule,
+    CardSurfaceDirective,
     EmptyStateComponent,
-    SegmentedControlComponent,
+    FormFieldComponent,
+    SkeletonComponent,
   ],
   templateUrl: './shopping-list.component.html',
   styleUrl: './shopping-list.component.scss',
@@ -54,186 +71,120 @@ export class ShoppingListComponent {
   private readonly router = inject(Router);
   readonly shoppingListService = inject(ShoppingListService);
   readonly mealPlannerService = inject(MealPlannerService);
-  private readonly document = inject(DOCUMENT);
-  private readonly injector = inject(Injector);
-  private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly transloco = inject(TranslocoService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly lang = toSignal(this.transloco.langChanges$);
+  private readonly cartRailQuery: MediaQueryList | null =
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia(CART_RAIL_QUERY)
+      : null;
 
-  // Filter state
-  activeFilter = signal<'all' | 'unchecked' | 'checked'>('all');
-  readonly searchQuery = signal('');
-  readonly selectedIds = signal<Set<string>>(new Set());
-  // Bulk selection is a secondary mode; the primary row control marks the item bought.
-  readonly selectMode = signal(false);
+  readonly storeFilter = signal<string>(ALL_STORES);
+  readonly cartExpanded = signal(false);
+  readonly menuOpen = signal(false);
+  readonly cartRail = signal(this.cartRailQuery?.matches ?? false);
 
-  // Sort state
-  readonly sortBy = signal<ShoppingSortColumn>('name');
-  readonly sortDirection = signal<'asc' | 'desc'>('asc');
-  readonly sortColumns: { key: ShoppingSortColumn; label: string }[] = [
-    { key: 'name', label: 'shoppingList.table.item' },
-    { key: 'category', label: 'shoppingList.table.category' },
-    { key: 'store', label: 'shoppingList.table.store' },
-    { key: 'quantity', label: 'shoppingList.table.quantity' },
-    { key: 'price', label: 'shoppingList.table.price' },
-  ];
+  readonly moreActions = computed<MenuItem[]>(() => {
+    this.lang();
+    return [
+      {
+        label: this.transloco.translate('shoppingList.actions.manageStores'),
+        icon: 'pi pi-map-marker',
+        command: () => this.goToStoreManagement(),
+      },
+      {
+        label: this.transloco.translate('shoppingList.actions.syncMealPlan'),
+        icon: 'pi pi-sync',
+        command: () => this.autoFillFromMealPlanner(),
+      },
+    ];
+  });
 
-  ariaSort(column: ShoppingSortColumn): 'ascending' | 'descending' | 'none' {
-    if (this.sortBy() !== column) return 'none';
-    return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
-  }
-
-  toggleSort(column: ShoppingSortColumn): void {
-    if (this.sortBy() === column) {
-      this.sortDirection.update((dir) => (dir === 'asc' ? 'desc' : 'asc'));
-    } else {
-      this.sortBy.set(column);
-      this.sortDirection.set('asc');
-    }
-  }
-
-  // Inline click-to-edit states
-  readonly editingQuantityId = signal<string | null>(null);
-  readonly editingPriceId = signal<string | null>(null);
-
-  startEditingQuantity(id: string): void {
-    this.editingQuantityId.set(id);
-    this.focusAfterRender('[data-inline-input]');
-  }
-
-  stopEditingQuantity(): void {
-    this.editingQuantityId.set(null);
-  }
-
-  startEditingPrice(id: string): void {
-    this.editingPriceId.set(id);
-    this.focusAfterRender('[data-inline-input]');
-  }
-
-  stopEditingPrice(): void {
-    this.editingPriceId.set(null);
-  }
-
-  /** Saves the quantity edit; Enter (restoreFocus) returns focus to the trigger button. */
-  commitQuantity(item: ShoppingItem, quantity: number, restoreFocus = false): void {
-    if (this.editingQuantityId() !== item.id) return;
-    this.updateInlineQuantity(item, quantity);
-    this.stopEditingQuantity();
-    if (restoreFocus) this.focusAfterRender(`[data-edit-trigger="qty-${item.id}"]`);
-  }
-
-  cancelQuantity(item: ShoppingItem): void {
-    this.stopEditingQuantity();
-    this.focusAfterRender(`[data-edit-trigger="qty-${item.id}"]`);
-  }
-
-  commitPrice(item: ShoppingItem, price: number, restoreFocus = false): void {
-    if (this.editingPriceId() !== item.id) return;
-    this.updateInlinePrice(item, price);
-    this.stopEditingPrice();
-    if (restoreFocus) this.focusAfterRender(`[data-edit-trigger="price-${item.id}"]`);
-  }
-
-  cancelPrice(item: ShoppingItem): void {
-    this.stopEditingPrice();
-    this.focusAfterRender(`[data-edit-trigger="price-${item.id}"]`);
-  }
-
-  private focusAfterRender(selector: string): void {
-    afterNextRender(() => this.document.querySelector<HTMLElement>(selector)?.focus(), {
-      injector: this.injector,
-    });
-  }
-
-  // Filtered & sorted items signal
-  readonly filteredItems = computed(() => {
+  readonly storeOptions = computed<StoreOption[]>(() => {
+    this.lang();
     const items = this.shoppingListService.items();
-    const filter = this.activeFilter();
-    let result =
-      filter === 'unchecked'
-        ? items.filter((item) => !item.checked)
-        : filter === 'checked'
-          ? items.filter((item) => item.checked)
-          : [...items];
-
-    const query = this.searchQuery().trim().toLocaleLowerCase();
-    if (query) {
-      result = result.filter((item) =>
-        [item.name, item.category, item.storeName, item.recipeName].some((value) =>
-          value?.toLocaleLowerCase().includes(query),
-        ),
-      );
+    const names = [
+      ...new Set(
+        items.map((item) => item.storeName?.trim()).filter((name): name is string => !!name),
+      ),
+    ].sort((a, b) => a.localeCompare(b));
+    const options: StoreOption[] = [
+      { value: ALL_STORES, label: this.transloco.translate('shoppingList.store.all') },
+      ...names.map((name) => ({ value: name, label: name })),
+    ];
+    if (items.some((item) => storeKey(item) === NO_STORE)) {
+      options.push({ value: NO_STORE, label: this.transloco.translate('shoppingList.store.none') });
     }
+    return options;
+  });
 
-    const sortCol = this.sortBy();
-    const isAsc = this.sortDirection() === 'asc';
+  readonly selectedStoreName = computed(() => {
+    const filter = this.storeFilter();
+    return this.storeOptions().find((option) => option.value === filter)?.label ?? '';
+  });
 
-    return result.sort((a, b) => {
-      let cmp = 0;
-      switch (sortCol) {
-        case 'name':
-          cmp = a.name.localeCompare(b.name);
-          break;
-        case 'category':
-          cmp = (a.category || '').localeCompare(b.category || '');
-          break;
-        case 'store':
-          cmp = (a.storeName || '').localeCompare(b.storeName || '');
-          break;
-        case 'quantity':
-          cmp = a.quantity - b.quantity;
-          break;
-        case 'price':
-          cmp = (a.estimatedPrice || 0) - (b.estimatedPrice || 0);
-          break;
+  private readonly itemsInFilter = computed(() => {
+    const filter = this.storeFilter();
+    const items = this.shoppingListService.items();
+    return filter === ALL_STORES ? items : items.filter((item) => storeKey(item) === filter);
+  });
+
+  readonly toBuyGroups = computed<StoreGroup[]>(() => {
+    const groups = new Map<string, StoreGroup>();
+    for (const item of this.itemsInFilter().filter((i) => !i.checked)) {
+      const key = storeKey(item);
+      const group = groups.get(key) ?? {
+        key,
+        name: key === NO_STORE ? null : key,
+        items: [],
+      };
+      group.items.push(item);
+      groups.set(key, group);
+    }
+    return [...groups.values()]
+      .map((group) => ({ ...group, items: [...group.items].sort(compareByName) }))
+      .sort((a, b) => {
+        if (a.name === null) return 1;
+        if (b.name === null) return -1;
+        return a.name.localeCompare(b.name);
+      });
+  });
+
+  readonly cartItems = computed(() =>
+    this.itemsInFilter()
+      .filter((item) => item.checked)
+      .sort(compareByName),
+  );
+
+  readonly cartSummary = computed(() =>
+    this.cartItems()
+      .map((item) => item.name)
+      .join(', '),
+  );
+
+  readonly showCartRail = computed(
+    () =>
+      this.cartRail() &&
+      !this.shoppingListService.isLoading() &&
+      this.shoppingListService.items().length > 0,
+  );
+
+  private readonly onCartRailChange = (event: MediaQueryListEvent): void =>
+    this.cartRail.set(event.matches);
+
+  constructor() {
+    this.cartRailQuery?.addEventListener('change', this.onCartRailChange);
+    this.destroyRef.onDestroy(() =>
+      this.cartRailQuery?.removeEventListener('change', this.onCartRailChange),
+    );
+
+    effect(() => {
+      const filter = this.storeFilter();
+      if (!this.storeOptions().some((option) => option.value === filter)) {
+        this.storeFilter.set(ALL_STORES);
       }
-      return isAsc ? cmp : -cmp;
     });
-  });
-
-  readonly totalCount = computed(() => this.shoppingListService.items().length);
-  readonly checkedCount = computed(
-    () => this.shoppingListService.items().filter((i) => i.checked).length,
-  );
-  readonly uncheckedCount = computed(
-    () => this.shoppingListService.items().filter((i) => !i.checked).length,
-  );
-  readonly boughtProgress = computed(() => {
-    const total = this.totalCount();
-    return total ? Math.round((this.checkedCount() / total) * 100) : 0;
-  });
-  readonly hasActiveFilters = computed(() => !!this.searchQuery() || this.activeFilter() !== 'all');
-
-  // Price & Budget Calculations
-  readonly totalEstimatedCost = computed(() => {
-    return this.shoppingListService
-      .items()
-      .reduce((sum, item) => sum + (item.estimatedPrice || 0), 0);
-  });
-
-  readonly inCartCost = computed(() => {
-    return this.shoppingListService
-      .items()
-      .filter((i) => i.checked)
-      .reduce((sum, item) => sum + (item.estimatedPrice || 0), 0);
-  });
-
-  readonly remainingCost = computed(() => {
-    return this.shoppingListService
-      .items()
-      .filter((i) => !i.checked)
-      .reduce((sum, item) => sum + (item.estimatedPrice || 0), 0);
-  });
-
-  readonly selectedCount = computed(() => this.selectedIds().size);
-  readonly allVisibleSelected = computed(() => {
-    const visible = this.filteredItems();
-    return visible.length > 0 && visible.every((item) => this.selectedIds().has(item.id));
-  });
-  readonly someVisibleSelected = computed(() => {
-    const visible = this.filteredItems();
-    const count = visible.filter((item) => this.selectedIds().has(item.id)).length;
-    return count > 0 && count < visible.length;
-  });
+  }
 
   goToAddItemPage(): void {
     this.router.navigate(['/shopping-list/new']);
@@ -241,25 +192,6 @@ export class ShoppingListComponent {
 
   goToStoreManagement(): void {
     this.router.navigate(['/shopping-list/stores']);
-  }
-
-  updateItemPrice(item: ShoppingItem, priceStr: string): void {
-    const price = parseFloat(priceStr);
-    if (!isNaN(price) && price >= 0) {
-      this.shoppingListService.updateItemPrice(item.id, price);
-    }
-  }
-
-  updateInlineQuantity(item: ShoppingItem, quantity: number | null): void {
-    if (quantity !== null && quantity > 0 && quantity !== item.quantity) {
-      this.shoppingListService.updateItemQuantity(item.id, quantity);
-    }
-  }
-
-  updateInlinePrice(item: ShoppingItem, price: number | null): void {
-    if (price !== null && price >= 0 && price !== item.estimatedPrice) {
-      this.shoppingListService.updateItemPrice(item.id, price);
-    }
   }
 
   autoFillFromMealPlanner(): void {
@@ -270,101 +202,16 @@ export class ShoppingListComponent {
     this.shoppingListService.toggleItem(id);
   }
 
-  openItem(id: string): void {
-    this.router.navigate(['/shopping-list', id, 'edit']);
-  }
-
-  toggleSelection(id: string): void {
-    const next = new Set(this.selectedIds());
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    this.selectedIds.set(next);
-  }
-
-  toggleSelectAll(): void {
-    const next = new Set(this.selectedIds());
-    if (this.allVisibleSelected()) this.filteredItems().forEach((item) => next.delete(item.id));
-    else this.filteredItems().forEach((item) => next.add(item.id));
-    this.selectedIds.set(next);
-  }
-
-  toggleSelectMode(): void {
-    this.selectMode.update((on) => !on);
-    if (!this.selectMode()) this.clearSelection();
-  }
-
-  clearSelection(): void {
-    this.selectedIds.set(new Set<string>());
-  }
-
-  markSelectedBought(): void {
-    const ids = [...this.selectedIds()];
-    if (!ids.length) return;
-    this.shoppingListService.markBought(ids).subscribe(() => {
-      this.shoppingListService.loadItemsFromBackend();
-      this.selectedIds.set(new Set());
-    });
-  }
-
-  async deleteSelected(): Promise<void> {
-    const ids = [...this.selectedIds()];
-    if (!ids.length) return;
-    const confirmed = await this.confirmDialog.confirm({
-      title: this.transloco.translate('shoppingList.confirmDelete.title'),
-      message:
-        ids.length === 1
-          ? this.transloco.translate('shoppingList.confirmDelete.messageOne')
-          : this.transloco.translate('shoppingList.confirmDelete.messageOther', {
-              count: ids.length,
-            }),
-      acceptLabel: this.transloco.translate('shoppingList.actions.delete'),
-      destructive: true,
-    });
-    if (!confirmed) return;
-    this.shoppingListService.deleteItems(ids).subscribe(() => {
-      this.shoppingListService.loadItemsFromBackend();
-      this.selectedIds.set(new Set());
-    });
-  }
-
-  removeItem(id: string): void {
-    this.shoppingListService.removeItem(id);
-  }
-
-  clearChecked(): void {
-    this.shoppingListService.clearChecked();
-  }
-
-  restockChecked(): void {
-    this.router.navigate(['/shopping-list/restock']);
+  toggleCart(): void {
+    this.cartExpanded.update((open) => !open);
   }
 
   goToRestock(): void {
-    this.router.navigate(['/shopping-list/restock']);
-  }
-
-  restockSelected(): void {
-    const ids = [...this.selectedIds()];
-    if (!ids.length) return;
+    if (this.storeFilter() === ALL_STORES) {
+      this.router.navigate(['/shopping-list/restock']);
+      return;
+    }
+    const ids = this.cartItems().map((item) => item.id);
     this.router.navigate(['/shopping-list/restock'], { queryParams: { ids: ids.join(',') } });
-  }
-
-  setFilter(filter: 'all' | 'unchecked' | 'checked'): void {
-    this.activeFilter.set(filter);
-    this.selectedIds.set(new Set());
-  }
-
-  onFilterChange(value: string | undefined): void {
-    if (value === 'all' || value === 'unchecked' || value === 'checked') this.setFilter(value);
-  }
-
-  setSearch(query: string): void {
-    this.searchQuery.set(query);
-    this.selectedIds.set(new Set());
-  }
-
-  clearFilters(): void {
-    this.searchQuery.set('');
-    this.setFilter('all');
   }
 }

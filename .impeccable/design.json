@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-02T00:00:00Z",
+  "generatedAt": "2026-11-09T23:12:51Z",
   "title": "Design System: Pantry",
   "extensions": {
     "colorMeta": {
@@ -365,18 +365,35 @@
       "description": "Sidebar items with an orange left rule and tint on the active item.",
       "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item\" href=\"#\">Home</a><a class=\"ds-nav-item ds-nav-active\" href=\"#\">Inventory</a><a class=\"ds-nav-sub ds-nav-sub-active\" href=\"#\">Ingredient items</a><a class=\"ds-nav-sub\" href=\"#\">Ingredients</a><a class=\"ds-nav-item\" href=\"#\">Recipes</a><a class=\"ds-nav-item\" href=\"#\">Shopping list</a></nav>",
       "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; width: 220px; padding: 8px; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; } .ds-nav-item { padding: 10px 12px; border-left: 3.5px solid transparent; border-radius: 8px; color: #475569; font-weight: 500; text-decoration: none; transition: background-color 240ms cubic-bezier(0.22,1,0.36,1), border-color 240ms cubic-bezier(0.22,1,0.36,1), color 200ms ease; } .ds-nav-item:hover:not(.ds-nav-active) { background: rgba(226,232,240,0.5); color: #0f172a; } .ds-nav-item:focus-visible, .ds-nav-sub:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.5); } .ds-nav-active { background: rgba(249,115,22,0.1); border-left-color: #f97316; color: #c2410c; font-weight: 600; } .ds-nav-sub { padding: 6px 12px 6px 28px; color: #64748b; font-weight: 500; text-decoration: none; transition: color 180ms ease; } .ds-nav-sub:hover:not(.ds-nav-sub-active) { color: #0f172a; } .ds-nav-sub-active { color: #c2410c; font-weight: 600; }"
+    },
+    {
+      "name": "Shopping List Row",
+      "kind": "custom",
+      "refersTo": "sub-card",
+      "description": "Store-grouped checklist: a store heading with its remaining count over one bordered list card; rows are a 42px checkbox hit area, name over a meta line, and quantity on the right. The in-cart variant uses a Fresh Emerald check and a struck-through name.",
+      "html": "<div class=\"ds-sl\"><div class=\"ds-sl-head\"><span>Trader Joe's</span><span>2</span></div><ul class=\"ds-sl-list\"><li class=\"ds-sl-row\"><label class=\"ds-sl-hit\"><span class=\"ds-sl-box\"></span></label><a class=\"ds-sl-link\" href=\"#\"><span class=\"ds-sl-text\"><span class=\"ds-sl-name\">Feta cheese</span><span class=\"ds-sl-meta\">For Greek salad · $4.99</span></span><span class=\"ds-sl-qty\">8 oz</span></a></li><li class=\"ds-sl-row ds-sl-in-cart\"><label class=\"ds-sl-hit\"><span class=\"ds-sl-box\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12l5 5 9-10\"/></svg></span></label><a class=\"ds-sl-link\" href=\"#\"><span class=\"ds-sl-text\"><span class=\"ds-sl-name\">Garlic</span><span class=\"ds-sl-meta\">Produce</span></span><span class=\"ds-sl-qty\">1 head</span></a></li></ul></div>",
+      "css": ".ds-sl { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; max-width: 420px; } .ds-sl-head { display: flex; justify-content: space-between; padding: 0 4px 6px; font-size: 13px; font-weight: 600; color: #475569; font-variant-numeric: tabular-nums; } .ds-sl-list { list-style: none; margin: 0; padding: 0; background: rgba(255,255,255,0.94); border: 1px solid #e2e8f0; border-radius: 16px; } .ds-sl-row { display: flex; align-items: center; gap: 4px; min-height: 54px; padding: 4px 12px 4px 4px; } .ds-sl-row + .ds-sl-row { border-top: 1px solid rgba(226,232,240,0.6); } .ds-sl-hit { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; } .ds-sl-box { width: 20px; height: 20px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; display: flex; align-items: center; justify-content: center; color: #fff; transition: background 0.2s ease, border-color 0.2s ease; } .ds-sl-hit:hover .ds-sl-box { border-color: #94a3b8; } .ds-sl-link { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; min-height: 42px; color: #0f172a; text-decoration: none; border-radius: 8px; } .ds-sl-link:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.25); } .ds-sl-text { flex: 1; min-width: 0; display: flex; flex-direction: column; } .ds-sl-name { font-size: 14px; font-weight: 500; } .ds-sl-meta { font-size: 12px; color: #64748b; } .ds-sl-qty { font-size: 13px; font-weight: 500; color: #475569; font-variant-numeric: tabular-nums; } .ds-sl-in-cart .ds-sl-box { background: #059669; border-color: #059669; } .ds-sl-in-cart .ds-sl-name { text-decoration: line-through; color: #64748b; }"
+    },
+    {
+      "name": "Meal Planner Week Table",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "One table of days × meal types inside a card. Today's day label is Ember Orange. A filled cell shows the recipe and one neutral status (Cooked, N missing with a hollow dot, In stock); its actions and the empty-cell add pill appear on row hover or focus, and stay visible on devices without hover.",
+      "html": "<div class=\"ds-wk\"><table><thead><tr><th>Day</th><th>Lunch</th><th>Dinner</th></tr></thead><tbody><tr class=\"ds-wk-today\"><th scope=\"row\">Monday<span>Today</span></th><td><span class=\"ds-wk-name ds-wk-done\">Classic pancakes</span><span class=\"ds-wk-status\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12l5 5 9-10\"/></svg>Cooked</span></td><td><span class=\"ds-wk-name\">Spaghetti with marinara</span><span class=\"ds-wk-status\"><i class=\"ds-wk-dot\"></i>2 missing</span></td></tr><tr><th scope=\"row\">Tuesday</th><td><span class=\"ds-wk-name\">Greek salad</span><span class=\"ds-wk-status\">In stock</span></td><td><button class=\"ds-wk-add\" type=\"button\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg>Add dinner</button></td></tr></tbody></table></div>",
+      "css": ".ds-wk { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: rgba(255,255,255,0.94); border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; max-width: 560px; } .ds-wk table { width: 100%; border-collapse: collapse; table-layout: fixed; } .ds-wk thead th { text-align: left; font-size: 13px; font-weight: 500; color: #64748b; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; } .ds-wk thead th:first-child { width: 112px; } .ds-wk tbody th { text-align: left; vertical-align: top; font-size: 14px; font-weight: 600; color: #0f172a; padding: 14px 16px; } .ds-wk tbody th span { display: block; font-size: 12px; font-weight: 400; } .ds-wk-today th { color: #c2410c !important; } .ds-wk td { vertical-align: top; padding: 12px 16px; height: 72px; border-left: 1px solid #f1f5f9; } .ds-wk tbody tr + tr > * { border-top: 1px solid #f1f5f9; } .ds-wk-name { display: block; font-size: 14px; font-weight: 500; color: #0f172a; } .ds-wk-done { text-decoration: line-through; color: #64748b; } .ds-wk-status { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 12px; color: #475569; } .ds-wk-dot { width: 6px; height: 6px; border-radius: 50%; border: 1.5px solid #64748b; } .ds-wk-add { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: none; border-radius: 8px; background: rgba(249,115,22,0.1); color: #c2410c; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; opacity: 0; transition: opacity 0.2s ease; } .ds-wk tr:hover .ds-wk-add, .ds-wk-add:focus-visible { opacity: 1; } .ds-wk-add:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.25); } @media (hover: none) { .ds-wk-add { opacity: 1; } } @media (prefers-reduced-motion: reduce) { .ds-wk-add { transition: none; } }"
     }
   ],
   "narrative": {
     "northStar": "The Calm Kitchen Ledger",
-    "overview": "Pantry is a quiet, trustworthy record of a household's food. The interface behaves like a well-kept ledger. Content sits on clean, nearly opaque surfaces with even rhythm and predictable controls, so you can trust a glance on a phone in the kitchen as much as a planning session at a desk. The system shows information plainly and does not perform.\n\nThe atmosphere stays in the background. The app shell carries a static pale Morning Haze sky (soft radial glows and a faint 28px dot grid) behind every page. Content never competes with it: cards are 92–96% opaque, so the haze only reads at the margins. Ember Orange is the one warm note in a cool, slate-and-sky world. It marks where you act and where you are, and it does nothing else. Status colors (emerald, amber, rose) carry the food's condition and never decorate.\n\nDensity is moderate and intentional. Body text starts at 14px, every single-line control is 42px tall, and pages keep useful information visible instead of hiding it behind extra framing. Minimalism here means fewer decisions and clearer relationships, not less information. Light and dark themes are first-class peers; neither is the fallback.",
+    "overview": "Pantry is a quiet, trustworthy record of a household's food. The interface behaves like a well-kept ledger. Content sits on clean, nearly opaque surfaces with even rhythm and predictable controls, so you can trust a glance on a phone in the kitchen as much as a planning session at a desk. The system shows information plainly and does not perform.\n\nThe atmosphere stays in the background. The app shell carries a static pale Morning Haze sky behind every page. The sky has soft radial glows. The sky has no particles, utensils, waves, or pattern. Content never competes with it. Cards are 92–96% opaque, so the haze only reads at the margins. Ember Orange is the one warm note in a cool, slate-and-sky world. It marks where you act and where you are. It does nothing else. Status colors (emerald, amber, rose) carry the food's condition. They never decorate.\n\nDensity is moderate and intentional. Body text starts at 14px. Every single-line control is 42px tall. Pages keep useful information visible. They do not hide it behind extra framing. Minimalism here means fewer decisions and clearer relationships. It does not mean less information. Light and dark themes are first-class peers. Neither theme is the fallback. The theme follows the stored choice. If no stored choice exists, the theme follows the operating system.",
     "keyCharacteristics": [
       "Cool slate neutrals over a pale sky-blue haze; Ember Orange reserved for actions and the current location.",
-      "Nearly opaque frosted cards, quietly layered on borders and tone rather than shadow.",
+      "Nearly opaque cards, quietly layered on borders and tone rather than shadow.",
       "One 42px control height and soft 12px corners across buttons, inputs, selects, and date pickers.",
       "Native system sans with five named type roles; natural case, no tracked uppercase labels.",
       "Emerald / amber / rose status language for fresh / expiring / expired stock.",
-      "Full light and dark themes, toggled by a `.dark` class. The first visit follows `prefers-color-scheme`."
+      "Full light and dark themes, toggled by a `.dark` class. The first visit follows `prefers-color-scheme`.",
+      "Text and control colors meet WCAG 2.2 AA (4.5:1 for text, 3:1 for icons and control edges) in both themes."
     ],
     "rules": [
       {
@@ -386,17 +403,27 @@
       },
       {
         "name": "The Status Is Not Decoration Rule",
-        "body": "Emerald, amber, and rose describe the food's condition. Never use them for category color, branding, or emphasis. Always pair them with a label or icon; color alone never carries status.",
+        "body": "Emerald, amber, and rose describe the food's condition. Never use them for category color, branding, or emphasis. Always pair them with a label or icon. Color alone never carries status. Category and group colors never use the status hues. See Documented Exceptions for the allowed palette clamp.",
+        "section": "colors"
+      },
+      {
+        "name": "The Orange Means Clickable Rule",
+        "body": "A non-clickable orange fill is wrong. A `primary` badge is not clickable. Use it only where it is a link or a filter. A taxonomy reference that has no link uses a `neutral` badge. Documented Exceptions lists the only non-clickable orange exceptions.",
         "section": "colors"
       },
       {
         "name": "The Natural Case Rule",
-        "body": "Use sentence case for all UI text. Uppercase is only for a deliberate short overline, never for routine field labels. Do not combine `uppercase` with `tracking-*`.",
+        "body": "Use sentence case for all UI text: headings, labels, buttons, navigation, and menu items. Capitalize only the first word and proper nouns. Uppercase is only for a deliberate short overline, never for routine field labels. Do not combine `uppercase` with `tracking-*`.",
+        "section": "typography"
+      },
+      {
+        "name": "The Minimum Size Rule",
+        "body": "Do not use text smaller than `text-xs` (12px). Do not use arbitrary 9–11px sizes. Do not use `font-extrabold`.",
         "section": "typography"
       },
       {
         "name": "The Role, Not Size Rule",
-        "body": "Use the named role classes (`type-page-title`, `type-section-title`, `type-label`, `type-meta`, `type-value`) instead of ad hoc size and weight utilities. Keep each role's color token; a quieter weight must not make help text unreadable.",
+        "body": "Use the named role classes (`type-page-title`, `type-section-title`, `type-body`, `type-label`, `type-meta`, `type-value`) instead of ad hoc size and weight utilities. Keep each role's color token; a quieter weight must not make help text unreadable.",
         "section": "typography"
       },
       {
@@ -411,32 +438,37 @@
       }
     ],
     "dos": [
-      "Do keep every single-line control at exactly 42px tall with a 12px radius.",
-      "Do use Ember Orange only for primary actions, focus, selection, and the current navigation location.",
-      "Do use the five named type roles and natural-case labels.",
-      "Do separate content with 1px slate borders and tonal steps before reaching for shadow.",
-      "Do pair every status color with a text label or icon, in both themes.",
-      "Do let the shell own outer gutters; pages set only their content measure.",
-      "Do verify light and dark themes together; check contrast against the composited card surface, not the raw token.",
-      "Do provide `prefers-reduced-motion` fallbacks for any animation.",
-      "Do use design tokens (`primary-*`, `surface-*`, `navy-900`) instead of hex values in templates.",
-      "Do use `pantry-confirm-dialog` for confirmations, `pantry-alert` for inline messages, and `pantry-segmented-control` for single-choice toggles.",
-      "Do use sentence case for all UI text.",
-      "Do keep touch targets at 42px or larger on phones."
+      "**Do** keep every single-line control at exactly 42px tall with a 12px radius.",
+      "**Do** use Ember Orange only for primary actions, focus, selection, and the current navigation location.",
+      "**Do** use the five named type roles and natural-case labels.",
+      "**Do** separate content with 1px slate borders and tonal steps before reaching for shadow.",
+      "**Do** pair every status color with a text label or icon, in both themes.",
+      "**Do** let the shell own outer gutters; pages set only their content measure.",
+      "**Do** verify light and dark themes together; check contrast against the composited card surface, not the raw token.",
+      "**Do** provide `prefers-reduced-motion` fallbacks for any animation.",
+      "**Do** use design tokens (`primary-*`, `surface-*`, `navy-900`) instead of hex values in templates.",
+      "**Do** use `pantry-confirm-dialog` for confirmations, `pantry-alert` for inline messages, and `pantry-segmented-control` for single-choice toggles.",
+      "**Do** use sentence case for all UI text.",
+      "**Do** keep touch targets at 42px or larger on phones."
     ],
     "donts": [
-      "Don't use emerald, amber, or rose for decoration, categories, or branding.",
-      "Don't use tracked uppercase field labels or extra-bold headings.",
-      "Don't nest a card inside a sub-panel, or add competing headings and badge clusters around a task.",
-      "Don't add outer horizontal or vertical padding wrappers to pages.",
-      "Don't put content directly on the haze background; it belongs on a card.",
-      "Don't shrink desktop tables or controls to fit phones; restructure instead.",
-      "Don't hand-roll search inputs, spinners, skeletons, empty states, badge pills, segmented controls, alerts, confirm dialogs, native selects, or popup menus; use the `@ui` primitive or PrimeNG control.",
-      "Don't write long inline Tailwind button strings; use the `btn-*` classes.",
-      "Don't hardcode brand hexes (`#ea580c`, `#141c2e`, `#0d1322`, `#f8fafc`) in templates.",
-      "Don't introduce new control heights, radii, button variants, or badge variants without recording them in this file.",
-      "Don't use native `confirm()`, `pi-spin`, `font-extrabold`, `text-gray-*`, `red-*` colors, or text smaller than 12px.",
-      "Don't use an orange fill on an element that is not clickable or current."
+      "**Don't** use emerald, amber, or rose for decoration, categories, or branding.",
+      "**Don't** use tracked uppercase field labels or extra-bold headings.",
+      "**Don't** nest a card inside a sub-panel, or add competing headings and badge clusters around a task.",
+      "**Don't** add outer horizontal or vertical padding wrappers to pages.",
+      "**Don't** put content directly on the haze background; it belongs on a card.",
+      "**Don't** add patterns, illustrations, or decorative drawings to the background.",
+      "**Don't** animate the background.",
+      "**Don't** add a second background layer or a per-page background.",
+      "**Don't** put backdrop blur on panels over the surface.",
+      "**Don't** use translucent fills for status surfaces. Alerts and status call-outs stay opaque, so the shell surface does not show through them.",
+      "**Don't** shrink desktop tables or controls to fit phones; restructure instead.",
+      "**Don't** hand-roll search inputs, spinners, skeletons, empty states, badge pills, segmented controls, alerts, confirm dialogs, native selects, or popup menus. Use the `@ui` primitive or PrimeNG control.",
+      "**Don't** write long inline Tailwind button strings; use the `btn-*` classes.",
+      "**Don't** hardcode brand hexes (`#ea580c`, `#141c2e`, `#0d1322`, `#f8fafc`) in templates.",
+      "**Don't** use native `confirm()`, `pi-spin`, `font-extrabold`, `text-gray-*`, `red-*` colors, or text smaller than 12px.",
+      "**Don't** use an orange fill on an element that is not clickable or current.",
+      "**Don't** introduce new control heights, radii, button variants, or badge variants without recording them in this file."
     ]
   }
 }

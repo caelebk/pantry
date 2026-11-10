@@ -1,4 +1,5 @@
 import { CDPSession, expect, test } from '@playwright/test';
+import { installDesignBaseline } from './fixtures/design-baseline';
 
 /**
  * Pantry Angular Application - E2E Browser Performance Benchmark Test Suite
@@ -442,6 +443,8 @@ test.describe('Pantry Application Performance Benchmarks', () => {
   test('4. Interaction-to-Next-Paint (INP) & click-to-render latency on key actions', async ({
     page,
   }) => {
+    // The plan form is a guarded route that calls /api/v1; use the current fixture.
+    await installDesignBaseline(page);
     const client = await page.context().newCDPSession(page);
     await client.send('Performance.enable');
 
@@ -461,26 +464,16 @@ test.describe('Pantry Application Performance Benchmarks', () => {
     const addFormLatency = Date.now() - startA;
     inpResults.push({ action: 'Open Add Item Form Navigation', latencyMs: addFormLatency });
 
-    // Action B: Switch Sub-Tabs in Meal Planner
+    // Action B: Open the plan form from the Meal Planner
     await page.goto('/meal-planner');
-    const dailyFocusBtn = page.locator('button:has-text("Daily Focus")');
-    await dailyFocusBtn.waitFor({ state: 'visible' });
+    const planMealBtn = page.locator('button:has-text("Plan a meal")');
+    await planMealBtn.waitFor({ state: 'visible' });
 
-    const startB1 = Date.now();
-    await dailyFocusBtn.click();
-    await page.locator('pantry-daily-focus').waitFor({ state: 'visible' });
-    const dailyFocusTabLatency = Date.now() - startB1;
-    inpResults.push({ action: 'Switch to Daily Focus Sub-Tab', latencyMs: dailyFocusTabLatency });
-
-    const calendarBtn = page.locator('button:has-text("Weekly Calendar")');
-    const startB2 = Date.now();
-    await calendarBtn.click();
-    await page.locator('pantry-weekly-view').waitFor({ state: 'visible' });
-    const calendarTabLatency = Date.now() - startB2;
-    inpResults.push({
-      action: 'Switch back to Weekly Calendar Sub-Tab',
-      latencyMs: calendarTabLatency,
-    });
+    const startB = Date.now();
+    await planMealBtn.click();
+    await page.locator('pantry-plan-meal-page').waitFor({ state: 'visible' });
+    const planMealLatency = Date.now() - startB;
+    inpResults.push({ action: 'Open Plan Meal Form', latencyMs: planMealLatency });
 
     // Action C: Click Status Filter Pill in Inventory Items
     await page.goto('/inventory/items');

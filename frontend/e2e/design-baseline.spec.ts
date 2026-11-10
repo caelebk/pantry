@@ -99,7 +99,7 @@ const pages = [
   {
     name: 'shopping',
     route: '/shopping-list',
-    heading: 'Shopping List',
+    heading: 'Shopping list',
     content: longIngredientName,
     endpoint: 'GET /api/v1/shopping-list',
     state: 'populated list with checked and unchecked items',

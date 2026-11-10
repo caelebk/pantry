@@ -4,45 +4,25 @@
       <h1 class="type-page-title text-surface-900 dark:text-white">
         {{ 'mealPlanner.pageTitle' | transloco }}
       </h1>
+      <p class="type-meta mt-1 text-surface-500 dark:text-surface-400">
+        @if (totalPlannedCount() === 0) {
+          {{ 'mealPlanner.weekMetaEmpty' | transloco }}
+        } @else {
+          {{
+            (totalPlannedCount() === 1 ? 'mealPlanner.weekMetaOne' : 'mealPlanner.weekMetaOther')
+              | transloco: { count: totalPlannedCount() }
+          }}
+        }
+      </p>
     </div>
 
-    <!-- Quick Actions Group -->
     <div class="page-header__actions">
-      @if (missingItemsCount() > 0) {
-        <button (click)="syncAllMissingToShoppingList()" class="btn-secondary">
-          {{
-            (missingItemsCount() === 1
-              ? 'mealPlanner.syncMissingOne'
-              : 'mealPlanner.syncMissingOther'
-            ) | transloco: { count: missingItemsCount() }
-          }}
-        </button>
-      }
-
-      <button (click)="openAddModal()" class="btn-primary">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2.5"
-          stroke="currentColor"
-          class="w-4 h-4">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
+      <button type="button" (click)="openAddModal()" class="btn-primary">
+        <i class="pi pi-plus" aria-hidden="true"></i>
         <span>{{ 'mealPlanner.planMeal' | transloco }}</span>
       </button>
     </div>
   </header>
-
-  <!-- Sub-Page Navigation Tabs -->
-  <div
-    class="flex items-center justify-between border-b border-surface-200/80 dark:border-surface-800/80 pb-3 panel-reveal panel-delay-1">
-    <pantry-segmented-control
-      [ariaLabel]="'mealPlanner.plannerView' | transloco"
-      [options]="subTabOptions()"
-      [value]="activeSubTab()"
-      (valueChange)="setSubTab($event)" />
-  </div>
 
   @if (mealPlannerService.stockFailed()) {
     <pantry-empty-state
@@ -53,16 +33,41 @@
       (actionClick)="retryLoadStock()" />
   }
 
-  <!-- Dynamic Views -->
-  <div class="panel-reveal panel-delay-2">
-    @if (mealPlannerService.isLoading()) {
-      <pantry-skeleton variant="card" height="384px"></pantry-skeleton>
-    } @else if (activeSubTab() === 'calendar') {
-      <pantry-weekly-view [meals]="plannedMeals()" (addMealRequested)="openAddModal($event)">
-      </pantry-weekly-view>
-    } @else if (activeSubTab() === 'daily') {
-      <pantry-daily-focus [meals]="plannedMeals()" (addMealRequested)="openAddModal($event)">
-      </pantry-daily-focus>
+  @if (mealPlannerService.isLoading()) {
+    <pantry-skeleton variant="card" height="480px"></pantry-skeleton>
+  } @else {
+    <pantry-weekly-view [meals]="plannedMeals()" (addMealRequested)="openAddModal($event)" />
+
+    @if (stockKnown() && totalPlannedCount() > 0) {
+      @if (missingMealsCount() > 0) {
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p class="type-label text-surface-600 dark:text-surface-300">
+            {{
+              'mealPlanner.footer.missingSummary'
+                | transloco
+                  : {
+                      ingredients:
+                        (missingItemsCount() === 1
+                          ? 'mealPlanner.footer.ingredientCountOne'
+                          : 'mealPlanner.footer.ingredientCountOther'
+                        ) | transloco: { count: missingItemsCount() },
+                      meals:
+                        (missingMealsCount() === 1
+                          ? 'mealPlanner.weekly.mealCountOne'
+                          : 'mealPlanner.weekly.mealCountOther'
+                        ) | transloco: { count: missingMealsCount() },
+                    }
+            }}
+          </p>
+          <button type="button" class="btn-secondary" (click)="syncAllMissingToShoppingList()">
+            {{ 'mealPlanner.footer.addToShoppingList' | transloco }}
+          </button>
+        </div>
+      } @else {
+        <p class="type-meta text-surface-500 dark:text-surface-400">
+          {{ 'mealPlanner.footer.allInStock' | transloco }}
+        </p>
+      }
     }
-  </div>
+  }
 </div>

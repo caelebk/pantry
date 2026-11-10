@@ -1179,6 +1179,74 @@ p-inputnumber {
   color: #ffffff !important;
 }
 
+/* In-cart items (shopping list) use Fresh Emerald instead of the brand accent. */
+.checkbox-in-cart.p-checkbox-checked .p-checkbox-box {
+  background-color: var(--color-emerald-600) !important;
+  border-color: var(--color-emerald-600) !important;
+}
+
+/* PrimeNG Menu (popup): opaque floating overlay with 42px items. */
+.p-menu {
+  background-color: #ffffff !important;
+  border: 1px solid var(--color-surface-200) !important;
+  border-radius: 0.75rem !important;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.15),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  color: var(--color-surface-700) !important;
+  min-width: 12rem;
+}
+
+:where(.dark, .dark *) .p-menu {
+  background-color: var(--color-surface-800) !important;
+  border-color: var(--color-surface-700) !important;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.5),
+    0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+  color: var(--color-surface-200) !important;
+}
+
+.p-menu-list {
+  padding: 0.25rem;
+}
+
+.p-menu-item-content {
+  border-radius: 0.5rem !important;
+  color: inherit !important;
+}
+
+.p-menu-item-link {
+  min-height: 42px;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: inherit !important;
+}
+
+.p-menu-item-icon,
+.p-menu-item-label {
+  color: inherit !important;
+}
+
+.p-menu-item:not(.p-disabled) > .p-menu-item-content:hover,
+.p-menu-item.p-focus > .p-menu-item-content {
+  background-color: var(--color-surface-100) !important;
+}
+
+:where(.dark, .dark *) .p-menu-item:not(.p-disabled) > .p-menu-item-content:hover,
+:where(.dark, .dark *) .p-menu-item.p-focus > .p-menu-item-content {
+  background-color: var(--color-surface-700) !important;
+}
+
+.p-menu-item.p-focus > .p-menu-item-content {
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
+}
+
+:where(.dark, .dark *) .p-menu-item.p-focus > .p-menu-item-content {
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.35);
+}
+
 /* ── Modern Micro-Animations & Accordion Grid Drawers ──────────────── */
 @keyframes fadeInSlideUp {
   from {

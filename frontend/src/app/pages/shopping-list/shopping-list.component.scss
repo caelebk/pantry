@@ -1,1 +1,29 @@
-/* Shopping list styles */
+/* The checklist keeps the 720px ledger column. Once the shell has room for a
+ * second column, the cart moves into a sticky rail in the space beside it. */
+.shopping-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 720px;
+  min-width: 0;
+}
+
+@media (min-width: 1280px) {
+  .shopping-page {
+    display: grid;
+    grid-template-columns: minmax(0, 720px) minmax(280px, 400px);
+    column-gap: 1.5rem;
+    align-items: start;
+  }
+
+  .shopping-main {
+    max-width: none;
+  }
+
+  .shopping-rail {
+    position: sticky;
+    top: 1.5rem;
+    min-width: 0;
+  }
+}
